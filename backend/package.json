@@ -1,0 +1,36 @@
+{
+  "name": "pzm-api",
+  "version": "1.0.0",
+  "description": "PZM iPhone Store API - Cloudflare Workers Backend",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:prod": "wrangler deploy --env production",
+    "db:migrate": "wrangler d1 execute pzm-db --file ../migrations/001_init.sql && wrangler d1 execute pzm-db --file ../migrations/002_seed_products.sql",
+    "db:seed": "wrangler d1 execute pzm-db --file ../migrations/002_seed_products.sql",
+    "db:query": "wrangler d1 execute pzm-db --command",
+    "r2:create": "wrangler r2 bucket create pzm-images",
+    "kv:create": "wrangler kv:namespace create pzm-kv && wrangler kv:namespace create pzm-kv --preview",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "iphone",
+    "store",
+    "ecommerce",
+    "cloudflare",
+    "workers"
+  ],
+  "author": "PZM",
+  "license": "ISC",
+  "dependencies": {
+    "hono": "^4.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231121.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "wrangler": "^4.53.0"
+  }
+}

@@ -1,0 +1,48 @@
+/* FAQ Section Styles */
+.faq {
+    padding: var(--space-xl);
+    background: linear-gradient(to bottom right, var(--bg-white), var(--bg-light));
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--space-xl);
+}
+
+.faq h2 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: var(--space-xl);
+    font-size: 2.25rem;
+    font-weight: 700;
+    position: relative;
+}
+
+.faq h2:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+    border-radius: var(--radius-sm);
+}
+
+/* Custom styles for Elfsight FAQ widget */
+:root {
+    --eapps-faq-background-color: transparent !important;
+    --eapps-faq-item-background-color: var(--bg-white) !important;
+    --eapps-faq-item-title-color: var(--text-dark) !important;
+    --eapps-faq-item-text-color: var(--text-light) !important;
+}
+
+@media (max-width: 768px) {
+    .faq {
+        padding: var(--space-lg);
+        margin-bottom: var(--space-lg);
+    }
+
+    .faq h2 {
+        font-size: 1.875rem;
+    }
+}
