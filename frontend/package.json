@@ -6,8 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:staging": "tsc && vite build --mode staging",
+    "build:production": "tsc && vite build --mode production",
     "preview": "vite preview",
-    "deploy": "npm run build && wrangler pages deploy dist"
+    "deploy": "npm run build && wrangler pages deploy dist",
+    "deploy:staging": "npm run build:staging && wrangler pages deploy dist --env staging",
+    "deploy:production": "npm run build:production && wrangler pages deploy dist --env production"
   },
   "dependencies": {
     "react": "^18.3.1",
