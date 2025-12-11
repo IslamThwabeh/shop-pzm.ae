@@ -1,0 +1,23 @@
+name: Deploy Staging Worker
+
+on:
+  push:
+    branches: [develop]
+    paths: ['backend/**']
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+        working-directory: ./backend
+      - run: npm run deploy:staging
+        working-directory: ./backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - run: sleep 5 && curl -f https://test.pzm.ae/ || echo "Endpoint not ready"

@@ -20,7 +20,7 @@ const app = new Hono<{ Bindings: Env }>();
 app.use(
   '*',
   cors({
-    origin: ['https://pzm.ae', 'https://www.pzm.ae', 'http://localhost:5173', 'http://localhost:3000'],
+    origin: ['https://pzm.ae', 'https://www.pzm.ae', 'https://test.pzm.ae', 'https://api.pzm.ae'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization'],
   })
@@ -402,4 +402,17 @@ app.notFound((c) => {
   return c.json({ error: 'Not found', status: 404 }, 404);
 });
 
-export default app;
+//export default app;
+
+export default {
+  async fetch(request: Request, env: Env) {
+    return new Response(JSON.stringify({
+      status: 'ok',
+      environment: env.ENVIRONMENT,
+      message: 'API is running'
+    }), {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}
+

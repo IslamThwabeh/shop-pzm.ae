@@ -5,7 +5,10 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --env staging",
+    "dev:local": "wrangler dev",
+    "deploy:staging": "wrangler deploy --env staging",
+    "deploy:production": "wrangler deploy --env production",
     "deploy": "wrangler deploy",
     "deploy:prod": "wrangler deploy --env production",
     "db:migrate": "wrangler d1 execute pzm-db --file ../migrations/001_init.sql && wrangler d1 execute pzm-db --file ../migrations/002_seed_products.sql",

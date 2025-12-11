@@ -3,32 +3,49 @@ main = "src/index.ts"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
-# ---------------------------------
-# Routes
-# ---------------------------------
-routes = [
-  { pattern = "api.pzm.ae/*", zone_name = "pzm.ae" }
-]
+# =====================================================================
+# Staging (test.pzm.ae) - Uses same resources as production
+# =====================================================================
+[env.staging]
+name = "pzm-api-staging"
+vars = { ENVIRONMENT = "staging" }
 
-# ---------------------------------
-# Production Environment ONLY
-# ---------------------------------
+[[env.staging.routes]]
+pattern = "test.pzm.ae/*"
+zone_name = "pzm.ae"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "pzm-db"
+database_id = "b8574f74-a23f-4f2b-bc18-1322afb7de2c"
+
+[[env.staging.r2_buckets]]
+binding = "BUCKET"
+bucket_name = "pzm-images"
+
+[[env.staging.kv_namespaces]]
+binding = "KV"
+id = "6df924c74e19424787a69c9f493b3151"
+
+# =====================================================================
+# Production (api.pzm.ae)
+# =====================================================================
 [env.production]
-vars.ENVIRONMENT = "production"
+vars = { ENVIRONMENT = "production" }
 
-# D1 Database (Production)
+[[env.production.routes]]
+pattern = "api.pzm.ae/*"
+zone_name = "pzm.ae"
+
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "pzm-db"
 database_id = "b8574f74-a23f-4f2b-bc18-1322afb7de2c"
 
-# R2 Bucket (Production)
 [[env.production.r2_buckets]]
 binding = "BUCKET"
 bucket_name = "pzm-images"
 
-# KV Namespace (Production)
 [[env.production.kv_namespaces]]
 binding = "KV"
 id = "6df924c74e19424787a69c9f493b3151"
-
