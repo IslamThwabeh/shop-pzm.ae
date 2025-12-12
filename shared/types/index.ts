@@ -7,8 +7,11 @@ export interface Product {
   color: string
   price: number
   quantity: number
-  images: string[]
+  image_url?: string
+  images?: string[]
   description?: string
+  created_at?: string
+  updated_at?: string
   createdAt?: string
   updatedAt?: string
 }
