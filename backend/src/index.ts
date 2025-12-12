@@ -402,17 +402,5 @@ app.notFound((c) => {
   return c.json({ error: 'Not found', status: 404 }, 404);
 });
 
-//export default app;
-
-export default {
-  async fetch(request: Request, env: Env) {
-    return new Response(JSON.stringify({
-      status: 'ok',
-      environment: env.ENVIRONMENT,
-      message: 'API is running'
-    }), {
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-}
+export default app;
 
