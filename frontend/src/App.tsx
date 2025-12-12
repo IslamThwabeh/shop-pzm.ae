@@ -10,9 +10,10 @@ import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation'
 import AdminDashboard from './pages/AdminDashboard'
+import AdminLogin from './pages/AdminLogin'
 import Header from './components/Header'
 
-type PageType = 'home' | 'product' | 'cart' | 'checkout' | 'confirmation' | 'admin'
+type PageType = 'home' | 'product' | 'cart' | 'checkout' | 'confirmation' | 'admin' | 'admin-login'
 
 interface PageState {
   type: PageType
@@ -51,7 +52,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header onNavigate={navigateTo} />
+      <Header onNavigate={navigateTo} currentPage={currentPage.type} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {error && (
@@ -94,6 +95,13 @@ function AppContent() {
           <OrderConfirmation
             orderId={currentPage.orderId}
             onContinueShopping={() => navigateTo({ type: 'home' })}
+          />
+        )}
+
+        {currentPage.type === 'admin-login' && (
+          <AdminLogin
+            onSuccess={() => navigateTo({ type: 'admin' })}
+            onCancel={() => navigateTo({ type: 'home' })}
           />
         )}
 

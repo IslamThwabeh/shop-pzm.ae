@@ -4,9 +4,10 @@ import { useAuth } from '../context/AuthContext'
 
 interface HeaderProps {
   onNavigate: (page: any) => void
+  currentPage?: string
 }
 
-export default function Header({ onNavigate }: HeaderProps) {
+export default function Header({ onNavigate, currentPage }: HeaderProps) {
   const { items } = useCart()
   const { isAuthenticated, logout } = useAuth()
 
@@ -26,12 +27,14 @@ export default function Header({ onNavigate }: HeaderProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => onNavigate({ type: 'admin-login' })}
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded hover:bg-green-700"
-            >
-              Admin
-            </button>
+            {currentPage !== 'admin' && currentPage !== 'admin-login' && (
+              <button
+                onClick={() => onNavigate({ type: 'admin-login' })}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded hover:bg-green-700"
+              >
+                Admin
+              </button>
+            )}
 
             <button
               onClick={() => onNavigate({ type: 'cart' })}
