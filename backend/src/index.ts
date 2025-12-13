@@ -340,9 +340,11 @@ app.post('/api/auth/admin/login', async (c) => {
     }
 
     const authService = new AuthService(c.env.ADMIN_SECRET);
-    const passwordHash = await db.getAdminPasswordHash(body.username);
+    const storedPasswordHash = await db.getAdminPasswordHash(body.username);
 
-    if (!passwordHash || !(await authService.verifyPassword(body.password, passwordHash))) {
+    // body.password is already a SHA-256 hash from the frontend
+    // Just compare it directly with the stored hash
+    if (!storedPasswordHash || !(await authService.verifyPasswordHash(body.password, storedPasswordHash))) {
       return c.json({ error: 'Invalid credentials', status: 401 }, 401);
     }
 

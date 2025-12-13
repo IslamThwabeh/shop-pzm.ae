@@ -78,21 +78,11 @@ export class AuthService {
   }
 
   /**
-   * Hash password using SHA-256
+   * Verify password hash (direct comparison)
+   * The frontend sends the SHA-256 hash, so we just compare it directly
    */
-  async hashPassword(password: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    return this.bufferToHex(hashBuffer);
-  }
-
-  /**
-   * Verify password against hash
-   */
-  async verifyPassword(password: string, hash: string): Promise<boolean> {
-    const passwordHash = await this.hashPassword(password);
-    return passwordHash === hash;
+  async verifyPasswordHash(receivedHash: string, storedHash: string): Promise<boolean> {
+    return receivedHash === storedHash;
   }
 
   /**
@@ -131,17 +121,5 @@ export class AuthService {
     const padding = '='.repeat((4 - (data.length % 4)) % 4);
     const base64 = (data + padding).replace(/-/g, '+').replace(/_/g, '/');
     return atob(base64);
-  }
-
-  /**
-   * Convert buffer to hex string
-   */
-  private bufferToHex(buffer: ArrayBuffer): string {
-    const view = new Uint8Array(buffer);
-    let hex = '';
-    for (let i = 0; i < view.length; i++) {
-      hex += ('0' + view[i].toString(16)).slice(-2);
-    }
-    return hex;
   }
 }

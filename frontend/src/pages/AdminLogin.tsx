@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Lock, User } from 'lucide-react'
+import { hashPassword } from '../utils/crypto'
 
 interface AdminLoginProps {
   onSuccess: () => void
@@ -18,10 +19,13 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
     setError(null)
 
     try {
+      // Hash the password before sending
+      const passwordHash = await hashPassword(password)
+
       const response = await fetch('https://test.pzm.ae/api/auth/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password: passwordHash }),
       })
 
       if (!response.ok) {
@@ -30,8 +34,8 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
       }
 
       const data = await response.json()
-      localStorage.setItem('adminToken', data.token)
-      localStorage.setItem('adminUser', JSON.stringify(data.admin))
+      localStorage.setItem('adminToken', data.data.token)
+      localStorage.setItem('adminUser', JSON.stringify(data.data.user))
       onSuccess()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
@@ -116,7 +120,7 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
           <p className="text-blue-700 text-xs">
             <strong>Demo Credentials:</strong><br />
             Username: admin<br />
-            Password: admin123
+            Password: RobinHood!@#123
           </p>
         </div>
       </div>
