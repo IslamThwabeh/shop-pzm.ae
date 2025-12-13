@@ -27,7 +27,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            {currentPage !== 'admin' && (
+            {currentPage !== 'admin' && currentPage !== 'home' && currentPage !== 'shop' && (
               <button
                 onClick={() => onNavigate({ type: 'admin' })}
                 className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded hover:bg-green-700"

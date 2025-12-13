@@ -10,9 +10,10 @@ import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation'
 import AdminPage from './pages/AdminPage'
+import HomePage from './pages/HomePage'
 import Header from './components/Header'
 
-type PageType = 'home' | 'product' | 'cart' | 'checkout' | 'confirmation' | 'admin'
+type PageType = 'home' | 'shop' | 'product' | 'cart' | 'checkout' | 'confirmation' | 'admin'
 
 interface PageState {
   type: PageType
@@ -61,6 +62,13 @@ function AppContent() {
         )}
 
         {currentPage.type === 'home' && (
+          <HomePage
+            products={products}
+            onShopClick={() => navigateTo({ type: 'shop' })}
+          />
+        )}
+
+        {currentPage.type === 'shop' && (
           <ProductListing
             products={products}
             loading={loading}
