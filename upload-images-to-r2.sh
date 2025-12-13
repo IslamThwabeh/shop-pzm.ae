@@ -51,7 +51,7 @@ for image in "${images[@]}"; do
     echo "[$count/$total] Uploading $image..."
     
     if [ -f "product-images/$image" ]; then
-        wrangler r2 object put "$BUCKET_NAME/$FOLDER/$image" --file="product-images/$image"
+        wrangler r2 object put "$BUCKET_NAME/$FOLDER/$image" --file="product-images/$image" --remote
         
         if [ $? -eq 0 ]; then
             echo "✅ Successfully uploaded $image"
