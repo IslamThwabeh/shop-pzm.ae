@@ -8,10 +8,10 @@ compatibility_flags = ["nodejs_compat"]
 # =====================================================================
 [env.staging]
 name = "pzm-api-staging"
-vars = { ENVIRONMENT = "staging" }
+vars = { ENVIRONMENT = "staging", ADMIN_SECRET = "your-super-secret-admin-key-change-this-in-production" }
 
 [[env.staging.routes]]
-pattern = "test.pzm.ae/api/*"
+pattern = "test.pzm.ae/*"
 zone_name = "pzm.ae"
 
 [[env.staging.d1_databases]]
@@ -31,7 +31,7 @@ id = "6df924c74e19424787a69c9f493b3151"
 # Production (api.pzm.ae)
 # =====================================================================
 [env.production]
-vars = { ENVIRONMENT = "production" }
+vars = { ENVIRONMENT = "production", ADMIN_SECRET = "your-super-secret-admin-key-change-this-in-production" }
 
 [[env.production.routes]]
 pattern = "api.pzm.ae/*"
