@@ -174,7 +174,7 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
                 onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                 min="1"
                 max={product.quantity}
-                className="w-20 px-3 py-2 border border-gray-300 rounded text-center"
+                className="w-20 px-3 py-2 border border-gray-300 rounded text-center text-gray-900 font-semibold"
               />
               <button
                 onClick={() => setQuantity(Math.min(product.quantity, quantity + 1))}

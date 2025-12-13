@@ -135,7 +135,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
                   value={formData.customerName}
                   onChange={handleChange}
                   placeholder="Enter your full name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                   required
                 />
               </div>
@@ -151,7 +151,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
                   value={formData.customerEmail}
                   onChange={handleChange}
                   placeholder="your@email.com"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                   required
                 />
               </div>
@@ -167,7 +167,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
                   value={formData.customerPhone}
                   onChange={handleChange}
                   placeholder="+971 50 123 4567"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                   required
                 />
               </div>
@@ -183,7 +183,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
                   onChange={handleChange}
                   placeholder="Enter your full delivery address"
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                   required
                 />
               </div>
@@ -199,7 +199,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
                   onChange={handleChange}
                   placeholder="Any special instructions or notes"
                   rows={2}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
             </div>

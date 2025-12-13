@@ -59,7 +59,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
                       value={item.quantity}
                       onChange={(e) => updateQuantity(item.id, Math.max(1, parseInt(e.target.value) || 1))}
                       min="1"
-                      className="w-16 px-2 py-1 border border-gray-300 rounded text-center"
+                      className="w-16 px-2 py-1 border border-gray-300 rounded text-center text-gray-900 font-semibold"
                     />
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}

@@ -9,11 +9,10 @@ import ProductDetail from './pages/ProductDetail'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation'
-import AdminDashboard from './pages/AdminDashboard'
-import AdminLogin from './pages/AdminLogin'
+import AdminPage from './pages/AdminPage'
 import Header from './components/Header'
 
-type PageType = 'home' | 'product' | 'cart' | 'checkout' | 'confirmation' | 'admin' | 'admin-login'
+type PageType = 'home' | 'product' | 'cart' | 'checkout' | 'confirmation' | 'admin'
 
 interface PageState {
   type: PageType
@@ -98,15 +97,8 @@ function AppContent() {
           />
         )}
 
-        {currentPage.type === 'admin-login' && (
-          <AdminLogin
-            onSuccess={() => navigateTo({ type: 'admin' })}
-            onCancel={() => navigateTo({ type: 'home' })}
-          />
-        )}
-
         {currentPage.type === 'admin' && (
-          <AdminDashboard onLogout={() => navigateTo({ type: 'home' })} />
+          <AdminPage />
         )}
       </main>
     </div>
