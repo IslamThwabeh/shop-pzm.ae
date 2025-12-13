@@ -11,7 +11,7 @@ name = "pzm-api-staging"
 vars = { ENVIRONMENT = "staging", ADMIN_SECRET = "your-super-secret-admin-key-change-this-in-production" }
 
 [[env.staging.routes]]
-pattern = "test.pzm.ae/*"
+pattern = "test.pzm.ae/api/*"
 zone_name = "pzm.ae"
 
 [[env.staging.d1_databases]]
