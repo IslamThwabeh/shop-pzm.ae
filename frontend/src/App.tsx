@@ -27,6 +27,29 @@ function AppContent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Parse URL and set the current page
+  useEffect(() => {
+    const path = window.location.pathname
+    
+    if (path === '/admin') {
+      setCurrentPage({ type: 'admin' })
+    } else if (path === '/shop') {
+      setCurrentPage({ type: 'shop' })
+    } else if (path === '/cart') {
+      setCurrentPage({ type: 'cart' })
+    } else if (path === '/checkout') {
+      setCurrentPage({ type: 'checkout' })
+    } else if (path.startsWith('/product/')) {
+      const productId = path.split('/product/')[1]
+      setCurrentPage({ type: 'product', productId })
+    } else if (path.startsWith('/order/')) {
+      const orderId = path.split('/order/')[1]
+      setCurrentPage({ type: 'confirmation', orderId })
+    } else {
+      setCurrentPage({ type: 'home' })
+    }
+  }, [])
+
   useEffect(() => {
     const loadProducts = async () => {
       try {
@@ -47,6 +70,24 @@ function AppContent() {
 
   const navigateTo = (page: PageState) => {
     setCurrentPage(page)
+    
+    // Update URL based on page type
+    let newPath = '/'
+    if (page.type === 'admin') {
+      newPath = '/admin'
+    } else if (page.type === 'shop') {
+      newPath = '/shop'
+    } else if (page.type === 'product' && page.productId) {
+      newPath = `/product/${page.productId}`
+    } else if (page.type === 'cart') {
+      newPath = '/cart'
+    } else if (page.type === 'checkout') {
+      newPath = '/checkout'
+    } else if (page.type === 'confirmation' && page.orderId) {
+      newPath = `/order/${page.orderId}`
+    }
+    
+    window.history.pushState({}, '', newPath)
     window.scrollTo(0, 0)
   }
 
@@ -86,7 +127,7 @@ function AppContent() {
 
         {currentPage.type === 'cart' && (
           <Cart
-            onContinueShopping={() => navigateTo({ type: 'home' })}
+            onContinueShopping={() => navigateTo({ type: 'shop' })}
             onCheckout={() => navigateTo({ type: 'checkout' })}
           />
         )}
@@ -106,14 +147,14 @@ function AppContent() {
         )}
 
         {currentPage.type === 'admin' && (
-          <AdminPage />
+          <AdminPage onLogout={() => navigateTo({ type: 'home' })} />
         )}
       </main>
     </div>
   )
 }
 
-export default function App() {
+function App() {
   return (
     <CartProvider>
       <AuthProvider>
@@ -122,3 +163,5 @@ export default function App() {
     </CartProvider>
   )
 }
+
+export default App

@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react'
 import AdminLogin from './AdminLogin'
 import AdminDashboard from './AdminDashboard'
 
-export default function AdminPage() {
+interface AdminPageProps {
+  onLogout?: () => void
+}
+
+export default function AdminPage({ onLogout }: AdminPageProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
@@ -21,6 +25,7 @@ export default function AdminPage() {
     localStorage.removeItem('adminToken')
     localStorage.removeItem('adminUser')
     setIsLoggedIn(false)
+    onLogout?.()
   }
 
   if (!isLoggedIn) {
