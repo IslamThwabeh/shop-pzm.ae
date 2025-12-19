@@ -8,7 +8,7 @@ compatibility_flags = ["nodejs_compat"]
 # =====================================================================
 [env.staging]
 name = "pzm-api-staging"
-vars = { ENVIRONMENT = "staging", ADMIN_SECRET = "your-super-secret-admin-key-change-this-in-production" }
+vars = { ENVIRONMENT = "staging", ADMIN_SECRET = "your-super-secret-admin-key-change-this-in-production", ZEPTOMAIL_API_TOKEN_STAGING="wSsVR61z8hKlD/x6njarcug/zAtRVF2kQUV4jFX3vn75F/2Q8cc/lkbNBQKvHqQZFDU/RzVA8L0qnR0A1DoLjNwkyllVWSiF9mqRe1U4J3x17qnvhDzDW2tZkxqPLYkIwA1imGhmG8Aj+g==" }
 
 [[env.staging.routes]]
 pattern = "test.pzm.ae/api/*"
@@ -31,7 +31,7 @@ id = "6df924c74e19424787a69c9f493b3151"
 # Production (api.pzm.ae)
 # =====================================================================
 [env.production]
-vars = { ENVIRONMENT = "production", ADMIN_SECRET = "your-super-secret-admin-key-change-this-in-production" }
+vars = { ENVIRONMENT = "production", ADMIN_SECRET = "your-super-secret-admin-key-change-this-in-production", ZEPTOMAIL_API_TOKEN_PRODUCTION = "wSsVR61z8hKlD/x6njarcug/zAtRVF2kQUV4jFX3vn75F/2Q8cc/lkbNBQKvHqQZFDU/RzVA8L0qnR0A1DoLjNwkyllVWSiF9mqRe1U4J3x17qnvhDzDW2tZkxqPLYkIwA1imGhmG8Aj+g==" }
 
 [[env.production.routes]]
 pattern = "api.pzm.ae/*"
@@ -50,5 +50,3 @@ bucket_name = "pzm-images"
 binding = "KV"
 id = "6df924c74e19424787a69c9f493b3151"
 
-ZEPTOMAIL_API_TOKEN_STAGING=wSsVR61z8hKlD/x6njarcug/zAtRVF2kQUV4jFX3vn75F/2Q8cc/lkbNBQKvHqQZFDU/RzVA8L0qnR0A1DoLjNwkyllVWSiF9mqRe1U4J3x17qnvhDzDW2tZkxqPLYkIwA1imGhmG8Aj+g==
-ZEPTOMAIL_API_TOKEN_PRODUCTION=wSsVR61z8hKlD/x6njarcug/zAtRVF2kQUV4jFX3vn75F/2Q8cc/lkbNBQKvHqQZFDU/RzVA8L0qnR0A1DoLjNwkyllVWSiF9mqRe1U4J3x17qnvhDzDW2tZkxqPLYkIwA1imGhmG8Aj+g==
