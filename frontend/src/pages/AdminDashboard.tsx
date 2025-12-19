@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogOut, RefreshCw, Plus, Edit2, Trash2 } from 'lucide-react';
-import OrderManagement from '../components/admin/OrderManagement';
+import { LogOut, RefreshCw } from 'lucide-react';
 import ProductManagement from '../components/admin/ProductManagement';
 
 interface AdminDashboardProps {

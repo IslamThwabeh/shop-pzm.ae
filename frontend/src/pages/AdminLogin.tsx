@@ -116,13 +116,7 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
           </div>
         </form>
 
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-blue-700 text-xs">
-            <strong>Demo Credentials:</strong><br />
-            Username: admin<br />
-            Password: RobinHood!@#123
-          </p>
-        </div>
+
       </div>
     </div>
   )
