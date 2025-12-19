@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { Database } from './db';
 import { AuthService } from './auth';
-import { EmailService } from './email';
+import { EmailService } from './email-service';
 import { StorageService } from './storage';
 import { getCorsHeaders, handleCors, generateId, validateRequired, parseRequestBody, logRequest, logError } from './utils';
 import type { Product, Order } from '../../shared/types';
@@ -12,6 +12,7 @@ interface Env {
   KV: KVNamespace;
   BUCKET: R2Bucket;
   ADMIN_SECRET: string;
+  ZEPTOMAIL_API_TOKEN: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -262,16 +263,27 @@ app.post('/api/orders', async (c) => {
     const created = await db.createOrder(order);
 
     // Send emails
-    const emailService = new EmailService({
-      fromEmail: 'no-reply@pzm.ae',
-      supportEmail: 'support@pzm.ae',
-      senderName: 'PZM iPhone Store',
-    });
+    const emailService = new EmailService(c.env.ZEPTOMAIL_API_TOKEN);
 
     const product = await db.getProduct(body.product_id);
     if (product) {
-      await emailService.sendOrderConfirmation(created, product);
-      await emailService.sendAdminNotification(created, product);
+      await emailService.sendOrderConfirmation(
+        body.customer_email,
+        body.customer_name,
+        created.id,
+        product.name,
+        body.quantity,
+        body.total_price
+      );
+      await emailService.sendOrderNotification(
+        created.id,
+        body.customer_name,
+        body.customer_email,
+        body.customer_phone,
+        product.name,
+        body.quantity,
+        body.total_price
+      );
     }
 
     return c.json({ data: created, status: 201 }, 201);
@@ -308,6 +320,21 @@ app.put('/api/orders/:id', async (c) => {
 
     if (!order) {
       return c.json({ error: 'Order not found', status: 404 }, 404);
+    }
+
+    // Send status update email if status changed
+    if (body.status && body.status !== order.status) {
+      const emailService = new EmailService(c.env.ZEPTOMAIL_API_TOKEN);
+      const product = await db.getProduct(order.product_id);
+      if (product) {
+        await emailService.sendStatusUpdate(
+          order.customer_email,
+          order.customer_name,
+          orderId,
+          body.status,
+          product.name
+        );
+      }
     }
 
     return c.json({ data: order, status: 200 }, 200);
