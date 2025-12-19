@@ -36,17 +36,19 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
               </button>
             )}
 
-            <button
-              onClick={() => onNavigate({ type: 'cart' })}
-              className="relative p-2 text-gray-600 hover:text-gray-900"
-            >
-              <ShoppingCart size={24} />
-              {cartCount > 0 && (
-                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </button>
+            {currentPage !== 'admin' && (
+              <button
+                onClick={() => onNavigate({ type: 'cart' })}
+                className="relative p-2 text-gray-600 hover:text-gray-900"
+              >
+                <ShoppingCart size={24} />
+                {cartCount > 0 && (
+                  <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+            )}
 
             {isAuthenticated && (
               <button
