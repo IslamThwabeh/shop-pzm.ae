@@ -97,4 +97,6 @@ export class Database {
       console.error('Error updating product:', error);
       return null;
     }
-}
+  }   // <-- Closes updateProduct method
+
+}   // <-- Add this to close the Database class
