@@ -70,14 +70,14 @@ export class EmailService {
     customerEmail: string,
     customerName: string,
     orderId: string,
-    productName: string,
+    productModel: string,
     quantity: number,
     totalPrice: number
   ): Promise<boolean> {
     const htmlBody = this.getOrderConfirmationTemplate(
       customerName,
       orderId,
-      productName,
+      productModel,
       quantity,
       totalPrice
     );
@@ -97,7 +97,7 @@ export class EmailService {
     customerName: string,
     customerEmail: string,
     customerPhone: string,
-    productName: string,
+    productModel: string,
     quantity: number,
     totalPrice: number
   ): Promise<boolean> {
@@ -106,7 +106,7 @@ export class EmailService {
       customerName,
       customerEmail,
       customerPhone,
-      productName,
+      productModel,
       quantity,
       totalPrice
     );
@@ -126,13 +126,13 @@ export class EmailService {
     customerName: string,
     orderId: string,
     status: string,
-    productName: string
+    productModel: string
   ): Promise<boolean> {
     const htmlBody = this.getStatusUpdateTemplate(
       customerName,
       orderId,
       status,
-      productName
+      productModel
     );
 
     const statusMessages: { [key: string]: string } = {
@@ -159,7 +159,7 @@ export class EmailService {
   private getOrderConfirmationTemplate(
     customerName: string,
     orderId: string,
-    productName: string,
+    productModel: string,
     quantity: number,
     totalPrice: number
   ): string {
@@ -208,7 +208,7 @@ export class EmailService {
               
               <div class="detail-row">
                 <span class="label">Product:</span>
-                <span class="value">${productName}</span>
+                <span class="value">${productModel}</span>
               </div>
               
               <div class="detail-row">
@@ -259,7 +259,7 @@ export class EmailService {
     customerName: string,
     customerEmail: string,
     customerPhone: string,
-    productName: string,
+    productModel: string,
     quantity: number,
     totalPrice: number
   ): string {
@@ -324,7 +324,7 @@ export class EmailService {
               
               <div class="detail-row">
                 <span class="label">Product:</span>
-                <span>${productName}</span>
+                <span>${productModel}</span>
               </div>
               
               <div class="detail-row">
@@ -367,7 +367,7 @@ export class EmailService {
     customerName: string,
     orderId: string,
     status: string,
-    productName: string
+    productModel: string
   ): string {
     const statusInfo: { [key: string]: { emoji: string; title: string; message: string; color: string } } = {
       confirmed: {
@@ -452,7 +452,7 @@ export class EmailService {
               
               <div class="detail-row">
                 <span class="label">Product:</span>
-                <span>${productName}</span>
+                <span>${productModel}</span>
               </div>
               
               <div class="detail-row">
