@@ -271,7 +271,7 @@ app.post('/api/orders', async (c) => {
         body.customer_email,
         body.customer_name,
         created.id,
-        product.name,
+        product.model,
         body.quantity,
         body.total_price
       );
@@ -280,7 +280,7 @@ app.post('/api/orders', async (c) => {
         body.customer_name,
         body.customer_email,
         body.customer_phone,
-        product.name,
+        product.model,
         body.quantity,
         body.total_price
       );
@@ -316,9 +316,14 @@ app.put('/api/orders/:id', async (c) => {
     }
 
     const db = new Database(c.env.DB);
-    const order = await db.updateOrder(orderId, body);
-
+    const order = await db.getOrder(orderId);
     if (!order) {
+      return c.json({ error: 'Order not found', status: 404 }, 404);
+    }
+
+    const updated = await db.updateOrder(orderId, body);
+
+    if (!updated) {
       return c.json({ error: 'Order not found', status: 404 }, 404);
     }
 
@@ -332,12 +337,12 @@ app.put('/api/orders/:id', async (c) => {
           order.customer_name,
           orderId,
           body.status,
-          product.name
+          product.model
         );
       }
     }
 
-    return c.json({ data: order, status: 200 }, 200);
+    return c.json({ data: updated, status: 200 }, 200);
   } catch (error) {
     logError(error, 'PUT /api/orders/:id');
     return c.json({ error: 'Failed to update order', status: 500 }, 500);
@@ -432,4 +437,3 @@ app.notFound((c) => {
 });
 
 export default app;
-
