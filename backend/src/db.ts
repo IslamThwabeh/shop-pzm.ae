@@ -97,3 +97,4 @@ export class Database {
       console.error('Error updating product:', error);
       return null;
     }
+}
