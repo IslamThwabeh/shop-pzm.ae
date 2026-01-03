@@ -32,3 +32,5 @@ dist-ssr
 build/
 .next/
 out/
+# Environment files
+.env*
