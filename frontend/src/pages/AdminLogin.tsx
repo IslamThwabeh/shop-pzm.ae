@@ -22,7 +22,7 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
       // Hash the password before sending
       const passwordHash = await hashPassword(password)
 
-      const response = await fetch('https://test.pzm.ae/api/auth/admin/login', {
+      const response = await fetch('/api/auth/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password: passwordHash }),

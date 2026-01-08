@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787'
+const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : 'http://localhost:8787/api'
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: API_BASE,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -119,7 +119,7 @@ export const apiService = {
   // Admin
   createProduct: async (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product | null> => {
     try {
-      const response = await api.post('/admin/products', product)
+      const response = await api.post('/products', product)
       return response.data.data || response.data
     } catch (error) {
       console.error('Failed to create product:', error)
@@ -129,7 +129,7 @@ export const apiService = {
 
   updateProduct: async (id: string, product: Partial<Product>): Promise<Product | null> => {
     try {
-      const response = await api.put(`/admin/products/${id}`, product)
+      const response = await api.put(`/products/${id}`, product)
       return response.data.data || response.data
     } catch (error) {
       console.error('Failed to update product:', error)
@@ -139,7 +139,7 @@ export const apiService = {
 
   deleteProduct: async (id: string): Promise<boolean> => {
     try {
-      await api.delete(`/admin/products/${id}`)
+      await api.delete(`/products/${id}`)
       return true
     } catch (error) {
       console.error('Failed to delete product:', error)
@@ -151,7 +151,7 @@ export const apiService = {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      const response = await api.post('/admin/upload', formData, {
+      const response = await api.post('/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       return response.data.url || response.data

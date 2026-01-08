@@ -13,6 +13,7 @@ interface Env {
   BUCKET: R2Bucket;
   ADMIN_SECRET: string;
   ZEPTOMAIL_API_TOKEN: string;
+  GOOGLE_MAPS_API_KEY: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();
@@ -21,7 +22,15 @@ const app = new Hono<{ Bindings: Env }>();
 app.use(
   '*',
   cors({
-    origin: ['https://pzm.ae', 'https://www.pzm.ae', 'https://test.pzm.ae', 'https://api.pzm.ae'],
+    origin: [
+      'https://pzm.ae',
+      'https://www.pzm.ae',
+      'https://test.pzm.ae',
+      'https://api.pzm.ae',
+      // Local dev origins (remove before production)
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+    ],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization'],
   })
@@ -30,6 +39,49 @@ app.use(
 // Health check
 app.get('/health', (c) => {
   return c.json({ status: 'ok' });
+});
+
+// ============ BUSINESS HOURS API ============
+
+const PLACE_ID = 'ChIJ1aZJvMBtXz4RLrOI1vITjBU'; // PZM Store Place ID
+
+app.get('/api/business-hours', async (c) => {
+  try {
+    logRequest('GET', '/api/business-hours');
+
+    const apiKey = c.env.GOOGLE_MAPS_API_KEY;
+
+    if (!apiKey) {
+      // Return fallback hours if API key not configured
+      return c.json({
+        result: {
+          opening_hours: {
+            weekday_text: [
+              "Monday: 8 AM – 12 AM",
+              "Tuesday: 8 AM – 12 AM",
+              "Wednesday: 8 AM – 12 AM",
+              "Thursday: 8 AM – 12 AM",
+              "Friday: 9:30 AM – 12 AM",
+              "Saturday: 7 AM – 1 AM",
+              "Sunday: 7 AM – 1 AM"
+            ],
+            open_now: null
+          }
+        },
+        status: 200
+      }, 200);
+    }
+
+    const googleUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${PLACE_ID}&fields=name,opening_hours&key=${apiKey}`;
+
+    const response = await fetch(googleUrl );
+    const data = await response.json();
+
+    return c.json(data, 200);
+  } catch (error) {
+    logError(error, 'GET /api/business-hours');
+    return c.json({ error: 'Failed to fetch business hours', status: 500 }, 500);
+  }
 });
 
 // ============ PRODUCTS API ============
