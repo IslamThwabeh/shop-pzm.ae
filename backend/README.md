@@ -1,59 +1,32 @@
-# Backend local development (D1 local-pzm-db)
+# Backend (Cloudflare Workers)
 
-This document explains how to create and seed a local Cloudflare D1 database (`local-pzm-db`) for safe local development without touching production (`pzm-db`).
+Local development instructions have been removed per repository policy change. This project uses Cloudflare staging and production environments for development and testing.
 
-## Create a local D1 database
-(Requires Wrangler configured with your Cloudflare account)
+## Staging
+- Staging worker: `pzm-api-staging` (routes: `test.pzm.ae/api/*`)
 
-1. Create the database:
-
-   ```bash
-   cd backend
-   npm run db:create:local
-   ```
-
-   > This runs `wrangler d1 create local-pzm-db` and returns the new database id.
-
-2. Configure the local environment in `wrangler.toml` (already added):
-
-   - `env.local` is configured to bind the `DB` to `local-pzm-db`.
-   - API key/secret placeholders are set for local development; replace if needed.
-
-## Initialize and seed the local DB
-
-Run migrations and seed data into `local-pzm-db`:
+To deploy to staging:
 
 ```bash
 cd backend
-npm run db:init:local
-npm run db:seed:local
-# OR run both with:
-npm run db:migrate:local
-```
-
-## Run the backend against the local DB
-
-Start the Worker using the `local` environment which binds `DB` to `local-pzm-db`:
-
-```bash
-cd backend
-npm run dev:local
-# This runs `wrangler dev --env local` and serves the API locally.
+npm ci
+npx wrangler deploy --env staging
 ```
 
 ## Useful commands
-
-- Query the local DB interactively:
+- Run DB migrations on the production DB (`pzm-db`):
 
 ```bash
 cd backend
-npm run db:query:local -- "SELECT username, password_hash FROM admin_users;"
+npm run db:migrate
 ```
 
-- To remove or recreate the local D1 database, use the Cloudflare dashboard or the Wrangler CLI.
+- Seed production DB (use with caution):
+
+```bash
+cd backend
+npm run db:seed
+```
 
 ## Notes
-
-- Do not use `local-pzm-db` for production data.
-- Remove local CORS relaxations and any test credentials before deploying to production.
-- If you want a fully local non-Cloudflare solution (SQLite), open an issue and we can add a local adapter.
+- If you need local development instructions restored, contact the maintainers to restore the archived docs.

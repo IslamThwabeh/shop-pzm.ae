@@ -4,14 +4,17 @@ Professional React frontend for the PZM iPhone Store built with Vite, TypeScript
 
 ## 🚀 Quick Start
 
-### Development
+### Staging (preferred workflow)
 
 ```bash
 npm install
-npm run dev
+npm run build:staging
+npm run deploy:staging
 ```
 
-The app will be available at `http://localhost:5173`
+The app is published to Cloudflare Pages at `https://test.pzm.ae`.
+
+> Note: Cloudflare Pages' CLI does not accept `--env` for Pages deploys. Use `--branch <branch-name>` when using `wrangler pages deploy` (the `deploy:staging` and `deploy:production` scripts use `--branch`).
 
 ### Production Build
 
@@ -48,6 +51,9 @@ src/
 - **TailwindCSS**: Utility-first CSS
 - **Axios**: HTTP client
 
+### Favicons
+The site uses a favicon stored in Cloudflare R2: `https://r2.pzm.ae/favicon/mini_logo.png`. The project references this URL directly in `index.html`, so no local favicon files are required.
+
 ## 📝 Environment Variables
 
 Create `.env.production` for production:
@@ -55,11 +61,12 @@ Create `.env.production` for production:
 VITE_API_URL=https://api.pzm.ae
 ```
 
-Create `.env.development` for development:
+Create `.env.staging` for staging:
 ```env
-VITE_API_URL=http://localhost:8787
+VITE_API_URL=https://test.pzm.ae/api
 ```
 
+> Note: Local development instructions were removed; use the staging workflow to publish and test changes.
 ## 🚢 Deployment
 
 Deploy to Cloudflare Pages:
