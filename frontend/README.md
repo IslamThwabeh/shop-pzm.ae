@@ -52,7 +52,7 @@ src/
 - **Axios**: HTTP client
 
 ### Favicons
-The site uses a favicon stored in Cloudflare R2: `https://r2.pzm.ae/favicon/mini_logo.png`. The project references this URL directly in `index.html`, so no local favicon files are required.
+The site uses a local favicon at `/favicon.png` (place the image at `frontend/public/favicon.png`). If you prefer to serve the favicon from R2 instead, you can keep the R2 URL (`https://r2.pzm.ae/favicon/mini_logo.png`) and update `index.html` accordingly.
 
 ## 📝 Environment Variables
 
