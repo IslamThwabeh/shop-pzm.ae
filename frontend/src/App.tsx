@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
 import './App.css'
@@ -6,6 +7,7 @@ import type { Product } from '@shared/types'
 import { apiService } from './services/api'
 import ProductListing from './pages/ProductListing'
 import ProductDetail from './pages/ProductDetail'
+import ProductDetails from './pages/ProductDetails'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation'
@@ -13,42 +15,12 @@ import AdminPage from './pages/AdminPage'
 import HomePage from './pages/HomePage'
 import Header from './components/Header'
 
-type PageType = 'home' | 'shop' | 'product' | 'cart' | 'checkout' | 'confirmation' | 'admin'
-
-interface PageState {
-  type: PageType
-  productId?: string
-  orderId?: string
-}
-
 function AppContent() {
-  const [currentPage, setCurrentPage] = useState<PageState>({ type: 'home' })
+  const navigate = useNavigate()
+  const location = useLocation()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  // Parse URL and set the current page
-  useEffect(() => {
-    const path = window.location.pathname
-    
-    if (path === '/admin') {
-      setCurrentPage({ type: 'admin' })
-    } else if (path === '/shop') {
-      setCurrentPage({ type: 'shop' })
-    } else if (path === '/cart') {
-      setCurrentPage({ type: 'cart' })
-    } else if (path === '/checkout') {
-      setCurrentPage({ type: 'checkout' })
-    } else if (path.startsWith('/product/')) {
-      const productId = path.split('/product/')[1]
-      setCurrentPage({ type: 'product', productId })
-    } else if (path.startsWith('/order/')) {
-      const orderId = path.split('/order/')[1]
-      setCurrentPage({ type: 'confirmation', orderId })
-    } else {
-      setCurrentPage({ type: 'home' })
-    }
-  }, [])
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -68,32 +40,27 @@ function AppContent() {
     loadProducts()
   }, [])
 
-  const navigateTo = (page: PageState) => {
-    setCurrentPage(page)
-    
-    // Update URL based on page type
-    let newPath = '/'
-    if (page.type === 'admin') {
-      newPath = '/admin'
-    } else if (page.type === 'shop') {
-      newPath = '/shop'
-    } else if (page.type === 'product' && page.productId) {
-      newPath = `/product/${page.productId}`
-    } else if (page.type === 'cart') {
-      newPath = '/cart'
-    } else if (page.type === 'checkout') {
-      newPath = '/checkout'
-    } else if (page.type === 'confirmation' && page.orderId) {
-      newPath = `/order/${page.orderId}`
-    }
-    
-    window.history.pushState({}, '', newPath)
+  const navigateTo = (path: string) => {
+    navigate(path)
     window.scrollTo(0, 0)
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header onNavigate={navigateTo} currentPage={currentPage.type} />
+      <Header
+        currentPage={location.pathname === '/' ? 'home' : location.pathname.split('/')[1] || 'home'}
+        onNavigate={(page) => {
+          // keep compatibility with previous onNavigate signature
+          if (page && (page as any).type) {
+            const p = page as any
+            if (p.type === 'home') navigateTo('/')
+            else if (p.type === 'shop') navigateTo('/shop')
+            else if (p.type === 'admin') navigateTo('/admin')
+            else if (p.type === 'cart') navigateTo('/cart')
+            else if (p.type === 'checkout') navigateTo('/checkout')
+          }
+        }}
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {error && (
@@ -102,53 +69,36 @@ function AppContent() {
           </div>
         )}
 
-        {currentPage.type === 'home' && (
-          <HomePage
-            products={products}
-            onShopClick={() => navigateTo({ type: 'shop' })}
+        <Routes>
+          <Route
+            path="/"
+            element={<HomePage products={products} onShopClick={() => navigateTo('/shop')} />}
           />
-        )}
-
-        {currentPage.type === 'shop' && (
-          <ProductListing
-            products={products}
-            loading={loading}
-            onProductClick={(productId) => navigateTo({ type: 'product', productId })}
+          <Route
+            path="/shop"
+            element={<ProductListing products={products} loading={loading} onProductClick={(id) => navigateTo(`/product/${id}`)} />}
           />
-        )}
-
-        {currentPage.type === 'product' && currentPage.productId && (
-          <ProductDetail
-            productId={currentPage.productId}
-            onBack={() => navigateTo({ type: 'home' })}
-            onCheckout={() => navigateTo({ type: 'checkout' })}
+          <Route
+            path="/product/:id"
+            element={<ProductDetails />}
           />
-        )}
-
-        {currentPage.type === 'cart' && (
-          <Cart
-            onContinueShopping={() => navigateTo({ type: 'shop' })}
-            onCheckout={() => navigateTo({ type: 'checkout' })}
+          <Route
+            path="/cart"
+            element={<Cart onContinueShopping={() => navigateTo('/shop')} onCheckout={() => navigateTo('/checkout')} />}
           />
-        )}
-
-        {currentPage.type === 'checkout' && (
-          <Checkout
-            onBack={() => navigateTo({ type: 'cart' })}
-            onSuccess={(orderId) => navigateTo({ type: 'confirmation', orderId })}
+          <Route
+            path="/checkout"
+            element={<Checkout onBack={() => navigateTo('/cart')} onSuccess={(orderId) => navigateTo(`/order/${orderId}`)} />}
           />
-        )}
-
-        {currentPage.type === 'confirmation' && currentPage.orderId && (
-          <OrderConfirmation
-            orderId={currentPage.orderId}
-            onContinueShopping={() => navigateTo({ type: 'home' })}
+          <Route
+            path="/order/:id"
+            element={<OrderConfirmation onContinueShopping={() => navigateTo('/')} orderId={undefined as any} />}
           />
-        )}
-
-        {currentPage.type === 'admin' && (
-          <AdminPage onLogout={() => navigateTo({ type: 'home' })} />
-        )}
+          <Route
+            path="/admin"
+            element={<AdminPage onLogout={() => navigateTo('/')} />}
+          />
+        </Routes>
       </main>
     </div>
   )
