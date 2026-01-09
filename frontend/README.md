@@ -1,6 +1,6 @@
-# PZM iPhone Store Frontend
+# PZM Computers & Phones Store Frontend
 
-Professional React frontend for the PZM iPhone Store built with Vite, TypeScript, and TailwindCSS.
+Professional React frontend for the PZM Computers & Phones Store built with Vite, TypeScript, and TailwindCSS.
 
 ## 🚀 Quick Start
 

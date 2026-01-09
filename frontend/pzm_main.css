@@ -1,0 +1,305 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+  --primary-color: #00A76F;
+  --secondary-color: #161C24;
+  --accent-color: #00A76F;
+  --success-color: #22C55E;
+  --warning-color: #FFAB00;
+  --error-color: #FF5630;
+  --text-dark: #212B36;
+  --text-light: #637381;
+  --text-lighter: #919EAB;
+  --bg-light: #F9FAFB;
+  --bg-white: #FFFFFF;
+  --shadow-sm: 0 2px 8px rgba(145, 158, 171, 0.16);
+  --shadow-md: 0 8px 16px rgba(145, 158, 171, 0.24);
+  --shadow-lg: 0 24px 48px rgba(145, 158, 171, 0.24);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-xxl: 3rem;
+  --header-height: 60px;
+  --nav-height: 45px;
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--header-height) + var(--nav-height));
+    touch-action: manipulation;
+    height: 100%;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: calc(var(--header-height) + var(--nav-height));
+}
+
+main {
+    flex: 1;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
+}
+
+section {
+    margin-bottom: var(--space-xl);
+    background-color: var(--bg-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    padding: var(--space-xl);
+    transition: transform var(--transition-normal);
+}
+
+section:hover {
+    transform: translateY(-2px);
+}
+
+section h2 {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    color: var(--secondary-color);
+    font-size: 2.25rem;
+    font-weight: 700;
+    position: relative;
+    letter-spacing: -0.025em;
+}
+
+section h2:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    border-radius: var(--radius-sm);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: var(--space-md);
+    color: var(--text-dark);
+    letter-spacing: -0.025em;
+}
+
+p {
+    margin-bottom: var(--space-md);
+    color: var(--text-light);
+    font-size: 1.125rem;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    font-weight: 500;
+}
+
+a:hover {
+    color: var(--secondary-color);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+ul, ol {
+    padding-left: var(--space-xl);
+    margin-bottom: var(--space-md);
+}
+
+li {
+    margin-bottom: var(--space-sm);
+    color: var(--text-light);
+    font-size: 1.125rem;
+}
+
+.reviews {
+    text-align: center;
+    padding: var(--space-xxl) var(--space-xl);
+    background: linear-gradient(to bottom, var(--bg-white), var(--bg-light));
+}
+
+footer {
+    text-align: center;
+    padding: var(--space-xl);
+    background: linear-gradient(to bottom, var(--secondary-color), #000);
+    color: white;
+    margin-top: var(--space-xl);
+}
+
+#whatsapp-banner {
+    position: fixed;
+    bottom: var(--space-lg);
+    right: var(--space-lg);
+    z-index: 999;
+}
+
+#quotation-banner {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: var(--space-md) var(--space-xl);
+    border-radius: 60px;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-normal);
+}
+
+#quotation-banner:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+#person-animation {
+    width: 40px;
+    height: auto;
+    margin-right: var(--space-md);
+}
+
+.category {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    background-color: var(--bg-white);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+}
+
+.category:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.category-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--space-md);
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    color: white;
+    transform: translateY(100%);
+    transition: transform var(--transition-normal);
+}
+
+.category:hover .category-content {
+    transform: translateY(0);
+}
+
+.category .price {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-top: var(--space-sm);
+}
+
+.category .book-now {
+    display: inline-block;
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: var(--radius-sm);
+    margin-top: var(--space-sm);
+    transition: all var(--transition-fast);
+}
+
+.category .book-now:hover {
+    background-color: var(--secondary-color);
+    transform: scale(1.05);
+}
+
+.service-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.service-card h3 {
+    color: var(--secondary-color);
+    font-size: 1.5rem;
+    margin-bottom: var(--space-md);
+}
+
+.service-card .price-tag {
+    display: inline-block;
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-md);
+}
+
+@media (max-width: 768px) {
+    :root {
+        --header-height: 50px;
+        --nav-height: 40px;
+    }
+    
+    section {
+        padding: var(--space-lg);
+        margin-bottom: var(--space-lg);
+    }
+
+    section h2 {
+        font-size: 1.875rem;
+    }
+
+    #whatsapp-banner {
+        bottom: var(--space-md);
+        right: var(--space-md);
+    }
+
+    #quotation-banner {
+        padding: var(--space-sm) var(--space-lg);
+    }
+
+    #person-animation {
+        width: 30px;
+    }
+
+    #quotation-banner span {
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+}
+
+@media (min-width: 1024px) {
+    main {
+        padding: var(--space-xxl) var(--space-xl);
+    }
+}

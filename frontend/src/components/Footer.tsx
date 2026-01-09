@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-xl font-bold mb-4">PZM iPhone Store</h3>
+            <h3 className="text-xl font-bold mb-4">PZM Computers & Phones Store</h3>
             <p className="text-gray-400 text-sm">
               Your trusted source for premium iPhones and accessories in the UAE.
             </p>
@@ -50,7 +50,7 @@ export default function Footer() {
           {/* Copyright with Dynamic Year */}
           <div className="text-center text-gray-400 text-sm">
             <p>
-              &copy; {currentYear} PZM iPhone Store. All rights reserved.
+              &copy; {currentYear} PZM Computers & Phones Store. All rights reserved.
             </p>
             <p className="mt-2">
               Made with ❤️ for iPhone enthusiasts

@@ -6,7 +6,6 @@ import './App.css'
 import type { Product } from '@shared/types'
 import { apiService } from './services/api'
 import ProductListing from './pages/ProductListing'
-import ProductDetail from './pages/ProductDetail'
 import ProductDetails from './pages/ProductDetails'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
@@ -76,7 +75,7 @@ function AppContent() {
           />
           <Route
             path="/shop"
-            element={<ProductListing products={products} loading={loading} onProductClick={(id) => navigateTo(`/product/${id}`)} />}
+            element={<ProductListing products={products} loading={loading} />}
           />
           <Route
             path="/product/:id"

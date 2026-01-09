@@ -42,7 +42,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
                   <p className="text-sm text-gray-600 mt-1">
                     {item.storage} • {item.color}
                   </p>
-                  <p className="text-lg font-bold text-blue-600 mt-2">AED {item.price.toFixed(2)}</p>
+                  <p className="text-lg font-bold text-primary mt-2">AED {item.price.toFixed(2)}</p>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -89,7 +89,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
 
           <button
             onClick={onContinueShopping}
-            className="mt-4 inline-flex items-center gap-2 text-blue-600 hover:text-blue-700"
+            className="mt-4 inline-flex items-center gap-2 text-primary hover:opacity-90"
           >
             <ArrowLeft size={20} />
             Continue Shopping
@@ -118,7 +118,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
 
             <div className="flex justify-between items-center mb-6">
               <span className="text-lg font-bold">Total</span>
-              <span className="text-3xl font-bold text-blue-600">AED {total.toFixed(2)}</span>
+              <span className="text-3xl font-bold text-primary">AED {total.toFixed(2)}</span>
             </div>
 
             <button

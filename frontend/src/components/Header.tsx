@@ -20,21 +20,13 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
           <div className="flex items-center gap-8">
             <button
               onClick={() => onNavigate({ type: 'home' })}
-              className="text-2xl font-bold text-blue-600 hover:text-blue-700"
+              className="text-2xl font-bold text-primary hover:opacity-90"
             >
-              PZM iPhone Store
+              PZM Computers & Phones Store -Buy•Sell•Fix•Used•PC•Build
             </button>
           </div>
 
           <div className="flex items-center gap-4">
-            {currentPage !== 'admin' && currentPage !== 'home' && currentPage !== 'shop' && (
-              <button
-                onClick={() => onNavigate({ type: 'admin' })}
-                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded hover:bg-green-700"
-              >
-                Admin
-              </button>
-            )}
 
             {currentPage !== 'admin' && (
               <button

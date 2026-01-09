@@ -33,10 +33,10 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
         <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mb-8">
           <p className="text-sm text-gray-600 mb-2">Order ID</p>
           <div className="flex items-center justify-center gap-3">
-            <p className="text-2xl font-bold text-blue-600 font-mono">{orderId}</p>
+            <p className="text-2xl font-bold text-primary font-mono">{orderId}</p>
             <button
               onClick={handleCopyOrderId}
-              className="p-2 text-blue-600 hover:bg-blue-100 rounded transition-colors"
+              className="p-2 text-primary hover:bg-primary/10 rounded transition-colors"
               title="Copy order ID"
             >
               <Copy size={20} />
@@ -125,13 +125,13 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
           <div className="space-y-1 text-sm">
             <p>
               <strong>Email:</strong>{' '}
-              <a href="mailto:support@pzm.ae" className="text-blue-600 hover:underline">
+              <a href="mailto:support@pzm.ae" className="text-primary hover:underline">
                 support@pzm.ae
               </a>
             </p>
             <p>
               <strong>Phone:</strong>{' '}
-              <a href="tel:+971501234567" className="text-blue-600 hover:underline">
+              <a href="tel:+971501234567" className="text-primary hover:underline">
                 +971 50 123 4567
               </a>
             </p>

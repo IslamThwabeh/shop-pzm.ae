@@ -6,13 +6,12 @@ import ProductCard from '../components/ProductCard'
 interface ProductListingProps {
   products: Product[]
   loading: boolean
-  onProductClick: (productId: string) => void
 }
 
 type SortOption = 'price-asc' | 'price-desc' | 'newest'
 type ConditionFilter = 'all' | 'new' | 'used'
 
-export default function ProductListing({ products, loading, onProductClick }: ProductListingProps) {
+export default function ProductListing({ products, loading }: ProductListingProps) {
   const [sortBy, setSortBy] = useState<SortOption>('price-asc')
   const [conditionFilter, setConditionFilter] = useState<ConditionFilter>('all')
   const [minPrice, setMinPrice] = useState(0)
@@ -51,7 +50,7 @@ export default function ProductListing({ products, loading, onProductClick }: Pr
 
   return (
     <div>
-      <h1 className="text-4xl font-bold mb-2">PZM iPhone Store</h1>
+      <h1 className="text-4xl font-bold mb-2">PZM Computers & Phones Store</h1>
       <p className="text-gray-600 mb-8">Buy new and used iPhones with Cash on Delivery</p>
 
       {/* Filters */}

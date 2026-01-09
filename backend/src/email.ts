@@ -112,7 +112,7 @@ export class EmailService {
 
           <div class="footer">
             <p>If you have any questions, contact us at ${this.config.supportEmail}</p>
-            <p>© 2024 PZM iPhone Store. All rights reserved.</p>
+            <p>© 2024 PZM Computers & Phones Store. All rights reserved.</p>
           </div>
         </div>
       </body>
@@ -258,7 +258,7 @@ export class EmailService {
     const htmlContent = this.generateOrderConfirmationEmail(order, product);
     return this.sendEmail(
       order.customer_email,
-      `Order Confirmation - PZM iPhone Store #${order.id.substring(0, 8)}`,
+      `Order Confirmation - PZM Computers & Phones Store #${order.id.substring(0, 8)}`,
       htmlContent,
       this.config.supportEmail
     );

@@ -68,7 +68,7 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
         <p className="text-red-600 mb-4">{error || 'Product not found'}</p>
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-700"
+          className="inline-flex items-center gap-2 px-4 py-2 text-primary hover:opacity-90"
         >
           <ArrowLeft size={20} />
           Back to Products
@@ -81,7 +81,7 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
     <div>
       <button
         onClick={onBack}
-        className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-6"
+        className="inline-flex items-center gap-2 text-primary hover:opacity-90 mb-6"
       >
         <ArrowLeft size={20} />
         Back to Products
@@ -155,7 +155,7 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
           {/* Price */}
           <div className="mb-6">
             <p className="text-gray-600 mb-2">Price</p>
-            <p className="text-5xl font-bold text-blue-600">AED {product.price.toFixed(2)}</p>
+            <p className="text-5xl font-bold text-primary">AED {product.price.toFixed(2)}</p>
           </div>
 
           {/* Quantity Selector */}

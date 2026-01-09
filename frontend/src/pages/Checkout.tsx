@@ -103,7 +103,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
     <div>
       <button
         onClick={onBack}
-        className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-6"
+        className="inline-flex items-center gap-2 text-primary hover:opacity-90 mb-6"
       >
         <ArrowLeft size={20} />
         Back to Cart
@@ -272,7 +272,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
 
             <div className="flex justify-between items-center">
               <span className="text-lg font-bold">Total</span>
-              <span className="text-3xl font-bold text-blue-600">AED {total.toFixed(2)}</span>
+              <span className="text-3xl font-bold text-primary">AED {total.toFixed(2)}</span>
             </div>
 
             <div className="mt-6 p-3 bg-blue-50 rounded border border-blue-200">

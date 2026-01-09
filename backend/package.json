@@ -1,7 +1,7 @@
 {
   "name": "pzm-api",
   "version": "1.0.0",
-  "description": "PZM iPhone Store API - Cloudflare Workers Backend",
+  "description": "PZM Computers & Phones Store API - Cloudflare Workers Backend",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {

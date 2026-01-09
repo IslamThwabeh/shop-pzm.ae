@@ -27,7 +27,7 @@ export class EmailService {
       const payload = {
         from: {
           address: this.senderEmail,
-          name: 'PZM iPhone Store',
+          name: 'PZM Computers & Phones Store',
         },
         to: [
           {
@@ -233,16 +233,16 @@ export class EmailService {
             
             <p>If you have any questions, feel free to contact us at support@pzm.ae</p>
             
-            <p>Thank you for shopping with PZM iPhone Store!</p>
+            <p>Thank you for shopping with PZM Computers & Phones Store!</p>
             
             <p>
               <strong>Best regards,</strong><br>
-              PZM iPhone Store Team
+              PZM Computers & Phones Store Team
             </p>
           </div>
           
           <div class="footer">
-            <p>© 2025 PZM iPhone Store. All rights reserved.</p>
+            <p>© 2025 PZM Computers & Phones Store. All rights reserved.</p>
             <p>This is an automated email. Please do not reply directly to this email.</p>
           </div>
         </div>
@@ -352,7 +352,7 @@ export class EmailService {
           </div>
           
           <div class="footer">
-            <p>© 2025 PZM iPhone Store. All rights reserved.</p>
+            <p>© 2025 PZM Computers & Phones Store. All rights reserved.</p>
           </div>
         </div>
       </body>
@@ -464,14 +464,14 @@ export class EmailService {
             <p>If you have any questions or concerns, please don't hesitate to contact us at support@pzm.ae</p>
             
             <p>
-              <strong>Thank you for shopping with PZM iPhone Store!</strong><br>
+              <strong>Thank you for shopping with PZM Computers & Phones Store!</strong><br>
               Best regards,<br>
-              PZM iPhone Store Team
+              PZM Computers & Phones Store Team
             </p>
           </div>
           
           <div class="footer">
-            <p>© 2025 PZM iPhone Store. All rights reserved.</p>
+            <p>© 2025 PZM Computers & Phones Store. All rights reserved.</p>
             <p>This is an automated email. Please do not reply directly to this email.</p>
           </div>
         </div>

@@ -40,7 +40,7 @@ export default function ProductCard({ product }: Props) {
           </span>
         </div>
 
-        <p className="text-2xl font-bold text-blue-600 mt-4">AED {product.price.toFixed(2)}</p>
+        <p className="text-2xl font-bold text-primary mt-4">AED {product.price.toFixed(2)}</p>
 
         <p className="text-sm text-gray-500 mt-2">
           Stock: {product.quantity > 0 ? (
