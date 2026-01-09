@@ -50,6 +50,7 @@ src/
 - **TypeScript**: Type safety
 - **TailwindCSS**: Utility-first CSS
 - **Axios**: HTTP client
+- **react-router-dom**: Client-side routing (install with `npm install react-router-dom`)
 
 ### Favicons
 The site uses a local favicon at `/favicon.png` (place the image at `frontend/public/favicon.png`). If you prefer to serve the favicon from R2 instead, you can keep the R2 URL (`https://r2.pzm.ae/favicon/mini_logo.png`) and update `index.html` accordingly.
