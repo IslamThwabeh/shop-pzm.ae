@@ -1,5 +1,6 @@
 import { ShoppingCart, Truck, Shield, MessageCircle, Star, CheckCircle } from 'lucide-react'
 import type { Product } from '@shared/types'
+import ProductCard from '../components/ProductCard' 
 
 interface HomePageProps {
   products: Product[]
@@ -80,21 +81,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
             <h3 className="text-2xl font-bold mb-6 text-gray-900">✨ Brand New</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {newProducts.map(product => (
-                <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="w-full h-40 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                    {product.image_url ? (
-                      <img src={product.image_url} alt={product.model} className="w-full h-full object-cover" />
-                    ) : (
-                      <p className="text-gray-500">No image</p>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h4 className="font-bold text-gray-900">{product.model}</h4>
-                    <p className="text-sm text-gray-600">{product.storage} • {product.color}</p>
-                    <p className="text-2xl font-bold text-green-600 mt-2">AED {product.price.toFixed(2)}</p>
-                    <p className="text-sm text-gray-500">Stock: {product.quantity} available</p>
-                  </div>
-                </div>
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           </div>
@@ -104,21 +91,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
             <h3 className="text-2xl font-bold mb-6 text-gray-900">📱 Used & Refurbished</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {usedProducts.map(product => (
-                <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="w-full h-40 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                    {product.image_url ? (
-                      <img src={product.image_url} alt={product.model} className="w-full h-full object-cover" />
-                    ) : (
-                      <p className="text-gray-500">No image</p>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h4 className="font-bold text-gray-900">{product.model}</h4>
-                    <p className="text-sm text-gray-600">{product.storage} • {product.color}</p>
-                    <p className="text-2xl font-bold text-green-600 mt-2">AED {product.price.toFixed(2)}</p>
-                    <p className="text-sm text-gray-500">Stock: {product.quantity} available</p>
-                  </div>
-                </div>
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           </div>
