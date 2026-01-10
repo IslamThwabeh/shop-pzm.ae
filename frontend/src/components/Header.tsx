@@ -16,11 +16,11 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
   return (
     <header className="bg-white shadow sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-8">
+        <div className="flex flex-wrap justify-between items-center gap-3">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
             <button
               onClick={() => onNavigate({ type: 'home' })}
-              className="text-2xl font-bold text-primary hover:opacity-90"
+              className="text-sm md:text-2xl font-bold text-primary hover:opacity-90 whitespace-normal break-words max-w-[70%] text-left"
             >
               PZM Computers & Phones Store -Buy•Sell•Fix•Used•PC•Build
             </button>
@@ -31,11 +31,12 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
             {currentPage !== 'admin' && (
               <button
                 onClick={() => onNavigate({ type: 'cart' })}
-                className="relative p-2 text-gray-600 hover:text-gray-900"
+                className="relative p-3 md:p-2 min-h-[44px] min-w-[44px] text-gray-600 hover:text-gray-900"
+                aria-label="Open cart"
               >
                 <ShoppingCart size={24} />
                 {cartCount > 0 && (
-                  <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
@@ -48,7 +49,8 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                   logout()
                   onNavigate({ type: 'home' })
                 }}
-                className="p-2 text-gray-600 hover:text-gray-900"
+                className="p-3 md:p-2 min-h-[44px] min-w-[44px] text-gray-600 hover:text-gray-900"
+                aria-label="Logout"
               >
                 <LogOut size={24} />
               </button>

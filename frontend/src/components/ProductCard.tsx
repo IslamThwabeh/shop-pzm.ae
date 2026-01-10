@@ -9,14 +9,14 @@ export default function ProductCard({ product }: Props) {
   return (
     <Link
       to={`/product/${product.id}`}
-      className="block bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden"
+      className="block bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
     >
-      <div className="w-full h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+      <div className="w-full h-56 md:h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
         {product.image_url || product.images?.[0] ? (
           <img
             src={product.image_url || product.images?.[0] || ''}
             alt={product.model}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain md:object-cover"
           />
         ) : (
           <div className="text-center">
@@ -25,12 +25,12 @@ export default function ProductCard({ product }: Props) {
         )}
       </div>
 
-      <div className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900">{product.model}</h3>
+      <div className="p-4 md:p-6">
+        <h3 className="text-xl md:text-lg font-semibold text-gray-900 leading-tight">{product.model}</h3>
 
         <div className="flex justify-between items-start mt-2">
           <div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 leading-relaxed">
               {product.storage} • {product.condition === 'new' ? '✨ Brand New' : '📱 Used'}
             </p>
             <p className="text-sm text-gray-600">{product.color}</p>
@@ -40,9 +40,9 @@ export default function ProductCard({ product }: Props) {
           </span>
         </div>
 
-        <p className="text-2xl font-bold text-primary mt-4">AED {product.price.toFixed(2)}</p>
+        <p className="text-3xl md:text-2xl font-bold text-primary mt-4 leading-tight">AED {product.price.toFixed(2)}</p>
 
-        <p className="text-sm text-gray-500 mt-2">
+        <p className="text-sm text-gray-500 mt-2 leading-relaxed">
           Stock: {product.quantity > 0 ? (
             <span className="text-green-600 font-semibold">{product.quantity} available</span>
           ) : (
@@ -51,11 +51,11 @@ export default function ProductCard({ product }: Props) {
         </p>
 
         {product.description && (
-          <p className="text-sm text-gray-600 mt-3 line-clamp-2">{product.description}</p>
+          <p className="text-sm text-gray-600 mt-3 line-clamp-2 leading-relaxed">{product.description}</p>
         )}
 
         <div className="mt-4">
-          <span className="inline-block w-full text-center bg-blue-600 text-white py-2 rounded font-medium">
+          <span className="inline-block w-full text-center bg-blue-600 text-white h-11 rounded font-medium flex items-center justify-center">
             View Details
           </span>
         </div>

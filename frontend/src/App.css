@@ -5,6 +5,20 @@
   text-align: center;
 }
 
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  #root {
+    padding: 1rem;
+  }
+}
+
+/* Ensure images are responsive by default */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   a:where(:not(.raw)) {
     transition: color 200ms;
