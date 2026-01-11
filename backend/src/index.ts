@@ -27,6 +27,7 @@ app.use(
       'https://www.pzm.ae',
       'https://test.pzm.ae',
       'https://api.pzm.ae',
+      'https://pzm-store-frontend.pages.dev',
       // Local dev origins (remove before production)
       'http://localhost:5173',
       'http://127.0.0.1:5173',
