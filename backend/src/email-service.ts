@@ -19,6 +19,18 @@ export class EmailService {
     this.apiToken = apiToken;
   }
 
+  private formatOrderId(id: string): string {
+    const numeric = id?.replace(/\D/g, '');
+    const short = (numeric || id || '000001').slice(-6);
+    return `PZM-${short}`;
+  }  
+
+  private formatOrderId(orderId: string): string {
+    const numeric = orderId?.replace(/\D/g, '');
+    const short = (numeric || orderId || '000001').slice(-6);
+    return `PZM-${short}`;
+  }
+
   /**
    * Send email via ZeptoMail API
    */
@@ -27,7 +39,7 @@ export class EmailService {
       const payload = {
         from: {
           address: this.senderEmail,
-          name: 'PZM Computers & Phones Store',
+          name: 'PZM Shop',
         },
         to: [
           {
@@ -74,9 +86,10 @@ export class EmailService {
     quantity: number,
     totalPrice: number
   ): Promise<boolean> {
+    const displayId = this.formatOrderId(orderId);
     const htmlBody = this.getOrderConfirmationTemplate(
       customerName,
-      orderId,
+      displayId,
       productModel,
       quantity,
       totalPrice
@@ -84,7 +97,7 @@ export class EmailService {
 
     return this.sendEmail({
       to: customerEmail,
-      subject: `Order Confirmation - Order #${orderId}`,
+      subject: `Order Confirmation - ${displayId}`,
       htmlBody,
     });
   }
@@ -101,8 +114,9 @@ export class EmailService {
     quantity: number,
     totalPrice: number
   ): Promise<boolean> {
+    const displayId = this.formatOrderId(orderId);
     const htmlBody = this.getOrderNotificationTemplate(
-      orderId,
+      displayId,
       customerName,
       customerEmail,
       customerPhone,
@@ -113,7 +127,7 @@ export class EmailService {
 
     return this.sendEmail({
       to: this.teamEmail,
-      subject: `New Order Received - Order #${orderId}`,
+      subject: `New Order Received - ${displayId}`,
       htmlBody,
     });
   }
@@ -128,9 +142,10 @@ export class EmailService {
     status: string,
     productModel: string
   ): Promise<boolean> {
+    const displayId = this.formatOrderId(orderId);
     const htmlBody = this.getStatusUpdateTemplate(
       customerName,
-      orderId,
+      displayId,
       status,
       productModel
     );
@@ -144,7 +159,7 @@ export class EmailService {
       cancelled: 'Your Order Has Been Cancelled',
     };
 
-    const subject = statusMessages[status] || `Order Status Update - Order #${orderId}`;
+    const subject = statusMessages[status] || `Order Status Update - ${displayId}`;
 
     return this.sendEmail({
       to: customerEmail,
@@ -233,16 +248,16 @@ export class EmailService {
             
             <p>If you have any questions, feel free to contact us at support@pzm.ae</p>
             
-            <p>Thank you for shopping with PZM Computers & Phones Store!</p>
+            <p>Thank you for shopping with PZM Shop!</p>
             
             <p>
               <strong>Best regards,</strong><br>
-              PZM Computers & Phones Store Team
+              PZM Shop Team
             </p>
           </div>
           
           <div class="footer">
-            <p>© 2025 PZM Computers & Phones Store. All rights reserved.</p>
+            <p>© 2025 PZM Shop. All rights reserved.</p>
             <p>This is an automated email. Please do not reply directly to this email.</p>
           </div>
         </div>
@@ -296,7 +311,7 @@ export class EmailService {
           
           <div class="content">
             <div class="alert">
-              <strong>⚠️ New Order Received!</strong> Order #${orderId} needs to be processed.
+              <strong>⚠️ New Order Received!</strong> Order ${orderId} needs to be processed.
             </div>
             
             <h2>Customer Information</h2>
@@ -464,9 +479,9 @@ export class EmailService {
             <p>If you have any questions or concerns, please don't hesitate to contact us at support@pzm.ae</p>
             
             <p>
-              <strong>Thank you for shopping with PZM Computers & Phones Store!</strong><br>
+              <strong>Thank you for shopping with PZM Shop!</strong><br>
               Best regards,<br>
-              PZM Computers & Phones Store Team
+              PZM Shop Team
             </p>
           </div>
           

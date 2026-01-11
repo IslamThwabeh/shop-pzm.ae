@@ -29,6 +29,12 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<'orders' | 'products'>('orders');
 
+  const formatOrderId = (id: string) => {
+    const numeric = id?.replace(/\D/g, '');
+    const short = (numeric || id || '000001').slice(-6);
+    return `PZM-${short}`;
+  };
+
   const loadOrders = async () => {
     setLoading(true);
     setError(null);
@@ -249,7 +255,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                       <tbody className="divide-y divide-slate-700">
                         {filteredOrders.map((order) => (
                           <tr key={order.id} className="hover:bg-slate-700/50 transition-colors">
-                            <td className="px-6 py-4 text-sm font-mono text-slate-300">{order.id}</td>
+                            <td className="px-6 py-4 text-sm font-mono text-slate-300">{formatOrderId(order.id)}</td>
                             <td className="px-6 py-4 text-sm text-slate-300">{order.customer_name}</td>
                             <td className="px-6 py-4 text-sm font-semibold text-green-400">
                               AED {order.total_price.toFixed(2)}
