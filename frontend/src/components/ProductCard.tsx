@@ -11,12 +11,12 @@ export default function ProductCard({ product }: Props) {
       to={`/product/${product.id}`}
       className="block bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
     >
-      <div className="w-full h-56 md:h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+      <div className="w-full h-56 md:h-56 lg:h-64 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
         {product.image_url || product.images?.[0] ? (
           <img
             src={product.image_url || product.images?.[0] || ''}
             alt={product.model}
-            className="w-full h-full object-contain md:object-cover"
+            className="w-full h-full object-contain"
           />
         ) : (
           <div className="text-center">

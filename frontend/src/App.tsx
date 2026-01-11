@@ -21,6 +21,22 @@ function AppContent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Load Elfsight widget script for Google Reviews
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.src = 'https://static.elfsight.com/platform/platform.js'
+    script.setAttribute('data-use-service-core', '')
+    script.async = true
+    document.body.appendChild(script)
+
+    return () => {
+      // Cleanup
+      if (document.body.contains(script)) {
+        document.body.removeChild(script)
+      }
+    }
+  }, [])
+
   useEffect(() => {
     const loadProducts = async () => {
       try {
