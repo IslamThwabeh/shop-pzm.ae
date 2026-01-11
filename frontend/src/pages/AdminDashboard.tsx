@@ -312,7 +312,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       {selectedOrder && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-slate-800 rounded-lg shadow-xl p-8 w-full max-w-lg border border-slate-700">
-            <h2 className="text-2xl font-bold text-white mb-6">Manage Order #{selectedOrder.id}</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">Manage Order {formatOrderId(selectedOrder.id)}</h2>
             
             <div className="space-y-4 mb-6">
               <div>
