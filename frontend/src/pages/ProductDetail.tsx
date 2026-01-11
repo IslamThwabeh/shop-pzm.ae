@@ -77,6 +77,8 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
     )
   }
 
+  const totalPrice = product ? product.price * quantity : 0
+
   return (
     <div>
       <button
@@ -89,7 +91,7 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-lg shadow p-8">
         {/* Product Image */}
-        <div className="flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg h-96">
+        <div className="flex items-center justify-center bg-green-50 rounded-lg h-96">
           {product.image_url || product.images?.[0] ? (
             <img
               src={product.image_url || product.images?.[0] || ''}
@@ -106,38 +108,38 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
         {/* Product Details */}
         <div>
           <div className="mb-6">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">{product.model}</h1>
+            <h1 className="text-4xl font-bold text-primary mb-2">{product.model}</h1>
             <div className="flex items-center gap-4">
               <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
                 product.condition === 'new'
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-yellow-100 text-yellow-800'
+                  ? 'bg-green-100 text-primary'
+                  : 'bg-green-100 text-primary'
               }`}>
                 {product.condition === 'new' ? '✨ Brand New' : '📱 Used'}
               </span>
-              <span className="text-gray-600">{product.color}</span>
+              <span className="text-brandTextMedium">{product.color}</span>
             </div>
           </div>
 
           {/* Specifications */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold text-gray-900 mb-3">Specifications</h3>
+            <h3 className="font-semibold text-primary mb-3">Specifications</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Storage:</span>
+                <span className="text-brandTextMedium">Storage:</span>
                 <span className="font-semibold">{product.storage}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Condition:</span>
+                <span className="text-brandTextMedium">Condition:</span>
                 <span className="font-semibold capitalize">{product.condition}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Color:</span>
+                <span className="text-brandTextMedium">Color:</span>
                 <span className="font-semibold">{product.color}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Stock:</span>
-                <span className={`font-semibold ${product.quantity > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className="text-brandTextMedium">Stock:</span>
+                <span className={`font-semibold ${product.quantity > 0 ? 'text-brandGreenDark' : 'text-brandRed'}`}>
                   {product.quantity > 0 ? `${product.quantity} available` : 'Out of stock'}
                 </span>
               </div>
@@ -147,24 +149,30 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
           {/* Description */}
           {product.description && (
             <div className="mb-6">
-              <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
-              <p className="text-gray-600">{product.description}</p>
+              <h3 className="font-semibold text-primary mb-2">Description</h3>
+              <p className="text-brandTextMedium">{product.description}</p>
             </div>
           )}
 
           {/* Price */}
-          <div className="mb-6">
-            <p className="text-gray-600 mb-2">Price</p>
-            <p className="text-5xl font-bold text-primary">AED {product.price.toFixed(2)}</p>
+          <div className="mb-6 space-y-2">
+            <div>
+              <p className="text-brandTextMedium">Price (per unit)</p>
+              <p className="text-3xl font-bold text-primary">AED {product.price.toFixed(2)}</p>
+            </div>
+            <div className="rounded-lg bg-green-50 border border-primary p-3">
+              <p className="text-sm font-semibold text-primary">Total ({quantity} × AED {product.price.toFixed(2)})</p>
+              <p className="text-4xl font-bold text-primary">AED {totalPrice.toFixed(2)}</p>
+            </div>
           </div>
 
           {/* Quantity Selector */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+            <label className="block text-sm font-semibold text-primary mb-2">Quantity</label>
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+                className="px-4 py-2 border-2 border-brandBorder rounded-md hover:border-primary hover:bg-green-50 transition-colors text-primary font-bold text-lg"
               >
                 −
               </button>
@@ -174,11 +182,11 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
                 onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                 min="1"
                 max={product.quantity}
-                className="w-20 px-3 py-2 border border-gray-300 rounded text-center text-gray-900 font-semibold"
+                className="w-20 px-3 py-2 border-2 border-brandBorder rounded-md text-center text-brandTextDark font-semibold focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
               />
               <button
                 onClick={() => setQuantity(Math.min(product.quantity, quantity + 1))}
-                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+                className="px-4 py-2 border-2 border-brandBorder rounded-md hover:border-primary hover:bg-green-50 transition-colors text-primary font-bold text-lg"
               >
                 +
               </button>
@@ -192,7 +200,7 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
             className={`w-full py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors ${
               product.quantity === 0
                 ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-primary text-white hover:bg-brandGreenDark'
             }`}
           >
             <ShoppingCart size={20} />
@@ -200,9 +208,9 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
           </button>
 
           {/* COD Info */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <p className="text-sm text-blue-900">
-              <strong>✓ Cash on Delivery Available</strong> - Pay when you receive your order
+          <div className="mt-6 p-4 bg-green-50 rounded-lg border border-primary">
+            <p className="text-sm text-primary font-semibold">
+              ✓ Cash on Delivery Available - Pay when you receive your order
             </p>
           </div>
         </div>

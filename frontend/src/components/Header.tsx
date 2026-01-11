@@ -59,7 +59,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                   PZM Store
                 </span>
 
-                <span className={`hidden md:block text-xl font-bold text-primary leading-snug transition-all duration-200 ${isShrunk ? 'opacity-0 max-w-0 overflow-hidden pointer-events-none' : 'opacity-100 max-w-[520px] whitespace-normal break-words'}`}>
+                <span className={`hidden md:block text-xl font-bold text-brandTextDark leading-snug transition-all duration-200 ${isShrunk ? 'opacity-0 max-w-0 overflow-hidden pointer-events-none' : 'opacity-100 max-w-[520px] whitespace-normal break-words'}`}>
                   PZM Computers & Phones Store — Buy•Sell•Fix•Used•PC•Build
                 </span>
               </div>
@@ -71,12 +71,12 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
             {currentPage !== 'admin' && (
               <button
                 onClick={() => onNavigate({ type: 'cart' })}
-                className="relative p-3 md:p-2 min-h-[44px] min-w-[44px] text-gray-600 hover:text-gray-900"
+                className="relative p-3 md:p-2 min-h-[44px] min-w-[44px] text-brandTextMedium hover:text-primary transition-colors"
                 aria-label="Open cart"
               >
                 <ShoppingCart size={24} />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-brandRed text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
@@ -89,7 +89,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                   logout()
                   onNavigate({ type: 'home' })
                 }}
-                className="p-3 md:p-2 min-h-[44px] min-w-[44px] text-gray-600 hover:text-gray-900"
+                className="p-3 md:p-2 min-h-[44px] min-w-[44px] text-brandTextMedium hover:text-primary transition-colors"
                 aria-label="Logout"
               >
                 <LogOut size={24} />

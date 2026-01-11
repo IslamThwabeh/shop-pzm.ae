@@ -50,24 +50,24 @@ export default function ProductListing({ products, loading }: ProductListingProp
 
   return (
     <div>
-      <h1 className="text-4xl font-bold mb-2">PZM Computers & Phones Store</h1>
-      <p className="text-gray-600 mb-8">Buy new and used iPhones with Cash on Delivery</p>
+      <h1 className="text-4xl font-bold mb-2 text-primary">PZM Computers & Phones Store</h1>
+      <p className="text-brandTextMedium mb-8">Buy new and used iPhones with Cash on Delivery</p>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-6 mb-8">
+      <div className="bg-white rounded-lg border border-brandBorder shadow-sm p-6 mb-8 border-t-4 border-t-primary">
         <div className="flex items-center gap-2 mb-4">
-          <Filter size={20} />
-          <h2 className="text-lg font-semibold">Filters & Sorting</h2>
+          <Filter size={20} className="text-primary" />
+          <h2 className="text-lg font-semibold text-primary">Filters & Sorting</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Condition Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">Condition</label>
+            <label className="block text-sm font-semibold text-primary mb-2">Condition</label>
             <select
               value={conditionFilter}
               onChange={(e) => setConditionFilter(e.target.value as ConditionFilter)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900 font-medium"
+              className="w-full px-3 py-2 border border-brandBorder rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-brandTextDark font-medium"
             >
               <option value="all">All Conditions</option>
               <option value="new">Brand New</option>
@@ -77,34 +77,34 @@ export default function ProductListing({ products, loading }: ProductListingProp
 
           {/* Price Range */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">Min Price (AED)</label>
+            <label className="block text-sm font-semibold text-primary mb-2">Min Price (AED)</label>
             <input
               type="number"
               value={minPrice}
               onChange={(e) => setMinPrice(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900 font-semibold"
+              className="w-full px-3 py-2 border border-brandBorder rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-brandTextDark font-semibold"
               placeholder="0"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">Max Price (AED)</label>
+            <label className="block text-sm font-semibold text-primary mb-2">Max Price (AED)</label>
             <input
               type="number"
               value={maxPrice}
               onChange={(e) => setMaxPrice(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900 font-semibold"
+              className="w-full px-3 py-2 border border-brandBorder rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-brandTextDark font-semibold"
               placeholder="10000"
             />
           </div>
 
           {/* Sort */}
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">Sort By</label>
+            <label className="block text-sm font-semibold text-primary mb-2">Sort By</label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900 font-medium"
+              className="w-full px-3 py-2 border border-brandBorder rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-brandTextDark font-medium"
             >
               <option value="price-asc">Price: Low to High</option>
               <option value="price-desc">Price: High to Low</option>
@@ -116,13 +116,13 @@ export default function ProductListing({ products, loading }: ProductListingProp
 
       {/* Products Grid */}
       <div>
-        <h2 className="text-2xl font-bold mb-6">
+        <h2 className="text-2xl font-bold mb-6 text-primary">
           Available Products ({filteredAndSorted.length})
         </h2>
 
         {filteredAndSorted.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg">
-            <p className="text-gray-600">No products match your filters</p>
+          <div className="text-center py-12 bg-white rounded-lg border border-brandBorder">
+            <p className="text-brandTextMedium">No products match your filters</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
