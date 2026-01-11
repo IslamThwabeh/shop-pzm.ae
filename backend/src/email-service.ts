@@ -19,15 +19,12 @@ export class EmailService {
     this.apiToken = apiToken;
   }
 
+  /**
+   * Format order ID from raw ID to PZM-XXXXXX format
+   */
   private formatOrderId(id: string): string {
     const numeric = id?.replace(/\D/g, '');
     const short = (numeric || id || '000001').slice(-6);
-    return `PZM-${short}`;
-  }  
-
-  private formatOrderId(orderId: string): string {
-    const numeric = orderId?.replace(/\D/g, '');
-    const short = (numeric || orderId || '000001').slice(-6);
     return `PZM-${short}`;
   }
 
