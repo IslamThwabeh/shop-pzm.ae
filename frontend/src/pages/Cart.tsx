@@ -15,7 +15,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
         <p className="text-gray-600 mb-6">Your cart is empty</p>
         <button
           onClick={onContinueShopping}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
         >
           <ArrowLeft size={20} />
           Continue Shopping
