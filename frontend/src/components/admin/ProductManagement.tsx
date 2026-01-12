@@ -4,8 +4,11 @@ import { Plus, Edit2, Trash2, Upload } from 'lucide-react';
 interface Product {
   id: string;
   model: string;
+  storage: string;
+  condition: 'new' | 'used';
+  color: string;
   price: number;
-  stock: number;
+  quantity: number;
   image_url: string;
   description: string;
   created_at: string;
@@ -23,8 +26,11 @@ export default function ProductManagement({ token }: ProductManagementProps) {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState({
     model: '',
+    storage: '',
+    condition: 'new' as 'new' | 'used',
+    color: '',
     price: 0,
-    stock: 0,
+    quantity: 0,
     description: '',
     image: null as File | null,
   });
@@ -62,8 +68,11 @@ export default function ProductManagement({ token }: ProductManagementProps) {
       setEditingProduct(product);
       setFormData({
         model: product.model,
+        storage: product.storage,
+        condition: product.condition,
+        color: product.color,
         price: product.price,
-        stock: product.stock,
+        quantity: product.quantity,
         description: product.description,
         image: null,
       });
@@ -71,8 +80,11 @@ export default function ProductManagement({ token }: ProductManagementProps) {
       setEditingProduct(null);
       setFormData({
         model: '',
+        storage: '',
+        condition: 'new',
+        color: '',
         price: 0,
-        stock: 0,
+        quantity: 0,
         description: '',
         image: null,
       });
@@ -89,7 +101,7 @@ export default function ProductManagement({ token }: ProductManagementProps) {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'price' || name === 'stock' ? parseFloat(value) : value,
+      [name]: name === 'price' || name === 'quantity' ? parseFloat(value) : value,
     }));
   };
 
@@ -109,8 +121,11 @@ export default function ProductManagement({ token }: ProductManagementProps) {
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('model', formData.model);
+      formDataToSend.append('storage', formData.storage);
+      formDataToSend.append('condition', formData.condition);
+      formDataToSend.append('color', formData.color);
       formDataToSend.append('price', formData.price.toString());
-      formDataToSend.append('stock', formData.stock.toString());
+      formDataToSend.append('quantity', formData.quantity.toString());
       formDataToSend.append('description', formData.description);
       if (formData.image) {
         formDataToSend.append('image', formData.image);
@@ -222,9 +237,9 @@ export default function ProductManagement({ token }: ProductManagementProps) {
                     <p className="text-green-400 font-bold">AED {product.price.toFixed(2)}</p>
                   </div>
                   <div>
-                    <p className="text-slate-400 text-xs">Stock</p>
-                    <p className={`font-bold ${product.stock > 0 ? 'text-blue-400' : 'text-red-400'}`}>
-                      {product.stock}
+                    <p className="text-slate-400 text-xs">Quantity</p>
+                    <p className={`font-bold ${product.quantity > 0 ? 'text-blue-400' : 'text-red-400'}`}>
+                      {product.quantity}
                     </p>
                   </div>
                 </div>
@@ -275,6 +290,61 @@ export default function ProductManagement({ token }: ProductManagementProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Storage</label>
+                  <input
+                    type="text"
+                    name="storage"
+                    value={formData.storage}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., 256GB"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Color</label>
+                  <input
+                    type="text"
+                    name="color"
+                    value={formData.color}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., Black"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Condition</label>
+                  <select
+                    name="condition"
+                    value={formData.condition}
+                    onChange={(e) => setFormData(prev => ({ ...prev, condition: e.target.value as 'new' | 'used' }))}
+                    required
+                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="new">✨ Brand New</option>
+                    <option value="used">📱 Used</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Quantity</label>
+                  <input
+                    type="number"
+                    name="quantity"
+                    value={formData.quantity}
+                    onChange={handleInputChange}
+                    required
+                    min="0"
+                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">Price (AED)</label>
                   <input
                     type="number"
@@ -283,17 +353,6 @@ export default function ProductManagement({ token }: ProductManagementProps) {
                     onChange={handleInputChange}
                     required
                     step="0.01"
-                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Stock</label>
-                  <input
-                    type="number"
-                    name="stock"
-                    value={formData.stock}
-                    onChange={handleInputChange}
-                    required
                     className="w-full px-4 py-2 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
