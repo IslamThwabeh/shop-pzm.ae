@@ -3,7 +3,7 @@ import type { UploadConfig, UploadResult } from '../../../shared/types';
 const DEFAULT_CONFIG: UploadConfig = {
   maxFileSize: 10 * 1024 * 1024, // 10MB
   allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
-  bucketUrl: 'https://pzm-images.r2.cloudflarestorage.com',
+  bucketUrl: 'https://r2.pzm.ae',
 };
 
 export class StorageService {
