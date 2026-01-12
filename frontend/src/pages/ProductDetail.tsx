@@ -127,15 +127,15 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-brandTextMedium">Storage:</span>
-                <span className="font-semibold">{product.storage}</span>
+                <span className="font-semibold text-brandTextDark">{product.storage}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-brandTextMedium">Condition:</span>
-                <span className="font-semibold capitalize">{product.condition}</span>
+                <span className="font-semibold text-brandTextDark capitalize">{product.condition}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-brandTextMedium">Color:</span>
-                <span className="font-semibold">{product.color}</span>
+                <span className="font-semibold text-brandTextDark">{product.color}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-brandTextMedium">Stock:</span>
