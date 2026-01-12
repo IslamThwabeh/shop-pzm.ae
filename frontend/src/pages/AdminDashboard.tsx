@@ -30,9 +30,11 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState<'orders' | 'products'>('orders');
 
   const formatOrderId = (id: string) => {
-    const numeric = id?.replace(/\D/g, '');
-    const short = (numeric || id || '000001').slice(-6);
-    return `PZM-${short}`;
+    // Full ID format: ord-[timestamp]-[random 6 chars]
+    // Extract the random part (last segment after the final hyphen)
+    const parts = id?.split('-');
+    const randomPart = parts?.[parts.length - 1] || id || '000000';
+    return `PZM-${randomPart}`;
   };
 
   const loadOrders = async () => {

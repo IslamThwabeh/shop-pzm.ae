@@ -29,9 +29,11 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null)
 
   const rawId = orderId || params.id || ''
-  const numericPart = rawId.replace(/\D/g, '')
-  const shortPart = (numericPart || rawId || '000001').slice(-6)
-  const displayOrderId = `PZM-${shortPart}`
+  // Full ID format: ord-[timestamp]-[random 6 chars]
+  // Extract the random part (last segment after the final hyphen)
+  const parts = rawId?.split('-')
+  const randomPart = parts?.[parts.length - 1] || rawId || '000000'
+  const displayOrderId = `PZM-${randomPart}`
 
   useEffect(() => {
     // Load order details from localStorage

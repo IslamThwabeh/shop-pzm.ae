@@ -21,11 +21,14 @@ export class EmailService {
 
   /**
    * Format order ID from raw ID to PZM-XXXXXX format
+   * Extracts the 6-character random portion from the end of the full ID
    */
   private formatOrderId(id: string): string {
-    const numeric = id?.replace(/\D/g, '');
-    const short = (numeric || id || '000001').slice(-6);
-    return `PZM-${short}`;
+    // Full ID format: ord-[timestamp]-[random 6 chars]
+    // Extract the random part (last segment after the final hyphen)
+    const parts = id?.split('-');
+    const randomPart = parts?.[parts.length - 1] || id || '000000';
+    return `PZM-${randomPart}`;
   }
 
   /**
