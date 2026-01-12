@@ -149,14 +149,20 @@ export class EmailService {
     customerName: string,
     orderId: string,
     status: string,
-    productModel: string
+    productModel: string,
+    productStorage: string,
+    productCondition: string,
+    productColor: string
   ): Promise<boolean> {
     const displayId = this.formatOrderId(orderId);
     const htmlBody = this.getStatusUpdateTemplate(
       customerName,
       displayId,
       status,
-      productModel
+      productModel,
+      productStorage,
+      productCondition,
+      productColor
     );
 
     const statusMessages: { [key: string]: string } = {
@@ -173,6 +179,47 @@ export class EmailService {
     return this.sendEmail({
       to: customerEmail,
       subject,
+      htmlBody,
+    });
+  }
+
+  /**
+   * Send order status update notification to team
+   */
+  async sendStatusUpdateToTeam(
+    orderId: string,
+    customerName: string,
+    status: string,
+    productModel: string,
+    productStorage: string,
+    productCondition: string,
+    productColor: string
+  ): Promise<boolean> {
+    const displayId = this.formatOrderId(orderId);
+    const htmlBody = this.getStatusUpdateTeamTemplate(
+      displayId,
+      customerName,
+      status,
+      productModel,
+      productStorage,
+      productCondition,
+      productColor
+    );
+
+    const statusMessages: { [key: string]: string } = {
+      confirmed: 'Order Confirmed',
+      in_progress: 'Order In Progress',
+      ready_for_delivery: 'Order Ready for Delivery',
+      shipped: 'Order Shipped',
+      delivered: 'Order Delivered',
+      cancelled: 'Order Cancelled',
+    };
+
+    const subject = statusMessages[status] || `Order Status Update - ${displayId}`;
+
+    return this.sendEmail({
+      to: this.teamEmail,
+      subject: `${subject} - ${displayId}`,
       htmlBody,
     });
   }
@@ -198,21 +245,21 @@ export class EmailService {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header { background: linear-gradient(135deg, #00A76F 0%, #16a34a 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
           .header h1 { margin: 0; font-size: 28px; }
           .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
           .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
           .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
           .detail-row:last-child { border-bottom: none; }
-          .label { font-weight: bold; color: #667eea; }
+          .label { font-weight: bold; color: #00A76F; }
           .value { text-align: right; }
           .total-row { background: #f0f0f0; padding: 15px; border-radius: 8px; margin-top: 15px; }
           .total-row .detail-row { border-bottom: none; }
           .total-row .label { font-size: 18px; color: #333; }
-          .total-row .value { font-size: 18px; font-weight: bold; color: #667eea; }
-          .button { display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+          .total-row .value { font-size: 18px; font-weight: bold; color: #00A76F; }
+          .button { display: inline-block; background: #00A76F; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin-top: 20px; }
           .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-          .status-badge { display: inline-block; background: #4CAF50; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
+          .status-badge { display: inline-block; background: #00A76F; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
         </style>
       </head>
       <body>
@@ -229,38 +276,38 @@ export class EmailService {
             
             <div class="order-details">
               <div class="detail-row">
-                <span class="label">Order ID:</span>
+                <span class="label">Order ID: </span>
                 <span class="value"><strong>${orderId}</strong></span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Product:</span>
+                <span class="label">Product: </span>
                 <span class="value">${productModel}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Storage:</span>
+                <span class="label">Storage: </span>
                 <span class="value">${productStorage}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Condition:</span>
+                <span class="label">Condition: </span>
                 <span class="value">${productCondition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Color:</span>
+                <span class="label">Color: </span>
                 <span class="value">${productColor}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Quantity:</span>
+                <span class="label">Quantity: </span>
                 <span class="value">${quantity}</span>
               </div>
               
               <div class="total-row">
                 <div class="detail-row">
-                  <span class="label">Total Amount:</span>
+                  <span class="label">Total Amount: </span>
                   <span class="value">AED ${totalPrice.toFixed(2)}</span>
                 </div>
               </div>
@@ -316,20 +363,20 @@ export class EmailService {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #FF6B6B; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header { background: #00A76F; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
           .header h1 { margin: 0; font-size: 24px; }
           .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
-          .alert { background: #FFF3CD; border-left: 4px solid #FFC107; padding: 15px; margin: 20px 0; border-radius: 4px; }
+          .alert { background: #e8f5e9; border-left: 4px solid #00A76F; padding: 15px; margin: 20px 0; border-radius: 4px; }
           .customer-info { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
           .info-row { padding: 10px 0; border-bottom: 1px solid #eee; }
           .info-row:last-child { border-bottom: none; }
-          .label { font-weight: bold; color: #FF6B6B; display: inline-block; width: 120px; }
+          .label { font-weight: bold; color: #00A76F; display: inline-block; width: 120px; }
           .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
           .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
           .detail-row:last-child { border-bottom: none; }
           .total-row { background: #f0f0f0; padding: 15px; border-radius: 8px; margin-top: 15px; }
           .total-row .detail-row { border-bottom: none; }
-          .button { display: inline-block; background: #FF6B6B; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+          .button { display: inline-block; background: #00A76F; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin-top: 20px; }
           .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
         </style>
       </head>
@@ -347,15 +394,15 @@ export class EmailService {
             <h2>Customer Information</h2>
             <div class="customer-info">
               <div class="info-row">
-                <span class="label">Name:</span>
+                <span class="label">Name: </span>
                 <span>${customerName}</span>
               </div>
               <div class="info-row">
-                <span class="label">Email:</span>
+                <span class="label">Email: </span>
                 <span>${customerEmail}</span>
               </div>
               <div class="info-row">
-                <span class="label">Phone:</span>
+                <span class="label">Phone: </span>
                 <span>${customerPhone}</span>
               </div>
             </div>
@@ -363,38 +410,38 @@ export class EmailService {
             <h2>Order Details</h2>
             <div class="order-details">
               <div class="detail-row">
-                <span class="label">Order ID:</span>
+                <span class="label">Order ID: </span>
                 <span><strong>${orderId}</strong></span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Product:</span>
+                <span class="label">Product: </span>
                 <span>${productModel}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Storage:</span>
+                <span class="label">Storage: </span>
                 <span>${productStorage}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Condition:</span>
+                <span class="label">Condition: </span>
                 <span>${productCondition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Color:</span>
+                <span class="label">Color: </span>
                 <span>${productColor}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Quantity:</span>
+                <span class="label">Quantity: </span>
                 <span>${quantity}</span>
               </div>
               
               <div class="total-row">
                 <div class="detail-row">
-                  <span class="label">Total:</span>
+                  <span class="label">Total: </span>
                   <span><strong>AED ${totalPrice.toFixed(2)}</strong></span>
                 </div>
               </div>
@@ -427,44 +474,47 @@ export class EmailService {
     customerName: string,
     orderId: string,
     status: string,
-    productModel: string
+    productModel: string,
+    productStorage: string,
+    productCondition: string,
+    productColor: string
   ): string {
     const statusInfo: { [key: string]: { emoji: string; title: string; message: string; color: string } } = {
       confirmed: {
         emoji: '✓',
         title: 'Order Confirmed',
         message: 'Your order has been confirmed and is being prepared for shipment.',
-        color: '#4CAF50',
+        color: '#00A76F',
       },
       in_progress: {
         emoji: '⚙️',
         title: 'Order in Progress',
         message: 'Your order is currently being prepared. We\'re working hard to get it ready!',
-        color: '#2196F3',
+        color: '#00A76F',
       },
       ready_for_delivery: {
         emoji: '📦',
         title: 'Ready for Delivery',
         message: 'Your order is ready and will be dispatched soon. Get ready to receive it!',
-        color: '#FF9800',
+        color: '#00A76F',
       },
       shipped: {
         emoji: '🚚',
         title: 'Order Shipped',
         message: 'Your order is on its way! You can expect delivery soon.',
-        color: '#9C27B0',
+        color: '#00A76F',
       },
       delivered: {
         emoji: '✓✓',
         title: 'Order Delivered',
         message: 'Your order has been delivered! Thank you for shopping with us.',
-        color: '#4CAF50',
+        color: '#00A76F',
       },
       cancelled: {
         emoji: '✕',
         title: 'Order Cancelled',
         message: 'Your order has been cancelled. Please contact support for more information.',
-        color: '#F44336',
+        color: '#DC3545',
       },
     };
 
@@ -506,17 +556,32 @@ export class EmailService {
             
             <div class="order-details">
               <div class="detail-row">
-                <span class="label">Order ID:</span>
+                <span class="label">Order ID: </span>
                 <span><strong>${orderId}</strong></span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Product:</span>
+                <span class="label">Product: </span>
                 <span>${productModel}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Status:</span>
+                <span class="label">Storage: </span>
+                <span>${productStorage}</span>
+              </div>
+              
+              <div class="detail-row">
+                <span class="label">Condition: </span>
+                <span>${productCondition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
+              </div>
+              
+              <div class="detail-row">
+                <span class="label">Color: </span>
+                <span>${productColor}</span>
+              </div>
+              
+              <div class="detail-row">
+                <span class="label">Status: </span>
                 <span><strong>${status.replace(/_/g, ' ').toUpperCase()}</strong></span>
               </div>
             </div>
@@ -533,6 +598,104 @@ export class EmailService {
           <div class="footer">
             <p>© 2025 PZM Computers & Phones Store. All rights reserved.</p>
             <p>This is an automated email. Please do not reply directly to this email.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  /**
+   * Status Update Team Notification Template
+   */
+  private getStatusUpdateTeamTemplate(
+    orderId: string,
+    customerName: string,
+    status: string,
+    productModel: string,
+    productStorage: string,
+    productCondition: string,
+    productColor: string
+  ): string {
+    const statusColors: { [key: string]: string } = {
+      confirmed: '#00A76F',
+      in_progress: '#00A76F',
+      ready_for_delivery: '#00A76F',
+      shipped: '#00A76F',
+      delivered: '#00A76F',
+      cancelled: '#DC3545',
+    };
+
+    const color = statusColors[status] || '#00A76F';
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, ${color} 0%, ${color}dd 100%); color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header h1 { margin: 0; font-size: 24px; }
+          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+          .alert { background: #FFF3CD; border-left: 4px solid ${color}; padding: 15px; margin: 20px 0; border-radius: 4px; }
+          .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+          .detail-row { padding: 10px 0; border-bottom: 1px solid #eee; }
+          .detail-row:last-child { border-bottom: none; }
+          .label { font-weight: bold; color: ${color}; display: inline-block; width: 120px; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>📋 Order Status Updated</h1>
+          </div>
+          
+          <div class="content">
+            <div class="alert">
+              <strong>⚠️ Status Update!</strong> Order ${orderId} status has been changed to <strong>${status.replace(/_/g, ' ').toUpperCase()}</strong>
+            </div>
+            
+            <h2>Order Information</h2>
+            <div class="order-details">
+              <div class="detail-row">
+                <span class="label">Order ID: </span>
+                <span><strong>${orderId}</strong></span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Customer: </span>
+                <span>${customerName}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Product: </span>
+                <span>${productModel}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Storage: </span>
+                <span>${productStorage}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Condition: </span>
+                <span>${productCondition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Color: </span>
+                <span>${productColor}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">New Status: </span>
+                <span><strong>${status.replace(/_/g, ' ').toUpperCase()}</strong></span>
+              </div>
+            </div>
+            
+            <p><strong>Note:</strong> Customer has been notified about this status change.</p>
+          </div>
+          
+          <div class="footer">
+            <p>© 2025 PZM Computers & Phones Store. All rights reserved.</p>
+            <p>This is an automated notification from the order management system.</p>
           </div>
         </div>
       </body>

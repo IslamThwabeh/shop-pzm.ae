@@ -391,12 +391,26 @@ app.put('/api/orders/:id', async (c) => {
       const emailService = new EmailService(c.env.ZEPTOMAIL_API_TOKEN);
       const product = await db.getProduct(order.product_id);
       if (product) {
+        // Send to customer
         await emailService.sendStatusUpdate(
           order.customer_email,
           order.customer_name,
           orderId,
           body.status,
-          product.model
+          product.model,
+          product.storage,
+          product.condition,
+          product.color
+        );
+        // Send to support team
+        await emailService.sendStatusUpdateToTeam(
+          orderId,
+          order.customer_name,
+          body.status,
+          product.model,
+          product.storage,
+          product.condition,
+          product.color
         );
       }
     }
