@@ -19,23 +19,31 @@ export interface Product {
 // Order Types
 export interface Order {
   id: string
-  customerId: string
-  items: OrderItem[]
-  totalPrice: number
+  customer_id?: string
+  customer_name: string
+  customer_email: string
+  customer_phone: string
+  customer_address: string
+  product_id?: string // Legacy: for backward compatibility with single-item orders
+  quantity?: number // Legacy: for backward compatibility
+  total_price: number
+  payment_method: string
   status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
-  customerName: string
-  customerEmail: string
-  customerPhone: string
-  customerAddress: string
   notes?: string
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
+  items?: OrderItem[] // New: for multi-item orders
 }
 
 export interface OrderItem {
-  productId: string
+  id: string
+  order_id: string
+  product_id: string
   quantity: number
-  price: number
+  unit_price: number
+  subtotal: number
+  created_at: string
+  product?: Product // Populated when fetching order with products
 }
 
 // Customer Types

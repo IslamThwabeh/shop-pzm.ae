@@ -288,8 +288,7 @@ app.post('/api/orders', async (c) => {
       'customer_email',
       'customer_phone',
       'customer_address',
-      'product_id',
-      'quantity',
+      'items', // Now expecting items array
       'total_price',
     ]);
 
@@ -297,53 +296,74 @@ app.post('/api/orders', async (c) => {
       return c.json({ error: validation, status: 400 }, 400);
     }
 
+    // Validate items array
+    if (!Array.isArray(body.items) || body.items.length === 0) {
+      return c.json({ error: 'Order must contain at least one item', status: 400 }, 400);
+    }
+
     const db = new Database(c.env.DB);
+    const orderId = generateId('ord');
+    
     const order: Order = {
-      id: generateId('ord'),
+      id: orderId,
       customer_name: body.customer_name,
       customer_email: body.customer_email,
       customer_phone: body.customer_phone,
       customer_address: body.customer_address,
-      product_id: body.product_id,
-      quantity: body.quantity,
+      product_id: null, // Legacy field, not used for multi-item orders
+      quantity: null, // Legacy field
       total_price: body.total_price,
       payment_method: 'cash_on_delivery',
       status: 'pending',
+      notes: body.notes,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
 
     const created = await db.createOrder(order);
 
-    // Send emails
-    const emailService = new EmailService(c.env.ZEPTOMAIL_API_TOKEN);
+    // Create order items
+    const orderItems = [];
+    for (const item of body.items) {
+      const product = await db.getProduct(item.product_id);
+      if (!product) {
+        return c.json({ error: `Product ${item.product_id} not found`, status: 400 }, 400);
+      }
 
-    const product = await db.getProduct(body.product_id);
-    if (product) {
-      await emailService.sendOrderConfirmation(
-        body.customer_email,
-        body.customer_name,
-        created.id,
-        product.model,
-        product.storage,
-        product.condition,
-        product.color,
-        body.quantity,
-        body.total_price
-      );
-      await emailService.sendOrderNotification(
-        created.id,
-        body.customer_name,
-        body.customer_email,
-        body.customer_phone,
-        product.model,
-        product.storage,
-        product.condition,
-        product.color,
-        body.quantity,
-        body.total_price
-      );
+      const orderItem = {
+        id: generateId('oi'),
+        order_id: orderId,
+        product_id: item.product_id,
+        quantity: item.quantity,
+        unit_price: product.price,
+        subtotal: product.price * item.quantity,
+        created_at: new Date().toISOString(),
+        product: product,
+      };
+
+      await db.createOrderItem(orderItem);
+      orderItems.push(orderItem);
     }
+
+    // Send emails with all items
+    const emailService = new EmailService(c.env.ZEPTOMAIL_API_TOKEN);
+    
+    await emailService.sendOrderConfirmation(
+      body.customer_email,
+      body.customer_name,
+      created.id,
+      orderItems,
+      body.total_price
+    );
+    
+    await emailService.sendOrderNotification(
+      created.id,
+      body.customer_name,
+      body.customer_email,
+      body.customer_phone,
+      orderItems,
+      body.total_price
+    );
 
     return c.json({ data: created, status: 201 }, 201);
   } catch (error) {

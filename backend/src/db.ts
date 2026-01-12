@@ -1,4 +1,4 @@
-import type { Product, Order, Customer, AdminUser } from '../../shared/types';
+import type { Product, Order, OrderItem, Customer, AdminUser } from '../../shared/types';
 
 export class Database {
   constructor(private db: D1Database) {}
@@ -117,7 +117,14 @@ export class Database {
       const result = await this.db
         .prepare('SELECT * FROM orders ORDER BY created_at DESC')
         .all();
-      return (result.results as Order[]) || [];
+      const orders = (result.results as Order[]) || [];
+      
+      // Fetch items for each order
+      for (const order of orders) {
+        order.items = await this.getOrderItems(order.id);
+      }
+      
+      return orders;
     } catch (error) {
       console.error('Error fetching orders:', error);
       return [];
@@ -130,7 +137,14 @@ export class Database {
         .prepare('SELECT * FROM orders WHERE id = ?')
         .bind(id)
         .first();
-      return (result as Order) || null;
+      const order = (result as Order) || null;
+      
+      if (order) {
+        // Fetch items for this order
+        order.items = await this.getOrderItems(order.id);
+      }
+      
+      return order;
     } catch (error) {
       console.error('Error fetching order:', error);
       return null;
@@ -202,6 +216,74 @@ export class Database {
     } catch (error) {
       console.error('Error updating order:', error);
       return null;
+    }
+  }
+
+  // ============ ORDER ITEMS ============
+
+  async createOrderItem(item: OrderItem): Promise<OrderItem> {
+    try {
+      await this.db
+        .prepare(
+          `INSERT INTO order_items (id, order_id, product_id, quantity, unit_price, subtotal, created_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`
+        )
+        .bind(
+          item.id,
+          item.order_id,
+          item.product_id,
+          item.quantity,
+          item.unit_price,
+          item.subtotal,
+          item.created_at
+        )
+        .run();
+
+      return item;
+    } catch (error) {
+      console.error('Error creating order item:', error);
+      throw error;
+    }
+  }
+
+  async getOrderItems(orderId: string): Promise<OrderItem[]> {
+    try {
+      const result = await this.db
+        .prepare(
+          `SELECT oi.*, p.model, p.storage, p.condition, p.color, p.image_url
+           FROM order_items oi
+           LEFT JOIN products p ON oi.product_id = p.id
+           WHERE oi.order_id = ?
+           ORDER BY oi.created_at ASC`
+        )
+        .bind(orderId)
+        .all();
+      
+      const items = (result.results as any[]) || [];
+      
+      // Transform to OrderItem with product data
+      return items.map(item => ({
+        id: item.id,
+        order_id: item.order_id,
+        product_id: item.product_id,
+        quantity: item.quantity,
+        unit_price: item.unit_price,
+        subtotal: item.subtotal,
+        created_at: item.created_at,
+        product: item.model ? {
+          id: item.product_id,
+          model: item.model,
+          storage: item.storage,
+          condition: item.condition,
+          color: item.color,
+          image_url: item.image_url,
+          price: item.unit_price,
+          quantity: 0, // Not relevant in this context
+        } as Product : undefined
+      }));
+    } catch (error) {
+      console.error('Error fetching order items:', error);
+      return [];
     }
   }
 

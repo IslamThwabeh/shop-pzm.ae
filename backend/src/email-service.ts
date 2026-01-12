@@ -3,6 +3,8 @@
  * Handles sending transactional emails for order confirmations and status updates
  */
 
+import type { OrderItem } from '../../shared/types';
+
 interface EmailOptions {
   to: string;
   subject: string;
@@ -82,22 +84,14 @@ export class EmailService {
     customerEmail: string,
     customerName: string,
     orderId: string,
-    productModel: string,
-    productStorage: string,
-    productCondition: string,
-    productColor: string,
-    quantity: number,
+    orderItems: OrderItem[],
     totalPrice: number
   ): Promise<boolean> {
     const displayId = this.formatOrderId(orderId);
     const htmlBody = this.getOrderConfirmationTemplate(
       customerName,
       displayId,
-      productModel,
-      productStorage,
-      productCondition,
-      productColor,
-      quantity,
+      orderItems,
       totalPrice
     );
 
@@ -116,11 +110,7 @@ export class EmailService {
     customerName: string,
     customerEmail: string,
     customerPhone: string,
-    productModel: string,
-    productStorage: string,
-    productCondition: string,
-    productColor: string,
-    quantity: number,
+    orderItems: OrderItem[],
     totalPrice: number
   ): Promise<boolean> {
     const displayId = this.formatOrderId(orderId);
@@ -129,11 +119,7 @@ export class EmailService {
       customerName,
       customerEmail,
       customerPhone,
-      productModel,
-      productStorage,
-      productCondition,
-      productColor,
-      quantity,
+      orderItems,
       totalPrice
     );
 
@@ -233,13 +219,42 @@ export class EmailService {
   private getOrderConfirmationTemplate(
     customerName: string,
     orderId: string,
-    productModel: string,
-    productStorage: string,
-    productCondition: string,
-    productColor: string,
-    quantity: number,
+    orderItems: OrderItem[],
     totalPrice: number
   ): string {
+    // Generate items HTML
+    const itemsHtml = orderItems.map((item, index) => `
+      <div class="product-item">
+        <div class="product-number">${index + 1}</div>
+        <div class="product-details">
+          <div class="detail-row">
+            <span class="label">Product:</span>
+            <span class="value">${item.product?.model || 'N/A'}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Storage:</span>
+            <span class="value">${item.product?.storage || 'N/A'}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Condition:</span>
+            <span class="value">${item.product?.condition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Color:</span>
+            <span class="value">${item.product?.color || 'N/A'}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Quantity:</span>
+            <span class="value">${item.quantity}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Price:</span>
+            <span class="value">AED ${item.unit_price.toFixed(2)} × ${item.quantity} = AED ${item.subtotal.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
     return `
       <!DOCTYPE html>
       <html>
@@ -256,6 +271,9 @@ export class EmailService {
           .detail-row:last-child { border-bottom: none; }
           .label { font-weight: bold; color: #00A76F; min-width: 140px; }
           .value { text-align: left; }
+          .product-item { background: #fafafa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #00A76F; }
+          .product-number { display: inline-block; background: #00A76F; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; margin-bottom: 10px; }
+          .product-details .detail-row { padding: 8px 0; }
           .total-row { background: #f0f0f0; padding: 15px; border-radius: 8px; margin-top: 15px; }
           .total-row .detail-row { border-bottom: none; }
           .total-row .label { font-size: 18px; color: #333; }
@@ -282,37 +300,15 @@ export class EmailService {
                 <span class="label">Order ID:</span>
                 <span class="value"><strong>${orderId}</strong></span>
               </div>
+            </div>
+
+            <h3 style="color: #00A76F; margin-top: 20px;">Order Items (${orderItems.length})</h3>
+            ${itemsHtml}
               
+            <div class="total-row">
               <div class="detail-row">
-                <span class="label">Product:</span>
-                <span class="value">${productModel}</span>
-              </div>
-              
-              <div class="detail-row">
-                <span class="label">Storage:</span>
-                <span class="value">${productStorage}</span>
-              </div>
-              
-              <div class="detail-row">
-                <span class="label">Condition:</span>
-                <span class="value">${productCondition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
-              </div>
-              
-              <div class="detail-row">
-                <span class="label">Color:</span>
-                <span class="value">${productColor}</span>
-              </div>
-              
-              <div class="detail-row">
-                <span class="label">Quantity:</span>
-                <span class="value">${quantity}</span>
-              </div>
-              
-              <div class="total-row">
-                <div class="detail-row">
-                  <span class="label">Total Amount:</span>
-                  <span class="value">AED ${totalPrice.toFixed(2)}</span>
-                </div>
+                <span class="label">Total Amount:</span>
+                <span class="value">AED ${totalPrice.toFixed(2)}</span>
               </div>
             </div>
             
@@ -351,13 +347,42 @@ export class EmailService {
     customerName: string,
     customerEmail: string,
     customerPhone: string,
-    productModel: string,
-    productStorage: string,
-    productCondition: string,
-    productColor: string,
-    quantity: number,
+    orderItems: OrderItem[],
     totalPrice: number
   ): string {
+    // Generate items HTML
+    const itemsHtml = orderItems.map((item, index) => `
+      <div class="product-item">
+        <div class="product-number">${index + 1}</div>
+        <div class="product-details">
+          <div class="info-row">
+            <span class="label">Product:</span>
+            <span>${item.product?.model || 'N/A'}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Storage:</span>
+            <span>${item.product?.storage || 'N/A'}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Condition:</span>
+            <span>${item.product?.condition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Color:</span>
+            <span>${item.product?.color || 'N/A'}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Quantity:</span>
+            <span>${item.quantity}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Subtotal:</span>
+            <span>AED ${item.subtotal.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
     return `
       <!DOCTYPE html>
       <html>
@@ -373,12 +398,11 @@ export class EmailService {
           .customer-info { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
           .info-row { padding: 10px 0; border-bottom: 1px solid #eee; }
           .info-row:last-child { border-bottom: none; }
-          .label { font-weight: bold; color: #00A76F; display: inline-block; width: 120px; }
-          .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
-          .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-          .detail-row:last-child { border-bottom: none; }
+          .label { font-weight: bold; color: #00A76F; display: inline-block; min-width: 120px; }
+          .product-item { background: #fafafa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #00A76F; }
+          .product-number { display: inline-block; background: #00A76F; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; margin-bottom: 10px; }
+          .product-details .info-row { padding: 8px 0; }
           .total-row { background: #f0f0f0; padding: 15px; border-radius: 8px; margin-top: 15px; }
-          .total-row .detail-row { border-bottom: none; }
           .button { display: inline-block; background: #00A76F; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin-top: 20px; }
           .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
         </style>
@@ -397,63 +421,44 @@ export class EmailService {
             <h2>Customer Information</h2>
             <div class="customer-info">
               <div class="info-row">
-                <span class="label">Name: </span>
+                <span class="label">Name:</span>
                 <span>${customerName}</span>
               </div>
               <div class="info-row">
-                <span class="label">Email: </span>
+                <span class="label">Email:</span>
                 <span>${customerEmail}</span>
               </div>
               <div class="info-row">
-                <span class="label">Phone: </span>
+                <span class="label">Phone:</span>
                 <span>${customerPhone}</span>
               </div>
             </div>
             
             <h2>Order Details</h2>
-            <div class="order-details">
-              <div class="detail-row">
-                <span class="label">Order ID: </span>
+            <div class="customer-info">
+              <div class="info-row">
+                <span class="label">Order ID:</span>
                 <span><strong>${orderId}</strong></span>
               </div>
-              
-              <div class="detail-row">
-                <span class="label">Product: </span>
-                <span>${productModel}</span>
-              </div>
-              
-              <div class="detail-row">
-                <span class="label">Storage: </span>
-                <span>${productStorage}</span>
-              </div>
-              
-              <div class="detail-row">
-                <span class="label">Condition: </span>
-                <span>${productCondition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
-              </div>
-              
-              <div class="detail-row">
+            </div>
+
+            <h3 style="color: #00A76F; margin-top: 20px;">Order Items (${orderItems.length})</h3>
+            ${itemsHtml}              <div class="detail-row">
                 <span class="label">Color: </span>
-                <span>${productColor}</span>
-              </div>
+            <h3 style="color: #00A76F; margin-top: 20px;">Order Items (${orderItems.length})</h3>
+            ${itemsHtml}
               
-              <div class="detail-row">
-                <span class="label">Quantity: </span>
-                <span>${quantity}</span>
-              </div>
-              
-              <div class="total-row">
-                <div class="detail-row">
-                  <span class="label">Total: </span>
-                  <span><strong>AED ${totalPrice.toFixed(2)}</strong></span>
-                </div>
+            <div class="total-row">
+              <div class="info-row">
+                <span class="label">Total Amount:</span>
+                <span><strong>AED ${totalPrice.toFixed(2)}</strong></span>
               </div>
             </div>
             
             <p><strong>Next Steps:</strong></p>
             <ul>
               <li>Review the order details</li>
-              <li>Prepare the product for shipment</li>
+              <li>Prepare the products for shipment</li>
               <li>Update order status in the admin dashboard</li>
               <li>Customer will be notified of status changes automatically</li>
             </ul>

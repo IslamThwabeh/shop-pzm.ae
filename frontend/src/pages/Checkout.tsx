@@ -48,9 +48,12 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
     setError(null)
 
     try {
-      // Create order with single product (assuming one item for simplicity)
-      // In a real app, you'd handle multiple items
-      const firstItem = items[0]
+      // Prepare items array for backend
+      const orderItems = items.map(item => ({
+        product_id: item.id,
+        quantity: item.quantity,
+      }))
+
       const response = await fetch('https://test.pzm.ae/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -59,8 +62,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
           customer_email: formData.customerEmail,
           customer_phone: formData.customerPhone,
           customer_address: formData.customerAddress,
-          product_id: firstItem.id,
-          quantity: firstItem.quantity,
+          items: orderItems, // Send all items
           total_price: total,
           notes: formData.notes,
         }),
