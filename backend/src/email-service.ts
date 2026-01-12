@@ -443,9 +443,6 @@ export class EmailService {
             </div>
 
             <h3 style="color: #00A76F; margin-top: 20px;">Order Items (${orderItems.length})</h3>
-            ${itemsHtml}              <div class="detail-row">
-                <span class="label">Color: </span>
-            <h3 style="color: #00A76F; margin-top: 20px;">Order Items (${orderItems.length})</h3>
             ${itemsHtml}
               
             <div class="total-row">
