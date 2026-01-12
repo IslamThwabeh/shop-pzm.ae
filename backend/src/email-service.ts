@@ -80,6 +80,9 @@ export class EmailService {
     customerName: string,
     orderId: string,
     productModel: string,
+    productStorage: string,
+    productCondition: string,
+    productColor: string,
     quantity: number,
     totalPrice: number
   ): Promise<boolean> {
@@ -88,6 +91,9 @@ export class EmailService {
       customerName,
       displayId,
       productModel,
+      productStorage,
+      productCondition,
+      productColor,
       quantity,
       totalPrice
     );
@@ -108,6 +114,9 @@ export class EmailService {
     customerEmail: string,
     customerPhone: string,
     productModel: string,
+    productStorage: string,
+    productCondition: string,
+    productColor: string,
     quantity: number,
     totalPrice: number
   ): Promise<boolean> {
@@ -118,6 +127,9 @@ export class EmailService {
       customerEmail,
       customerPhone,
       productModel,
+      productStorage,
+      productCondition,
+      productColor,
       quantity,
       totalPrice
     );
@@ -172,6 +184,9 @@ export class EmailService {
     customerName: string,
     orderId: string,
     productModel: string,
+    productStorage: string,
+    productCondition: string,
+    productColor: string,
     quantity: number,
     totalPrice: number
   ): string {
@@ -224,6 +239,21 @@ export class EmailService {
               </div>
               
               <div class="detail-row">
+                <span class="label">Storage:</span>
+                <span class="value">${productStorage}</span>
+              </div>
+              
+              <div class="detail-row">
+                <span class="label">Condition:</span>
+                <span class="value">${productCondition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
+              </div>
+              
+              <div class="detail-row">
+                <span class="label">Color:</span>
+                <span class="value">${productColor}</span>
+              </div>
+              
+              <div class="detail-row">
                 <span class="label">Quantity:</span>
                 <span class="value">${quantity}</span>
               </div>
@@ -272,6 +302,9 @@ export class EmailService {
     customerEmail: string,
     customerPhone: string,
     productModel: string,
+    productStorage: string,
+    productCondition: string,
+    productColor: string,
     quantity: number,
     totalPrice: number
   ): string {
@@ -337,6 +370,21 @@ export class EmailService {
               <div class="detail-row">
                 <span class="label">Product:</span>
                 <span>${productModel}</span>
+              </div>
+              
+              <div class="detail-row">
+                <span class="label">Storage:</span>
+                <span>${productStorage}</span>
+              </div>
+              
+              <div class="detail-row">
+                <span class="label">Condition:</span>
+                <span>${productCondition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
+              </div>
+              
+              <div class="detail-row">
+                <span class="label">Color:</span>
+                <span>${productColor}</span>
               </div>
               
               <div class="detail-row">

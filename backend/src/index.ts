@@ -325,6 +325,9 @@ app.post('/api/orders', async (c) => {
         body.customer_name,
         created.id,
         product.model,
+        product.storage,
+        product.condition,
+        product.color,
         body.quantity,
         body.total_price
       );
@@ -334,6 +337,9 @@ app.post('/api/orders', async (c) => {
         body.customer_email,
         body.customer_phone,
         product.model,
+        product.storage,
+        product.condition,
+        product.color,
         body.quantity,
         body.total_price
       );
