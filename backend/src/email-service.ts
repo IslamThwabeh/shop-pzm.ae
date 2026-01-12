@@ -334,7 +334,7 @@ export class EmailService {
           </div>
           
           <div class="footer">
-            <p>© 2025 PZM Shop. All rights reserved.</p>
+            <p>© ${new Date().getFullYear()} PZM Shop. All rights reserved.</p>
             <p>This is an automated email. Please do not reply directly to this email.</p>
           </div>
         </div>
@@ -462,7 +462,7 @@ export class EmailService {
           </div>
           
           <div class="footer">
-            <p>© 2025 PZM Computers & Phones Store. All rights reserved.</p>
+            <p>© ${new Date().getFullYear()} PZM Computers & Phones Store. All rights reserved.</p>
           </div>
         </div>
       </body>
@@ -599,7 +599,7 @@ export class EmailService {
           </div>
           
           <div class="footer">
-            <p>© 2025 PZM Computers & Phones Store. All rights reserved.</p>
+            <p>© ${new Date().getFullYear()} PZM Computers & Phones Store. All rights reserved.</p>
             <p>This is an automated email. Please do not reply directly to this email.</p>
           </div>
         </div>
@@ -697,7 +697,7 @@ export class EmailService {
           </div>
           
           <div class="footer">
-            <p>© 2025 PZM Computers & Phones Store. All rights reserved.</p>
+            <p>© ${new Date().getFullYear()} PZM Computers & Phones Store. All rights reserved.</p>
             <p>This is an automated notification from the order management system.</p>
           </div>
         </div>
