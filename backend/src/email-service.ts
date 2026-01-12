@@ -249,10 +249,10 @@ export class EmailService {
           .header h1 { margin: 0; font-size: 28px; }
           .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
           .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
-          .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+          .detail-row { display: flex; justify-content: flex-start; padding: 10px 0; border-bottom: 1px solid #eee; }
           .detail-row:last-child { border-bottom: none; }
-          .label { font-weight: bold; color: #00A76F; }
-          .value { text-align: right; }
+          .label { font-weight: bold; color: #00A76F; min-width: 140px; }
+          .value { text-align: left; }
           .total-row { background: #f0f0f0; padding: 15px; border-radius: 8px; margin-top: 15px; }
           .total-row .detail-row { border-bottom: none; }
           .total-row .label { font-size: 18px; color: #333; }
@@ -276,38 +276,38 @@ export class EmailService {
             
             <div class="order-details">
               <div class="detail-row">
-                <span class="label">Order ID: </span>
+                <span class="label">Order ID:</span>
                 <span class="value"><strong>${orderId}</strong></span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Product: </span>
+                <span class="label">Product:</span>
                 <span class="value">${productModel}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Storage: </span>
+                <span class="label">Storage:</span>
                 <span class="value">${productStorage}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Condition: </span>
+                <span class="label">Condition:</span>
                 <span class="value">${productCondition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Color: </span>
+                <span class="label">Color:</span>
                 <span class="value">${productColor}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Quantity: </span>
+                <span class="label">Quantity:</span>
                 <span class="value">${quantity}</span>
               </div>
               
               <div class="total-row">
                 <div class="detail-row">
-                  <span class="label">Total Amount: </span>
+                  <span class="label">Total Amount:</span>
                   <span class="value">AED ${totalPrice.toFixed(2)}</span>
                 </div>
               </div>
@@ -534,9 +534,9 @@ export class EmailService {
           .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
           .status-message { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid ${info.color}; }
           .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
-          .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+          .detail-row { display: flex; justify-content: flex-start; padding: 10px 0; border-bottom: 1px solid #eee; }
           .detail-row:last-child { border-bottom: none; }
-          .label { font-weight: bold; color: ${info.color}; }
+          .label { font-weight: bold; color: ${info.color}; min-width: 140px; }
           .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
         </style>
       </head>
@@ -556,32 +556,32 @@ export class EmailService {
             
             <div class="order-details">
               <div class="detail-row">
-                <span class="label">Order ID: </span>
+                <span class="label">Order ID:</span>
                 <span><strong>${orderId}</strong></span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Product: </span>
+                <span class="label">Product:</span>
                 <span>${productModel}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Storage: </span>
+                <span class="label">Storage:</span>
                 <span>${productStorage}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Condition: </span>
+                <span class="label">Condition:</span>
                 <span>${productCondition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Color: </span>
+                <span class="label">Color:</span>
                 <span>${productColor}</span>
               </div>
               
               <div class="detail-row">
-                <span class="label">Status: </span>
+                <span class="label">Status:</span>
                 <span><strong>${status.replace(/_/g, ' ').toUpperCase()}</strong></span>
               </div>
             </div>
