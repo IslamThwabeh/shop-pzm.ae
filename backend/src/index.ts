@@ -132,27 +132,43 @@ app.post('/api/products', async (c) => {
       return c.json({ error: 'Forbidden', status: 403 }, 403);
     }
 
-    const body = await parseRequestBody(c);
-    if (!body) {
-      return c.json({ error: 'Invalid request body', status: 400 }, 400);
+    // Parse FormData for file upload
+    const formData = await c.req.formData();
+    const model = formData.get('model') as string;
+    const storage = formData.get('storage') as string;
+    const condition = formData.get('condition') as string;
+    const color = formData.get('color') as string;
+    const price = parseFloat(formData.get('price') as string);
+    const quantity = parseInt(formData.get('quantity') as string) || 0;
+    const description = formData.get('description') as string || '';
+    const imageFile = formData.get('image') as File | null;
+
+    // Validate required fields
+    if (!model || !storage || !condition || !color || !price) {
+      return c.json({ error: 'Missing required fields: model, storage, condition, color, price', status: 400 }, 400);
     }
 
-    const validation = validateRequired(body, ['model', 'storage', 'condition', 'color', 'price']);
-    if (validation) {
-      return c.json({ error: validation, status: 400 }, 400);
+    // Upload image if provided
+    let imageUrl = '';
+    if (imageFile && imageFile.size > 0) {
+      const storageService = new StorageService(c.env.BUCKET);
+      const uploadResult = await storageService.uploadFile(imageFile, 'products');
+      if (uploadResult) {
+        imageUrl = uploadResult.url;
+      }
     }
 
     const db = new Database(c.env.DB);
     const product: Product = {
       id: generateId('prod'),
-      model: body.model,
-      storage: body.storage,
-      condition: body.condition,
-      color: body.color,
-      price: body.price,
-      description: body.description,
-      quantity: body.quantity || 0,
-      image_url: body.image_url,
+      model,
+      storage,
+      condition: condition as 'new' | 'used',
+      color,
+      price,
+      description,
+      quantity,
+      image_url: imageUrl,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -182,13 +198,39 @@ app.put('/api/products/:id', async (c) => {
       return c.json({ error: 'Forbidden', status: 403 }, 403);
     }
 
-    const body = await parseRequestBody(c);
-    if (!body) {
-      return c.json({ error: 'Invalid request body', status: 400 }, 400);
+    // Parse FormData for file upload
+    const formData = await c.req.formData();
+    const updates: Partial<Product> = {};
+
+    // Parse form fields
+    const model = formData.get('model') as string;
+    const storage = formData.get('storage') as string;
+    const condition = formData.get('condition') as string;
+    const color = formData.get('color') as string;
+    const price = formData.get('price') as string;
+    const quantity = formData.get('quantity') as string;
+    const description = formData.get('description') as string;
+    const imageFile = formData.get('image') as File | null;
+
+    if (model) updates.model = model;
+    if (storage) updates.storage = storage;
+    if (condition) updates.condition = condition as 'new' | 'used';
+    if (color) updates.color = color;
+    if (price) updates.price = parseFloat(price);
+    if (quantity) updates.quantity = parseInt(quantity);
+    if (description !== null) updates.description = description;
+
+    // Upload new image if provided
+    if (imageFile && imageFile.size > 0) {
+      const storageService = new StorageService(c.env.BUCKET);
+      const uploadResult = await storageService.uploadFile(imageFile, 'products');
+      if (uploadResult) {
+        updates.image_url = uploadResult.url;
+      }
     }
 
     const db = new Database(c.env.DB);
-    const product = await db.updateProduct(productId, body);
+    const product = await db.updateProduct(productId, updates);
 
     if (!product) {
       return c.json({ error: 'Product not found', status: 404 }, 404);
