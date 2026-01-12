@@ -26,7 +26,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Shopping Cart</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-900">Shopping Cart</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
@@ -50,7 +50,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100 font-bold text-lg"
+                      className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100 font-bold text-lg text-gray-900"
                     >
                       -
                     </button>
@@ -63,7 +63,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
                     />
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100 font-bold text-lg"
+                      className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100 font-bold text-lg text-gray-900"
                     >
                       +
                     </button>
@@ -72,7 +72,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
                   {/* Subtotal */}
                   <div className="text-right min-w-[100px]">
                     <p className="text-sm text-gray-600">Subtotal</p>
-                    <p className="text-lg font-semibold">AED {(item.price * item.quantity).toFixed(2)}</p>
+                    <p className="text-lg font-semibold text-gray-900">AED {(item.price * item.quantity).toFixed(2)}</p>
                   </div>
 
                   {/* Remove Button */}
@@ -117,7 +117,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
             </div>
 
             <div className="flex justify-between items-center mb-6">
-              <span className="text-lg font-bold">Total</span>
+              <span className="text-lg font-bold text-gray-900">Total</span>
               <span className="text-3xl font-bold text-primary">AED {total.toFixed(2)}</span>
             </div>
 
