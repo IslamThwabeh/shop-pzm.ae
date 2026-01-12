@@ -292,7 +292,14 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                         {paginatedOrders.map((order) => (
                           <tr key={order.id} className="hover:bg-slate-700/50 transition-colors">
                             <td className="px-6 py-4 text-sm font-mono text-slate-300">{formatOrderId(order.id)}</td>
-                            <td className="px-6 py-4 text-sm text-slate-300">{order.customer_name}</td>
+                            <td className="px-6 py-4 text-sm">
+                              <button
+                                onClick={() => setSelectedOrder(order)}
+                                className="text-[#00A76F] hover:text-[#16a34a] font-medium transition-colors text-left"
+                              >
+                                {order.customer_name}
+                              </button>
+                            </td>
                             <td className="px-6 py-4 text-sm font-semibold text-green-400">
                               AED {order.total_price.toFixed(2)}
                             </td>
@@ -384,57 +391,160 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         </div>
       </div>
 
-      {/* Modal for managing order */}
+      {/* Sliding Side Panel for Order Details */}
       {selectedOrder && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-800 rounded-lg shadow-xl p-8 w-full max-w-lg border border-slate-700">
-            <h2 className="text-2xl font-bold text-white mb-6">Manage Order {formatOrderId(selectedOrder.id)}</h2>
-            
-            <div className="space-y-4 mb-6">
-              <div>
-                <p className="text-slate-400 text-sm">Customer</p>
-                <p className="text-white font-medium">{selectedOrder.customer_name}</p>
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+            onClick={() => setSelectedOrder(null)}
+          />
+          
+          {/* Side Panel */}
+          <div className="fixed top-0 right-0 h-full w-full max-w-2xl bg-slate-800 shadow-2xl z-50 overflow-y-auto transform transition-transform">
+            <div className="p-8">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-8 pb-6 border-b border-slate-700">
+                <div>
+                  <h2 className="text-3xl font-bold text-white mb-1">Order Details</h2>
+                  <p className="text-[#00A76F] font-mono text-lg">{formatOrderId(selectedOrder.id)}</p>
+                </div>
+                <button
+                  onClick={() => setSelectedOrder(null)}
+                  className="text-slate-400 hover:text-white transition-colors p-2"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
-              <div>
-                <p className="text-slate-400 text-sm">Current Status</p>
-                <p className="text-white font-medium capitalize">{selectedOrder.status.replace(/_/g, ' ')}</p>
-              </div>
-              <div>
-                <p className="text-slate-400 text-sm">Total Amount</p>
-                <p className="text-green-400 font-bold text-lg">AED {selectedOrder.total_price.toFixed(2)}</p>
-              </div>
-            </div>
 
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-slate-300 mb-2">Update Status</label>
-              <select
-                onChange={(e) => {
-                  if (e.target.value) {
-                    handleUpdateOrderStatus(selectedOrder.id, e.target.value);
-                  }
-                }}
-                value=""
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00A76F]"
+              {/* Client Information Section */}
+              <div className="mb-8">
+                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-[#00A76F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  Client Information
+                </h3>
+                <div className="bg-slate-900/50 rounded-lg p-6 space-y-4">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1 font-medium">Full Name</p>
+                      <p className="text-white text-lg font-semibold">{selectedOrder.customer_name}</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1 font-medium">Phone Number</p>
+                      <p className="text-white text-lg font-semibold">{selectedOrder.customer_phone}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-slate-400 text-sm mb-1 font-medium">Email Address</p>
+                    <p className="text-white text-lg font-semibold break-all">{selectedOrder.customer_email}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400 text-sm mb-1 font-medium">Delivery Address</p>
+                    <p className="text-white text-lg leading-relaxed">{selectedOrder.customer_address}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Information Section */}
+              <div className="mb-8">
+                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-[#00A76F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  Order Information
+                </h3>
+                <div className="bg-slate-900/50 rounded-lg p-6 space-y-4">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1 font-medium">Order Date</p>
+                      <p className="text-white text-lg">{new Date(selectedOrder.created_at).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1 font-medium">Payment Method</p>
+                      <p className="text-white text-lg capitalize">{selectedOrder.payment_method}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1 font-medium">Current Status</p>
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
+                          selectedOrder.status === 'pending'
+                            ? 'bg-yellow-500/20 text-yellow-300'
+                            : selectedOrder.status === 'confirmed'
+                            ? 'bg-blue-500/20 text-blue-300'
+                            : selectedOrder.status === 'in_progress'
+                            ? 'bg-purple-500/20 text-purple-300'
+                            : selectedOrder.status === 'ready_for_delivery'
+                            ? 'bg-orange-500/20 text-orange-300'
+                            : selectedOrder.status === 'shipped'
+                            ? 'bg-indigo-500/20 text-indigo-300'
+                            : selectedOrder.status === 'delivered'
+                            ? 'bg-green-500/20 text-green-300'
+                            : 'bg-red-500/20 text-red-300'
+                        }`}
+                      >
+                        {selectedOrder.status.replace(/_/g, ' ')}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1 font-medium">Total Amount</p>
+                      <p className="text-[#00A76F] font-bold text-2xl">AED {selectedOrder.total_price.toFixed(2)}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Update Status Section */}
+              <div className="mb-8">
+                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-[#00A76F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Update Order Status
+                </h3>
+                <div className="bg-slate-900/50 rounded-lg p-6">
+                  <label className="block text-sm font-medium text-slate-300 mb-3">Select New Status</label>
+                  <select
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        handleUpdateOrderStatus(selectedOrder.id, e.target.value);
+                      }
+                    }}
+                    value=""
+                    className="w-full px-4 py-3 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00A76F] text-base"
+                  >
+                    <option value="">Select new status</option>
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="ready_for_delivery">Ready for Delivery</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                  <p className="text-slate-400 text-sm mt-3">Selecting a status will automatically update the order and send notifications.</p>
+                </div>
+              </div>
+
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedOrder(null)}
+                className="w-full bg-slate-700 hover:bg-slate-600 text-white py-3 rounded-lg font-medium transition-colors text-lg"
               >
-                <option value="">Select new status</option>
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="in_progress">In Progress</option>
-                <option value="ready_for_delivery">Ready for Delivery</option>
-                <option value="shipped">Shipped</option>
-                <option value="delivered">Delivered</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
+                Close Panel
+              </button>
             </div>
-
-            <button
-              onClick={() => setSelectedOrder(null)}
-              className="w-full bg-slate-700 hover:bg-slate-600 text-white py-2 rounded-lg font-medium transition-colors"
-            >
-              Close
-            </button>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
