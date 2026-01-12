@@ -28,7 +28,7 @@ export interface Order {
   quantity?: number // Legacy: for backward compatibility
   total_price: number
   payment_method: string
-  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
+  status: 'pending' | 'confirmed' | 'in_progress' | 'ready_for_delivery' | 'shipped' | 'delivered' | 'cancelled'
   notes?: string
   created_at: string
   updated_at: string
