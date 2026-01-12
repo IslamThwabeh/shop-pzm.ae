@@ -122,6 +122,9 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       ? orders
       : orders.filter((order) => order.status === statusFilter);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 10;
+
   const stats = {
     total: orders.length,
     pending: orders.filter((o) => o.status === 'pending').length,
@@ -130,16 +133,31 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     readyForDelivery: orders.filter((o) => o.status === 'ready_for_delivery').length,
     shipped: orders.filter((o) => o.status === 'shipped').length,
     delivered: orders.filter((o) => o.status === 'delivered').length,
+    cancelled: orders.filter((o) => o.status === 'cancelled').length,
   };
+
+  // Pagination
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+  const startIndex = (currentPage - 1) * ordersPerPage;
+  const endIndex = startIndex + ordersPerPage;
+  const paginatedOrders = filteredOrders.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+      <header className="bg-gradient-to-r from-[#00A76F] to-[#16a34a] text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">PZM Admin Panel</h1>
-            <p className="text-blue-100 text-sm mt-1">Manage your store efficiently</p>
+          <div className="flex items-center gap-4">
+            <img src="/images/Header/logo.svg" alt="PZM Logo" className="h-12" />
+            <div>
+              <h1 className="text-3xl font-bold">PZM Admin Panel</h1>
+              <p className="text-green-100 text-sm mt-1">Manage your store efficiently</p>
+            </div>
           </div>
           <button
             onClick={handleLogout}
@@ -159,22 +177,38 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
-            <p className="text-blue-100 text-sm">Total Orders</p>
-            <p className="text-4xl font-bold mt-2">{stats.total}</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
+          <div className="bg-gradient-to-br from-[#00A76F] to-[#16a34a] rounded-lg shadow-lg p-4 text-white">
+            <p className="text-green-100 text-xs">Total Orders</p>
+            <p className="text-3xl font-bold mt-2">{stats.total}</p>
           </div>
-          <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg p-6 text-white">
-            <p className="text-yellow-100 text-sm">Pending</p>
-            <p className="text-4xl font-bold mt-2">{stats.pending}</p>
+          <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg p-4 text-white">
+            <p className="text-yellow-100 text-xs">Pending</p>
+            <p className="text-3xl font-bold mt-2">{stats.pending}</p>
           </div>
-          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
-            <p className="text-purple-100 text-sm">In Progress</p>
-            <p className="text-4xl font-bold mt-2">{stats.inProgress}</p>
+          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-4 text-white">
+            <p className="text-blue-100 text-xs">Confirmed</p>
+            <p className="text-3xl font-bold mt-2">{stats.confirmed}</p>
           </div>
-          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
-            <p className="text-green-100 text-sm">Delivered</p>
-            <p className="text-4xl font-bold mt-2">{stats.delivered}</p>
+          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-4 text-white">
+            <p className="text-purple-100 text-xs">In Progress</p>
+            <p className="text-3xl font-bold mt-2">{stats.inProgress}</p>
+          </div>
+          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-lg p-4 text-white">
+            <p className="text-orange-100 text-xs">Ready</p>
+            <p className="text-3xl font-bold mt-2">{stats.readyForDelivery}</p>
+          </div>
+          <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-4 text-white">
+            <p className="text-indigo-100 text-xs">Shipped</p>
+            <p className="text-3xl font-bold mt-2">{stats.shipped}</p>
+          </div>
+          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-4 text-white">
+            <p className="text-green-100 text-xs">Delivered</p>
+            <p className="text-3xl font-bold mt-2">{stats.delivered}</p>
+          </div>
+          <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-lg p-4 text-white">
+            <p className="text-red-100 text-xs">Cancelled</p>
+            <p className="text-3xl font-bold mt-2">{stats.cancelled}</p>
           </div>
         </div>
 
@@ -185,7 +219,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               onClick={() => setActiveTab('orders')}
               className={`flex-1 px-6 py-4 font-medium transition-colors ${
                 activeTab === 'orders'
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-[#00A76F] text-white'
                   : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
               }`}
             >
@@ -195,7 +229,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               onClick={() => setActiveTab('products')}
               className={`flex-1 px-6 py-4 font-medium transition-colors ${
                 activeTab === 'products'
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-[#00A76F] text-white'
                   : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
               }`}
             >
@@ -225,7 +259,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
                   <button
                     onClick={loadOrders}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#00A76F] hover:bg-[#16a34a] text-white rounded-lg transition-colors font-medium"
                   >
                     <RefreshCw size={20} />
                     Refresh
@@ -255,7 +289,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-700">
-                        {filteredOrders.map((order) => (
+                        {paginatedOrders.map((order) => (
                           <tr key={order.id} className="hover:bg-slate-700/50 transition-colors">
                             <td className="px-6 py-4 text-sm font-mono text-slate-300">{formatOrderId(order.id)}</td>
                             <td className="px-6 py-4 text-sm text-slate-300">{order.customer_name}</td>
@@ -289,7 +323,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                             <td className="px-6 py-4 text-sm">
                               <button
                                 onClick={() => setSelectedOrder(order)}
-                                className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                                className="text-[#00A76F] hover:text-[#16a34a] font-medium transition-colors"
                               >
                                 Manage
                               </button>
@@ -298,6 +332,46 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                         ))}
                       </tbody>
                     </table>
+                    
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                      <div className="mt-6 flex items-center justify-between">
+                        <p className="text-sm text-slate-400">
+                          Showing {startIndex + 1} to {Math.min(endIndex, filteredOrders.length)} of {filteredOrders.length} orders
+                        </p>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 bg-slate-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 transition-colors"
+                          >
+                            Previous
+                          </button>
+                          <div className="flex gap-1">
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                              <button
+                                key={page}
+                                onClick={() => setCurrentPage(page)}
+                                className={`px-3 py-2 rounded-lg transition-colors ${
+                                  currentPage === page
+                                    ? 'bg-[#00A76F] text-white'
+                                    : 'bg-slate-700 text-white hover:bg-slate-600'
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            ))}
+                          </div>
+                          <button
+                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 bg-slate-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 transition-colors"
+                          >
+                            Next
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -334,8 +408,13 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
             <div className="mb-6">
               <label className="block text-sm font-medium text-slate-300 mb-2">Update Status</label>
               <select
-                onChange={(e) => handleUpdateOrderStatus(selectedOrder.id, e.target.value)}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => {
+                  if (e.target.value) {
+                    handleUpdateOrderStatus(selectedOrder.id, e.target.value);
+                  }
+                }}
+                value=""
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00A76F]"
               >
                 <option value="">Select new status</option>
                 <option value="pending">Pending</option>
