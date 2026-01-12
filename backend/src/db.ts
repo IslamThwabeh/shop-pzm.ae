@@ -250,7 +250,8 @@ export class Database {
     try {
       const result = await this.db
         .prepare(
-          `SELECT oi.*, p.model, p.storage, p.condition, p.color, p.image_url
+          `SELECT oi.id, oi.order_id, oi.product_id, oi.quantity, oi.unit_price, oi.subtotal, oi.created_at,
+                  p.id as p_id, p.model, p.storage, p.condition, p.color, p.image_url, p.price
            FROM order_items oi
            LEFT JOIN products p ON oi.product_id = p.id
            WHERE oi.order_id = ?
@@ -270,14 +271,14 @@ export class Database {
         unit_price: item.unit_price,
         subtotal: item.subtotal,
         created_at: item.created_at,
-        product: item.model ? {
-          id: item.product_id,
+        product: item.p_id ? {
+          id: item.p_id,
           model: item.model,
           storage: item.storage,
           condition: item.condition,
           color: item.color,
           image_url: item.image_url,
-          price: item.unit_price,
+          price: item.price,
           quantity: 0, // Not relevant in this context
         } as Product : undefined
       }));

@@ -304,14 +304,21 @@ app.post('/api/orders', async (c) => {
     const db = new Database(c.env.DB);
     const orderId = generateId('ord');
     
+    // For multi-item orders, use first item's product_id for backward compatibility with orders table
+    const firstItem = body.items[0];
+    const firstProduct = await db.getProduct(firstItem.product_id);
+    if (!firstProduct) {
+      return c.json({ error: `Product ${firstItem.product_id} not found`, status: 400 }, 400);
+    }
+    
     const order: Order = {
       id: orderId,
       customer_name: body.customer_name,
       customer_email: body.customer_email,
       customer_phone: body.customer_phone,
       customer_address: body.customer_address,
-      product_id: null, // Legacy field, not used for multi-item orders
-      quantity: null, // Legacy field
+      product_id: firstItem.product_id, // Store first product for backward compatibility
+      quantity: firstItem.quantity, // Store first item quantity
       total_price: body.total_price,
       payment_method: 'cash_on_delivery',
       status: 'pending',
