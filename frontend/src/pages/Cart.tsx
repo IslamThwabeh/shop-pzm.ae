@@ -15,7 +15,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
         <p className="text-gray-600 mb-6">Your cart is empty</p>
         <button
           onClick={onContinueShopping}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-brandGreenDark"
         >
           <ArrowLeft size={20} />
           Continue Shopping
@@ -50,9 +50,9 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="px-2 py-1 border border-gray-300 rounded hover:bg-gray-100"
+                      className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100 font-bold text-lg"
                     >
-                      −
+                      -
                     </button>
                     <input
                       type="number"
@@ -63,7 +63,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
                     />
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="px-2 py-1 border border-gray-300 rounded hover:bg-gray-100"
+                      className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100 font-bold text-lg"
                     >
                       +
                     </button>
@@ -123,13 +123,13 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
 
             <button
               onClick={onCheckout}
-              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors"
+              className="w-full py-3 bg-primary text-white rounded-lg hover:bg-brandGreenDark font-semibold transition-colors"
             >
               Proceed to Checkout
             </button>
 
-            <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
-              <p className="text-xs text-blue-900">
+            <div className="mt-4 p-3 bg-green-50 rounded border border-primary">
+              <p className="text-xs text-primary font-semibold">
                 <strong>✓ Cash on Delivery</strong> - Pay when you receive your order
               </p>
             </div>

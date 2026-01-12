@@ -74,6 +74,15 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
       const data = await response.json()
       const orderId = data.data?.id || data.id
 
+      // Save order details to localStorage for confirmation page
+      localStorage.setItem('lastOrderDetails', JSON.stringify({
+        orderId,
+        items,
+        total,
+        customerName: formData.customerName,
+        customerEmail: formData.customerEmail,
+      }))
+
       clearCart()
       onSuccess(orderId)
     } catch (err) {
