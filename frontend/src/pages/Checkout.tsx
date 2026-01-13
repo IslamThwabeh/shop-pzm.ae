@@ -31,6 +31,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
     if (!formData.customerPhone.trim()) return 'Phone is required'
     if (!/^\+?[\d\s\-()]{7,}$/.test(formData.customerPhone)) return 'Invalid phone format'
     if (!formData.customerAddress.trim()) return 'Address is required'
+    if (!/dubai/i.test(formData.customerAddress)) return 'We currently only deliver to Dubai. Please enter a Dubai address.'
     if (items.length === 0) return 'Cart is empty'
     return null
   }
@@ -186,17 +187,18 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
               {/* Address */}
               <div>
                 <label className="block text-sm font-semibold text-primary mb-2">
-                  Delivery Address *
+                  Delivery Address (Dubai) *
                 </label>
                 <textarea
                   name="customerAddress"
                   value={formData.customerAddress}
                   onChange={handleChange}
-                  placeholder="Enter your full delivery address"
+                  placeholder="Enter your full delivery address in Dubai"
                   rows={3}
                   className="w-full px-4 py-2 border border-brandBorder rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-brandTextDark placeholder-brandTextMedium"
                   required
                 />
+                <p className="text-xs text-orange-600 mt-2">⚠️ We currently only deliver within Dubai</p>
               </div>
 
               {/* Notes */}
@@ -275,9 +277,18 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
                 <span>Shipping</span>
                 <span className="text-primary font-semibold">Free</span>
               </div>
-              <div className="flex justify-between text-brandTextMedium">
-                <span>Tax</span>
-                <span>AED 0.00</span>
+            </div>
+
+            {/* VAT Breakdown */}
+            <div className="space-y-2 mb-6 pb-6 border-b bg-blue-50 p-4 rounded-lg">
+              <h3 className="font-semibold text-primary mb-3 text-sm">Amount Breakdown</h3>
+              <div className="flex justify-between text-sm">
+                <span className="text-brandTextMedium">Mobile Price (95%)</span>
+                <span className="font-semibold text-brandTextDark">AED {(total * 0.95).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-brandTextMedium">VAT (5%)</span>
+                <span className="font-semibold text-brandTextDark">AED {(total * 0.05).toFixed(2)}</span>
               </div>
             </div>
 

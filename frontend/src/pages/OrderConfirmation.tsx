@@ -124,6 +124,19 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
               <span className="text-xl font-bold text-brandTextDark">Total Amount:</span>
               <span className="text-2xl font-bold text-primary">AED {orderDetails.total.toFixed(2)}</span>
             </div>
+            
+            {/* VAT Breakdown */}
+            <div className="mt-6 pt-6 border-t bg-blue-50 p-4 rounded-lg">
+              <h3 className="font-semibold text-primary mb-3 text-sm">Amount Breakdown</h3>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-brandTextMedium">Mobile Price (95%)</span>
+                <span className="font-semibold text-brandTextDark">AED {(orderDetails.total * 0.95).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-brandTextMedium">VAT (5%)</span>
+                <span className="font-semibold text-brandTextDark">AED {(orderDetails.total * 0.05).toFixed(2)}</span>
+              </div>
+            </div>
           </div>
         )}
 

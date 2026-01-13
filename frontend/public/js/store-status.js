@@ -1,12 +1,12 @@
 // Hardcoded fallback hours
 const FALLBACK_WEEKDAY_TEXT = [
-  "Monday: 9:30 AM – 11:00 PM",
-  "Tuesday: 9:30 AM – 11:00 PM",
-  "Wednesday: 9:30 AM – 11:00 PM",
-  "Thursday: 9:30 AM – 11:00 PM",
-  "Friday: 9:30 AM – 11:00 PM",
-  "Saturday: 9:30 AM – 11:00 PM",
-  "Sunday: 9:30 AM – 1:00 AM"
+  "Monday: 8 AM – 12 AM",
+  "Tuesday: 8 AM – 12 AM",
+  "Wednesday: 8 AM – 12 AM",
+  "Thursday: 8 AM – 12 AM",
+  "Friday: 9:30 AM – 12 AM",
+  "Saturday: 7 AM – 1 AM",
+  "Sunday: 7 AM – 1 AM"
 ];
 
 async function fetchBusinessHours() {

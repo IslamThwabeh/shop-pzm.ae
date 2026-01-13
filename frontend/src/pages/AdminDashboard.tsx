@@ -19,6 +19,20 @@ interface Order {
   status: string;
   created_at: string;
   updated_at: string;
+  items?: Array<{
+    id: string;
+    product_id: string;
+    quantity: number;
+    unit_price: number;
+    subtotal: number;
+    product?: {
+      model: string;
+      storage: string;
+      color: string;
+      condition: string;
+      image_url?: string;
+    };
+  }>;
 }
 
 export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
@@ -27,7 +41,8 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'orders' | 'products'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'reports'>('orders');
+  const [selectedMonth, setSelectedMonth] = useState<string>(new Date().toISOString().slice(0, 7));
 
   const formatOrderId = (id: string) => {
     // Full ID format: ord-[timestamp]-[random 6 chars]
@@ -235,6 +250,16 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
             >
               📱 Products Management
             </button>
+            <button
+              onClick={() => setActiveTab('reports')}
+              className={`flex-1 px-6 py-4 font-medium transition-colors ${
+                activeTab === 'reports'
+                  ? 'bg-[#00A76F] text-white'
+                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              }`}
+            >
+              📊 Monthly Reports
+            </button>
           </div>
 
           <div className="p-6">
@@ -387,6 +412,157 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
             {activeTab === 'products' && (
               <ProductManagement token={localStorage.getItem('adminToken') || ''} />
             )}
+
+            {activeTab === 'reports' && (
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-6">Monthly Reports</h2>
+                
+                {/* Month Selection */}
+                <div className="mb-8">
+                  <label className="block text-sm font-medium text-slate-300 mb-3">Select Month</label>
+                  <input
+                    type="month"
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    className="px-4 py-3 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00A76F]"
+                  />
+                </div>
+
+                {/* Monthly Report Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                  {(() => {
+                    const [year, month] = selectedMonth.split('-');
+                    const monthOrders = orders.filter(order => {
+                      const orderDate = new Date(order.created_at);
+                      return orderDate.getFullYear() === parseInt(year) && 
+                             (orderDate.getMonth() + 1).toString().padStart(2, '0') === month;
+                    });
+
+                    const totalRevenue = monthOrders.reduce((sum, order) => sum + order.total_price, 0);
+                    const deliveredOrders = monthOrders.filter(o => o.status === 'delivered').length;
+                    const pendingOrders = monthOrders.filter(o => o.status === 'pending').length;
+                    const averageOrderValue = monthOrders.length > 0 ? totalRevenue / monthOrders.length : 0;
+
+                    return (
+                      <>
+                        <div className="bg-gradient-to-br from-[#00A76F] to-[#16a34a] rounded-lg shadow-lg p-6 text-white">
+                          <p className="text-green-100 text-sm font-medium mb-2">Total Orders</p>
+                          <p className="text-4xl font-bold">{monthOrders.length}</p>
+                          <p className="text-xs text-green-100 mt-2">In {new Date(selectedMonth + '-01').toLocaleString('en-US', { month: 'long', year: 'numeric' })}</p>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+                          <p className="text-blue-100 text-sm font-medium mb-2">Total Revenue</p>
+                          <p className="text-4xl font-bold">AED {totalRevenue.toFixed(2)}</p>
+                          <p className="text-xs text-blue-100 mt-2">Monthly earnings</p>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+                          <p className="text-green-100 text-sm font-medium mb-2">Delivered Orders</p>
+                          <p className="text-4xl font-bold">{deliveredOrders}</p>
+                          <p className="text-xs text-green-100 mt-2">{monthOrders.length > 0 ? ((deliveredOrders / monthOrders.length) * 100).toFixed(1) : 0}% completion</p>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+                          <p className="text-purple-100 text-sm font-medium mb-2">Average Order Value</p>
+                          <p className="text-4xl font-bold">AED {averageOrderValue.toFixed(2)}</p>
+                          <p className="text-xs text-purple-100 mt-2">Per order</p>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+
+                {/* Detailed Monthly Orders Table */}
+                <div className="bg-slate-700 rounded-lg shadow-lg overflow-hidden">
+                  <div className="p-6 border-b border-slate-600">
+                    <h3 className="text-xl font-bold text-white">Orders in {new Date(selectedMonth + '-01').toLocaleString('en-US', { month: 'long', year: 'numeric' })}</h3>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-slate-600">
+                        <tr>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Order ID</th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Customer</th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Amount</th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Status</th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Date</th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-600">
+                        {(() => {
+                          const [year, month] = selectedMonth.split('-');
+                          const monthOrders = orders.filter(order => {
+                            const orderDate = new Date(order.created_at);
+                            return orderDate.getFullYear() === parseInt(year) && 
+                                   (orderDate.getMonth() + 1).toString().padStart(2, '0') === month;
+                          });
+
+                          return monthOrders.length === 0 ? (
+                            <tr>
+                              <td colSpan={6} className="px-6 py-8 text-center text-slate-400">
+                                No orders found for this month
+                              </td>
+                            </tr>
+                          ) : (
+                            monthOrders.map((order) => (
+                              <tr key={order.id} className="hover:bg-slate-700/50 transition-colors">
+                                <td className="px-6 py-4 text-sm font-mono text-slate-300">{formatOrderId(order.id)}</td>
+                                <td className="px-6 py-4 text-sm">
+                                  <button
+                                    onClick={() => setSelectedOrder(order)}
+                                    className="text-[#00A76F] hover:text-[#16a34a] font-medium transition-colors"
+                                  >
+                                    {order.customer_name}
+                                  </button>
+                                </td>
+                                <td className="px-6 py-4 text-sm font-semibold text-green-400">
+                                  AED {order.total_price.toFixed(2)}
+                                </td>
+                                <td className="px-6 py-4 text-sm">
+                                  <span
+                                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                      order.status === 'pending'
+                                        ? 'bg-yellow-500/20 text-yellow-300'
+                                        : order.status === 'confirmed'
+                                        ? 'bg-blue-500/20 text-blue-300'
+                                        : order.status === 'in_progress'
+                                        ? 'bg-purple-500/20 text-purple-300'
+                                        : order.status === 'ready_for_delivery'
+                                        ? 'bg-orange-500/20 text-orange-300'
+                                        : order.status === 'shipped'
+                                        ? 'bg-indigo-500/20 text-indigo-300'
+                                        : order.status === 'delivered'
+                                        ? 'bg-green-500/20 text-green-300'
+                                        : 'bg-red-500/20 text-red-300'
+                                    }`}
+                                  >
+                                    {order.status.replace(/_/g, ' ')}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 text-sm text-slate-400">
+                                  {new Date(order.created_at).toLocaleDateString()}
+                                </td>
+                                <td className="px-6 py-4 text-sm">
+                                  <button
+                                    onClick={() => setSelectedOrder(order)}
+                                    className="text-[#00A76F] hover:text-[#16a34a] font-medium transition-colors"
+                                  >
+                                    View
+                                  </button>
+                                </td>
+                              </tr>
+                            ))
+                          );
+                        })()}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -502,6 +678,59 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   </div>
                 </div>
               </div>
+
+              {/* Order Items Section */}
+              {selectedOrder.items && selectedOrder.items.length > 0 && (
+                <div className="mb-8">
+                  <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-[#00A76F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    Order Items ({selectedOrder.items.length})
+                  </h3>
+                  <div className="bg-slate-900/50 rounded-lg p-6 space-y-4">
+                    {selectedOrder.items.map((item, index) => (
+                      <div key={item.id} className="border-b border-slate-700 pb-4 last:border-b-0 last:pb-0">
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex-1">
+                            {item.product && (
+                              <>
+                                <h4 className="text-white font-semibold text-lg">{item.product.model}</h4>
+                                <div className="grid grid-cols-2 gap-3 mt-2 text-sm">
+                                  <div>
+                                    <span className="text-slate-400">Storage:</span>
+                                    <span className="ml-2 text-white font-medium">{item.product.storage}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-slate-400">Color:</span>
+                                    <span className="ml-2 text-white font-medium">{item.product.color}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-slate-400">Condition:</span>
+                                    <span className="ml-2 text-white font-medium">{item.product.condition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-slate-400">Quantity:</span>
+                                    <span className="ml-2 text-white font-medium">{item.quantity}</span>
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            <p className="text-slate-400 text-sm">Unit Price</p>
+                            <p className="text-[#00A76F] font-bold text-lg">AED {item.unit_price.toFixed(2)}</p>
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-center pt-3 border-t border-slate-600/50">
+                          <span className="text-slate-400">Subtotal ({item.quantity} item{item.quantity > 1 ? 's' : ''}):</span>
+                          <span className="text-white font-semibold text-lg">AED {item.subtotal.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Update Status Section */}
               <div className="mb-8">

@@ -188,23 +188,23 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-700">Monday</span>
-                    <span className="text-green-600 font-semibold">08:00 AM – 11:00 PM</span>
+                    <span className="text-green-600 font-semibold">08:00 AM – 12:00 AM</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-700">Tuesday</span>
-                    <span className="text-green-600 font-semibold">08:00 AM – 11:00 PM</span>
+                    <span className="text-green-600 font-semibold">08:00 AM – 12:00 AM</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-700">Wednesday</span>
-                    <span className="text-green-600 font-semibold">08:00 AM – 11:00 PM</span>
+                    <span className="text-green-600 font-semibold">08:00 AM – 12:00 AM</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-700">Thursday</span>
-                    <span className="text-green-600 font-semibold">08:00 AM – 11:00 PM</span>
+                    <span className="text-green-600 font-semibold">08:00 AM – 12:00 AM</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-700">Friday</span>
-                    <span className="text-green-600 font-semibold">09:30 AM – 11:00 PM</span>
+                    <span className="text-green-600 font-semibold">09:30 AM – 12:00 AM</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-700">Saturday</span>
