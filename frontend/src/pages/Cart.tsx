@@ -43,7 +43,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
                   <div>
                     <h3 className="font-semibold text-gray-900">{item.model}</h3>
                     <p className="text-sm text-gray-600 mt-1">
-                      {item.storage} • {item.color}
+                      {item.storage} • {item.condition === 'new' ? '✨ Brand New' : '📱 Used'} • {item.color}
                     </p>
                     <p className="text-lg font-bold text-primary mt-2">AED {item.price.toFixed(2)}</p>
                   </div>
@@ -93,7 +93,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">{item.model}</h3>
                     <p className="text-sm text-gray-600 mt-1">
-                      {item.storage} • {item.color}
+                      {item.storage} • {item.condition === 'new' ? '✨ Brand New' : '📱 Used'} • {item.color}
                     </p>
                     <p className="text-lg font-bold text-primary mt-2">AED {item.price.toFixed(2)}</p>
                   </div>

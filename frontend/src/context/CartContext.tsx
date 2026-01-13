@@ -7,6 +7,7 @@ export interface CartItem {
   quantity: number
   color: string
   storage: string
+  condition?: string
 }
 
 interface CartContextType {

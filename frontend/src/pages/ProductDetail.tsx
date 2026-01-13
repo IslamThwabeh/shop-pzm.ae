@@ -48,6 +48,7 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
         quantity,
         color: product.color,
         storage: product.storage,
+        condition: product.condition,
       })
       alert('Added to cart!')
       onCheckout()
