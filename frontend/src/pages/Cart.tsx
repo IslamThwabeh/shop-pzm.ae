@@ -158,15 +158,15 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
             <div className="space-y-3 mb-6 pb-6 border-b">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span>AED {total.toFixed(2)}</span>
+                <span>AED {(total / 1.05).toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Shipping</span>
                 <span className="text-green-600">Free</span>
               </div>
               <div className="flex justify-between text-gray-600">
-                <span>Tax</span>
-                <span>AED 0.00</span>
+                <span>Tax (5% VAT)</span>
+                <span>AED {(total - (total / 1.05)).toFixed(2)}</span>
               </div>
             </div>
 

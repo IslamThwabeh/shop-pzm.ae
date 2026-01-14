@@ -110,6 +110,75 @@ export class Database {
     }
   }
 
+  // ============ PRODUCT IMAGES ============
+
+  async getProductImages(productId: string): Promise<string[]> {
+    try {
+      const result = await this.db
+        .prepare(
+          `SELECT image_url FROM product_images WHERE product_id = ? ORDER BY image_order ASC`
+        )
+        .bind(productId)
+        .all();
+      
+      const images = (result.results as any[]) || [];
+      return images.map(img => img.image_url);
+    } catch (error) {
+      console.error('Error fetching product images:', error);
+      return [];
+    }
+  }
+
+  async createProductImage(productId: string, imageUrl: string, imageOrder: number, isPrimary: boolean = false): Promise<void> {
+    try {
+      const imageId = `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      await this.db
+        .prepare(
+          `INSERT INTO product_images (id, product_id, image_url, image_order, is_primary, created_at)
+           VALUES (?, ?, ?, ?, ?, ?)`
+        )
+        .bind(
+          imageId,
+          productId,
+          imageUrl,
+          imageOrder,
+          isPrimary ? 1 : 0,
+          new Date().toISOString()
+        )
+        .run();
+    } catch (error) {
+      console.error('Error creating product image:', error);
+      throw error;
+    }
+  }
+
+  async deleteProductImage(productId: string, imageUrl: string): Promise<boolean> {
+    try {
+      const result = await this.db
+        .prepare('DELETE FROM product_images WHERE product_id = ? AND image_url = ?')
+        .bind(productId, imageUrl)
+        .run();
+      return result.success;
+    } catch (error) {
+      console.error('Error deleting product image:', error);
+      return false;
+    }
+  }
+
+  async deleteAllProductImages(productId: string): Promise<boolean> {
+    try {
+      const result = await this.db
+        .prepare('DELETE FROM product_images WHERE product_id = ?')
+        .bind(productId)
+        .run();
+      return result.success;
+    } catch (error) {
+      console.error('Error deleting product images:', error);
+      return false;
+    }
+  }
+
   // ============ ORDERS ============
 
   async getOrders(): Promise<Order[]> {

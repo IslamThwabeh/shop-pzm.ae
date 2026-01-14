@@ -12,6 +12,7 @@ interface Order {
   customer_email: string;
   customer_phone: string;
   customer_address: string;
+  notes?: string;
   product_id: string;
   quantity: number;
   total_price: number;
@@ -42,7 +43,12 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'reports'>('orders');
-  const [selectedMonth, setSelectedMonth] = useState<string>(new Date().toISOString().slice(0, 7));
+  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
+  });
 
   const formatOrderId = (id: string) => {
     // Full ID format: ord-[timestamp]-[random 6 chars]
@@ -440,7 +446,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
                     const totalRevenue = monthOrders.reduce((sum, order) => sum + order.total_price, 0);
                     const deliveredOrders = monthOrders.filter(o => o.status === 'delivered').length;
-                    const pendingOrders = monthOrders.filter(o => o.status === 'pending').length;
                     const averageOrderValue = monthOrders.length > 0 ? totalRevenue / monthOrders.length : 0;
 
                     return (
@@ -625,6 +630,22 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 </div>
               </div>
 
+              {/* Special Notes Section */}
+              {selectedOrder.notes && selectedOrder.notes.trim().length > 0 && (
+                <div className="mb-8">
+                  <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-[#00A76F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 20h9" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z" />
+                    </svg>
+                    Special Notes
+                  </h3>
+                  <div className="bg-slate-900/50 rounded-lg p-6">
+                    <p className="text-slate-300 whitespace-pre-wrap">{selectedOrder.notes}</p>
+                  </div>
+                </div>
+              )}
+
               {/* Order Information Section */}
               <div className="mb-8">
                 <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
@@ -689,7 +710,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     Order Items ({selectedOrder.items.length})
                   </h3>
                   <div className="bg-slate-900/50 rounded-lg p-6 space-y-4">
-                    {selectedOrder.items.map((item, index) => (
+                    {selectedOrder.items.map((item) => (
                       <div key={item.id} className="border-b border-slate-700 pb-4 last:border-b-0 last:pb-0">
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex-1">

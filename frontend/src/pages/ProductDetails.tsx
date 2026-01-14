@@ -16,7 +16,7 @@ export default function ProductDetails() {
   return (
     <ProductDetail
       productId={id}
-      onBack={() => navigate('/')}
+      onBack={() => navigate('/shop')}
       onCheckout={() => navigate('/checkout')}
     />
   )

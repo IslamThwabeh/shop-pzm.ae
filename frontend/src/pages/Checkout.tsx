@@ -15,13 +15,19 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
     customerName: '',
     customerEmail: '',
     customerPhone: '',
-    customerAddress: '',
+    customerAddress: 'Dubai, ',
     notes: '',
+    acceptTerms: false,
+    emailConsent: true,
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value, type } = e.target
+    const checked = (e.target as HTMLInputElement).checked
+    setFormData((prev) => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }))
   }
 
   const validateForm = () => {
@@ -32,6 +38,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
     if (!/^\+?[\d\s\-()]{7,}$/.test(formData.customerPhone)) return 'Invalid phone format'
     if (!formData.customerAddress.trim()) return 'Address is required'
     if (!/dubai/i.test(formData.customerAddress)) return 'We currently only deliver to Dubai. Please enter a Dubai address.'
+    if (!formData.acceptTerms) return 'You must accept the Terms and Conditions to proceed'
     if (items.length === 0) return 'Cart is empty'
     return null
   }
@@ -66,6 +73,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
           items: orderItems, // Send all items
           total_price: total,
           notes: formData.notes,
+          email_consent: formData.emailConsent,
         }),
       })
 
@@ -193,12 +201,15 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
                   name="customerAddress"
                   value={formData.customerAddress}
                   onChange={handleChange}
-                  placeholder="Enter your full delivery address in Dubai"
+                  placeholder="e.g., Dubai, Hessa Street Branch, Inside Hessa Union Coop Hypermarket, Ground floor"
                   rows={3}
                   className="w-full px-4 py-2 border border-brandBorder rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-brandTextDark placeholder-brandTextMedium"
                   required
                 />
-                <p className="text-xs text-orange-600 mt-2">⚠️ We currently only deliver within Dubai</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  💡 Example: Dubai, Hessa Street Branch, Inside Hessa Union Coop Hypermarket, Ground floor
+                </p>
+                <p className="text-xs text-orange-600 mt-1">⚠️ We currently only deliver within Dubai</p>
               </div>
 
               {/* Notes */}
@@ -214,6 +225,41 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
                   rows={2}
                   className="w-full px-4 py-2 border border-brandBorder rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-brandTextDark placeholder-brandTextMedium"
                 />
+              </div>
+            </div>
+
+              {/* Terms and Consent */}
+            <div className="mt-6 pt-6 border-t space-y-4">
+              {/* Terms Checkbox */}
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  name="acceptTerms"
+                  checked={formData.acceptTerms}
+                  onChange={handleChange}
+                  className="mt-1 w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
+                  required
+                />
+                <label className="text-sm text-brandTextDark">
+                  I have read and accept the{' '}
+                  <a href="/terms" target="_blank" className="text-primary hover:underline font-semibold">
+                    Terms & Conditions
+                  </a>{' '}* (includes our refund policy)
+                </label>
+              </div>
+
+              {/* Email/WhatsApp Consent */}
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  name="emailConsent"
+                  checked={formData.emailConsent}
+                  onChange={handleChange}
+                  className="mt-1 w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
+                />
+                <label className="text-sm text-brandTextDark">
+                  I agree to receive email and WhatsApp notifications regarding my order status and updates from PZM Shop
+                </label>
               </div>
             </div>
 
@@ -283,7 +329,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
             <div className="space-y-2 mb-6 pb-6 border-b bg-blue-50 p-4 rounded-lg">
               <h3 className="font-semibold text-primary mb-3 text-sm">Amount Breakdown</h3>
               <div className="flex justify-between text-sm">
-                <span className="text-brandTextMedium">Mobile Price (95%)</span>
+                <span className="text-brandTextMedium">Mobile Price</span>
                 <span className="font-semibold text-brandTextDark">AED {(total * 0.95).toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">

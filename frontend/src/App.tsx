@@ -13,6 +13,7 @@ import OrderConfirmation from './pages/OrderConfirmation'
 import AdminPage from './pages/AdminPage'
 import HomePage from './pages/HomePage'
 import Header from './components/Header'
+import Terms from './pages/Terms'
 
 function AppContent() {
   const navigate = useNavigate()
@@ -108,6 +109,10 @@ function AppContent() {
           <Route
             path="/order/:id"
             element={<OrderConfirmation onContinueShopping={() => navigateTo('/')} orderId={undefined as any} />}
+          />
+          <Route
+            path="/terms"
+            element={<Terms />}
           />
           <Route
             path="/admin"

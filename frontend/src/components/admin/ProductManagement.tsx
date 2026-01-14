@@ -10,6 +10,7 @@ interface Product {
   price: number;
   quantity: number;
   image_url: string;
+  images?: string[];
   description: string;
   created_at: string;
 }
@@ -32,7 +33,8 @@ export default function ProductManagement({ token }: ProductManagementProps) {
     price: 0,
     quantity: 0,
     description: '',
-    image: null as File | null,
+    images: [] as File[],
+    imagePreviews: [] as string[],
   });
 
   useEffect(() => {
@@ -74,7 +76,8 @@ export default function ProductManagement({ token }: ProductManagementProps) {
         price: product.price,
         quantity: product.quantity,
         description: product.description,
-        image: null,
+        images: [],
+        imagePreviews: product.images || (product.image_url ? [product.image_url] : []),
       });
     } else {
       setEditingProduct(null);
@@ -86,7 +89,8 @@ export default function ProductManagement({ token }: ProductManagementProps) {
         price: 0,
         quantity: 0,
         description: '',
-        image: null,
+        images: [],
+        imagePreviews: [],
       });
     }
     setShowModal(true);
@@ -106,13 +110,35 @@ export default function ProductManagement({ token }: ProductManagementProps) {
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
+    const files = e.target.files;
+    if (files) {
+      const newImages = Array.from(files).slice(0, 4 - formData.images.length);
+      const newPreviews = newImages.map(file => URL.createObjectURL(file));
+      
       setFormData((prev) => ({
         ...prev,
-        image: file,
+        images: [...prev.images, ...newImages],
+        imagePreviews: [...prev.imagePreviews, ...newPreviews],
       }));
     }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setFormData((prev) => {
+      const newImages = prev.images.filter((_, i) => i !== index);
+      const newPreviews = prev.imagePreviews.filter((_, i) => i !== index);
+      
+      // Only remove URL preview if it's a new file preview, not an existing URL
+      if (index >= (formData.imagePreviews.length - formData.images.length)) {
+        URL.revokeObjectURL(prev.imagePreviews[index]);
+      }
+      
+      return {
+        ...prev,
+        images: newImages,
+        imagePreviews: newPreviews,
+      };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,9 +153,11 @@ export default function ProductManagement({ token }: ProductManagementProps) {
       formDataToSend.append('price', formData.price.toString());
       formDataToSend.append('quantity', formData.quantity.toString());
       formDataToSend.append('description', formData.description);
-      if (formData.image) {
-        formDataToSend.append('image', formData.image);
-      }
+      
+      // Append all new image files
+      formData.images.forEach((image, index) => {
+        formDataToSend.append(`image${index}`, image);
+      });
 
       const url = editingProduct
         ? `https://test.pzm.ae/api/products/${editingProduct.id}`
@@ -371,19 +399,54 @@ export default function ProductManagement({ token }: ProductManagementProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Product Image</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 text-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <Upload size={20} className="text-slate-400" />
+                <label className="block text-sm font-medium text-slate-300 mb-2">Product Images (Max 4)</label>
+                <div className="space-y-3">
+                  {/* Image Upload Input */}
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageChange}
+                      disabled={formData.imagePreviews.length >= 4}
+                      className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 text-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                    />
+                    <Upload size={20} className="text-slate-400" />
+                  </div>
+                  
+                  {/* Image Previews */}
+                  {formData.imagePreviews.length > 0 && (
+                    <div className="grid grid-cols-2 gap-3">
+                      {formData.imagePreviews.map((preview, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={preview}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-24 object-cover rounded-lg border border-slate-600"
+                          />
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 rounded-lg transition-opacity flex items-center justify-center">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(index)}
+                              className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                          {index === 0 && formData.imagePreviews.length > 1 && (
+                            <div className="absolute top-1 left-1 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                              Primary
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  <p className="text-xs text-slate-400">
+                    {formData.imagePreviews.length}/4 images ({4 - formData.imagePreviews.length} remaining)
+                  </p>
                 </div>
-                {formData.image && (
-                  <p className="text-sm text-green-400 mt-2">✓ {formData.image.name}</p>
-                )}
               </div>
 
               <div className="flex gap-3 pt-4">

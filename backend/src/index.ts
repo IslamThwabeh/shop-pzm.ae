@@ -93,7 +93,19 @@ app.get('/api/products', async (c) => {
     const db = new Database(c.env.DB);
     const condition = c.req.query('condition');
     const products = await db.getProducts(condition as 'new' | 'used' | undefined);
-    return c.json({ data: products, status: 200 }, 200);
+    
+    // Fetch images for each product
+    const productsWithImages = await Promise.all(
+      products.map(async (product) => {
+        const images = await db.getProductImages(product.id);
+        return {
+          ...product,
+          images: images.length > 0 ? images : (product.image_url ? [product.image_url] : [])
+        };
+      })
+    );
+    
+    return c.json({ data: productsWithImages, status: 200 }, 200);
   } catch (error) {
     logError(error, 'GET /api/products');
     return c.json({ error: 'Failed to fetch products', status: 500 }, 500);
@@ -109,7 +121,15 @@ app.get('/api/products/:id', async (c) => {
     if (!product) {
       return c.json({ error: 'Product not found', status: 404 }, 404);
     }
-    return c.json({ data: product, status: 200 }, 200);
+    
+    // Fetch images for this product
+    const images = await db.getProductImages(productId);
+    const productWithImages = {
+      ...product,
+      images: images.length > 0 ? images : (product.image_url ? [product.image_url] : [])
+    };
+    
+    return c.json({ data: productWithImages, status: 200 }, 200);
   } catch (error) {
     logError(error, 'GET /api/products/:id');
     return c.json({ error: 'Failed to fetch product', status: 500 }, 500);
@@ -141,20 +161,34 @@ app.post('/api/products', async (c) => {
     const price = parseFloat(formData.get('price') as string);
     const quantity = parseInt(formData.get('quantity') as string) || 0;
     const description = formData.get('description') as string || '';
-    const imageFile = formData.get('image') as File | null;
+    
+    // Get all image files (up to 4)
+    const imageFiles: File[] = [];
+    for (let i = 0; i < 4; i++) {
+      const imageFile = formData.get(`image${i}`) as File | null;
+      if (imageFile && imageFile.size > 0) {
+        imageFiles.push(imageFile);
+      }
+    }
 
     // Validate required fields
     if (!model || !storage || !condition || !color || !price) {
       return c.json({ error: 'Missing required fields: model, storage, condition, color, price', status: 400 }, 400);
     }
 
-    // Upload image if provided
-    let imageUrl = '';
-    if (imageFile && imageFile.size > 0) {
+    // Upload images if provided
+    const imageUrls: string[] = [];
+    if (imageFiles.length > 0) {
       const storageService = new StorageService(c.env.BUCKET);
-      const uploadResult = await storageService.uploadFile(imageFile, 'products');
-      if (uploadResult) {
-        imageUrl = uploadResult.url;
+      for (const imageFile of imageFiles) {
+        try {
+          const uploadResult = await storageService.uploadFile(imageFile, 'products');
+          if (uploadResult) {
+            imageUrls.push(uploadResult.url);
+          }
+        } catch (err) {
+          console.error('Error uploading image:', err);
+        }
       }
     }
 
@@ -168,13 +202,22 @@ app.post('/api/products', async (c) => {
       price,
       description,
       quantity,
-      image_url: imageUrl,
+      image_url: imageUrls[0] || '', // Primary image for backward compatibility
+      images: imageUrls,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
 
     const created = await db.createProduct(product);
-    return c.json({ data: created, status: 201 }, 201);
+    
+    // Create product images in database
+    if (imageUrls.length > 0) {
+      for (let i = 0; i < imageUrls.length; i++) {
+        await db.createProductImage(created.id, imageUrls[i], i, i === 0);
+      }
+    }
+    
+    return c.json({ data: { ...created, images: imageUrls }, status: 201 }, 201);
   } catch (error) {
     logError(error, 'POST /api/products');
     return c.json({ error: 'Failed to create product', status: 500 }, 500);
@@ -210,7 +253,15 @@ app.put('/api/products/:id', async (c) => {
     const price = formData.get('price') as string;
     const quantity = formData.get('quantity') as string;
     const description = formData.get('description') as string;
-    const imageFile = formData.get('image') as File | null;
+    
+    // Get all image files (up to 4)
+    const imageFiles: File[] = [];
+    for (let i = 0; i < 4; i++) {
+      const imageFile = formData.get(`image${i}`) as File | null;
+      if (imageFile && imageFile.size > 0) {
+        imageFiles.push(imageFile);
+      }
+    }
 
     if (model) updates.model = model;
     if (storage) updates.storage = storage;
@@ -220,23 +271,57 @@ app.put('/api/products/:id', async (c) => {
     if (quantity) updates.quantity = parseInt(quantity);
     if (description !== null) updates.description = description;
 
-    // Upload new image if provided
-    if (imageFile && imageFile.size > 0) {
+    const db = new Database(c.env.DB);
+    
+    // Get existing images
+    const existingImages = await db.getProductImages(productId);
+    
+    // Upload new images if provided
+    if (imageFiles.length > 0) {
       const storageService = new StorageService(c.env.BUCKET);
-      const uploadResult = await storageService.uploadFile(imageFile, 'products');
-      if (uploadResult) {
-        updates.image_url = uploadResult.url;
+      const imageUrls: string[] = [];
+      
+      for (const imageFile of imageFiles) {
+        try {
+          const uploadResult = await storageService.uploadFile(imageFile, 'products');
+          if (uploadResult) {
+            imageUrls.push(uploadResult.url);
+          }
+        } catch (err) {
+          console.error('Error uploading image:', err);
+        }
+      }
+      
+      // Append new images to existing ones (max 4)
+      if (imageUrls.length > 0) {
+        const allImages = [...existingImages, ...imageUrls];
+        const finalImages = allImages.slice(0, 4); // Limit to 4 total
+        
+        // Delete all and re-insert with new order
+        await db.deleteAllProductImages(productId);
+        for (let i = 0; i < finalImages.length; i++) {
+          await db.createProductImage(productId, finalImages[i], i, i === 0);
+        }
+        
+        updates.image_url = finalImages[0]; // Primary image
+      }
+    } else {
+      // If no new images provided, keep existing images
+      if (existingImages.length > 0) {
+        updates.image_url = existingImages[0]; // Keep primary image
       }
     }
 
-    const db = new Database(c.env.DB);
     const product = await db.updateProduct(productId, updates);
 
     if (!product) {
       return c.json({ error: 'Product not found', status: 404 }, 404);
     }
-
-    return c.json({ data: product, status: 200 }, 200);
+    
+    // Fetch images for the product
+    const images = await db.getProductImages(productId);
+    
+    return c.json({ data: { ...product, images }, status: 200 }, 200);
   } catch (error) {
     logError(error, 'PUT /api/products/:id');
     return c.json({ error: 'Failed to update product', status: 500 }, 500);
@@ -402,7 +487,9 @@ app.post('/api/orders', async (c) => {
       body.customer_name,
       created.id,
       orderItems,
-      body.total_price
+      body.total_price,
+      body.notes,
+      body.customer_address
     );
     
     await emailService.sendOrderNotification(
@@ -411,7 +498,9 @@ app.post('/api/orders', async (c) => {
       body.customer_email,
       body.customer_phone,
       orderItems,
-      body.total_price
+      body.total_price,
+      body.notes,
+      body.customer_address
     );
 
     return c.json({ data: created, status: 201 }, 201);

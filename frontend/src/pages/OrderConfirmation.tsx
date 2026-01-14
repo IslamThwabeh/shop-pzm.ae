@@ -129,7 +129,7 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
             <div className="mt-6 pt-6 border-t bg-blue-50 p-4 rounded-lg">
               <h3 className="font-semibold text-primary mb-3 text-sm">Amount Breakdown</h3>
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-brandTextMedium">Mobile Price (95%)</span>
+                <span className="text-brandTextMedium">Mobile Price</span>
                 <span className="font-semibold text-brandTextDark">AED {(orderDetails.total * 0.95).toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">

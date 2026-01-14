@@ -53,6 +53,8 @@ export interface Customer {
   name: string
   phone: string
   address: string
+  email_consent?: boolean
+  unsubscribed?: boolean
   createdAt: string
   updatedAt: string
 }

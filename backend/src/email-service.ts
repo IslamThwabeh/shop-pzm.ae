@@ -85,14 +85,18 @@ export class EmailService {
     customerName: string,
     orderId: string,
     orderItems: OrderItem[],
-    totalPrice: number
+    totalPrice: number,
+    notes?: string,
+    customerAddress?: string
   ): Promise<boolean> {
     const displayId = this.formatOrderId(orderId);
     const htmlBody = this.getOrderConfirmationTemplate(
       customerName,
       displayId,
       orderItems,
-      totalPrice
+      totalPrice,
+      notes,
+      customerAddress
     );
 
     return this.sendEmail({
@@ -111,7 +115,9 @@ export class EmailService {
     customerEmail: string,
     customerPhone: string,
     orderItems: OrderItem[],
-    totalPrice: number
+    totalPrice: number,
+    notes?: string,
+    customerAddress?: string
   ): Promise<boolean> {
     const displayId = this.formatOrderId(orderId);
     const htmlBody = this.getOrderNotificationTemplate(
@@ -120,7 +126,9 @@ export class EmailService {
       customerEmail,
       customerPhone,
       orderItems,
-      totalPrice
+      totalPrice,
+      notes,
+      customerAddress
     );
 
     return this.sendEmail({
@@ -220,7 +228,9 @@ export class EmailService {
     customerName: string,
     orderId: string,
     orderItems: OrderItem[],
-    totalPrice: number
+    totalPrice: number,
+    notes?: string,
+    customerAddress?: string
   ): string {
     // Generate items HTML
     const itemsHtml = orderItems.map((item, index) => `
@@ -255,6 +265,24 @@ export class EmailService {
       </div>
     `).join('');
 
+    const notesHtml = notes ? `
+      <div class="order-details" style="background: #fff8e1; border-left: 4px solid #ff9800;">
+        <div class="detail-row">
+          <span class="label">📝 Your Notes:</span>
+          <span class="value">${notes}</span>
+        </div>
+      </div>
+    ` : '';
+
+    const addressHtml = customerAddress ? `
+      <div class="order-details">
+        <div class="detail-row">
+          <span class="label">📍 Delivery Address:</span>
+          <span class="value">${customerAddress}</span>
+        </div>
+      </div>
+    ` : '';
+
     return `
       <!DOCTYPE html>
       <html>
@@ -280,7 +308,8 @@ export class EmailService {
           .total-row .value { font-size: 18px; font-weight: bold; color: #00A76F; }
           .button { display: inline-block; background: #00A76F; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin-top: 20px; }
           .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-          .status-badge { display: inline-block; background: #00A76F; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
+          .unsubscribe { margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd; }
+          .unsubscribe a { color: #666; text-decoration: underline; }
         </style>
       </head>
       <body>
@@ -302,6 +331,9 @@ export class EmailService {
               </div>
             </div>
 
+            ${addressHtml}
+            ${notesHtml}
+
             <h3 style="color: #00A76F; margin-top: 20px;">Order Items (${orderItems.length})</h3>
             ${itemsHtml}
               
@@ -316,7 +348,7 @@ export class EmailService {
             <ul>
               <li>Your order is being prepared for shipment</li>
               <li>You'll receive a notification when it's ready for delivery</li>
-              <li>Track your order status anytime by logging into your account</li>
+              <li>Track your order status anytime by contacting support@pzm.ae</li>
             </ul>
             
             <p>If you have any questions, feel free to contact us at support@pzm.ae</p>
@@ -332,6 +364,9 @@ export class EmailService {
           <div class="footer">
             <p>© ${new Date().getFullYear()} PZM Shop. All rights reserved.</p>
             <p>This is an automated email. Please do not reply directly to this email.</p>
+            <div class="unsubscribe">
+              <p>Don't want to receive these emails? <a href="https://test.pzm.ae/unsubscribe?email=${encodeURIComponent(orderId)}">Unsubscribe</a></p>
+            </div>
           </div>
         </div>
       </body>
@@ -348,7 +383,9 @@ export class EmailService {
     customerEmail: string,
     customerPhone: string,
     orderItems: OrderItem[],
-    totalPrice: number
+    totalPrice: number,
+    notes?: string,
+    customerAddress?: string
   ): string {
     // Generate items HTML
     const itemsHtml = orderItems.map((item, index) => `
@@ -382,6 +419,24 @@ export class EmailService {
         </div>
       </div>
     `).join('');
+
+    const notesHtml = notes ? `
+      <div class="customer-info" style="background: #fff8e1; border-left: 4px solid #ff9800;">
+        <div class="info-row">
+          <span class="label">📝 Customer Notes:</span>
+          <span>${notes}</span>
+        </div>
+      </div>
+    ` : '';
+
+    const addressHtml = customerAddress ? `
+      <div class="customer-info">
+        <div class="info-row">
+          <span class="label">📍 Delivery Address:</span>
+          <span>${customerAddress}</span>
+        </div>
+      </div>
+    ` : '';
 
     return `
       <!DOCTYPE html>
@@ -433,6 +488,9 @@ export class EmailService {
                 <span>${customerPhone}</span>
               </div>
             </div>
+
+            ${addressHtml}
+            ${notesHtml}
             
             <h2>Order Details</h2>
             <div class="customer-info">
@@ -448,28 +506,108 @@ export class EmailService {
             <div class="total-row">
               <div class="info-row">
                 <span class="label">Total Amount:</span>
-                <span><strong>AED ${totalPrice.toFixed(2)}</strong></span>
+                <span style="font-size: 18px; font-weight: bold; color: #00A76F;">AED ${totalPrice.toFixed(2)}</span>
               </div>
             </div>
             
-            <p><strong>Next Steps:</strong></p>
+            <p><strong>Action Required:</strong></p>
             <ul>
-              <li>Review the order details</li>
-              <li>Prepare the products for shipment</li>
-              <li>Update order status in the admin dashboard</li>
-              <li>Customer will be notified of status changes automatically</li>
+              <li>Process the order and prepare items for shipment</li>
+              <li>Contact customer if needed</li>
+              <li>Update order status in admin panel</li>
             </ul>
-            
-            <a href="https://test.pzm.ae/admin" class="button">Go to Admin Dashboard</a>
           </div>
           
           <div class="footer">
-            <p>© ${new Date().getFullYear()} PZM Computers & Phones Store. All rights reserved.</p>
+            <p>© ${new Date().getFullYear()} PZM Shop - Internal Notification</p>
           </div>
         </div>
       </body>
       </html>
     `;
+  }
+
+  /**
+   * Send order status update email to customer
+   */
+  async sendStatusUpdate(
+    customerEmail: string,
+    customerName: string,
+    orderId: string,
+    status: string,
+    productModel: string,
+    productStorage: string,
+    productCondition: string,
+    productColor: string
+  ): Promise<boolean> {
+    const displayId = this.formatOrderId(orderId);
+    const htmlBody = this.getStatusUpdateTemplate(
+      customerName,
+      displayId,
+      status,
+      productModel,
+      productStorage,
+      productCondition,
+      productColor
+    );
+
+    const statusMessages: { [key: string]: string } = {
+      confirmed: 'Your Order Has Been Confirmed',
+      in_progress: 'Your Order is Being Prepared',
+      ready_for_delivery: 'Your Order is Ready for Delivery',
+      shipped: 'Your Order Has Been Shipped',
+      delivered: 'Your Order Has Been Delivered',
+      cancelled: 'Your Order Has Been Cancelled',
+    };
+
+    const subject = statusMessages[status] || `Order Status Update - ${displayId}`;
+
+    return this.sendEmail({
+      to: customerEmail,
+      subject,
+      htmlBody,
+    });
+  }
+
+  /**
+   * Send order status update notification to team
+   */
+  async sendStatusUpdateToTeam(
+    orderId: string,
+    customerName: string,
+    status: string,
+    productModel: string,
+    productStorage: string,
+    productCondition: string,
+    productColor: string
+  ): Promise<boolean> {
+    const displayId = this.formatOrderId(orderId);
+    const htmlBody = this.getStatusUpdateTeamTemplate(
+      displayId,
+      customerName,
+      status,
+      productModel,
+      productStorage,
+      productCondition,
+      productColor
+    );
+
+    const statusMessages: { [key: string]: string } = {
+      confirmed: 'Order Confirmed',
+      in_progress: 'Order In Progress',
+      ready_for_delivery: 'Order Ready for Delivery',
+      shipped: 'Order Shipped',
+      delivered: 'Order Delivered',
+      cancelled: 'Order Cancelled',
+    };
+
+    const subject = statusMessages[status] || `Order Status Update - ${displayId}`;
+
+    return this.sendEmail({
+      to: this.teamEmail,
+      subject: `${subject} - ${displayId}`,
+      htmlBody,
+    });
   }
 
   /**

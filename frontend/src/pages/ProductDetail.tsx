@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { ArrowLeft, ShoppingCart } from 'lucide-react'
+import { ArrowLeft, ShoppingCart, Check, Image } from 'lucide-react'
 import type { Product } from '@shared/types'
 import { apiService } from '../services/api'
 import { useCart } from '../context/CartContext'
+import ImageGallery from '../components/ImageGallery'
 
 interface ProductDetailProps {
   productId: string
@@ -15,6 +16,8 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
   const [loading, setLoading] = useState(true)
   const [quantity, setQuantity] = useState(1)
   const [error, setError] = useState<string | null>(null)
+  const [showGallery, setShowGallery] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
   const { addItem } = useCart()
 
   useEffect(() => {
@@ -50,8 +53,7 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
         storage: product.storage,
         condition: product.condition,
       })
-      alert('Added to cart!')
-      onCheckout()
+      setShowSuccessModal(true)
     }
   }
 
@@ -92,16 +94,28 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-lg shadow p-8">
         {/* Product Image */}
-        <div className="flex items-center justify-center bg-green-50 rounded-lg h-96">
-          {product.image_url || product.images?.[0] ? (
-            <img
-              src={product.image_url || product.images?.[0] || ''}
-              alt={product.model}
-              className="w-full h-full object-cover rounded-lg"
-            />
+        <div className="flex flex-col gap-4">
+          {product.images && product.images.length > 0 ? (
+            <>
+              <ImageGallery 
+                images={product.images} 
+                productName={product.model}
+              />
+              {product.images.length > 1 && (
+                <button
+                  onClick={() => setShowGallery(true)}
+                  className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-primary text-white rounded-lg hover:bg-brandGreenDark transition-colors text-sm font-medium"
+                >
+                  <Image size={18} />
+                  View All Images
+                </button>
+              )}
+            </>
           ) : (
-            <div className="text-center">
-              <p className="text-gray-500">No image available</p>
+            <div className="flex items-center justify-center bg-green-50 rounded-lg h-96">
+              <div className="text-center">
+                <p className="text-gray-500">No image available</p>
+              </div>
             </div>
           )}
         </div>
@@ -168,26 +182,29 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
           </div>
 
           {/* Quantity Selector */}
-          <div className="mb-6">
+          <div className="mb-6 text-center">
             <label className="block text-sm font-semibold text-primary mb-2">Quantity</label>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center justify-center gap-3">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="px-4 py-2 border-2 border-brandBorder rounded-md hover:border-primary hover:bg-green-50 transition-colors text-primary font-bold text-lg"
+                className="w-12 h-12 flex items-center justify-center border-2 border-brandBorder rounded-md hover:border-primary hover:bg-green-50 transition-colors text-primary font-bold text-xl"
               >
                 −
               </button>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                min="1"
-                max={product.quantity}
-                className="w-20 px-3 py-2 border-2 border-brandBorder rounded-md text-center text-brandTextDark font-semibold focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9]/g, '');
+                  setQuantity(Math.max(1, parseInt(val) || 1));
+                }}
+                className="w-20 h-12 px-3 py-2 border-2 border-brandBorder rounded-md text-center text-brandTextDark font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
               />
               <button
                 onClick={() => setQuantity(Math.min(product.quantity, quantity + 1))}
-                className="px-4 py-2 border-2 border-brandBorder rounded-md hover:border-primary hover:bg-green-50 transition-colors text-primary font-bold text-lg"
+                className="w-12 h-12 flex items-center justify-center border-2 border-brandBorder rounded-md hover:border-primary hover:bg-green-50 transition-colors text-primary font-bold text-xl"
               >
                 +
               </button>
@@ -216,6 +233,53 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
           </div>
         </div>
       </div>
+
+      {/* Image Gallery Modal */}
+      {showGallery && product && product.images && (
+        <ImageGallery
+          images={product.images}
+          productName={product.model}
+          isModal={true}
+          onClose={() => setShowGallery(false)}
+        />
+      )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-8">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                <Check className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Added to Cart!</h3>
+              <p className="text-gray-600 mb-6">
+                {product?.model} has been added to your cart
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowSuccessModal(false)
+                    onBack()
+                  }}
+                  className="flex-1 px-4 py-3 border-2 border-primary text-primary rounded-lg hover:bg-green-50 font-semibold transition-colors"
+                >
+                  Continue Shopping
+                </button>
+                <button
+                  onClick={() => {
+                    setShowSuccessModal(false)
+                    onCheckout()
+                  }}
+                  className="flex-1 px-4 py-3 bg-primary text-white rounded-lg hover:bg-brandGreenDark font-semibold transition-colors"
+                >
+                  Go to Checkout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
