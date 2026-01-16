@@ -102,6 +102,13 @@ export class Database {
 
   async deleteProduct(id: string): Promise<boolean> {
     try {
+      // Detach product references before deletion to satisfy foreign keys
+      await this.db.prepare('UPDATE order_items SET product_id = NULL WHERE product_id = ?').bind(id).run();
+      await this.db.prepare('UPDATE orders SET product_id = NULL WHERE product_id = ?').bind(id).run();
+
+      // Clean up product images as well
+      await this.deleteAllProductImages(id);
+
       const result = await this.db.prepare('DELETE FROM products WHERE id = ?').bind(id).run();
       return result.success;
     } catch (error) {
