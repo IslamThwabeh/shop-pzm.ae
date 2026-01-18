@@ -14,6 +14,7 @@ import AdminPage from './pages/AdminPage'
 import HomePage from './pages/HomePage'
 import Header from './components/Header'
 import Terms from './pages/Terms'
+import AdminInvoice from './pages/AdminInvoice'
 
 function AppContent() {
   const navigate = useNavigate()
@@ -61,6 +62,16 @@ function AppContent() {
     window.scrollTo(0, 0)
   }
 
+  const isInvoiceRoute = location.pathname.startsWith('/admin/orders/') && location.pathname.endsWith('/invoice')
+
+  if (isInvoiceRoute) {
+    return (
+      <Routes>
+        <Route path="/admin/orders/:id/invoice" element={<AdminInvoice />} />
+      </Routes>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header
@@ -86,6 +97,7 @@ function AppContent() {
         )}
 
         <Routes>
+          <Route path="/admin/orders/:id/invoice" element={<AdminInvoice />} />
           <Route
             path="/"
             element={<HomePage products={products} onShopClick={() => navigateTo('/shop')} />}

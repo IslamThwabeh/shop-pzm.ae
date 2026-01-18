@@ -4,6 +4,7 @@
 PRAGMA foreign_keys = OFF;
 
 -- Recreate orders table with nullable product_id and ON DELETE SET NULL
+DROP TABLE IF EXISTS orders_new;
 CREATE TABLE orders_new (
   id TEXT PRIMARY KEY,
   customer_id TEXT,
@@ -15,7 +16,16 @@ CREATE TABLE orders_new (
   quantity INTEGER NOT NULL,
   total_price REAL NOT NULL,
   payment_method TEXT DEFAULT 'cash_on_delivery',
-  status TEXT DEFAULT 'pending' CHECK(status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled')),
+  -- Accept all statuses currently used by the app
+  status TEXT DEFAULT 'pending' CHECK(status IN (
+    'pending',
+    'confirmed',
+    'in_progress',
+    'ready_for_delivery',
+    'shipped',
+    'delivered',
+    'cancelled'
+  )),
   notes TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
@@ -40,6 +50,7 @@ CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at);
 
 -- Recreate order_items with nullable product_id and ON DELETE SET NULL
+DROP TABLE IF EXISTS order_items_new;
 CREATE TABLE order_items_new (
   id TEXT PRIMARY KEY,
   order_id TEXT NOT NULL,

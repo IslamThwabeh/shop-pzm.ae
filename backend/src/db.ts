@@ -18,7 +18,9 @@ export class Database {
       query += ' ORDER BY created_at DESC';
 
       const result = await this.db.prepare(query).bind(...params).all();
-      return (result.results as Product[]) || [];
+      const products = (result.results as Product[]) || [];
+      // Hide used items that are out of stock; keep new items visible regardless
+      return products.filter(p => p.condition === 'used' ? (p.quantity ?? 0) > 0 : true);
     } catch (error) {
       console.error('Error fetching products:', error);
       return [];
@@ -361,6 +363,19 @@ export class Database {
     } catch (error) {
       console.error('Error fetching order items:', error);
       return [];
+    }
+  }
+
+  async decrementProductQuantity(productId: string, amount: number): Promise<boolean> {
+    try {
+      const result = await this.db
+        .prepare('UPDATE products SET quantity = quantity - ?, updated_at = ? WHERE id = ? AND quantity >= ?')
+        .bind(amount, new Date().toISOString(), productId, amount)
+        .run();
+      return result.success;
+    } catch (error) {
+      console.error('Error decrementing product quantity:', error);
+      return false;
     }
   }
 
