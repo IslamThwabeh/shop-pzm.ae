@@ -1,69 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://shop.pzm.ae/</loc>
-    <lastmod>2025-11-08</lastmod>
+    <lastmod>2026-01-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   
-  <!-- Buy iPhone Page - High Priority for SEO -->
+  <!-- Products Page - High Priority for SEO -->
   <url>
-    <loc>https://shop.pzm.ae/services/buy-iphone.html</loc>
-    <lastmod>2025-11-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://shop.pzm.ae/shop</loc>
+    <lastmod>2026-01-21</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.95</priority>
-    <image:image>
-      <image:loc>https://shop.pzm.ae/images/buy_iphone/iPhone_17/iPhone_17_Black.jpg</image:loc>
-      <image:title>iPhone 17 Black Dubai</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://shop.pzm.ae/images/buy_iphone/iPhone_17_Pro/iPhone_17_Pro_Silver.jpg</image:loc>
-      <image:title>iPhone 17 Pro Silver Dubai</image:title>
-    </image:image>
   </url>
   
+  <!-- Cart Page -->
   <url>
-    <loc>https://shop.pzm.ae/blog.html</loc>
-    <lastmod>2025-11-08</lastmod>
+    <loc>https://shop.pzm.ae/cart</loc>
+    <lastmod>2026-01-21</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://shop.pzm.ae/services/brand-new.html</loc>
-    <lastmod>2025-11-08</lastmod>
-    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  
+  <!-- Checkout Page -->
   <url>
-    <loc>https://shop.pzm.ae/services/secondhand.html</loc>
-    <lastmod>2025-11-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://shop.pzm.ae/checkout</loc>
+    <lastmod>2026-01-21</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://shop.pzm.ae/services/repair.html</loc>
-    <lastmod>2025-11-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://shop.pzm.ae/services/gaming-pc.html</loc>
-    <lastmod>2025-11-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://shop.pzm.ae/services/sell-gadgets.html</loc>
-    <lastmod>2025-11-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://shop.pzm.ae/services/accessories.html</loc>
-    <lastmod>2025-11-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
   </url>
 </urlset>
