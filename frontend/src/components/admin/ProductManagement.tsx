@@ -46,7 +46,7 @@ export default function ProductManagement({ token }: ProductManagementProps) {
     setError(null);
 
     try {
-      const response = await fetch('https://test.pzm.ae/api/products', {
+      const response = await fetch('https://shop.pzm.ae/api/products', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -160,8 +160,8 @@ export default function ProductManagement({ token }: ProductManagementProps) {
       });
 
       const url = editingProduct
-        ? `https://test.pzm.ae/api/products/${editingProduct.id}`
-        : 'https://test.pzm.ae/api/products';
+        ? `https://shop.pzm.ae/api/products/${editingProduct.id}`
+        : 'https://shop.pzm.ae/api/products';
 
       const method = editingProduct ? 'PUT' : 'POST';
 
@@ -190,7 +190,7 @@ export default function ProductManagement({ token }: ProductManagementProps) {
     }
 
     try {
-      const response = await fetch(`https://test.pzm.ae/api/products/${productId}`, {
+      const response = await fetch(`https://shop.pzm.ae/api/products/${productId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

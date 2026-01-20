@@ -62,7 +62,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
         quantity: item.quantity,
       }))
 
-      const response = await fetch('https://test.pzm.ae/api/orders', {
+      const response = await fetch('https://shop.pzm.ae/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -70,7 +70,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         return;
       }
 
-      const response = await fetch('https://test.pzm.ae/api/orders', {
+      const response = await fetch('https://shop.pzm.ae/api/orders', {
         headers: {
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         return;
       }
 
-      const response = await fetch(`https://test.pzm.ae/api/orders/${orderId}`, {
+      const response = await fetch(`https://shop.pzm.ae/api/orders/${orderId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

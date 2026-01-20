@@ -365,7 +365,7 @@ export class EmailService {
             <p>© ${new Date().getFullYear()} PZM Shop. All rights reserved.</p>
             <p>This is an automated email. Please do not reply directly to this email.</p>
             <div class="unsubscribe">
-              <p>Don't want to receive these emails? <a href="https://test.pzm.ae/unsubscribe?email=${encodeURIComponent(orderId)}">Unsubscribe</a></p>
+              <p>Don't want to receive these emails? <a href="https://shop.pzm.ae/unsubscribe?email=${encodeURIComponent(orderId)}">Unsubscribe</a></p>
             </div>
           </div>
         </div>

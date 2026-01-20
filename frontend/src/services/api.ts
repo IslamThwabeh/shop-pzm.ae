@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE = 'https://test.pzm.ae/api'
+const API_BASE = 'https://shop.pzm.ae/api'
 
 const api = axios.create({
   baseURL: API_BASE,

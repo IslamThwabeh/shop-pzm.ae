@@ -70,7 +70,7 @@ export default function AdminInvoice() {
         setLoading(true)
         setError(null)
         const authToken = localStorage.getItem('adminToken')
-        const res = await fetch(`https://test.pzm.ae/api/orders/${id}`, {
+        const res = await fetch(`https://shop.pzm.ae/api/orders/${id}`, {
           headers: {
             'Authorization': authToken ? `Bearer ${authToken}` : '',
           },
