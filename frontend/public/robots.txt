@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Prioritize important pages for crawling
+Allow: /services/buy-iphone.html
+Allow: /services/
+Allow: /blog.html
+
+# Sitemap location
+Sitemap: https://shop.pzm.ae/sitemap.xml
+
+# Allow crawling of all content
+Disallow:
