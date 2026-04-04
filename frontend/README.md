@@ -14,7 +14,7 @@ npm run deploy:staging
 
 The app is published to Cloudflare Pages at `https://test.pzm.ae`.
 
-> Note: Cloudflare Pages' CLI does not accept `--env` for Pages deploys. Use `--branch <branch-name>` when using `wrangler pages deploy` (the `deploy:staging` and `deploy:production` scripts use `--branch`).
+> Note: Cloudflare Pages' CLI does not accept `--env` for Pages deploys. Use `--branch <branch-name>` when using `wrangler pages deploy`. This project deploys staging with `--branch staging` and production with `--branch main`.
 
 ### Production Build
 

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE = 'https://shop.pzm.ae/api'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api'
 
 const api = axios.create({
   baseURL: API_BASE,
@@ -49,6 +49,24 @@ export interface Order {
   notes?: string
   createdAt: string
   updatedAt: string
+}
+
+export interface ServiceRequest {
+  id: string
+  service_type: string
+  request_kind: 'quote' | 'booking' | 'callback' | 'availability'
+  customer_name: string
+  customer_email?: string
+  customer_phone: string
+  customer_address?: string
+  details: string
+  preferred_contact_method?: 'phone' | 'email' | 'whatsapp'
+  preferred_date?: string
+  preferred_time_period?: 'morning' | 'afternoon' | 'evening'
+  source_page?: string
+  status: 'pending' | 'contacted' | 'quoted' | 'scheduled' | 'completed' | 'cancelled'
+  created_at: string
+  updated_at: string
 }
 
 export const apiService = {
@@ -113,6 +131,38 @@ export const apiService = {
     } catch (error) {
       console.error('Failed to fetch order:', error)
       return null
+    }
+  },
+
+  createServiceRequest: async (request: {
+    service_type: string
+    request_kind: 'quote' | 'booking' | 'callback' | 'availability'
+    customer_name: string
+    customer_email?: string
+    customer_phone: string
+    customer_address?: string
+    details: string
+    preferred_contact_method?: 'phone' | 'email' | 'whatsapp'
+    preferred_date?: string
+    preferred_time_period?: 'morning' | 'afternoon' | 'evening'
+    source_page?: string
+  }): Promise<ServiceRequest | null> => {
+    try {
+      const response = await api.post('/service-requests', request)
+      return response.data.data || response.data
+    } catch (error) {
+      console.error('Failed to create service request:', error)
+      return null
+    }
+  },
+
+  getServiceRequests: async (): Promise<ServiceRequest[]> => {
+    try {
+      const response = await api.get('/service-requests')
+      return response.data.data || response.data
+    } catch (error) {
+      console.error('Failed to fetch service requests:', error)
+      return []
     }
   },
 

@@ -1,62 +1,85 @@
+import { Link } from 'react-router-dom'
+import { areaNavigationLinks, policyNavigationLinks, serviceNavigationLinks, siteContact, siteIdentity } from '../content/siteData'
+
 export default function Footer() {
-  // Get current year dynamically - this will automatically update every year!
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-gray-900 text-white mt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          {/* Company Info */}
-          <div>
-            <h3 className="text-xl font-bold mb-4">PZM Computers & Phones Store</h3>
-            <p className="text-gray-400 text-sm">
-              Your trusted source for premium iPhones and accessories in the UAE.
-            </p>
+    <footer className="bg-slate-950 text-slate-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10">
+          <div className="xl:pr-6">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-green-300">PZM</p>
+            <h3 className="mt-3 text-2xl font-bold text-white">{siteIdentity.name}</h3>
+            <p className="mt-2 text-sm font-semibold uppercase tracking-[0.14em] text-slate-400">{siteIdentity.tagline}</p>
+            <p className="mt-4 text-sm leading-7 text-slate-300">{siteIdentity.summary}</p>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-gray-400 text-sm">
-              <li><a href="/" className="hover:text-white transition">Home</a></li>
-              <li><a href="/shop" className="hover:text-white transition">Shop</a></li>
-              <li><a href="/cart" className="hover:text-white transition">Cart</a></li>
+            <h4 className="text-lg font-semibold text-white">Services</h4>
+            <ul className="mt-4 space-y-2 text-sm text-slate-300">
+              {serviceNavigationLinks.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Support */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Support</h4>
-            <ul className="space-y-2 text-gray-400 text-sm">
-              <li><a href="mailto:support@pzm.ae" className="hover:text-white transition">support@pzm.ae</a></li>
-              <li><a href="tel:+971" className="hover:text-white transition">+971 (0) XXX XXXX</a></li>
-              <li><a href="#" className="hover:text-white transition">Contact Us</a></li>
+            <h4 className="text-lg font-semibold text-white">Areas</h4>
+            <ul className="mt-4 space-y-2 text-sm text-slate-300">
+              {areaNavigationLinks.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Legal */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Legal</h4>
-            <ul className="space-y-2 text-gray-400 text-sm">
-              <li><a href="/terms" className="hover:text-white transition">Terms & Conditions</a></li>
-              <li><a href="mailto:support@pzm.ae" className="hover:text-white transition">Privacy & Data Requests</a></li>
+            <h4 className="text-lg font-semibold text-white">Support and Legal</h4>
+            <ul className="mt-4 space-y-2 text-sm text-slate-300">
+              <li>
+                <a href={siteContact.phoneHref} className="hover:text-white transition-colors">
+                  {siteContact.phoneDisplay}
+                </a>
+              </li>
+              <li>
+                <a href={`mailto:${siteContact.supportEmail}`} className="hover:text-white transition-colors">
+                  {siteContact.supportEmail}
+                </a>
+              </li>
+              <li>
+                <a href={siteContact.mapsHref} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  Google Maps
+                </a>
+              </li>
+              <li>
+                <Link to={siteContact.blogHref} className="hover:text-white transition-colors">
+                  Blog
+                </Link>
+              </li>
+              {policyNavigationLinks.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-gray-800 pt-8">
-          {/* Copyright with Dynamic Year */}
-          <div className="text-center text-gray-400 text-sm">
-            <p>
-              &copy; {currentYear} PZM Computers & Phones Store. All rights reserved.
-            </p>
-            <p className="mt-2">
-              Made with ❤️ for iPhone enthusiasts
-            </p>
-          </div>
+        <div className="mt-10 border-t border-slate-800 pt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between text-sm text-slate-400">
+          <p>{siteIdentity.name} - {siteIdentity.tagline}</p>
+          <p>&copy; {currentYear} All rights reserved.</p>
         </div>
       </div>
     </footer>
-  );
+  )
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { useCart } from '../context/CartContext'
+import Seo from '../components/Seo'
 
 interface CheckoutProps {
   onBack: () => void
@@ -115,6 +116,12 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
   if (items.length === 0) {
     return (
       <div className="text-center py-12 bg-white rounded-lg shadow">
+        <Seo
+          title="Checkout | PZM Computers & Phones"
+          description="Secure checkout with Cash on Delivery in Dubai."
+          canonicalPath="/checkout"
+          noindex={true}
+        />
         <p className="text-gray-600 mb-6">Your cart is empty</p>
         <button
           onClick={onBack}
@@ -129,6 +136,12 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
 
   return (
     <div>
+      <Seo
+        title="Checkout | PZM Computers & Phones"
+        description="Secure checkout with Cash on Delivery in Dubai."
+        canonicalPath="/checkout"
+        noindex={true}
+      />
       <button
         onClick={onBack}
         className="inline-flex items-center gap-2 text-primary hover:opacity-90 mb-6"

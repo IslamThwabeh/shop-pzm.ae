@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import AdminLogin from './AdminLogin'
 import AdminDashboard from './AdminDashboard'
+import Seo from '../components/Seo'
 
 interface AdminPageProps {
   onLogout?: () => void
@@ -29,8 +30,28 @@ export default function AdminPage({ onLogout }: AdminPageProps) {
   }
 
   if (!isLoggedIn) {
-    return <AdminLogin onSuccess={handleLoginSuccess} onCancel={() => {}} />
+    return (
+      <>
+        <Seo
+          title="Admin Login | PZM"
+          description="Admin access for PZM Computers & Phones."
+          canonicalPath="/admin"
+          noindex={true}
+        />
+        <AdminLogin onSuccess={handleLoginSuccess} onCancel={() => {}} />
+      </>
+    )
   }
 
-  return <AdminDashboard onLogout={handleLogout} />
+  return (
+    <>
+      <Seo
+        title="Admin Dashboard | PZM"
+        description="Admin dashboard for PZM Computers & Phones."
+        canonicalPath="/admin"
+        noindex={true}
+      />
+      <AdminDashboard onLogout={handleLogout} />
+    </>
+  )
 }

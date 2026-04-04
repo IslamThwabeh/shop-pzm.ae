@@ -1,7 +1,39 @@
-import type { Product, Order, OrderItem, Customer, AdminUser } from '../../shared/types';
+import type { Product, Order, OrderItem, Customer, AdminUser, ServiceRequest } from '../../shared/types';
 
 export class Database {
   constructor(private db: D1Database) {}
+
+  private async ensureServiceRequestsSchema(): Promise<void> {
+    await this.db.prepare(
+      `CREATE TABLE IF NOT EXISTS service_requests (
+         id TEXT PRIMARY KEY,
+         service_type TEXT NOT NULL,
+         request_kind TEXT NOT NULL CHECK(request_kind IN ('quote', 'booking', 'callback', 'availability')),
+         customer_name TEXT NOT NULL,
+         customer_email TEXT,
+         customer_phone TEXT NOT NULL,
+         customer_address TEXT,
+         details TEXT NOT NULL,
+         preferred_contact_method TEXT DEFAULT 'phone' CHECK(preferred_contact_method IN ('phone', 'email', 'whatsapp')),
+         preferred_date TEXT,
+         preferred_time_period TEXT CHECK(preferred_time_period IN ('morning', 'afternoon', 'evening')),
+         source_page TEXT,
+         status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'contacted', 'quoted', 'scheduled', 'completed', 'cancelled')),
+         created_at TEXT NOT NULL,
+         updated_at TEXT NOT NULL
+       )`
+    ).run();
+
+    await this.db.prepare(
+      'CREATE INDEX IF NOT EXISTS idx_service_requests_status ON service_requests(status)'
+    ).run();
+    await this.db.prepare(
+      'CREATE INDEX IF NOT EXISTS idx_service_requests_service_type ON service_requests(service_type)'
+    ).run();
+    await this.db.prepare(
+      'CREATE INDEX IF NOT EXISTS idx_service_requests_created_at ON service_requests(created_at)'
+    ).run();
+  }
 
   // ============ PRODUCTS ============
 
@@ -376,6 +408,136 @@ export class Database {
     } catch (error) {
       console.error('Error decrementing product quantity:', error);
       return false;
+    }
+  }
+
+  // ============ SERVICE REQUESTS ============
+
+  async getServiceRequests(): Promise<ServiceRequest[]> {
+    try {
+      await this.ensureServiceRequestsSchema();
+      const result = await this.db
+        .prepare('SELECT * FROM service_requests ORDER BY created_at DESC')
+        .all();
+      return (result.results as ServiceRequest[]) || [];
+    } catch (error) {
+      console.error('Error fetching service requests:', error);
+      return [];
+    }
+  }
+
+  async getServiceRequest(id: string): Promise<ServiceRequest | null> {
+    try {
+      await this.ensureServiceRequestsSchema();
+      const result = await this.db
+        .prepare('SELECT * FROM service_requests WHERE id = ?')
+        .bind(id)
+        .first();
+      return (result as ServiceRequest) || null;
+    } catch (error) {
+      console.error('Error fetching service request:', error);
+      return null;
+    }
+  }
+
+  async createServiceRequest(request: ServiceRequest): Promise<ServiceRequest> {
+    try {
+      await this.ensureServiceRequestsSchema();
+      await this.db
+        .prepare(
+          `INSERT INTO service_requests (
+             id,
+             service_type,
+             request_kind,
+             customer_name,
+             customer_email,
+             customer_phone,
+             customer_address,
+             details,
+             preferred_contact_method,
+             preferred_date,
+             preferred_time_period,
+             source_page,
+             status,
+             created_at,
+             updated_at
+           )
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        )
+        .bind(
+          request.id,
+          request.service_type,
+          request.request_kind,
+          request.customer_name,
+          request.customer_email || null,
+          request.customer_phone,
+          request.customer_address || null,
+          request.details,
+          request.preferred_contact_method || 'phone',
+          request.preferred_date || null,
+          request.preferred_time_period || null,
+          request.source_page || null,
+          request.status,
+          request.created_at,
+          request.updated_at
+        )
+        .run();
+
+      return request;
+    } catch (error) {
+      console.error('Error creating service request:', error);
+      throw error;
+    }
+  }
+
+  async updateServiceRequest(id: string, updates: Partial<ServiceRequest>): Promise<ServiceRequest | null> {
+    try {
+      await this.ensureServiceRequestsSchema();
+      const request = await this.getServiceRequest(id);
+      if (!request) return null;
+
+      const updated = { ...request, ...updates, updated_at: new Date().toISOString() };
+
+      await this.db
+        .prepare(
+          `UPDATE service_requests SET
+             service_type = ?,
+             request_kind = ?,
+             customer_name = ?,
+             customer_email = ?,
+             customer_phone = ?,
+             customer_address = ?,
+             details = ?,
+             preferred_contact_method = ?,
+             preferred_date = ?,
+             preferred_time_period = ?,
+             source_page = ?,
+             status = ?,
+             updated_at = ?
+           WHERE id = ?`
+        )
+        .bind(
+          updated.service_type,
+          updated.request_kind,
+          updated.customer_name,
+          updated.customer_email || null,
+          updated.customer_phone,
+          updated.customer_address || null,
+          updated.details,
+          updated.preferred_contact_method || 'phone',
+          updated.preferred_date || null,
+          updated.preferred_time_period || null,
+          updated.source_page || null,
+          updated.status,
+          updated.updated_at,
+          id
+        )
+        .run();
+
+      return updated;
+    } catch (error) {
+      console.error('Error updating service request:', error);
+      return null;
     }
   }
 

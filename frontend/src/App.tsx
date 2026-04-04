@@ -13,8 +13,17 @@ import OrderConfirmation from './pages/OrderConfirmation'
 import AdminPage from './pages/AdminPage'
 import HomePage from './pages/HomePage'
 import Header from './components/Header'
+import Footer from './components/Footer'
+import StoreContactSection from './components/StoreContactSection'
 import Terms from './pages/Terms'
 import AdminInvoice from './pages/AdminInvoice'
+import ServicesPage from './pages/ServicesPage'
+import ServicePage from './pages/ServicePage'
+import AreasPage from './pages/AreasPage'
+import AreaPage from './pages/AreaPage'
+import ReturnPolicyPage from './pages/ReturnPolicyPage'
+import BlogPage from './pages/BlogPage'
+import BlogPostPage from './pages/BlogPostPage'
 
 function AppContent() {
   const navigate = useNavigate()
@@ -22,6 +31,10 @@ function AppContent() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const currentPageRaw = location.pathname === '/'
+    ? 'home'
+    : (location.pathname.split('/')[1] || 'home').replace(/\.html$/i, '')
+  const currentPage = currentPageRaw === 'blog-post' ? 'blog' : currentPageRaw
 
   // Load Elfsight widget script for Google Reviews
   useEffect(() => {
@@ -63,6 +76,14 @@ function AppContent() {
   }
 
   const isInvoiceRoute = location.pathname.startsWith('/admin/orders/') && location.pathname.endsWith('/invoice')
+  const isAdminRoute = location.pathname.startsWith('/admin')
+  const isHomeRoute = location.pathname === '/'
+  const showStoreContactSection =
+    !isInvoiceRoute &&
+    !isAdminRoute &&
+    location.pathname !== '/cart' &&
+    location.pathname !== '/checkout' &&
+    !location.pathname.startsWith('/order/')
 
   if (isInvoiceRoute) {
     return (
@@ -75,7 +96,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header
-        currentPage={location.pathname === '/' ? 'home' : location.pathname.split('/')[1] || 'home'}
+        currentPage={currentPage}
         onNavigate={(page) => {
           // keep compatibility with previous onNavigate signature
           if (page && (page as any).type) {
@@ -89,7 +110,7 @@ function AppContent() {
         }}
       />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className={isAdminRoute || isHomeRoute ? 'w-full' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'}>
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
             {error}
@@ -101,6 +122,46 @@ function AppContent() {
           <Route
             path="/"
             element={<HomePage products={products} onShopClick={() => navigateTo('/shop')} />}
+          />
+          <Route
+            path="/services"
+            element={<ServicesPage />}
+          />
+          <Route
+            path="/services/index.html"
+            element={<ServicesPage />}
+          />
+          <Route
+            path="/services/:slug"
+            element={<ServicePage />}
+          />
+          <Route
+            path="/areas"
+            element={<AreasPage />}
+          />
+          <Route
+            path="/areas/index.html"
+            element={<AreasPage />}
+          />
+          <Route
+            path="/areas/:slug"
+            element={<AreaPage />}
+          />
+          <Route
+            path="/blog"
+            element={<BlogPage />}
+          />
+          <Route
+            path="/blog.html"
+            element={<BlogPage />}
+          />
+          <Route
+            path="/blog/:slug"
+            element={<BlogPostPage />}
+          />
+          <Route
+            path="/blog-post.html"
+            element={<BlogPostPage />}
           />
           <Route
             path="/shop"
@@ -127,11 +188,26 @@ function AppContent() {
             element={<Terms />}
           />
           <Route
+            path="/terms.html"
+            element={<Terms />}
+          />
+          <Route
+            path="/return-policy"
+            element={<ReturnPolicyPage />}
+          />
+          <Route
+            path="/return-policy.html"
+            element={<ReturnPolicyPage />}
+          />
+          <Route
             path="/admin"
             element={<AdminPage onLogout={() => navigateTo('/')} />}
           />
         </Routes>
       </main>
+
+      {showStoreContactSection && <StoreContactSection />}
+      {!isInvoiceRoute && !isAdminRoute && <Footer />}
     </div>
   )
 }

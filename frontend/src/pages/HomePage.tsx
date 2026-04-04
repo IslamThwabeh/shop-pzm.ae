@@ -1,6 +1,89 @@
-import { ShoppingCart, Truck, Shield, MessageCircle, CheckCircle, Phone, MapPin } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { ArrowRight, CalendarDays, ChevronDown, Clock3, MapPin, ShieldCheck, ShoppingCart, Wrench } from 'lucide-react'
 import type { Product } from '@shared/types'
-import ProductCard from '../components/ProductCard' 
+import Seo from '../components/Seo'
+import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
+import { areaCatalogList } from '../content/areaCatalog'
+import {
+  homeAreaOrder,
+  homeBlogTeasers,
+  homeFaqItems,
+  homeFeaturedCategories,
+  homeServiceCards,
+  homeTrustCards,
+} from '../content/homePageContent'
+import { siteContact, siteIdentity } from '../content/siteData'
+
+type SectionHeaderProps = {
+  badge: string
+  title: string
+  description: string
+  align?: 'left' | 'center'
+}
+
+function SectionHeader({ badge, title, description, align = 'center' }: SectionHeaderProps) {
+  const alignmentClass = align === 'left' ? 'text-left' : 'text-center'
+
+  return (
+    <div className={alignmentClass}>
+      <span className="inline-flex rounded-full bg-gradient-to-r from-sky-100 to-emerald-100 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-sky-700">
+        {badge}
+      </span>
+      <h2 className="mt-5 text-3xl font-bold tracking-tight text-slate-950 md:text-4xl">{title}</h2>
+      <p className={`mt-4 text-base leading-7 text-brandTextMedium md:text-lg ${align === 'center' ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
+        {description}
+      </p>
+    </div>
+  )
+}
+
+function ReviewCard(props: { name: string, rating: number, text: string }) {
+  return (
+    <div className="h-full rounded-3xl border border-brandBorder bg-white p-6 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md">
+      <div className="mb-3 flex items-center gap-2">
+        <span className="font-bold text-gray-900">{props.name}</span>
+        <span className="text-yellow-400">{'★'.repeat(props.rating)}</span>
+      </div>
+      <p className="text-sm leading-7 text-gray-700">{props.text}</p>
+    </div>
+  )
+}
+
+function CustomerReviewsFallback() {
+  const reviews = [
+    { name: '9airafi', rating: 5, text: 'Amazing store full of everything. I came here to sell my iPhone and the process was super fast with instant cash.' },
+    { name: 'Matallah Mohamed', rating: 5, text: 'They handle both hardware and software repairs very well, and their used laptops and phones are priced competitively for Dubai.' },
+    { name: 'Margarette Ann Tamo', rating: 5, text: 'PZM fixed my water-damaged phone after other shops could not. Very professional team and I was very happy with the result.' },
+    { name: 'Ahmed Hekal', rating: 5, text: 'Very good store for new and used phones and laptops, and a strong choice for repairs and gaming PC builds as well.' },
+    { name: 'Muhammad Nazeer Rakha', rating: 5, text: 'I brought a MacBook Pro and the team upgraded and restored it well. Customer service was strong and they wanted the job done properly.' },
+    { name: 'Niyati Desai', rating: 5, text: 'Excellent work by PZM. They repaired our PlayStation quickly, at a good price, and were very easy to deal with.' },
+  ]
+
+  return (
+    <div className="mt-10 space-y-8">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {reviews.map((review) => (
+          <div key={review.name}>
+            <ReviewCard {...review} />
+          </div>
+        ))}
+      </div>
+
+      <div className="text-center">
+        <a
+          href="https://www.google.com/maps/place/PZM+Computers+%26+Phones+Store+-Buy%E2%80%A2Sell%E2%80%A2Fix%E2%80%A2Used%E2%80%A2PC%E2%80%A2Build/@25.0849294,55.1966838,17z/data=!4m18!1m9!3m8!1s0x3e5f6dc0bc49a6d5:0x158c13f2d688b32e!2zUFpNIENvbXB1dGVycyAmIFBob25lcyBTdG9yZSAtQnV54oCiU2VsbOKAokZpeOKAolVzZWTigKJQQ-KAokJ1aWxk!8m2!3d25.0849246!4d55.1992587!9m1!1b1!16s%2Fg%2F11vtbpyx8l!3m7!1s0x3e5f6dc0bc49a6d5:0x158c13f2d688b32e!8m2!3d25.0849246!4d55.1992587!9m1!1b1!16s%2Fg%2F11vtbpyx8l?entry=ttu&g_ep=EgoyMDI2MDEyOC4wIKXMDSoASAFQAw%3D%3D"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded-full border border-brandBorder bg-white px-5 py-3 text-base font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
+        >
+          See All Reviews on Google Maps
+          <ArrowRight size={16} />
+        </a>
+      </div>
+    </div>
+  )
+}
 
 interface HomePageProps {
   products: Product[]
@@ -8,271 +91,390 @@ interface HomePageProps {
 }
 
 export default function HomePage({ products, onShopClick }: HomePageProps) {
-  const newProducts = products.filter(p => p.condition === 'new').slice(0, 3)
-  const usedProducts = products.filter(p => p.condition === 'used').slice(0, 3)
+  const [openFaqIndex, setOpenFaqIndex] = useState(0)
+
+  const inStockProducts = useMemo(
+    () => products.filter((product) => (product.quantity ?? 0) > 0),
+    [products]
+  )
+
+  const areaLookup = useMemo(
+    () => new Map(areaCatalogList.map((area) => [area.slug, area])),
+    []
+  )
+
+  const orderedAreas = homeAreaOrder
+    .map((slug) => areaLookup.get(slug))
+    .filter((area): area is NonNullable<typeof area> => Boolean(area))
+
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: homeFaqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  }
+
+  const storeJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ComputerStore',
+    name: siteIdentity.name,
+    description:
+      'Buy, sell, fix, and build with PZM in Al Barsha, Dubai. New and used iPhones, MacBooks, gaming PCs, repairs, accessories, and tracked service requests.',
+    url: 'https://shop.pzm.ae',
+    telephone: '+971528026677',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: `${siteContact.addressLine1}, ${siteContact.addressLine2}`,
+      addressLocality: 'Dubai',
+      addressCountry: 'AE',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 25.0848627,
+      longitude: 55.1992671,
+    },
+    hasMap: siteContact.mapsHref,
+    image: 'https://shop.pzm.ae/images/mini_logo.png',
+    priceRange: 'AED 150 - AED 7,000',
+    areaServed: orderedAreas.map((area) => ({
+      '@type': 'Place',
+      name: `${area.name}, Dubai`,
+    })),
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-green-50 to-white">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white py-20 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-5xl font-bold mb-4">Premium iPhones at Best Prices</h1>
-          <p className="text-xl mb-2">Buy New & Used iPhones with Cash on Delivery</p>
-          <p className="text-green-100 mb-8">Authentic Products • Warranty • Fast Delivery • Secure Payment</p>
-          <button
-            onClick={onShopClick}
-            className="bg-white text-green-600 px-8 py-3 rounded-lg font-bold text-lg hover:bg-green-50 transition-colors"
-          >
-            Shop Now
-          </button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#f0f7ff] text-slate-900">
+      <Seo
+        title="Buy iPhones, Laptops and Repair Dubai | PZM Store"
+        description="PZM Computers and Phones Store in Al Barsha, Dubai for new and used devices, expert repairs, custom PC builds, accessories, and tracked service requests."
+        canonicalPath="/"
+        jsonLd={[storeJsonLd, faqJsonLd]}
+      />
 
-      {/* Services Section */}
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Why Choose PZM?</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Service Card 1 */}
-          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow text-center">
-            <div className="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto">
-              <ShoppingCart className="text-green-600" size={24} />
+      <section id="home" className="relative overflow-hidden bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_55%,#f0f7ff_100%)] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="pointer-events-none absolute -right-20 top-0 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(14,165,233,0.18),transparent_70%)]" />
+        <div className="pointer-events-none absolute -left-16 bottom-0 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(0,200,150,0.16),transparent_70%)]" />
+
+        <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
+          <div>
+            <span className="inline-flex rounded-full border border-white/80 bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-sky-700 shadow-sm backdrop-blur">
+              Al Barsha, Dubai
+            </span>
+            <h1 className="mt-6 text-4xl font-extrabold leading-[1.05] tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+              PZM Computers
+              <br />
+              and Phones Store
+              <br />
+              <span className="bg-gradient-to-r from-sky-500 to-primary bg-clip-text text-transparent">
+                New Used Repair PC Build
+              </span>
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-brandTextMedium">
+              Your integrated device solutions hub in Al Barsha, Dubai. Expert repairs, brand new and certified used devices, custom gaming PC builds, accessories, and tracked service requests under one roof.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-4">
+              <button
+                onClick={onShopClick}
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-4 text-base font-semibold text-white shadow-[0_10px_30px_rgba(0,167,111,0.25)] transition-transform hover:-translate-y-0.5 hover:bg-brandGreenDark"
+              >
+                <ShoppingCart size={18} />
+                Shop Now
+              </button>
+              <Link
+                to="/services/repair"
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-7 py-4 text-base font-semibold text-slate-900 transition-colors hover:border-primary hover:text-primary"
+              >
+                <Wrench size={18} />
+                Repair Services
+              </Link>
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Cash on Delivery</h3>
-            <p className="text-gray-600">Pay safely upon delivery. No advance payment required.</p>
-          </div>
 
-          {/* Service Card 2 */}
-          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow text-center">
-            <div className="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto">
-              <Truck className="text-green-600" size={24} />
-            </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Fast Delivery</h3>
-            <p className="text-gray-600">Quick and reliable delivery across UAE within 24-48 hours.</p>
-          </div>
-
-          {/* Service Card 3 */}
-          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow text-center">
-            <div className="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto">
-              <Shield className="text-green-600" size={24} />
-            </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Warranty & Support</h3>
-            <p className="text-gray-600">All phones come with warranty and dedicated customer support.</p>
-          </div>
-
-          {/* Service Card 4 */}
-          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow text-center">
-            <div className="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto">
-              <CheckCircle className="text-green-600" size={24} />
-            </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Authentic Products</h3>
-            <p className="text-gray-600">100% genuine iPhones. All products verified and tested.</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Featured Products */}
-      <div className="bg-gray-50 py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold mb-12 text-gray-900">Featured Products</h2>
-          
-          {/* New Products */}
-          <div className="mb-12">
-            <h3 className="text-2xl font-bold mb-6 text-gray-900">✨ Brand New</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {newProducts.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+            <div className="mt-10 flex flex-wrap gap-3">
+              <span className="rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">{inStockProducts.length} live products</span>
+              <span className="rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">8 core service funnels</span>
+              <span className="rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">Open late, 7 days</span>
             </div>
           </div>
 
-          {/* Used Products */}
-          {usedProducts.length > 0 && (
-            <div>
-              <h3 className="text-2xl font-bold mb-6 text-gray-900">📱 Used & Refurbished</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {usedProducts.map(product => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Testimonials Section with Real Google Reviews */}
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">What Our Customers Say</h2>
-        
-        {/* Elfsight Google Reviews Widget */}
-        <div className="elfsight-app-69b4a752-7f66-44fe-8388-276e68bc6823" data-elfsight-app-lazy></div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="bg-green-600 text-white py-12 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Get Your iPhone?</h2>
-          <p className="text-lg mb-6">Browse our collection and find the perfect iPhone for you</p>
-          <button
-            onClick={onShopClick}
-            className="bg-white text-green-600 px-8 py-3 rounded-lg font-bold text-lg hover:bg-green-50 transition-colors"
-          >
-            Start Shopping
-          </button>
-        </div>
-      </div>
-
-      {/* Contact Section */}
-      <div className="bg-white py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">Contact Us</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {/* Left Column - Contact Methods */}
-            <div>
-              <p className="text-gray-600 text-lg mb-8">Need help with our services or products? Get in touch!</p>
-              
-              <div className="space-y-6">
-                {/* Phone */}
-                <div className="flex items-start gap-4">
-                  <div className="bg-gray-100 p-3 rounded-full">
-                    <Phone size={24} className="text-green-600" />
-                  </div>
-                  <div>
-                    <a href="tel:+971528026677" className="text-green-600 font-semibold hover:underline">
-                      +971 528026677
-                    </a>
-                  </div>
-                </div>
-
-                {/* WhatsApp */}
-                <div className="flex items-start gap-4">
-                  <div className="bg-gray-100 p-3 rounded-full">
-                    <MessageCircle size={24} className="text-green-600" />
-                  </div>
-                  <div>
-                    <a href="https://wa.me/971528026677" className="text-green-600 font-semibold hover:underline">
-                      Chat on WhatsApp
-                    </a>
-                  </div>
-                </div>
-
-                {/* Google Maps */}
-                <div className="flex items-start gap-4">
-                  <div className="bg-gray-100 p-3 rounded-full">
-                    <MapPin size={24} className="text-green-600" />
-                  </div>
-                  <div>
-                    <a href="https://maps.app.goo.gl/e5Rhfo8YY3i8CatM7?g_st=ic" className="text-green-600 font-semibold hover:underline">
-                      Find us on Google Maps
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column - Store Info & Hours */}
-            <div>
-              <h3 className="text-2xl font-bold text-green-600 mb-6">Visit Our Store</h3>
-              
-              <div className="mb-8">
-                <p className="text-gray-700 font-semibold mb-2">PZM Computers & Phones Store -Buy•Sell•Fix•Used•PC•Build</p>
-                <p className="text-gray-600 mb-2">Hessa Street Branch</p>
-                <p className="text-gray-600 mb-6">Inside Hessa Union Coop Hypermarket, Ground floor</p>
+          <div className="rounded-[32px] border border-white/70 bg-white/80 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.12)] backdrop-blur md:p-8">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-3xl bg-gradient-to-br from-sky-50 to-white p-5 ring-1 ring-sky-100">
+                <ShieldCheck className="text-sky-600" size={22} />
+                <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-sky-700">Trust layer</p>
+                <h2 className="mt-2 text-xl font-bold text-slate-900">Warranty, repairs, and pickups</h2>
+                <p className="mt-3 text-sm leading-7 text-brandTextMedium">
+                  The homepage now follows the legacy structure while pushing key product and service journeys into attributable on-site flows.
+                </p>
               </div>
 
-              {/* Business Hours Table */}
-              <div className="bg-gray-50 rounded-lg p-6">
-                <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <span className="inline-block bg-pink-400 text-white px-3 py-1 rounded-full text-sm font-bold">Business Hours</span>
-                </h4>
-                
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-700">Monday</span>
-                    <span className="text-green-600 font-semibold">08:00 AM – 12:00 AM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-700">Tuesday</span>
-                    <span className="text-green-600 font-semibold">08:00 AM – 12:00 AM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-700">Wednesday</span>
-                    <span className="text-green-600 font-semibold">08:00 AM – 12:00 AM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-700">Thursday</span>
-                    <span className="text-green-600 font-semibold">08:00 AM – 12:00 AM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-700">Friday</span>
-                    <span className="text-green-600 font-semibold">09:30 AM – 12:00 AM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-700">Saturday</span>
-                    <span className="text-green-600 font-semibold">07:00 AM – 01:00 AM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-700">Sunday</span>
-                    <span className="text-green-600 font-semibold">07:00 AM – 01:00 AM</span>
-                  </div>
+              <div className="rounded-3xl bg-gradient-to-br from-emerald-50 to-white p-5 ring-1 ring-emerald-100">
+                <CalendarDays className="text-primary" size={22} />
+                <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-emerald-700">Booking</p>
+                <h2 className="mt-2 text-xl font-bold text-slate-900">Book drop-off or pickup</h2>
+                <p className="mt-3 text-sm leading-7 text-brandTextMedium">
+                  The legacy appointment block is preserved lower on the page, but now it writes directly into the service request backend.
+                </p>
+              </div>
+
+              <div className="rounded-3xl bg-slate-950 p-5 text-white sm:col-span-2">
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-sky-200">Store details</p>
+                <h2 className="mt-2 text-2xl font-bold">{siteIdentity.name}</h2>
+                <div className="mt-4 grid gap-3 text-sm text-slate-200 md:grid-cols-3">
+                  <a href={siteContact.phoneHref} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 transition-colors hover:bg-white/10">
+                    Call {siteContact.phoneDisplay}
+                  </a>
+                  <a href={siteContact.mapsHref} target="_blank" rel="noopener noreferrer" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 transition-colors hover:bg-white/10">
+                    Get directions
+                  </a>
+                  <Link to="/services" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 transition-colors hover:bg-white/10">
+                    Explore services
+                  </Link>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Google Map */}
-          <div className="mt-12 rounded-lg overflow-hidden shadow-lg h-96">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.231830114033!2d55.1992671!3d25.0848627!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f6dc0bc49a6d5%3A0x158c13f2d688b32e!2sPZM%20Computer%20Phone%20Trading%20%26%20Repair%20(Sell%2CUsed%2CNew%2CBuild)!5e0!3m2!1sen!2sae!4v1715590341023!5m2!1sen!2sae"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
+      <section id="services" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeader
+          badge="What We Do"
+          title="Our Services"
+          description="From expert repairs to custom builds, everything your device needs is now mapped into first-party service pages and tracked requests."
+        />
+
+        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+          {homeServiceCards.map((card) => (
+            <Link
+              key={card.title}
+              to={card.to}
+              className="group relative overflow-hidden rounded-[28px] border border-brandBorder bg-white p-7 shadow-sm transition-all hover:-translate-y-1.5 hover:border-transparent hover:shadow-xl"
+            >
+              <div className={`inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${card.accentClassName} text-2xl shadow-sm`}>
+                {card.emoji}
+              </div>
+              <h3 className="mt-6 text-xl font-bold text-slate-900">{card.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-brandTextMedium">{card.description}</p>
+              <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-700 transition-all group-hover:gap-3 group-hover:text-primary">
+                {card.cta}
+                <ArrowRight size={16} />
+              </span>
+              <div className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-sky-500 to-primary transition-transform group-hover:scale-x-100" />
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section id="products" className="border-y border-slate-200/70 bg-slate-50/80 px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeader
+            badge="Featured"
+            title="Shop by Category"
+            description="Brand new devices with official warranty and certified pre-owned stock at prices that make sense in Dubai."
+          />
+
+          <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {homeFeaturedCategories.map((category) => (
+              <Link
+                key={category.title}
+                to={category.to}
+                className="group overflow-hidden rounded-[30px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+              >
+                <div className="grid min-h-[280px] grid-cols-1 md:grid-cols-[220px,1fr]">
+                  <div className="bg-slate-100">
+                    <img src={category.imageUrl} alt={category.title} className="h-full w-full object-cover" />
+                  </div>
+                  <div className="flex flex-col justify-center p-7 md:p-8">
+                    <span className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] ${category.badgeClassName}`}>
+                      {category.tag}
+                    </span>
+                    <h3 className="mt-5 text-2xl font-bold text-slate-900">{category.title}</h3>
+                    <p className="mt-3 text-sm leading-7 text-brandTextMedium">{category.description}</p>
+                    <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-700 transition-all group-hover:gap-3 group-hover:text-primary">
+                      Open category
+                      <ArrowRight size={16} />
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-8 rounded-[28px] border border-brandBorder bg-white px-6 py-5 shadow-sm md:flex md:items-center md:justify-between md:gap-6">
+            <div>
+              <p className="text-lg font-semibold text-slate-900">Live inventory already exists behind the category pages</p>
+              <p className="mt-1 text-sm text-brandTextMedium">Use the storefront for product checkout, and use service pages for repair, trade-in, and callback funnels.</p>
+            </div>
+            <button
+              onClick={onShopClick}
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark md:mt-0"
+            >
+              Browse Live Shop
+              <ArrowRight size={16} />
+            </button>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Footer */}
-      <div className="bg-green-600 h-1"></div>
-      <footer className="bg-gray-900 text-white py-12 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            {/* WhatsApp */}
-            <div>
-              <MessageCircle size={40} className="mx-auto mb-4 text-green-400" />
-              <h3 className="text-xl font-bold mb-3">WhatsApp</h3>
-              <a href="https://wa.me/971528026677" className="text-green-300 hover:text-green-200 transition-colors">
-                +971 528026677
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeader
+          badge="Why PZM"
+          title="Trusted by Dubai Residents"
+          description="Serving Al Barsha and the wider Dubai corridor with quality devices, dependable repair handling, and clearer website conversion paths."
+        />
+
+        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+          {homeTrustCards.map((card) => (
+            <div key={card.title} className="rounded-[28px] border border-brandBorder bg-white p-8 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
+              <div className="text-4xl">{card.emoji}</div>
+              <h3 className="mt-5 text-xl font-bold text-slate-900">{card.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-brandTextMedium">{card.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="blog" className="bg-[linear-gradient(180deg,#f8fafc_0%,#f0f7ff_100%)] px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeader
+            badge="Latest Updates"
+            title="Tech Blog"
+            description="The blog routes still need full migration, but the homepage can already preserve the legacy content surface and link users into the existing article pages."
+          />
+
+          <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {homeBlogTeasers.map((post) => (
+              <a
+                key={post.title}
+                href={post.href}
+                className="overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+              >
+                <div className={`h-36 bg-gradient-to-br ${post.themeClassName} p-6`}>
+                  <span className="inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-700 shadow-sm">
+                    {post.tag}
+                  </span>
+                  <p className="mt-10 text-sm font-semibold text-slate-700">{post.date}</p>
+                </div>
+                <div className="p-7">
+                  <h3 className="text-xl font-bold leading-8 text-slate-900">{post.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-brandTextMedium">{post.description}</p>
+                  <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-700">
+                    Read article
+                    <ArrowRight size={16} />
+                  </span>
+                </div>
               </a>
-            </div>
-
-            {/* Delivery */}
-            <div>
-              <Truck size={40} className="mx-auto mb-4 text-green-400" />
-              <h3 className="text-xl font-bold mb-3">Delivery</h3>
-              <p className="text-gray-300">24-48 Hours Across UAE</p>
-            </div>
-
-            {/* Support */}
-            <div>
-              <Shield size={40} className="mx-auto mb-4 text-green-400" />
-              <h3 className="text-xl font-bold mb-3">Support</h3>
-              <a href="mailto:support@pzm.ae" className="text-green-300 hover:text-green-200 transition-colors">
-                support@pzm.ae
-              </a>
-            </div>
+            ))}
           </div>
 
-          <div className="mt-8 pt-8 border-t border-gray-700 text-center">
-            <p className="text-gray-400">PZM Computers & Phones Store -Buy•Sell•Fix•Used•PC•Build</p>
-            <p className="text-gray-400">© {new Date().getFullYear()} All rights reserved.</p>
+          <div className="mt-8 text-center">
+            <a
+              href="/blog.html"
+              className="inline-flex items-center gap-2 rounded-full border border-brandBorder bg-white px-5 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
+            >
+              Open Blog
+              <ArrowRight size={16} />
+            </a>
           </div>
         </div>
-      </footer>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeader
+          badge="Testimonials"
+          title="Customer Reviews"
+          description="What customers are saying about PZM on Google and after real repair, trade-in, and purchase experiences."
+        />
+        <CustomerReviewsFallback />
+      </section>
+
+      <section id="faq" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeader
+          badge="FAQ"
+          title="Frequently Asked Questions"
+          description="Everything customers typically ask about warranty, repair timing, ordering, pickup, and how the store works in Dubai."
+        />
+
+        <div className="mt-14 grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {homeFaqItems.map((item, index) => {
+            const isOpen = openFaqIndex === index
+
+            return (
+              <div key={item.question} className="overflow-hidden rounded-[22px] border border-brandBorder bg-white shadow-sm transition-shadow hover:shadow-md">
+                <button
+                  onClick={() => setOpenFaqIndex(isOpen ? -1 : index)}
+                  className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
+                >
+                  <span className="text-base font-semibold text-slate-900">{item.question}</span>
+                  <span className={`inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-all ${isOpen ? 'rotate-180 bg-primary text-white' : ''}`}>
+                    <ChevronDown size={18} />
+                  </span>
+                </button>
+                <div className={`grid transition-[grid-template-rows] duration-300 ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                  <div className="overflow-hidden">
+                    <p className="px-6 pb-6 text-sm leading-7 text-brandTextMedium">{item.answer}</p>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className="bg-slate-950 px-4 py-16 text-white sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight">Areas We Serve in Dubai</h2>
+          <p className="mt-3 text-base text-slate-300 md:text-lg">Based in Al Barsha, proudly serving customers from across Dubai.</p>
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
+            {orderedAreas.map((area) => (
+              <Link
+                key={area.slug}
+                to={`/areas/${area.slug}`}
+                className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-slate-200 transition-colors hover:border-primary hover:bg-primary hover:text-white"
+              >
+                {area.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="appointment" className="bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr,1.1fr] lg:items-center">
+          <div>
+            <SectionHeader
+              badge="Book Now"
+              title="Book Drop-Off or Pickup"
+              description="Choose whether you will bring the device to our Al Barsha store or ask us to collect and return it. The structure stays close to the legacy site, but the request is now stored inside shop.pzm.ae."
+              align="left"
+            />
+
+            <div className="mt-8 space-y-4 rounded-[28px] border border-brandBorder bg-white/70 p-6 shadow-sm backdrop-blur">
+              <div className="flex items-start gap-3">
+                <Clock3 className="mt-1 text-primary" size={18} />
+                <p className="text-sm leading-7 text-brandTextDark">Store drop-off can be booked for the same day, while pickup and return needs at least 24 hours notice.</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <MapPin className="mt-1 text-primary" size={18} />
+                <p className="text-sm leading-7 text-brandTextDark">The booking panel uses the existing service request backend, so each request gets a reference ID immediately.</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <ShoppingCart className="mt-1 text-primary" size={18} />
+                <p className="text-sm leading-7 text-brandTextDark">Product buying still belongs in the live storefront and checkout flow. Booking is reserved for service-style journeys.</p>
+              </div>
+            </div>
+          </div>
+
+          <HomeAppointmentPanel />
+        </div>
+      </section>
     </div>
   )
 }

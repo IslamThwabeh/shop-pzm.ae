@@ -1,6 +1,13 @@
+import Seo from '../components/Seo'
+
 export default function Terms() {
   return (
     <div className="bg-white rounded-lg shadow p-8 border border-brandBorder">
+      <Seo
+        title="Terms & Conditions | PZM Computers & Phones"
+        description="Read PZM Computers & Phones Store terms, refunds, and warranty policies."
+        canonicalPath="/terms"
+      />
       <h1 className="text-3xl font-bold text-primary mb-6">Terms & Conditions</h1>
 
       <p className="text-brandTextDark mb-6">Last updated: {new Date().toLocaleDateString()}</p>

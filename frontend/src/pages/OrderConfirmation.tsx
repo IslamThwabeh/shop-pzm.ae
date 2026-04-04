@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { CheckCircle, Home, Copy } from 'lucide-react'
+import Seo from '../components/Seo'
 
 interface OrderConfirmationProps {
   orderId: string
@@ -53,6 +54,12 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
 
   return (
     <div className="max-w-2xl mx-auto">
+      <Seo
+        title="Order Confirmation | PZM Computers & Phones"
+        description="Your order has been confirmed."
+        canonicalPath="/order/confirmation"
+        noindex={true}
+      />
       <div className="bg-white rounded-lg shadow-lg p-8 text-center border border-brandBorder">
         {/* Success Icon */}
         <div className="flex justify-center mb-6">

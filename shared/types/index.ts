@@ -46,6 +46,39 @@ export interface OrderItem {
   product?: Product // Populated when fetching order with products
 }
 
+// Service Request Types
+export type ServiceRequestKind = 'quote' | 'booking' | 'callback' | 'availability'
+
+export type ServiceRequestStatus =
+  | 'pending'
+  | 'contacted'
+  | 'quoted'
+  | 'scheduled'
+  | 'completed'
+  | 'cancelled'
+
+export type ServiceContactMethod = 'phone' | 'email' | 'whatsapp'
+
+export type ServiceTimePeriod = 'morning' | 'afternoon' | 'evening'
+
+export interface ServiceRequest {
+  id: string
+  service_type: string
+  request_kind: ServiceRequestKind
+  customer_name: string
+  customer_email?: string
+  customer_phone: string
+  customer_address?: string
+  details: string
+  preferred_contact_method?: ServiceContactMethod
+  preferred_date?: string
+  preferred_time_period?: ServiceTimePeriod
+  source_page?: string
+  status: ServiceRequestStatus
+  created_at: string
+  updated_at: string
+}
+
 // Customer Types
 export interface Customer {
   id: string

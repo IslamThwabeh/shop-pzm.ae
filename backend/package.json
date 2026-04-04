@@ -10,7 +10,7 @@
     "deploy:production": "wrangler deploy --env production",
     "deploy": "wrangler deploy",
     "deploy:prod": "wrangler deploy --env production",
-    "db:migrate": "wrangler d1 execute pzm-db --file ../migrations/001_init.sql && wrangler d1 execute pzm-db --file ../migrations/002_seed_products.sql",
+    "db:migrate": "wrangler d1 execute pzm-db --file ../migrations/001_init.sql && wrangler d1 execute pzm-db --file ../migrations/002_seed_products.sql && wrangler d1 execute pzm-db --file ../migrations/003_add_order_items.sql && wrangler d1 execute pzm-db --file ../migrations/004_make_product_id_nullable.sql && wrangler d1 execute pzm-db --file ../migrations/005_add_order_statuses.sql && wrangler d1 execute pzm-db --file ../migrations/006_add_product_images.sql && wrangler d1 execute pzm-db --file ../migrations/007_migrate_existing_images.sql && wrangler d1 execute pzm-db --file ../migrations/008_fix_product_foreign_keys.sql && wrangler d1 execute pzm-db --file ../migrations/009_add_service_requests.sql",
     "db:seed": "wrangler d1 execute pzm-db --file ../migrations/002_seed_products.sql",
     "db:query": "wrangler d1 execute pzm-db --command",
     "r2:create": "wrangler r2 bucket create pzm-images",

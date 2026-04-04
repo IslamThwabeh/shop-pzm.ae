@@ -1,15 +1,9 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-/* Mobile-specific adjustments */
-@media (max-width: 768px) {
-  #root {
-    padding: 1rem;
-  }
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
 
 /* Ensure images are responsive by default */

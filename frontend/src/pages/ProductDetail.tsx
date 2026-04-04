@@ -4,6 +4,7 @@ import type { Product } from '@shared/types'
 import { apiService } from '../services/api'
 import { useCart } from '../context/CartContext'
 import ImageGallery from '../components/ImageGallery'
+import Seo from '../components/Seo'
 
 interface ProductDetailProps {
   productId: string
@@ -84,6 +85,32 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
 
   return (
     <div>
+      <Seo
+        title={`${product.model} | PZM Computers & Phones`}
+        description={product.description || `Buy ${product.model} in ${product.color} with ${product.storage} storage. Cash on Delivery available in Dubai.`}
+        canonicalPath={`/product/${product.id}`}
+        imageUrl={product.images?.[0]}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: product.model,
+          description: product.description || `${product.model} in ${product.color} with ${product.storage} storage.`,
+          image: product.images || [],
+          sku: product.id,
+          brand: {
+            '@type': 'Brand',
+            name: 'Apple',
+          },
+          offers: {
+            '@type': 'Offer',
+            url: `https://shop.pzm.ae/product/${product.id}`,
+            priceCurrency: 'AED',
+            price: product.price,
+            availability: product.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            itemCondition: product.condition === 'new' ? 'https://schema.org/NewCondition' : 'https://schema.org/UsedCondition',
+          },
+        }}
+      />
       <button
         onClick={onBack}
         className="inline-flex items-center gap-2 text-primary hover:opacity-90 mb-6"

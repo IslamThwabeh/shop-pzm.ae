@@ -1,2 +1,7 @@
 # Environment files
 .env*
+.dev.vars
+.cloudflare-deploy.env
+
+# Local Wrangler state
+.wrangler/

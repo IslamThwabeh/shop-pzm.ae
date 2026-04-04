@@ -1,5 +1,6 @@
 import { Trash2, ArrowLeft } from 'lucide-react'
 import { useCart } from '../context/CartContext'
+import Seo from '../components/Seo'
 
 interface CartProps {
   onContinueShopping: () => void
@@ -12,6 +13,12 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
   if (items.length === 0) {
     return (
       <div className="text-center py-12 bg-white rounded-lg shadow">
+        <Seo
+          title="Your Cart | PZM Computers & Phones"
+          description="Review items in your cart before checkout."
+          canonicalPath="/cart"
+          noindex={true}
+        />
         <p className="text-gray-600 mb-6">Your cart is empty</p>
         <button
           onClick={onContinueShopping}
@@ -26,6 +33,12 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
 
   return (
     <div>
+      <Seo
+        title="Your Cart | PZM Computers & Phones"
+        description="Review items in your cart before checkout."
+        canonicalPath="/cart"
+        noindex={true}
+      />
       <h1 className="text-3xl font-bold mb-6 text-gray-900">Shopping Cart</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

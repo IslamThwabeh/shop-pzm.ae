@@ -5,17 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && copy public\\_redirects dist\\_redirects",
     "build:staging": "tsc && vite build --mode staging",
     "build:production": "tsc && vite build --mode production",
     "preview": "vite preview",
     "deploy": "npm run build && wrangler pages deploy ./dist --project-name shop-pzm-ae-frontend",
     "deploy:staging": "npm run build:staging && wrangler pages deploy ./dist --branch staging --project-name shop-pzm-ae-frontend",
-    "deploy:production": "npm run build:production && wrangler pages deploy ./dist --branch production --project-name shop-pzm-ae-frontend"
+    "deploy:production": "npm run build:production && wrangler pages deploy ./dist --branch main --project-name shop-pzm-ae-frontend"
   },
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-helmet-async": "^2.0.5",
     "axios": "^1.6.0",
     "lucide-react": "^0.344.0",
     "react-router-dom": "^6.14.1"

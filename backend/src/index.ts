@@ -5,7 +5,7 @@ import { AuthService } from './auth';
 import { EmailService } from './email-service';
 import { StorageService } from './storage';
 import { getCorsHeaders, handleCors, generateId, validateRequired, parseRequestBody, logRequest, logError } from './utils';
-import type { Product, Order } from '../../shared/types';
+import type { Product, Order, ServiceRequest } from '../../shared/types';
 
 interface Env {
   DB: D1Database;
@@ -17,6 +17,82 @@ interface Env {
 }
 
 const app = new Hono<{ Bindings: Env }>();
+
+const R2_HOST = 'r2.pzm.ae';
+const ROBOTS_TXT = 'User-agent: *\nDisallow: /\n';
+const SEARCH_BOT_REGEX = /(googlebot|bingbot|yandex(bot|images)?|duckduckbot|baiduspider|slurp|sogou|exabot|facebot|facebookexternalhit|twitterbot|linkedinbot|embedly|pinterestbot|applebot)/i;
+const ROBOTS_HEADERS = {
+  'X-Robots-Tag': 'noindex, nofollow, nosnippet, noarchive',
+};
+const SERVICE_REQUEST_KINDS = ['quote', 'booking', 'callback', 'availability'];
+const SERVICE_REQUEST_STATUSES = ['pending', 'contacted', 'quoted', 'scheduled', 'completed', 'cancelled'];
+const SERVICE_CONTACT_METHODS = ['phone', 'email', 'whatsapp'];
+const SERVICE_TIME_PERIODS = ['morning', 'afternoon', 'evening'];
+
+function isSearchEngineBot(userAgent: string | undefined): boolean {
+  if (!userAgent) return false;
+  return SEARCH_BOT_REGEX.test(userAgent);
+}
+
+async function serveR2Object(c: any) {
+  const url = new URL(c.req.url);
+  const key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
+
+  if (!key) {
+    return c.text('Forbidden', 403, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-store',
+      ...ROBOTS_HEADERS,
+    });
+  }
+
+  const object = await c.env.BUCKET.get(key);
+  if (!object) {
+    return c.text('Not found', 404, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-store',
+      ...ROBOTS_HEADERS,
+    });
+  }
+
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set('etag', object.httpEtag);
+  if (!headers.has('Cache-Control')) {
+    headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+  }
+
+  return new Response(object.body, { headers });
+}
+
+// Block search engine crawlers on r2.pzm.ae and serve robots.txt
+app.use('*', async (c, next) => {
+  const host = c.req.header('host')?.toLowerCase();
+  if (host === R2_HOST) {
+    const path = new URL(c.req.url).pathname;
+
+    if (path === '/robots.txt') {
+      return c.text(ROBOTS_TXT, 200, {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'public, max-age=86400',
+        ...ROBOTS_HEADERS,
+      });
+    }
+
+    const userAgent = c.req.header('user-agent') || '';
+    if (isSearchEngineBot(userAgent)) {
+      return c.text('Forbidden', 403, {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store',
+        ...ROBOTS_HEADERS,
+      });
+    }
+
+    return await serveR2Object(c);
+  }
+
+  await next();
+});
 
 // CORS middleware
 app.use(
@@ -589,6 +665,198 @@ app.put('/api/orders/:id', async (c) => {
   } catch (error) {
     logError(error, 'PUT /api/orders/:id');
     return c.json({ error: 'Failed to update order', status: 500 }, 500);
+  }
+});
+
+// ============ SERVICE REQUESTS API ============
+
+app.post('/api/service-requests', async (c) => {
+  try {
+    logRequest('POST', '/api/service-requests');
+    const body = await parseRequestBody(c);
+    if (!body) {
+      return c.json({ error: 'Invalid request body', status: 400 }, 400);
+    }
+
+    const validation = validateRequired(body, [
+      'service_type',
+      'request_kind',
+      'customer_name',
+      'customer_phone',
+      'details',
+    ]);
+
+    if (validation) {
+      return c.json({ error: validation, status: 400 }, 400);
+    }
+
+    if (!SERVICE_REQUEST_KINDS.includes(body.request_kind)) {
+      return c.json({ error: 'Invalid request kind', status: 400 }, 400);
+    }
+
+    if (body.customer_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.customer_email)) {
+      return c.json({ error: 'Invalid email format', status: 400 }, 400);
+    }
+
+    if (body.preferred_contact_method && !SERVICE_CONTACT_METHODS.includes(body.preferred_contact_method)) {
+      return c.json({ error: 'Invalid preferred contact method', status: 400 }, 400);
+    }
+
+    if (body.preferred_time_period && !SERVICE_TIME_PERIODS.includes(body.preferred_time_period)) {
+      return c.json({ error: 'Invalid preferred time period', status: 400 }, 400);
+    }
+
+    const now = new Date().toISOString();
+    const request: ServiceRequest = {
+      id: generateId('srq'),
+      service_type: body.service_type,
+      request_kind: body.request_kind,
+      customer_name: body.customer_name,
+      customer_email: body.customer_email || undefined,
+      customer_phone: body.customer_phone,
+      customer_address: body.customer_address || undefined,
+      details: body.details,
+      preferred_contact_method: body.preferred_contact_method || 'phone',
+      preferred_date: body.preferred_date || undefined,
+      preferred_time_period: body.preferred_time_period || undefined,
+      source_page: body.source_page || undefined,
+      status: 'pending',
+      created_at: now,
+      updated_at: now,
+    };
+
+    const db = new Database(c.env.DB);
+    const created = await db.createServiceRequest(request);
+
+    return c.json({ data: created, status: 201 }, 201);
+  } catch (error) {
+    logError(error, 'POST /api/service-requests');
+    return c.json({ error: 'Failed to create service request', status: 500 }, 500);
+  }
+});
+
+app.get('/api/service-requests', async (c) => {
+  try {
+    logRequest('GET', '/api/service-requests');
+    const authService = new AuthService(c.env.ADMIN_SECRET);
+    const authHeader = c.req.header('Authorization');
+    const token = authService.extractToken(authHeader);
+
+    if (!token) {
+      return c.json({ error: 'Unauthorized', status: 401 }, 401);
+    }
+
+    const payload = await authService.verifyToken(token);
+    if (!payload || payload.type !== 'admin') {
+      return c.json({ error: 'Forbidden', status: 403 }, 403);
+    }
+
+    const db = new Database(c.env.DB);
+    const requests = await db.getServiceRequests();
+    return c.json({ data: requests, status: 200 }, 200);
+  } catch (error) {
+    logError(error, 'GET /api/service-requests');
+    return c.json({ error: 'Failed to fetch service requests', status: 500 }, 500);
+  }
+});
+
+app.get('/api/service-requests/:id', async (c) => {
+  try {
+    const requestId = c.req.param('id');
+    logRequest('GET', `/api/service-requests/${requestId}`);
+    const authService = new AuthService(c.env.ADMIN_SECRET);
+    const authHeader = c.req.header('Authorization');
+    const token = authService.extractToken(authHeader);
+
+    if (!token) {
+      return c.json({ error: 'Unauthorized', status: 401 }, 401);
+    }
+
+    const payload = await authService.verifyToken(token);
+    if (!payload || payload.type !== 'admin') {
+      return c.json({ error: 'Forbidden', status: 403 }, 403);
+    }
+
+    const db = new Database(c.env.DB);
+    const request = await db.getServiceRequest(requestId);
+    if (!request) {
+      return c.json({ error: 'Service request not found', status: 404 }, 404);
+    }
+
+    return c.json({ data: request, status: 200 }, 200);
+  } catch (error) {
+    logError(error, 'GET /api/service-requests/:id');
+    return c.json({ error: 'Failed to fetch service request', status: 500 }, 500);
+  }
+});
+
+app.put('/api/service-requests/:id', async (c) => {
+  try {
+    const requestId = c.req.param('id');
+    logRequest('PUT', `/api/service-requests/${requestId}`);
+    const authService = new AuthService(c.env.ADMIN_SECRET);
+    const authHeader = c.req.header('Authorization');
+    const token = authService.extractToken(authHeader);
+
+    if (!token) {
+      return c.json({ error: 'Unauthorized', status: 401 }, 401);
+    }
+
+    const payload = await authService.verifyToken(token);
+    if (!payload || payload.type !== 'admin') {
+      return c.json({ error: 'Forbidden', status: 403 }, 403);
+    }
+
+    const body = await parseRequestBody(c);
+    if (!body) {
+      return c.json({ error: 'Invalid request body', status: 400 }, 400);
+    }
+
+    if (body.status && !SERVICE_REQUEST_STATUSES.includes(body.status)) {
+      return c.json({ error: 'Invalid service request status', status: 400 }, 400);
+    }
+
+    if (body.preferred_contact_method && !SERVICE_CONTACT_METHODS.includes(body.preferred_contact_method)) {
+      return c.json({ error: 'Invalid preferred contact method', status: 400 }, 400);
+    }
+
+    if (body.preferred_time_period && !SERVICE_TIME_PERIODS.includes(body.preferred_time_period)) {
+      return c.json({ error: 'Invalid preferred time period', status: 400 }, 400);
+    }
+
+    const allowedFields = [
+      'service_type',
+      'request_kind',
+      'customer_name',
+      'customer_email',
+      'customer_phone',
+      'customer_address',
+      'details',
+      'preferred_contact_method',
+      'preferred_date',
+      'preferred_time_period',
+      'source_page',
+      'status',
+    ];
+
+    const updates = Object.fromEntries(
+      Object.entries(body).filter(([key]) => allowedFields.includes(key))
+    );
+
+    if (Object.keys(updates).length === 0) {
+      return c.json({ error: 'No valid fields provided', status: 400 }, 400);
+    }
+
+    const db = new Database(c.env.DB);
+    const updated = await db.updateServiceRequest(requestId, updates as Partial<ServiceRequest>);
+    if (!updated) {
+      return c.json({ error: 'Service request not found', status: 404 }, 404);
+    }
+
+    return c.json({ data: updated, status: 200 }, 200);
+  } catch (error) {
+    logError(error, 'PUT /api/service-requests/:id');
+    return c.json({ error: 'Failed to update service request', status: 500 }, 500);
   }
 });
 

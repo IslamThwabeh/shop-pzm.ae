@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { Filter } from 'lucide-react'
 import type { Product } from '@shared/types'
 import ProductCard from '../components/ProductCard'
+import Seo from '../components/Seo'
 
 interface ProductListingProps {
   products: Product[]
@@ -50,6 +51,11 @@ export default function ProductListing({ products, loading }: ProductListingProp
 
   return (
     <div>
+      <Seo
+        title="Shop iPhones in Dubai | PZM Computers & Phones"
+        description="Browse new and used iPhones with Cash on Delivery in Dubai. Filter by price, condition, and availability at PZM."
+        canonicalPath="/shop"
+      />
       <h1 className="text-4xl font-bold mb-2 text-primary">PZM Computers & Phones Store</h1>
       <p className="text-brandTextMedium mb-8">Buy new and used iPhones with Cash on Delivery</p>
 
