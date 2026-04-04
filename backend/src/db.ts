@@ -37,7 +37,7 @@ export class Database {
 
   // ============ PRODUCTS ============
 
-  async getProducts(condition?: 'new' | 'used'): Promise<Product[]> {
+  async getProducts(condition?: 'new' | 'used', includeOutOfStock: boolean = false): Promise<Product[]> {
     try {
       let query = 'SELECT * FROM products';
       const params: any[] = [];
@@ -51,6 +51,10 @@ export class Database {
 
       const result = await this.db.prepare(query).bind(...params).all();
       const products = (result.results as Product[]) || [];
+      if (includeOutOfStock) {
+        return products;
+      }
+
       // Hide used items that are out of stock; keep new items visible regardless
       return products.filter(p => p.condition === 'used' ? (p.quantity ?? 0) > 0 : true);
     } catch (error) {

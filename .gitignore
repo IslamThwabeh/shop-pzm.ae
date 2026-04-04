@@ -32,3 +32,4 @@ backend/.env
 
 wrangler.toml
 wrangler.jsonc
+!backend/wrangler.toml

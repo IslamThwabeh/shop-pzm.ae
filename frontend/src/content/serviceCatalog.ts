@@ -1,4 +1,5 @@
 import type { ServiceRequestKind } from '@shared/types'
+import { buildApiUrl } from '../utils/siteConfig'
 
 export interface ServiceRequestOption {
   value: ServiceRequestKind
@@ -15,7 +16,11 @@ export interface ServiceCatalogEntry {
   highlights: string[]
   requestKinds: ServiceRequestOption[]
   shopPath?: string
+  imageUrl?: string
+  imageAlt?: string
 }
+
+const legacyMedia = (path: string) => buildApiUrl(`/media/legacy/${path}`)
 
 const quoteAndCallback: ServiceRequestOption[] = [
   { value: 'quote', label: 'Request a quote', description: 'Get pricing and availability from the team.' },
@@ -34,6 +39,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Pickup and drop-off requests can be tracked with a reference ID',
       'Keep service conversions inside the website instead of leaking to chat apps',
     ],
+    imageUrl: legacyMedia('Services/repairing_services.jpg'),
+    imageAlt: 'Repair services at PZM',
     requestKinds: [
       { value: 'booking', label: 'Book repair or drop-off', description: 'Reserve a repair visit, drop-off, or pickup slot.' },
       { value: 'quote', label: 'Request repair estimate', description: 'Describe the issue and ask for a cost estimate first.' },
@@ -51,6 +58,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Supports quote-first and callback flows for price discovery',
       'Creates an internal request reference you can track later',
     ],
+    imageUrl: legacyMedia('Services/Sell_Your_Old_iPhones.jpg'),
+    imageAlt: 'Sell your old iPhone at PZM',
     requestKinds: quoteAndCallback,
   },
   'gaming-pc': {
@@ -64,6 +73,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Good fit for gaming, workstation, streaming, and editing builds',
       'Structured intake before the sales conversation starts',
     ],
+    imageUrl: legacyMedia('Catigories/GamingPC.JPG'),
+    imageAlt: 'Gaming PC builds at PZM',
     requestKinds: [
       { value: 'quote', label: 'Request a build quote', description: 'Share your budget and goal to get a recommended configuration.' },
       { value: 'callback', label: 'Talk through the build', description: 'Ask the team to call you and discuss parts and timing.' },
@@ -81,6 +92,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Works for availability checks and bundle requests',
       'Pairs well with live catalog pages as they expand',
     ],
+    imageUrl: legacyMedia('Catigories/mobile_accessories.jpg'),
+    imageAlt: 'Accessories and peripherals at PZM',
     requestKinds: [
       { value: 'availability', label: 'Check availability', description: 'Ask whether a specific accessory is in stock.' },
       { value: 'quote', label: 'Request a bundle quote', description: 'Ask for pricing on multiple accessories together.' },
@@ -99,6 +112,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Supports availability checks for models not yet listed',
       'Designed for gradual parity without losing attribution',
     ],
+    imageUrl: legacyMedia('Catigories/brand_new.jpg'),
+    imageAlt: 'Brand new device range at PZM',
     requestKinds: [
       { value: 'availability', label: 'Check model availability', description: 'Ask about a model or configuration before ordering.' },
       { value: 'quote', label: 'Request a price confirmation', description: 'Ask for a confirmed price and stock status.' },
@@ -117,6 +132,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Availability and callback requests cover missing SKUs during migration',
       'Keeps your payout tied to orders created on the website',
     ],
+    imageUrl: legacyMedia('buy_iphone/iPhone_17_Pro_Max_all_colors.jpg'),
+    imageAlt: 'iPhone 17 Pro Max color lineup at PZM',
     requestKinds: [
       { value: 'availability', label: 'Check iPhone availability', description: 'Ask whether a model, storage option, or color is available.' },
       { value: 'quote', label: 'Request a confirmed offer', description: 'Ask for pricing confirmation before placing the order.' },
@@ -135,6 +152,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Pairs with the live catalog for in-stock used items',
       'Keeps service-style inquiries tied to the website',
     ],
+    imageUrl: legacyMedia('buy_used/used_iphone_16_pro_max_main.webp'),
+    imageAlt: 'Used devices at PZM',
     requestKinds: [
       { value: 'availability', label: 'Check used stock', description: 'Ask about stock, condition, or configuration.' },
       { value: 'quote', label: 'Request a price confirmation', description: 'Ask for a confirmed price on a used device.' },

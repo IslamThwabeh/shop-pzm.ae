@@ -20,6 +20,8 @@ interface Env {
 const app = new Hono<{ Bindings: Env }>();
 
 const R2_HOST = 'r2.pzm.ae';
+const SHOP_MEDIA_HOSTS = new Set(['shop.pzm.ae']);
+const SHOP_MEDIA_PATH_PREFIX = '/api/media/';
 const ROBOTS_TXT = 'User-agent: *\nDisallow: /\n';
 const SEARCH_BOT_REGEX = /(googlebot|bingbot|yandex(bot|images)?|duckduckbot|baiduspider|slurp|sogou|exabot|facebot|facebookexternalhit|twitterbot|linkedinbot|embedly|pinterestbot|applebot)/i;
 const ROBOTS_HEADERS = {
@@ -52,14 +54,42 @@ function getAllowedCorsOrigins(environment: string | undefined, host: string | u
   return origins;
 }
 
+function getObjectKeyFromUrl(url: string): string | null {
+  try {
+    const parsedUrl = new URL(url);
+    const hostname = parsedUrl.hostname.toLowerCase();
+
+    if (hostname !== R2_HOST && !hostname.endsWith('.r2.cloudflarestorage.com')) {
+      return null;
+    }
+
+    const key = parsedUrl.pathname.replace(/^\/+/, '');
+    return key || null;
+  } catch {
+    return null;
+  }
+}
+
+async function deleteBucketObjects(storageService: StorageService, urls: string[]) {
+  for (const url of urls) {
+    const key = getObjectKeyFromUrl(url);
+    if (!key) continue;
+    await storageService.deleteFile(key);
+  }
+}
+
 function isSearchEngineBot(userAgent: string | undefined): boolean {
   if (!userAgent) return false;
   return SEARCH_BOT_REGEX.test(userAgent);
 }
 
-async function serveR2Object(c: any) {
+async function serveR2Object(c: any, pathPrefix: string = '/') {
   const url = new URL(c.req.url);
-  const key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
+  const pathname = url.pathname;
+  const normalizedPrefix = pathPrefix === '/' ? '/' : pathPrefix.endsWith('/') ? pathPrefix : `${pathPrefix}/`;
+  const key = normalizedPrefix !== '/' && pathname.startsWith(normalizedPrefix)
+    ? pathname.slice(normalizedPrefix.length)
+    : (pathname.startsWith('/') ? pathname.slice(1) : pathname);
 
   if (!key) {
     return c.text('Forbidden', 403, {
@@ -91,9 +121,8 @@ async function serveR2Object(c: any) {
 // Block search engine crawlers on r2.pzm.ae and serve robots.txt
 app.use('*', async (c, next) => {
   const host = c.req.header('host')?.toLowerCase();
+  const path = new URL(c.req.url).pathname;
   if (host === R2_HOST) {
-    const path = new URL(c.req.url).pathname;
-
     if (path === '/robots.txt') {
       return c.text(ROBOTS_TXT, 200, {
         'Content-Type': 'text/plain; charset=utf-8',
@@ -112,6 +141,10 @@ app.use('*', async (c, next) => {
     }
 
     return await serveR2Object(c);
+  }
+
+  if (host && SHOP_MEDIA_HOSTS.has(host) && path.startsWith(SHOP_MEDIA_PATH_PREFIX)) {
+    return await serveR2Object(c, SHOP_MEDIA_PATH_PREFIX);
   }
 
   await next();
@@ -186,7 +219,11 @@ app.get('/api/products', async (c) => {
     logRequest('GET', '/api/products');
     const db = new Database(c.env.DB);
     const condition = c.req.query('condition');
-    const products = await db.getProducts(condition as 'new' | 'used' | undefined);
+    const authService = new AuthService(c.env.ADMIN_SECRET);
+    const token = authService.extractToken(c.req.header('Authorization'));
+    const payload = token ? await authService.verifyToken(token) : null;
+    const includeOutOfStock = payload?.type === 'admin';
+    const products = await db.getProducts(condition as 'new' | 'used' | undefined, includeOutOfStock);
     
     // Fetch images for each product
     const productsWithImages = await Promise.all(
@@ -347,6 +384,8 @@ app.put('/api/products/:id', async (c) => {
     const price = formData.get('price') as string;
     const quantity = formData.get('quantity') as string;
     const description = formData.get('description') as string;
+    const replaceImagesRaw = (formData.get('replace_images') || formData.get('replaceImages') || '') as string;
+    const replaceImages = ['1', 'true', 'yes'].includes(replaceImagesRaw.toLowerCase());
     
     // Get all image files (up to 4)
     const imageFiles: File[] = [];
@@ -366,9 +405,16 @@ app.put('/api/products/:id', async (c) => {
     if (description !== null) updates.description = description;
 
     const db = new Database(c.env.DB);
+    const existingProduct = await db.getProduct(productId);
+    if (!existingProduct) {
+      return c.json({ error: 'Product not found', status: 404 }, 404);
+    }
     
     // Get existing images
     const existingImages = await db.getProductImages(productId);
+    const currentImages = existingImages.length > 0
+      ? existingImages
+      : (existingProduct.image_url ? [existingProduct.image_url] : []);
     
     // Upload new images if provided
     if (imageFiles.length > 0) {
@@ -386,23 +432,28 @@ app.put('/api/products/:id', async (c) => {
         }
       }
       
-      // Append new images to existing ones (max 4)
+      // Replace or append images based on operator intent.
       if (imageUrls.length > 0) {
-        const allImages = [...existingImages, ...imageUrls];
-        const finalImages = allImages.slice(0, 4); // Limit to 4 total
+        const finalImages = replaceImages
+          ? imageUrls.slice(0, 4)
+          : [...currentImages, ...imageUrls].slice(0, 4);
         
         // Delete all and re-insert with new order
         await db.deleteAllProductImages(productId);
         for (let i = 0; i < finalImages.length; i++) {
           await db.createProductImage(productId, finalImages[i], i, i === 0);
         }
+
+        if (replaceImages) {
+          await deleteBucketObjects(storageService, currentImages);
+        }
         
-        updates.image_url = finalImages[0]; // Primary image
+        updates.image_url = finalImages[0] || ''; // Primary image
       }
     } else {
       // If no new images provided, keep existing images
-      if (existingImages.length > 0) {
-        updates.image_url = existingImages[0]; // Keep primary image
+      if (currentImages.length > 0) {
+        updates.image_url = currentImages[0]; // Keep primary image
       }
     }
 
@@ -440,11 +491,23 @@ app.delete('/api/products/:id', async (c) => {
     }
 
     const db = new Database(c.env.DB);
+    const product = await db.getProduct(productId);
+    if (!product) {
+      return c.json({ error: 'Product not found', status: 404 }, 404);
+    }
+
+    const existingImages = await db.getProductImages(productId);
+    const imagesToDelete = existingImages.length > 0
+      ? existingImages
+      : (product.image_url ? [product.image_url] : []);
     const success = await db.deleteProduct(productId);
 
     if (!success) {
-      return c.json({ error: 'Product not found', status: 404 }, 404);
+      return c.json({ error: 'Failed to delete product', status: 500 }, 500);
     }
+
+    const storageService = new StorageService(c.env.BUCKET);
+    await deleteBucketObjects(storageService, imagesToDelete);
 
     return c.json({ data: { success: true }, status: 200 }, 200);
   } catch (error) {

@@ -60,26 +60,36 @@ export default function ServicePage() {
         </div>
       </div>
 
-      <section className="bg-white rounded-3xl border border-brandBorder shadow-md p-8 md:p-12 text-left">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">Attribution-first service flow</p>
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{service.heroTitle}</h1>
-        <p className="text-lg text-brandTextMedium max-w-3xl mb-6">{service.heroDescription}</p>
+      <section className="overflow-hidden rounded-3xl border border-brandBorder bg-white shadow-md text-left">
+        <div className={`grid grid-cols-1 ${service.imageUrl ? 'lg:grid-cols-[1.05fr,0.95fr] lg:items-stretch' : ''}`}>
+          <div className="p-8 md:p-12">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">Attribution-first service flow</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{service.heroTitle}</h1>
+            <p className="text-lg text-brandTextMedium max-w-3xl mb-6">{service.heroDescription}</p>
 
-        <div className="flex flex-wrap gap-3">
-          {service.shopPath && (
-            <Link
-              to={service.shopPath}
-              className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
-            >
-              Browse Live Shop
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              {service.shopPath && (
+                <Link
+                  to={service.shopPath}
+                  className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
+                >
+                  Browse Live Shop
+                </Link>
+              )}
+              <a
+                href="#service-request-form"
+                className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
+              >
+                Start Request
+              </a>
+            </div>
+          </div>
+
+          {service.imageUrl && (
+            <div className="min-h-[280px] bg-slate-100">
+              <img src={service.imageUrl} alt={service.imageAlt || service.title} className="h-full w-full object-cover" />
+            </div>
           )}
-          <a
-            href="#service-request-form"
-            className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
-          >
-            Start Request
-          </a>
         </div>
       </section>
 

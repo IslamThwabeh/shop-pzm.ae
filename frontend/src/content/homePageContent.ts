@@ -1,3 +1,5 @@
+import { buildApiUrl } from '../utils/siteConfig'
+
 export interface HomeServiceCard {
   emoji: string
   title: string
@@ -5,6 +7,8 @@ export interface HomeServiceCard {
   to: string
   cta: string
   accentClassName: string
+  imageUrl?: string
+  imageAlt?: string
 }
 
 export interface HomeFeaturedCategory {
@@ -36,6 +40,8 @@ export interface HomeFaqItem {
   answer: string
 }
 
+const legacyMedia = (path: string) => buildApiUrl(`/media/legacy/${path}`)
+
 export const homeServiceCards: HomeServiceCard[] = [
   {
     emoji: '🔧',
@@ -44,6 +50,8 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/repair',
     cta: 'Learn more',
     accentClassName: 'from-amber-100 to-orange-50',
+    imageUrl: legacyMedia('Services/repairing_services.jpg'),
+    imageAlt: 'PZM repair services workspace',
   },
   {
     emoji: '🛍️',
@@ -52,6 +60,8 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/brand-new',
     cta: 'Browse new devices',
     accentClassName: 'from-sky-100 to-cyan-50',
+    imageUrl: legacyMedia('Catigories/brand_new.jpg'),
+    imageAlt: 'Brand new devices at PZM',
   },
   {
     emoji: '✅',
@@ -60,6 +70,8 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/buy-used.html',
     cta: 'Browse used devices',
     accentClassName: 'from-emerald-100 to-green-50',
+    imageUrl: legacyMedia('buy_used/used_iphone_16_pro_max_main.webp'),
+    imageAlt: 'Certified pre-owned devices at PZM',
   },
   {
     emoji: '🖥️',
@@ -68,6 +80,8 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/gaming-pc',
     cta: 'Start building',
     accentClassName: 'from-violet-100 to-purple-50',
+    imageUrl: legacyMedia('Catigories/GamingPC.JPG'),
+    imageAlt: 'Custom gaming PC category at PZM',
   },
   {
     emoji: '📱',
@@ -76,6 +90,8 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/buy-iphone',
     cta: 'View iPhones',
     accentClassName: 'from-pink-100 to-rose-50',
+    imageUrl: legacyMedia('buy_iphone/iPhone_17_Pro_Max_all_colors.jpg'),
+    imageAlt: 'iPhone 17 Pro Max colors at PZM',
   },
   {
     emoji: '💰',
@@ -84,6 +100,8 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/sell-gadgets',
     cta: 'Get a quote',
     accentClassName: 'from-yellow-100 to-lime-50',
+    imageUrl: legacyMedia('Services/Sell_Your_Old_iPhones.jpg'),
+    imageAlt: 'Sell your old iPhone at PZM',
   },
   {
     emoji: '🎧',
@@ -92,6 +110,8 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/accessories',
     cta: 'Shop accessories',
     accentClassName: 'from-indigo-100 to-blue-50',
+    imageUrl: legacyMedia('Catigories/mobile_accessories.jpg'),
+    imageAlt: 'Phone and laptop accessories at PZM',
   },
   {
     emoji: '🌐',
@@ -109,7 +129,7 @@ export const homeFeaturedCategories: HomeFeaturedCategory[] = [
     title: 'Latest Devices',
     description: 'iPhones, Samsung, MacBooks, and gaming consoles with official warranty and fast support from the Hessa Street branch.',
     to: '/services/brand-new',
-    imageUrl: '/images/Catigories/mini_brand_new.webp',
+    imageUrl: legacyMedia('Catigories/brand_new.jpg'),
     badgeClassName: 'bg-emerald-100 text-emerald-700',
   },
   {
@@ -117,7 +137,7 @@ export const homeFeaturedCategories: HomeFeaturedCategory[] = [
     title: 'Pre-Owned Devices',
     description: 'Certified used phones, laptops, tablets, and gaming PCs with clear grading, testing, and warranty support.',
     to: '/services/buy-used.html',
-    imageUrl: '/images/Catigories/mini_Used_Phones.webp',
+    imageUrl: legacyMedia('buy_used/used_iphone_16_pro_max_main.webp'),
     badgeClassName: 'bg-amber-100 text-amber-700',
   },
 ]

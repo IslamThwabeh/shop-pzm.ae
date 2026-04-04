@@ -256,17 +256,36 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
             <Link
               key={card.title}
               to={card.to}
-              className="group relative overflow-hidden rounded-[28px] border border-brandBorder bg-white p-7 shadow-sm transition-all hover:-translate-y-1.5 hover:border-transparent hover:shadow-xl"
+              className="group relative overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1.5 hover:border-transparent hover:shadow-xl"
             >
-              <div className={`inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${card.accentClassName} text-2xl shadow-sm`}>
-                {card.emoji}
+              {card.imageUrl ? (
+                <div className="relative h-40 overflow-hidden bg-slate-100">
+                  <img
+                    src={card.imageUrl}
+                    alt={card.imageAlt || card.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/45 via-slate-950/10 to-transparent" />
+                  <div className={`absolute left-5 top-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${card.accentClassName} text-2xl shadow-sm`}>
+                    {card.emoji}
+                  </div>
+                </div>
+              ) : (
+                <div className="p-7 pb-0">
+                  <div className={`inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${card.accentClassName} text-2xl shadow-sm`}>
+                    {card.emoji}
+                  </div>
+                </div>
+              )}
+
+              <div className="p-7">
+                <h3 className="text-xl font-bold text-slate-900">{card.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-brandTextMedium">{card.description}</p>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-700 transition-all group-hover:gap-3 group-hover:text-primary">
+                  {card.cta}
+                  <ArrowRight size={16} />
+                </span>
               </div>
-              <h3 className="mt-6 text-xl font-bold text-slate-900">{card.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-brandTextMedium">{card.description}</p>
-              <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-700 transition-all group-hover:gap-3 group-hover:text-primary">
-                {card.cta}
-                <ArrowRight size={16} />
-              </span>
               <div className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-sky-500 to-primary transition-transform group-hover:scale-x-100" />
             </Link>
           ))}

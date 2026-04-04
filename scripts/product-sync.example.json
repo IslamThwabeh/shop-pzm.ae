@@ -1,0 +1,18 @@
+{
+  "products": [
+    {
+      "model": "iPhone 17 Pro Max",
+      "storage": "256GB",
+      "condition": "new",
+      "color": "Black",
+      "price": 5999,
+      "quantity": 3,
+      "description": "Middle East version with physical SIM support.",
+      "replaceImages": true,
+      "imagePaths": [
+        "C:/Users/your-name/Pictures/pzm/catalog/iphone-17-black-front.jpg",
+        "C:/Users/your-name/Pictures/pzm/catalog/iphone-17-black-back.jpg"
+      ]
+    }
+  ]
+}
