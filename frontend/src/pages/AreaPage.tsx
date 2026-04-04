@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import Seo from '../components/Seo'
 import { resolveAreaSlug } from '../content/areaCatalog'
 import { siteContact, siteIdentity } from '../content/siteData'
+import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 const geoCoordinates = {
   latitude: 25.0848627,
@@ -44,7 +45,7 @@ export default function AreaPage() {
           '@type': 'ComputerStore',
           name: `${siteIdentity.name} - ${area.name}, Dubai`,
           description: area.description,
-          url: `https://shop.pzm.ae/areas/${area.slug}`,
+          url: buildSiteUrl(`/areas/${area.slug}`),
           telephone: '+971528026677',
           address: {
             '@type': 'PostalAddress',
@@ -58,7 +59,7 @@ export default function AreaPage() {
             longitude: geoCoordinates.longitude,
           },
           areaServed: area.areaServed.map((name) => ({ '@type': 'Place', name })),
-          image: 'https://shop.pzm.ae/images/mini_logo.png',
+          image: toAbsoluteSiteUrl('/images/mini_logo.png'),
           priceRange: 'AED 150 - AED 7,000',
         }}
       />

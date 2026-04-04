@@ -12,6 +12,7 @@ interface Env {
   KV: KVNamespace;
   BUCKET: R2Bucket;
   ADMIN_SECRET: string;
+  ENVIRONMENT?: string;
   ZEPTOMAIL_API_TOKEN: string;
   GOOGLE_MAPS_API_KEY: string;
 }
@@ -28,6 +29,28 @@ const SERVICE_REQUEST_KINDS = ['quote', 'booking', 'callback', 'availability'];
 const SERVICE_REQUEST_STATUSES = ['pending', 'contacted', 'quoted', 'scheduled', 'completed', 'cancelled'];
 const SERVICE_CONTACT_METHODS = ['phone', 'email', 'whatsapp'];
 const SERVICE_TIME_PERIODS = ['morning', 'afternoon', 'evening'];
+const PRODUCTION_SITE_ORIGINS = [
+  'https://pzm.ae',
+  'https://www.pzm.ae',
+  'https://shop.pzm.ae',
+  'https://api.pzm.ae',
+  'https://pzm-store-frontend.pages.dev',
+];
+const LOCAL_DEV_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173'];
+const PRODUCTION_API_HOSTS = new Set(['pzm.ae', 'www.pzm.ae', 'shop.pzm.ae', 'api.pzm.ae']);
+
+function getAllowedCorsOrigins(environment: string | undefined, host: string | undefined): string[] {
+  const origins = [...PRODUCTION_SITE_ORIGINS];
+  const normalizedHost = host?.toLowerCase();
+  const isProductionHost = normalizedHost ? PRODUCTION_API_HOSTS.has(normalizedHost) : false;
+
+  // Keep localhost available for local/preview workflows without leaving it open on cutover domains.
+  if (environment !== 'production' || !isProductionHost) {
+    origins.push(...LOCAL_DEV_ORIGINS);
+  }
+
+  return origins;
+}
 
 function isSearchEngineBot(userAgent: string | undefined): boolean {
   if (!userAgent) return false;
@@ -97,20 +120,15 @@ app.use('*', async (c, next) => {
 // CORS middleware
 app.use(
   '*',
-  cors({
-    origin: [
-      'https://pzm.ae',
-      'https://www.pzm.ae',
-      'https://shop.pzm.ae',
-      'https://api.pzm.ae',
-      'https://pzm-store-frontend.pages.dev',
-      // Local dev origins (remove before production)
-      'http://localhost:5173',
-      'http://127.0.0.1:5173',
-    ],
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
-  })
+  async (c, next) => {
+    const corsMiddleware = cors({
+      origin: getAllowedCorsOrigins(c.env.ENVIRONMENT, c.req.header('host')),
+      allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+    });
+
+    return corsMiddleware(c, next);
+  }
 );
 
 // Health check
@@ -728,6 +746,12 @@ app.post('/api/service-requests', async (c) => {
     const db = new Database(c.env.DB);
     const created = await db.createServiceRequest(request);
 
+    const emailService = new EmailService(c.env.ZEPTOMAIL_API_TOKEN);
+    await emailService.sendServiceRequestNotification(created);
+    if (created.customer_email) {
+      await emailService.sendServiceRequestConfirmation(created);
+    }
+
     return c.json({ data: created, status: 201 }, 201);
   } catch (error) {
     logError(error, 'POST /api/service-requests');
@@ -851,6 +875,11 @@ app.put('/api/service-requests/:id', async (c) => {
     const updated = await db.updateServiceRequest(requestId, updates as Partial<ServiceRequest>);
     if (!updated) {
       return c.json({ error: 'Service request not found', status: 404 }, 404);
+    }
+
+    if (body.status && body.status !== request.status && updated.customer_email) {
+      const emailService = new EmailService(c.env.ZEPTOMAIL_API_TOKEN);
+      await emailService.sendServiceRequestStatusUpdate(updated);
     }
 
     return c.json({ data: updated, status: 200 }, 200);

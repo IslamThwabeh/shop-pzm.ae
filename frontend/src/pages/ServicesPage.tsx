@@ -7,7 +7,7 @@ export default function ServicesPage() {
     <div className="space-y-10">
       <Seo
         title="Services in Dubai | PZM Computers & Phones"
-        description="Explore repair, trade-in, gaming PC, accessories, and device service pages with tracked request forms on shop.pzm.ae."
+        description="Explore repair, trade-in, gaming PC, accessories, and device service pages with tracked request forms on the PZM website."
         canonicalPath="/services"
       />
 
@@ -16,7 +16,7 @@ export default function ServicesPage() {
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Service funnels are moving on-site</h1>
         <p className="text-lg text-brandTextMedium max-w-3xl">
           This is the first implementation slice for replacing WhatsApp-first service funnels with trackable website requests.
-          The layout will keep evolving toward full parity with pzm.ae, but the conversion layer now starts inside shop.pzm.ae.
+          The layout will keep evolving toward full parity with pzm.ae, but the conversion layer now starts inside the website itself.
         </p>
       </section>
 

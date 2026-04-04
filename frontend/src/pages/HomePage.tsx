@@ -14,6 +14,7 @@ import {
   homeTrustCards,
 } from '../content/homePageContent'
 import { siteContact, siteIdentity } from '../content/siteData'
+import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 type SectionHeaderProps = {
   badge: string
@@ -126,7 +127,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
     name: siteIdentity.name,
     description:
       'Buy, sell, fix, and build with PZM in Al Barsha, Dubai. New and used iPhones, MacBooks, gaming PCs, repairs, accessories, and tracked service requests.',
-    url: 'https://shop.pzm.ae',
+    url: buildSiteUrl('/'),
     telephone: '+971528026677',
     address: {
       '@type': 'PostalAddress',
@@ -140,7 +141,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
       longitude: 55.1992671,
     },
     hasMap: siteContact.mapsHref,
-    image: 'https://shop.pzm.ae/images/mini_logo.png',
+    image: toAbsoluteSiteUrl('/images/mini_logo.png'),
     priceRange: 'AED 150 - AED 7,000',
     areaServed: orderedAreas.map((area) => ({
       '@type': 'Place',
@@ -452,7 +453,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
             <SectionHeader
               badge="Book Now"
               title="Book Drop-Off or Pickup"
-              description="Choose whether you will bring the device to our Al Barsha store or ask us to collect and return it. The structure stays close to the legacy site, but the request is now stored inside shop.pzm.ae."
+              description="Choose whether you will bring the device to our Al Barsha store or ask us to collect and return it. The structure stays close to the legacy site, but the request is now stored inside the website."
               align="left"
             />
 

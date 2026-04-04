@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import Seo from '../components/Seo'
 import { getRelatedBlogPosts, resolveBlogPost } from '../content/blogCatalog'
+import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 function formatPublishedDate(publishedAt: string) {
   return new Date(`${publishedAt}T00:00:00`).toLocaleDateString('en-US', {
@@ -47,6 +48,7 @@ export default function BlogPostPage() {
 
   const relatedPosts = getRelatedBlogPosts(post.slug)
   const readTimeMinutes = estimateReadTime(post.bodyHtml)
+  const articleImageUrl = toAbsoluteSiteUrl(post.imageUrl)
 
   return (
     <div className="space-y-10">
@@ -54,13 +56,13 @@ export default function BlogPostPage() {
         title={`${post.title} | PZM Blog`}
         description={post.seoDescription}
         canonicalPath={`/blog/${post.slug}`}
-        imageUrl={post.imageUrl.startsWith('http') ? post.imageUrl : `https://shop.pzm.ae${post.imageUrl}`}
+        imageUrl={articleImageUrl}
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'Article',
           headline: post.title,
           description: post.seoDescription,
-          image: [post.imageUrl.startsWith('http') ? post.imageUrl : `https://shop.pzm.ae${post.imageUrl}`],
+          image: [articleImageUrl],
           datePublished: `${post.publishedAt}T00:00:00+04:00`,
           dateModified: `${post.publishedAt}T00:00:00+04:00`,
           author: {
@@ -72,10 +74,10 @@ export default function BlogPostPage() {
             name: 'PZM Computers & Phones Store',
             logo: {
               '@type': 'ImageObject',
-              url: 'https://shop.pzm.ae/images/mini_logo.png',
+              url: toAbsoluteSiteUrl('/images/mini_logo.png'),
             },
           },
-          mainEntityOfPage: `https://shop.pzm.ae/blog/${post.slug}`,
+          mainEntityOfPage: buildSiteUrl(`/blog/${post.slug}`),
         }}
       />
 

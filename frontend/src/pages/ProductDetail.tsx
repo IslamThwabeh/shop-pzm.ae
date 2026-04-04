@@ -5,6 +5,7 @@ import { apiService } from '../services/api'
 import { useCart } from '../context/CartContext'
 import ImageGallery from '../components/ImageGallery'
 import Seo from '../components/Seo'
+import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 interface ProductDetailProps {
   productId: string
@@ -95,7 +96,6 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
           '@type': 'Product',
           name: product.model,
           description: product.description || `${product.model} in ${product.color} with ${product.storage} storage.`,
-          image: product.images || [],
           sku: product.id,
           brand: {
             '@type': 'Brand',
@@ -103,12 +103,13 @@ export default function ProductDetail({ productId, onBack, onCheckout }: Product
           },
           offers: {
             '@type': 'Offer',
-            url: `https://shop.pzm.ae/product/${product.id}`,
+            url: buildSiteUrl(`/product/${product.id}`),
             priceCurrency: 'AED',
             price: product.price,
             availability: product.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             itemCondition: product.condition === 'new' ? 'https://schema.org/NewCondition' : 'https://schema.org/UsedCondition',
           },
+          image: (product.images || []).map((image) => toAbsoluteSiteUrl(image)),
         }}
       />
       <button

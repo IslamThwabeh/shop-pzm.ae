@@ -51,9 +51,9 @@ export default function ReturnPolicyPage() {
             </a>
           </p>
           <p>
-            <strong>Email:</strong>{' '}
-            <a href={`mailto:${siteContact.supportEmail}`} className="text-primary font-semibold hover:underline">
-              {siteContact.supportEmail}
+            <strong>WhatsApp:</strong>{' '}
+            <a href={siteContact.whatsappSupportHref} target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
+              Chat with PZM on WhatsApp
             </a>
           </p>
           <p>

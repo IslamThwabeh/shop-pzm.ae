@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import Seo from '../components/Seo'
+import { buildApiUrl } from '../utils/siteConfig'
 
 interface CheckoutProps {
   onBack: () => void
@@ -63,7 +64,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
         quantity: item.quantity,
       }))
 
-      const response = await fetch('https://shop.pzm.ae/api/orders', {
+      const response = await fetch(buildApiUrl('/orders'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -50,8 +50,8 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href={`mailto:${siteContact.supportEmail}`} className="hover:text-white transition-colors">
-                  {siteContact.supportEmail}
+                <a href={siteContact.whatsappSupportHref} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  WhatsApp Support
                 </a>
               </li>
               <li>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Upload } from 'lucide-react';
+import { buildApiUrl } from '../../utils/siteConfig';
 
 interface Product {
   id: string;
@@ -46,7 +47,7 @@ export default function ProductManagement({ token }: ProductManagementProps) {
     setError(null);
 
     try {
-      const response = await fetch('https://shop.pzm.ae/api/products', {
+      const response = await fetch(buildApiUrl('/products'), {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -160,8 +161,8 @@ export default function ProductManagement({ token }: ProductManagementProps) {
       });
 
       const url = editingProduct
-        ? `https://shop.pzm.ae/api/products/${editingProduct.id}`
-        : 'https://shop.pzm.ae/api/products';
+        ? buildApiUrl(`/products/${editingProduct.id}`)
+        : buildApiUrl('/products');
 
       const method = editingProduct ? 'PUT' : 'POST';
 
@@ -190,7 +191,7 @@ export default function ProductManagement({ token }: ProductManagementProps) {
     }
 
     try {
-      const response = await fetch(`https://shop.pzm.ae/api/products/${productId}`, {
+      const response = await fetch(buildApiUrl(`/products/${productId}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

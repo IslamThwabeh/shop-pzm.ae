@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { buildApiUrl } from '../utils/siteConfig'
 
 interface OrderItemProduct {
   id: string
@@ -42,7 +43,6 @@ interface OrderResponse {
 // Company constants (edit if needed)
 const COMPANY = {
   name: 'PZM Computers & Phones Store',
-  email: 'support@pzm.ae',
   phone: '+971 528026677',
   // Use the favicon from public for reliable printing
   logo: '/favicon.png',
@@ -70,7 +70,7 @@ export default function AdminInvoice() {
         setLoading(true)
         setError(null)
         const authToken = localStorage.getItem('adminToken')
-        const res = await fetch(`https://shop.pzm.ae/api/orders/${id}`, {
+        const res = await fetch(buildApiUrl(`/orders/${id}`), {
           headers: {
             'Authorization': authToken ? `Bearer ${authToken}` : '',
           },
@@ -191,7 +191,7 @@ export default function AdminInvoice() {
             <div>
               <div style={{ fontWeight: 700 }}>{COMPANY.name}</div>
               <div className="muted">{COMPANY.address}</div>
-              <div className="muted">{COMPANY.phone} • {COMPANY.email}</div>
+              <div className="muted">{COMPANY.phone} • WhatsApp and phone support</div>
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
@@ -265,7 +265,7 @@ export default function AdminInvoice() {
         </div>
 
         <div className="footer">
-          Thank you for your purchase! If you have questions about this invoice, contact us at {COMPANY.email} or {COMPANY.phone}.
+          Thank you for your purchase! If you have questions about this invoice, contact us on WhatsApp or by phone at {COMPANY.phone}.
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async'
+import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 interface SeoProps {
   title: string
@@ -10,8 +11,7 @@ interface SeoProps {
 }
 
 const SITE_NAME = 'PZM Computers & Phones Store'
-const SITE_URL = 'https://shop.pzm.ae'
-const DEFAULT_IMAGE = `${SITE_URL}/images/mini_logo.png`
+const DEFAULT_IMAGE = toAbsoluteSiteUrl('/images/mini_logo.png')
 
 export default function Seo({
   title,
@@ -21,9 +21,9 @@ export default function Seo({
   noindex = false,
   jsonLd,
 }: SeoProps) {
-  const canonicalUrl = `${SITE_URL}${canonicalPath}`
+  const canonicalUrl = buildSiteUrl(canonicalPath)
   const robots = noindex ? 'noindex, nofollow' : 'index, follow'
-  const ogImage = imageUrl || DEFAULT_IMAGE
+  const ogImage = imageUrl ? toAbsoluteSiteUrl(imageUrl) : DEFAULT_IMAGE
 
   const jsonLdArray = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []
 

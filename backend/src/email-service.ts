@@ -3,7 +3,7 @@
  * Handles sending transactional emails for order confirmations and status updates
  */
 
-import type { OrderItem } from '../../shared/types';
+import type { OrderItem, ServiceRequest } from '../../shared/types';
 
 interface EmailOptions {
   to: string;
@@ -11,10 +11,16 @@ interface EmailOptions {
   htmlBody: string;
 }
 
+const NO_REPLY_EMAIL = 'no-reply@pzm.ae';
+const TEAM_NOTIFICATION_EMAIL = 'islam.thwabeh@gmail.com';
+const CONTACT_PHONE_DISPLAY = '+971 52 802 6677';
+const CONTACT_PHONE_E164 = '+971528026677';
+const CONTACT_WHATSAPP_URL = 'https://wa.me/971528026677?text=Hi%2C%20I%20need%20help%20with%20my%20PZM%20order%20or%20service%20request.';
+
 export class EmailService {
   private apiToken: string;
-  private senderEmail: string = 'support@pzm.ae';
-  private teamEmail: string = 'support@pzm.ae';
+  private senderEmail: string = NO_REPLY_EMAIL;
+  private teamEmail: string = TEAM_NOTIFICATION_EMAIL;
   private baseUrl: string = 'https://api.zeptomail.com/v1.1/email';
 
   constructor(apiToken: string) {
@@ -33,6 +39,36 @@ export class EmailService {
     return `PZM-${randomPart}`;
   }
 
+  private formatServiceRequestId(id: string): string {
+    const parts = id?.split('-');
+    const randomPart = parts?.[parts.length - 1] || id || '000000';
+    return `SRQ-${randomPart.toUpperCase()}`;
+  }
+
+  private formatLabel(value: string): string {
+    return value
+      .split(/[_-]/)
+      .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+      .join(' ');
+  }
+
+  private getCustomerContactNoteHtml(): string {
+    return `
+      <div style="margin-top: 24px; padding: 16px; background: #eefbf5; border: 1px solid #cceee0; border-radius: 8px;">
+        <p style="margin: 0 0 8px 0;"><strong>Important:</strong> This email was sent from <strong>${this.senderEmail}</strong>, which is unmonitored.</p>
+        <p style="margin: 0;">If you have any concern, please message us on <a href="${CONTACT_WHATSAPP_URL}" style="color: #00A76F; font-weight: bold;">WhatsApp</a> or call <a href="tel:${CONTACT_PHONE_E164}" style="color: #00A76F; font-weight: bold;">${CONTACT_PHONE_DISPLAY}</a>.</p>
+      </div>
+    `;
+  }
+
+  private getInternalNotificationNoteHtml(): string {
+    return `
+      <div style="margin-top: 24px; padding: 16px; background: #eefbf5; border: 1px solid #cceee0; border-radius: 8px;">
+        <p style="margin: 0;"><strong>Automated email note:</strong> Customer-facing emails are sent from <strong>${this.senderEmail}</strong>. If a customer needs help, direct them to WhatsApp or phone at ${CONTACT_PHONE_DISPLAY}.</p>
+      </div>
+    `;
+  }
+
   /**
    * Send email via ZeptoMail API
    */
@@ -41,7 +77,7 @@ export class EmailService {
       const payload = {
         from: {
           address: this.senderEmail,
-          name: 'PZM Shop',
+          name: 'PZM Notifications',
         },
         to: [
           {
@@ -221,6 +257,43 @@ export class EmailService {
     });
   }
 
+  async sendServiceRequestConfirmation(request: ServiceRequest): Promise<boolean> {
+    if (!request.customer_email) return true;
+
+    const displayId = this.formatServiceRequestId(request.id);
+    const htmlBody = this.getServiceRequestConfirmationTemplate(request, displayId);
+
+    return this.sendEmail({
+      to: request.customer_email,
+      subject: `We Received Your Service Request - ${displayId}`,
+      htmlBody,
+    });
+  }
+
+  async sendServiceRequestNotification(request: ServiceRequest): Promise<boolean> {
+    const displayId = this.formatServiceRequestId(request.id);
+    const htmlBody = this.getServiceRequestNotificationTemplate(request, displayId);
+
+    return this.sendEmail({
+      to: this.teamEmail,
+      subject: `New Service Request - ${displayId}`,
+      htmlBody,
+    });
+  }
+
+  async sendServiceRequestStatusUpdate(request: ServiceRequest): Promise<boolean> {
+    if (!request.customer_email) return true;
+
+    const displayId = this.formatServiceRequestId(request.id);
+    const htmlBody = this.getServiceRequestStatusUpdateTemplate(request, displayId);
+
+    return this.sendEmail({
+      to: request.customer_email,
+      subject: `Service Request Update - ${displayId}`,
+      htmlBody,
+    });
+  }
+
   /**
    * Order Confirmation Email Template
    */
@@ -348,10 +421,9 @@ export class EmailService {
             <ul>
               <li>Your order is being prepared for shipment</li>
               <li>You'll receive a notification when it's ready for delivery</li>
-              <li>Track your order status anytime by contacting support@pzm.ae</li>
+              <li>We will keep you updated as your order moves through confirmation, preparation, and delivery.</li>
             </ul>
-            
-            <p>If you have any questions, feel free to contact us at support@pzm.ae</p>
+            ${this.getCustomerContactNoteHtml()}
             
             <p>Thank you for shopping with PZM Shop!</p>
             
@@ -363,9 +435,9 @@ export class EmailService {
           
           <div class="footer">
             <p>© ${new Date().getFullYear()} PZM Shop. All rights reserved.</p>
-            <p>This is an automated email. Please do not reply directly to this email.</p>
+            <p>This is an automated email from ${this.senderEmail}. Replies are not monitored.</p>
             <div class="unsubscribe">
-              <p>Don't want to receive these emails? <a href="https://shop.pzm.ae/unsubscribe?email=${encodeURIComponent(orderId)}">Unsubscribe</a></p>
+              <p>For help, use WhatsApp or phone support instead of replying.</p>
             </div>
           </div>
         </div>
@@ -516,6 +588,7 @@ export class EmailService {
               <li>Contact customer if needed</li>
               <li>Update order status in admin panel</li>
             </ul>
+            ${this.getInternalNotificationNoteHtml()}
           </div>
           
           <div class="footer">
@@ -646,7 +719,7 @@ export class EmailService {
               </div>
             </div>
             
-            <p>If you have any questions or concerns, please don't hesitate to contact us at support@pzm.ae</p>
+            ${this.getCustomerContactNoteHtml()}
             
             <p>
               <strong>Thank you for shopping with PZM Shop!</strong><br>
@@ -657,7 +730,7 @@ export class EmailService {
           
           <div class="footer">
             <p>© ${new Date().getFullYear()} PZM Computers & Phones Store. All rights reserved.</p>
-            <p>This is an automated email. Please do not reply directly to this email.</p>
+            <p>This is an automated email from ${this.senderEmail}. Replies are not monitored.</p>
           </div>
         </div>
       </body>
@@ -751,11 +824,175 @@ export class EmailService {
             </div>
             
             <p><strong>Note:</strong> Customer has been notified about this status change.</p>
+            ${this.getInternalNotificationNoteHtml()}
           </div>
           
           <div class="footer">
             <p>© ${new Date().getFullYear()} PZM Computers & Phones Store. All rights reserved.</p>
             <p>This is an automated notification from the order management system.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private getServiceRequestConfirmationTemplate(request: ServiceRequest, requestId: string): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #00A76F 0%, #16a34a 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+          .details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+          .detail-row { display: flex; justify-content: flex-start; padding: 10px 0; border-bottom: 1px solid #eee; }
+          .detail-row:last-child { border-bottom: none; }
+          .label { font-weight: bold; color: #00A76F; min-width: 160px; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>✓ Service Request Received</h1>
+            <p>Your request is now in our system.</p>
+          </div>
+          <div class="content">
+            <p>Hi ${request.customer_name},</p>
+            <p>We received your service request and recorded it under the reference below.</p>
+            <div class="details">
+              <div class="detail-row">
+                <span class="label">Reference ID:</span>
+                <span><strong>${requestId}</strong></span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Service:</span>
+                <span>${this.formatLabel(request.service_type)}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Request Type:</span>
+                <span>${this.formatLabel(request.request_kind)}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Preferred Contact:</span>
+                <span>${this.formatLabel(request.preferred_contact_method || 'phone')}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Preferred Date:</span>
+                <span>${request.preferred_date || 'Not provided'}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Details:</span>
+                <span>${request.details}</span>
+              </div>
+            </div>
+            <p>We will review the request and follow up through your selected contact method.</p>
+            ${this.getCustomerContactNoteHtml()}
+          </div>
+          <div class="footer">
+            <p>© ${new Date().getFullYear()} PZM Computers & Phones Store. All rights reserved.</p>
+            <p>This is an automated email from ${this.senderEmail}. Replies are not monitored.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private getServiceRequestNotificationTemplate(request: ServiceRequest, requestId: string): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #00A76F; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+          .details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+          .detail-row { padding: 10px 0; border-bottom: 1px solid #eee; }
+          .detail-row:last-child { border-bottom: none; }
+          .label { font-weight: bold; color: #00A76F; display: inline-block; min-width: 160px; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🛠️ New Service Request</h1>
+          </div>
+          <div class="content">
+            <p><strong>A new service request has been submitted.</strong></p>
+            <div class="details">
+              <div class="detail-row"><span class="label">Reference ID:</span><span>${requestId}</span></div>
+              <div class="detail-row"><span class="label">Customer:</span><span>${request.customer_name}</span></div>
+              <div class="detail-row"><span class="label">Email:</span><span>${request.customer_email || 'Not provided'}</span></div>
+              <div class="detail-row"><span class="label">Phone:</span><span>${request.customer_phone}</span></div>
+              <div class="detail-row"><span class="label">Service:</span><span>${this.formatLabel(request.service_type)}</span></div>
+              <div class="detail-row"><span class="label">Request Type:</span><span>${this.formatLabel(request.request_kind)}</span></div>
+              <div class="detail-row"><span class="label">Preferred Contact:</span><span>${this.formatLabel(request.preferred_contact_method || 'phone')}</span></div>
+              <div class="detail-row"><span class="label">Preferred Date:</span><span>${request.preferred_date || 'Not provided'}${request.preferred_time_period ? ` (${this.formatLabel(request.preferred_time_period)})` : ''}</span></div>
+              <div class="detail-row"><span class="label">Source Page:</span><span>${request.source_page || 'Not recorded'}</span></div>
+              <div class="detail-row"><span class="label">Address:</span><span>${request.customer_address || 'Not provided'}</span></div>
+              <div class="detail-row"><span class="label">Status:</span><span>${this.formatLabel(request.status)}</span></div>
+              <div class="detail-row"><span class="label">Details:</span><span>${request.details}</span></div>
+            </div>
+            ${this.getInternalNotificationNoteHtml()}
+          </div>
+          <div class="footer">
+            <p>© ${new Date().getFullYear()} PZM Computers & Phones Store - Internal Notification</p>
+            <p>This is an automated notification from the service request system.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private getServiceRequestStatusUpdateTemplate(request: ServiceRequest, requestId: string): string {
+    const statusTitle = this.formatLabel(request.status);
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #00A76F 0%, #16a34a 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+          .details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+          .detail-row { display: flex; justify-content: flex-start; padding: 10px 0; border-bottom: 1px solid #eee; }
+          .detail-row:last-child { border-bottom: none; }
+          .label { font-weight: bold; color: #00A76F; min-width: 160px; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>📋 Service Request Update</h1>
+            <p>Your request status has changed to ${statusTitle}.</p>
+          </div>
+          <div class="content">
+            <p>Hi ${request.customer_name},</p>
+            <div class="details">
+              <div class="detail-row"><span class="label">Reference ID:</span><span><strong>${requestId}</strong></span></div>
+              <div class="detail-row"><span class="label">Service:</span><span>${this.formatLabel(request.service_type)}</span></div>
+              <div class="detail-row"><span class="label">Status:</span><span><strong>${statusTitle}</strong></span></div>
+              <div class="detail-row"><span class="label">Last Updated:</span><span>${request.updated_at}</span></div>
+            </div>
+            ${this.getCustomerContactNoteHtml()}
+          </div>
+          <div class="footer">
+            <p>© ${new Date().getFullYear()} PZM Computers & Phones Store. All rights reserved.</p>
+            <p>This is an automated email from ${this.senderEmail}. Replies are not monitored.</p>
           </div>
         </div>
       </body>

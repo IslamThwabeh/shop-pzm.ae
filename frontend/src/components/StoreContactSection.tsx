@@ -47,12 +47,12 @@ export default function StoreContactSection() {
                 <p className="mt-2 text-sm text-brandTextMedium">Keep this as support, not the primary sales funnel.</p>
               </a>
               <a
-                href={`mailto:${siteContact.supportEmail}`}
+                href={siteContact.phoneHref}
                 className="rounded-2xl border border-brandBorder p-5 hover:border-primary hover:bg-green-50 transition-colors"
               >
                 <Mail size={22} className="text-primary" />
-                <p className="mt-4 text-lg font-semibold text-brandTextDark">Email support</p>
-                <p className="mt-2 text-sm text-brandTextMedium">{siteContact.supportEmail}</p>
+                <p className="mt-4 text-lg font-semibold text-brandTextDark">Automated emails only</p>
+                <p className="mt-2 text-sm text-brandTextMedium">{siteContact.noReplyEmail} is unmonitored. Use phone or WhatsApp for support.</p>
               </a>
             </div>
 

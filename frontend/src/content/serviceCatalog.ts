@@ -26,7 +26,7 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
   repair: {
     slug: 'repair',
     title: 'Repair Services',
-    description: 'Book phone, laptop, MacBook, console, and motherboard repair services in Dubai with first-party tracking on shop.pzm.ae.',
+    description: 'Book phone, laptop, MacBook, console, and motherboard repair services in Dubai with first-party tracking on the PZM website.',
     heroTitle: 'Device repair without losing the lead to WhatsApp',
     heroDescription: 'Submit a repair request, pickup request, or callback directly on the website. You will get a reference ID immediately so the request stays attributable.',
     highlights: [
@@ -43,7 +43,7 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
   'sell-gadgets': {
     slug: 'sell-gadgets',
     title: 'Sell Your Device',
-    description: 'Request a valuation for your phone, laptop, tablet, or console directly on shop.pzm.ae and keep the lead attributable.',
+    description: 'Request a valuation for your phone, laptop, tablet, or console directly through the PZM website and keep the lead attributable.',
     heroTitle: 'Trade-in and sell-device requests that stay in your system',
     heroDescription: 'Tell us what you want to sell, its condition, and how to reach you. We will respond to a tracked request instead of forcing the user into WhatsApp first.',
     highlights: [

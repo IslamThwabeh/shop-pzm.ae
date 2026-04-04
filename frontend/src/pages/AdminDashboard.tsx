@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { LogOut, RefreshCw } from 'lucide-react';
 import ProductManagement from '../components/admin/ProductManagement';
+import ServiceRequestManagement from '../components/admin/ServiceRequestManagement';
+import { buildApiUrl } from '../utils/siteConfig';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -42,7 +44,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'reports'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'serviceRequests' | 'products' | 'reports'>('orders');
   const [selectedMonth, setSelectedMonth] = useState<string>(() => {
     const now = new Date();
     const year = now.getFullYear();
@@ -70,7 +72,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         return;
       }
 
-      const response = await fetch('https://shop.pzm.ae/api/orders', {
+      const response = await fetch(buildApiUrl('/orders'), {
         headers: {
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json',
@@ -104,7 +106,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         return;
       }
 
-      const response = await fetch(`https://shop.pzm.ae/api/orders/${orderId}`, {
+      const response = await fetch(buildApiUrl(`/orders/${orderId}`), {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -245,6 +247,16 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               }`}
             >
               📋 Orders Management
+            </button>
+            <button
+              onClick={() => setActiveTab('serviceRequests')}
+              className={`flex-1 px-6 py-4 font-medium transition-colors ${
+                activeTab === 'serviceRequests'
+                  ? 'bg-[#00A76F] text-white'
+                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              }`}
+            >
+              🛠️ Service Requests
             </button>
             <button
               onClick={() => setActiveTab('products')}
@@ -417,6 +429,10 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
             {activeTab === 'products' && (
               <ProductManagement token={localStorage.getItem('adminToken') || ''} />
+            )}
+
+            {activeTab === 'serviceRequests' && (
+              <ServiceRequestManagement onUnauthorized={handleLogout} />
             )}
 
             {activeTab === 'reports' && (

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { CheckCircle, Home, Copy } from 'lucide-react'
 import Seo from '../components/Seo'
+import { siteContact } from '../content/siteData'
 
 interface OrderConfirmationProps {
   orderId: string
@@ -226,15 +227,15 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
           </p>
           <div className="space-y-1 text-sm">
             <p>
-              <strong>Email:</strong>{' '}
-              <a href="mailto:support@pzm.ae" className="text-primary hover:underline">
-                support@pzm.ae
+              <strong>WhatsApp:</strong>{' '}
+              <a href={siteContact.whatsappSupportHref} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                Chat with PZM on WhatsApp
               </a>
             </p>
             <p>
               <strong>Phone:</strong>{' '}
-              <a href="tel:+971501234567" className="text-primary hover:underline">
-                +971 50 123 4567
+              <a href={siteContact.phoneHref} className="text-primary hover:underline">
+                {siteContact.phoneDisplay}
               </a>
             </p>
           </div>
