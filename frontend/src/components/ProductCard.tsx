@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { MessageCircle } from 'lucide-react'
 import type { Product } from '@shared/types'
 import { openWhatsAppLead } from '../utils/whatsappLead'
@@ -69,30 +68,17 @@ export default function ProductCard({ product }: Props) {
           <p className="text-sm text-brandTextMedium mt-3 line-clamp-2 leading-relaxed">{product.description}</p>
         )}
 
-        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Link
-            to={`/product/${product.id}`}
-            className="inline-flex w-full items-center justify-center rounded-md border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
-          >
-            View Details
-          </Link>
-          <button
-            type="button"
-            onClick={handleWhatsApp}
-            disabled={(product.quantity ?? 0) <= 0}
-            className={`inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-semibold transition-colors ${
-              (product.quantity ?? 0) > 0
-                ? 'bg-[#25D366] text-white hover:bg-[#1da851]'
-                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            <MessageCircle size={16} />
-            {(product.quantity ?? 0) > 0 ? 'WhatsApp Us' : 'Out of Stock'}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleWhatsApp}
+          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
+        >
+          <MessageCircle size={16} className="text-[#25D366]" />
+          Contact us
+        </button>
 
         <p className="mt-3 text-xs font-medium uppercase tracking-[0.14em] text-brandTextMedium">
-          Open the product page for full specs, photos, and delivery details.
+          Contact the team directly for availability, pricing, and device details.
         </p>
       </div>
     </article>

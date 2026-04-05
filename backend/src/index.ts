@@ -1188,4 +1188,73 @@ app.notFound((c) => {
   return c.json({ error: 'Not found', status: 404 }, 404);
 });
 
-export default app;
+export default {
+  fetch: app.fetch,
+  async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
+    const db = new Database(env.DB);
+    const emailService = new EmailService(env.ZEPTOMAIL_API_TOKEN);
+
+    // Daily report: cron "0 3 * * *" (3:00 UTC = 7:00 AM Dubai)
+    if (event.cron === '0 3 * * *') {
+      try {
+        const now = new Date();
+        const yesterday = new Date(now);
+        yesterday.setUTCDate(now.getUTCDate() - 1);
+        yesterday.setUTCHours(0, 0, 0, 0);
+        const todayStart = new Date(now);
+        todayStart.setUTCHours(0, 0, 0, 0);
+
+        const sinceIso = yesterday.toISOString();
+        const counts = await db.getCountsSince(sinceIso);
+        const recentLeads = await db.getRecentWhatsAppLeads(sinceIso);
+        const recentSRs = await db.getRecentServiceRequests(sinceIso);
+
+        const dateLabel = yesterday.toISOString().split('T')[0];
+        await emailService.sendDailyReport({
+          date: dateLabel,
+          orders: counts.orders,
+          serviceRequests: counts.serviceRequests,
+          whatsappLeads: counts.whatsappLeads,
+          recentLeads,
+          recentServiceRequests: recentSRs,
+        });
+        console.log(`Daily report sent for ${dateLabel}`);
+      } catch (error) {
+        console.error('Failed to send daily report:', error);
+      }
+    }
+
+    // Monthly report: cron "5 3 1 * *" (3:05 UTC on the 1st = 7:05 AM Dubai)
+    if (event.cron === '5 3 1 * *') {
+      try {
+        const now = new Date();
+        const firstOfThisMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+        const firstOfLastMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
+
+        const sinceIso = firstOfLastMonth.toISOString();
+        // Get counts for last month only (between firstOfLastMonth and firstOfThisMonth)
+        const [allSince, sinceThisMonth] = await Promise.all([
+          db.getCountsSince(sinceIso),
+          db.getCountsSince(firstOfThisMonth.toISOString()),
+        ]);
+
+        const counts = {
+          orders: allSince.orders - sinceThisMonth.orders,
+          serviceRequests: allSince.serviceRequests - sinceThisMonth.serviceRequests,
+          whatsappLeads: allSince.whatsappLeads - sinceThisMonth.whatsappLeads,
+        };
+
+        const monthLabel = firstOfLastMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+        await emailService.sendMonthlyReport({
+          month: monthLabel,
+          orders: counts.orders,
+          serviceRequests: counts.serviceRequests,
+          whatsappLeads: counts.whatsappLeads,
+        });
+        console.log(`Monthly report sent for ${monthLabel}`);
+      } catch (error) {
+        console.error('Failed to send monthly report:', error);
+      }
+    }
+  },
+};

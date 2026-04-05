@@ -59,3 +59,7 @@ bucket_name = "pzm-images"
 binding = "KV"
 id = "6df924c74e19424787a69c9f493b3151"
 
+# Daily report at 03:00 UTC (07:00 Dubai) and monthly report on the 1st at 03:05 UTC
+[env.production.triggers]
+crons = ["0 3 * * *", "5 3 1 * *"]
+

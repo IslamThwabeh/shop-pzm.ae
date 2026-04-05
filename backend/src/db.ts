@@ -654,4 +654,50 @@ export class Database {
       return null;
     }
   }
+
+  // ============ REPORTS ============
+
+  async getCountsSince(sinceIso: string): Promise<{ orders: number; serviceRequests: number; whatsappLeads: number }> {
+    try {
+      const [ordersRes, srRes, walRes] = await Promise.all([
+        this.db.prepare('SELECT COUNT(*) as cnt FROM orders WHERE created_at >= ?').bind(sinceIso).first(),
+        this.db.prepare('SELECT COUNT(*) as cnt FROM service_requests WHERE created_at >= ?').bind(sinceIso).first(),
+        this.db.prepare('SELECT COUNT(*) as cnt FROM whatsapp_leads WHERE created_at >= ?').bind(sinceIso).first(),
+      ]);
+      return {
+        orders: (ordersRes as any)?.cnt ?? 0,
+        serviceRequests: (srRes as any)?.cnt ?? 0,
+        whatsappLeads: (walRes as any)?.cnt ?? 0,
+      };
+    } catch (error) {
+      console.error('Error fetching report counts:', error);
+      return { orders: 0, serviceRequests: 0, whatsappLeads: 0 };
+    }
+  }
+
+  async getRecentWhatsAppLeads(sinceIso: string): Promise<WhatsAppLead[]> {
+    try {
+      const result = await this.db
+        .prepare('SELECT * FROM whatsapp_leads WHERE created_at >= ? ORDER BY created_at DESC LIMIT 50')
+        .bind(sinceIso)
+        .all();
+      return (result.results as WhatsAppLead[]) || [];
+    } catch (error) {
+      console.error('Error fetching recent whatsapp leads:', error);
+      return [];
+    }
+  }
+
+  async getRecentServiceRequests(sinceIso: string): Promise<ServiceRequest[]> {
+    try {
+      const result = await this.db
+        .prepare('SELECT * FROM service_requests WHERE created_at >= ? ORDER BY created_at DESC LIMIT 50')
+        .bind(sinceIso)
+        .all();
+      return (result.results as ServiceRequest[]) || [];
+    } catch (error) {
+      console.error('Error fetching recent service requests:', error);
+      return [];
+    }
+  }
 }

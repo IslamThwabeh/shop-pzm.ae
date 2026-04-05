@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Briefcase, CreditCard, Gamepad2, Laptop, MessageCircle, ShieldCheck, Smartphone, Truck } from 'lucide-react'
 import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
-import ServiceRequestForm from '../components/ServiceRequestForm'
+import WhatsAppCTA from '../components/WhatsAppCTA'
 import { brandNewCategories, brandNewHero, getBrandNewCategoryGroups, getBrandNewProducts } from '../content/brandNewCatalog'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { resolveServiceSlug } from '../content/serviceCatalog'
@@ -120,124 +120,94 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         </div>
       </div>
 
-      <section className="overflow-hidden rounded-[32px] border border-brandBorder bg-white shadow-md">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr,0.95fr] lg:items-stretch">
-          <div className="p-8 md:p-12">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">Brand-new retail</p>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Brand-new devices with live stock where it matters most</h1>
-            <p className="text-lg text-brandTextMedium max-w-3xl mb-6">
-              Shop the latest brand-new phones, tablets, laptops, gaming hardware, and business setups in Dubai.
-              Browse live stock with real-time pricing, or request availability for any device not yet listed.
-            </p>
+      <section className="rounded-[32px] border border-brandBorder bg-white px-6 py-10 shadow-sm md:px-10 md:py-12">
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Brand-new retail</p>
+          <h1 className="mt-4 text-3xl font-bold text-slate-950 md:text-4xl">Brand-new devices in a cleaner catalog view</h1>
+          <p className="mt-4 text-base leading-8 text-brandTextMedium md:text-lg">
+            Shop current phones, tablets, laptops, gaming hardware, and work devices without the extra visual noise. Live stock stays visible, while missing categories stay request-friendly.
+          </p>
+        </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <div className="rounded-2xl border border-brandBorder bg-slate-50 px-5 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brandTextMedium">Live SKUs</p>
-                <p className="mt-2 text-3xl font-bold text-slate-950">{liveBrandNewProducts.length}</p>
-              </div>
-              <div className="rounded-2xl border border-brandBorder bg-slate-50 px-5 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brandTextMedium">Units in stock</p>
-                <p className="mt-2 text-3xl font-bold text-slate-950">{totalUnits}</p>
-              </div>
-              <div className="rounded-2xl border border-brandBorder bg-slate-50 px-5 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brandTextMedium">Categories live</p>
-                <p className="mt-2 text-3xl font-bold text-slate-950">{liveCategoryGroups.length}/{brandNewCategories.length}</p>
-              </div>
-              <div className="rounded-2xl border border-brandBorder bg-slate-50 px-5 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brandTextMedium">Starting from</p>
-                <p className="mt-2 text-3xl font-bold text-slate-950">{lowestPrice ? `AED ${lowestPrice.toFixed(0)}` : 'Request'}</p>
-              </div>
-            </div>
+        <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm font-semibold text-brandTextMedium">
+          <span>{liveBrandNewProducts.length} live products</span>
+          <span>{totalUnits} units in stock</span>
+          <span>{liveCategoryGroups.length}/{brandNewCategories.length} categories live</span>
+          <span>{lowestPrice ? `From AED ${lowestPrice.toFixed(0)}` : 'Request pricing'}</span>
+        </div>
 
-            <div className="flex flex-wrap gap-3 mb-8">
-              <a
-                href="#brand-new-live-stock"
-                className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
-              >
-                Browse Brand-New Stock
-              </a>
-              <Link
-                to="/services/buy-iphone"
-                className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
-              >
-                View iPhone Collection
-              </Link>
-              <a
-                href="#brand-new-request-form"
-                className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
-              >
-                Ask About a Model
-              </a>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {brandNewCategories.map((category) => (
-                <a
-                  key={category.key}
-                  href={`#${category.key}`}
-                  className="rounded-2xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
-                >
-                  {category.shortTitle}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div className="min-h-[220px] md:min-h-[280px] bg-slate-100">
-            <img src={brandNewHero.imageUrl} alt={brandNewHero.imageAlt} className="h-full w-full object-cover" />
-          </div>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <a
+            href="#brand-new-live-stock"
+            className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold transition-colors hover:bg-brandGreenDark"
+          >
+            Browse Brand-New Stock
+          </a>
+          <Link
+            to="/services/buy-iphone"
+            className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold transition-colors hover:border-primary hover:text-primary"
+          >
+            View iPhone Collection
+          </Link>
+          <a
+            href="#brand-new-contact"
+            className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold transition-colors hover:border-primary hover:text-primary"
+          >
+            Ask About a Model
+          </a>
         </div>
       </section>
 
-      <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        {categoryGroups.map((group) => {
-          const Icon = getCategoryIcon(group.category.key)
+      <section className="space-y-4">
+        <div className="text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Browse by category</p>
+          <h2 className="mt-2 text-3xl font-bold text-slate-950">Choose the device type first</h2>
+        </div>
 
-          return (
-            <article
-              key={group.category.key}
-              id={group.category.key}
-              className={`rounded-[28px] border border-brandBorder bg-gradient-to-br ${group.category.accentClassName} p-6 shadow-sm`}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/80 text-primary shadow-sm">
-                  <Icon size={22} />
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          {categoryGroups.map((group) => {
+            const Icon = getCategoryIcon(group.category.key)
+
+            return (
+              <article key={group.category.key} className="flex h-full flex-col rounded-[28px] border border-brandBorder bg-white p-6 text-center shadow-sm">
+                <span className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-slate-50 text-primary">
+                  <Icon size={24} />
                 </span>
-                <span className="rounded-full bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-brandTextDark">
-                  {group.products.length > 0 ? `${group.products.length} live` : 'Request'}
-                </span>
-              </div>
+                <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-brandTextMedium">
+                  {group.products.length > 0 ? `${group.products.length} live products` : 'Request availability'}
+                </p>
+                <h2 className="mt-2 text-xl font-bold text-slate-950">{group.category.title}</h2>
+                <p className="mt-3 text-sm leading-7 text-brandTextMedium">{group.category.description}</p>
 
-              <h2 className="mt-5 text-2xl font-bold text-slate-950">{group.category.title}</h2>
-              <p className="mt-3 text-sm leading-7 text-brandTextDark">{group.category.description}</p>
+                <div className="mt-5 flex flex-wrap justify-center gap-2">
+                  {group.category.examples.slice(0, 4).map((example) => (
+                    <span key={example} className="rounded-full border border-brandBorder bg-slate-50 px-3 py-1 text-xs font-semibold text-brandTextDark">
+                      {example}
+                    </span>
+                  ))}
+                </div>
 
-              <div className="mt-5 flex flex-wrap gap-2">
-                {group.category.examples.slice(0, 4).map((example) => (
-                  <span key={example} className="rounded-full border border-white/70 bg-white/70 px-3 py-1 text-xs font-semibold text-brandTextDark">
-                    {example}
-                  </span>
-                ))}
-              </div>
-
-              <div className="mt-6 flex flex-wrap gap-3">
-                <a
-                  href={group.products.length > 0 ? `#${group.category.key}-live` : '#brand-new-request-form'}
-                  className="inline-flex items-center rounded-xl bg-white px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:text-primary"
-                >
-                  {group.products.length > 0 ? 'See live stock' : 'Request availability'}
-                </a>
-                {group.category.key === 'phones-tablets' && (
-                  <Link
-                    to="/services/buy-iphone"
-                    className="inline-flex items-center rounded-xl border border-white/80 px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
+                <div className="mt-6 flex flex-col items-center gap-3">
+                  <a
+                    href={group.products.length > 0 ? `#${group.category.key}-live` : '#brand-new-contact'}
+                    className={`inline-flex items-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
+                      group.products.length > 0
+                        ? 'bg-primary text-white hover:bg-brandGreenDark'
+                        : 'border border-brandBorder text-brandTextDark hover:border-primary hover:text-primary'
+                    }`}
                   >
-                    Open iPhone page
-                  </Link>
-                )}
-              </div>
-            </article>
-          )
-        })}
+                    {group.products.length > 0 ? 'See live stock' : 'Request availability'}
+                  </a>
+                  {group.category.key === 'phones-tablets' && (
+                    <Link to="/services/buy-iphone" className="text-sm font-semibold text-primary hover:underline">
+                      Open iPhone page
+                    </Link>
+                  )}
+                </div>
+              </article>
+            )
+          })}
+        </div>
       </section>
 
       <section id="brand-new-live-stock" className="space-y-8">
@@ -277,15 +247,15 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                       </div>
                     </div>
 
-                    <span className="self-start rounded-full bg-brandLight px-4 py-2 text-sm font-semibold text-primary">
+                    <span className="self-start rounded-full border border-brandBorder bg-slate-50 px-4 py-2 text-sm font-semibold text-brandTextDark">
                       {group.products.length} live products
                     </span>
                   </div>
 
                   <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                     {group.products.map((product) => (
-                      <article key={product.id} className="overflow-hidden rounded-[24px] border border-brandBorder bg-slate-50">
-                        <div className="aspect-[4/3] bg-white p-4">
+                      <article key={product.id} className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm">
+                        <div className="aspect-[4/3] border-b border-brandBorder bg-white p-6">
                           <img
                             src={product.image_url || product.images?.[0] || brandNewHero.imageUrl}
                             alt={product.model}
@@ -294,59 +264,37 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                         </div>
 
                         <div className="p-5">
-                          <div className="flex flex-wrap gap-2">
-                            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-brandTextDark">
-                              Brand New
-                            </span>
-                            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-brandTextDark">
-                              {product.storage}
-                            </span>
-                            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-brandTextDark">
-                              {product.color}
-                            </span>
-                          </div>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brandTextMedium">
+                            Brand new • {product.storage} • {product.color}
+                          </p>
 
-                          <h4 className="mt-4 text-lg font-bold text-slate-950">{product.model}</h4>
+                          <h4 className="mt-3 text-lg font-bold text-slate-950">{product.model}</h4>
                           <p className="mt-2 text-sm leading-7 text-brandTextMedium">{product.description || `${product.color} ${product.model}`}</p>
 
                           <div className="mt-4 flex items-end justify-between gap-4">
                             <div>
-                              <p className="text-2xl font-bold text-primary">AED {product.price.toFixed(0)}</p>
-                              <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">Cash on delivery</p>
+                              <p className="text-2xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
                             </div>
-                            <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+                            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
                               {(product.quantity ?? 0) > 0 ? `${product.quantity} in stock` : 'Out of stock'}
                             </span>
                           </div>
 
-                          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            <Link
-                              to={`/product/${product.id}`}
-                              className="inline-flex items-center justify-center rounded-xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
-                            >
-                              View details
-                            </Link>
-                            <button
-                              type="button"
-                              onClick={() => handleWhatsApp(product)}
-                              disabled={(product.quantity ?? 0) <= 0}
-                              className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
-                                (product.quantity ?? 0) > 0
-                                  ? 'bg-[#25D366] text-white hover:bg-[#1da851]'
-                                  : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                              }`}
-                            >
-                              <MessageCircle size={16} />
-                              {(product.quantity ?? 0) > 0 ? 'WhatsApp Us' : 'Out of stock'}
-                            </button>
-                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleWhatsApp(product)}
+                            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
+                          >
+                            <MessageCircle size={16} className="text-[#25D366]" />
+                            Contact us
+                          </button>
                         </div>
                       </article>
                     ))}
                   </div>
 
                   {group.category.key === 'phones-tablets' && (
-                    <div className="mt-6 rounded-[24px] border border-brandBorder bg-brandLight p-5 text-left">
+                    <div className="mt-6 rounded-[24px] border border-brandBorder bg-slate-50 p-5 text-left">
                       <p className="text-lg font-semibold text-slate-950">Need the iPhone family view instead?</p>
                       <p className="mt-2 text-brandTextMedium">
                         Open the dedicated iPhone page for a family-by-family layout across Pro Max, Pro, Air, and standard iPhone models.
@@ -370,7 +318,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
               Use the request form below and the team can confirm stock, pricing, or the closest available alternative for the model you want.
             </p>
             <a
-              href="#brand-new-request-form"
+              href="#brand-new-contact"
               className="mt-5 inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
             >
               Request a brand-new device
@@ -391,24 +339,24 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
               const Icon = getCategoryIcon(group.category.key)
 
               return (
-                <article key={group.category.key} className={`rounded-[24px] border border-brandBorder bg-gradient-to-br ${group.category.accentClassName} p-6`}>
-                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/80 text-primary shadow-sm">
+                <article key={group.category.key} className="rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-slate-50 text-primary">
                     <Icon size={22} />
                   </span>
                   <h3 className="mt-5 text-xl font-bold text-slate-950">{group.category.title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-brandTextDark">{group.category.description}</p>
+                  <p className="mt-3 text-sm leading-7 text-brandTextMedium">{group.category.description}</p>
 
                   <div className="mt-5 flex flex-wrap gap-2">
                     {group.category.examples.map((example) => (
-                      <span key={example} className="rounded-full border border-white/70 bg-white/70 px-3 py-1 text-xs font-semibold text-brandTextDark">
+                      <span key={example} className="rounded-full border border-brandBorder bg-slate-50 px-3 py-1 text-xs font-semibold text-brandTextDark">
                         {example}
                       </span>
                     ))}
                   </div>
 
                   <a
-                    href="#brand-new-request-form"
-                    className="mt-6 inline-flex items-center rounded-xl bg-white px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:text-primary"
+                    href="#brand-new-contact"
+                    className="mt-6 inline-flex items-center rounded-xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
                   >
                     Request {group.category.shortTitle}
                   </a>
@@ -448,17 +396,16 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">What happens next</h2>
           <div className="space-y-4 text-brandTextDark">
             <p><span className="font-semibold text-primary">1.</span> Browse the live brand-new products listed on this page.</p>
-            <p><span className="font-semibold text-primary">2.</span> Tap <strong>WhatsApp Us</strong> on any in-stock device to chat with the team instantly.</p>
-            <p><span className="font-semibold text-primary">3.</span> If your category or model is missing, send an availability request and the team will follow up.</p>
+            <p><span className="font-semibold text-primary">2.</span> Tap <strong>Contact us</strong> on any in-stock device to chat with the team instantly.</p>
+            <p><span className="font-semibold text-primary">3.</span> If your category or model is missing, message us and the team will follow up.</p>
           </div>
         </section>
 
-        <div id="brand-new-request-form">
-          <ServiceRequestForm
-            serviceSlug={service.slug}
-            serviceTitle={service.title}
-            sourcePath="/services/brand-new"
-            requestKinds={service.requestKinds}
+        <div id="brand-new-contact">
+          <WhatsAppCTA
+            title="Looking for a specific device?"
+            description="Tell us the model, storage, and color and the team will check availability and pricing."
+            prefilledMessage="Hi, I'm looking for a specific brand-new device. Can you check availability? (via pzm.ae/services/brand-new)"
           />
         </div>
       </div>

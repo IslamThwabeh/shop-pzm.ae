@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { MessageCircle } from 'lucide-react'
 import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
-import ServiceRequestForm from '../components/ServiceRequestForm'
+import WhatsAppCTA from '../components/WhatsAppCTA'
 import { buyIphoneFamilies, getBuyIphoneFamilyGroups, getBuyIphoneProducts } from '../content/buyIphoneCatalog'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { resolveServiceSlug } from '../content/serviceCatalog'
@@ -110,76 +110,75 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
         </div>
       </div>
 
-      <section className="overflow-hidden rounded-[32px] border border-brandBorder bg-white shadow-md">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr,0.95fr] lg:items-stretch">
-          <div className="p-8 md:p-12">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">New iPhone collection</p>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Buy iPhone in Dubai with live stock and direct checkout</h1>
-            <p className="text-lg text-brandTextMedium max-w-3xl mb-6">
-              Browse current iPhone 17 Pro Max, Pro, Air, and iPhone 17 models on this page, then move into product details or checkout when you are ready. If a configuration is missing, the request form keeps the conversation on-site.
-            </p>
+      <section className="rounded-[32px] border border-brandBorder bg-white px-6 py-10 shadow-sm md:px-10 md:py-12">
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Apple retail</p>
+          <h1 className="mt-4 text-3xl font-bold text-slate-950 md:text-4xl">All iPhone models in one clean view</h1>
+          <p className="mt-4 text-base leading-8 text-brandTextMedium md:text-lg">
+            Browse the current iPhone families first, then open the exact storage and color you want. If a configuration is missing, request it directly from the same page.
+          </p>
+        </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-              <div className="rounded-2xl border border-brandBorder bg-slate-50 px-5 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brandTextMedium">Live variants</p>
-                <p className="mt-2 text-3xl font-bold text-slate-950">{liveIphoneProducts.length}</p>
-              </div>
-              <div className="rounded-2xl border border-brandBorder bg-slate-50 px-5 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brandTextMedium">Families live</p>
-                <p className="mt-2 text-3xl font-bold text-slate-950">{availableFamilyCount}/{buyIphoneFamilies.length}</p>
-              </div>
-              <div className="rounded-2xl border border-brandBorder bg-slate-50 px-5 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brandTextMedium">Starting price</p>
-                <p className="mt-2 text-3xl font-bold text-slate-950">{lowestPrice ? `AED ${lowestPrice.toFixed(0)}` : 'Request'}</p>
-              </div>
-            </div>
+        <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm font-semibold text-brandTextMedium">
+          <span>{liveIphoneProducts.length} live variants</span>
+          <span>{availableFamilyCount}/{buyIphoneFamilies.length} families live</span>
+          <span>{lowestPrice ? `From AED ${lowestPrice.toFixed(0)}` : 'Request pricing'}</span>
+        </div>
 
-            <div className="flex flex-wrap gap-3 mb-8">
-              <a
-                href="#iphone-live-stock"
-                className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
-              >
-                Browse Live iPhone Stock
-              </a>
-              <a
-                href="#buy-iphone-request-form"
-                className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
-              >
-                Request Missing Model
-              </a>
-              <Link
-                to="/services"
-                className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
-              >
-                View All Service Pages
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {buyIphoneFamilies.map((family) => (
-                <a
-                  key={family.key}
-                  href={`#${family.key}`}
-                  className="rounded-2xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
-                >
-                  {family.title}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div className="min-h-[220px] md:min-h-[260px] bg-slate-100">
-            <img src={buyIphoneFamilies[0].imageUrl} alt={buyIphoneFamilies[0].imageAlt} className="h-full w-full object-cover" />
-          </div>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <a
+            href="#iphone-live-stock"
+            className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold transition-colors hover:bg-brandGreenDark"
+          >
+            Browse Live iPhone Stock
+          </a>
+          <a
+            href="#buy-iphone-contact"
+            className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold transition-colors hover:border-primary hover:text-primary"
+          >
+            Ask About a Model
+          </a>
         </div>
       </section>
 
-      <section className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm">
-        <h2 className="text-2xl font-bold text-slate-950">Why this page works</h2>
-        <div className="mt-5 grid gap-4 md:grid-cols-3 text-brandTextDark">
-          <p>• Live iPhone stock is visible directly on the page so buyers do not have to guess what is listed.</p>
-          <p>• Families, prices, and configurations are easier to compare before you open the product detail page.</p>
-          <p>• Missing models can still convert through an availability request when the exact configuration is not listed yet.</p>
+      <section className="space-y-4">
+        <div className="text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Shop by family</p>
+          <h2 className="mt-2 text-3xl font-bold text-slate-950">Start with the iPhone line</h2>
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          {buyIphoneFamilies.map((family) => {
+            const liveCount = familyGroups.find((group) => group.family.key === family.key)?.products.length ?? 0
+
+            return (
+              <a
+                key={family.key}
+                href={`#${family.key}`}
+                className="group rounded-[28px] border border-brandBorder bg-white p-6 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary"
+              >
+                <div className="flex h-36 items-center justify-center rounded-[24px] bg-white p-4">
+                  <img
+                    src={family.imageUrl}
+                    alt={family.imageAlt}
+                    className="max-h-full w-auto object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+                  />
+                </div>
+                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-brandTextMedium">{family.shortTitle}</p>
+                <h3 className="mt-2 text-xl font-bold text-slate-950">{family.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-brandTextMedium">{family.description}</p>
+                <span
+                  className={`mt-5 inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] ${
+                    liveCount > 0
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                      : 'border-brandBorder bg-slate-50 text-brandTextMedium'
+                  }`}
+                >
+                  {liveCount > 0 ? `${liveCount} live variants` : 'Request availability'}
+                </span>
+              </a>
+            )
+          })}
         </div>
       </section>
 
@@ -217,7 +216,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                     </div>
                   </div>
 
-                  <span className="self-start rounded-full bg-brandLight px-4 py-2 text-sm font-semibold text-primary">
+                  <span className="self-start rounded-full border border-brandBorder bg-slate-50 px-4 py-2 text-sm font-semibold text-brandTextDark">
                     {group.products.length > 0 ? `${group.products.length} live variants` : 'Not yet in live catalog'}
                   </span>
                 </div>
@@ -225,52 +224,30 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                 {group.products.length > 0 ? (
                   <div className="mt-6 overflow-hidden rounded-[24px] border border-brandBorder">
                     {group.products.map((product) => (
-                      <article
-                        key={product.id}
-                        className="flex flex-col gap-4 border-t border-brandBorder/70 p-5 first:border-t-0 md:flex-row md:items-center md:justify-between"
-                      >
+                      <article key={product.id} className="flex flex-col gap-4 border-t border-brandBorder/70 p-5 first:border-t-0 md:flex-row md:items-center md:justify-between">
                         <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap gap-2">
-                            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-brandTextDark">
-                              {product.storage}
-                            </span>
-                            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-brandTextDark">
-                              {product.color}
-                            </span>
-                            <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
-                              {(product.quantity ?? 0) > 0 ? `${product.quantity} in stock` : 'Out of stock'}
-                            </span>
-                          </div>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brandTextMedium">
+                            {product.storage} • {product.color}
+                          </p>
                           <h4 className="mt-3 text-lg font-bold text-slate-950">{getVariantDescriptor(product, group.family.title)}</h4>
                           <p className="mt-2 text-sm leading-7 text-brandTextMedium">{product.description || product.model}</p>
                         </div>
 
                         <div className="flex flex-col gap-4 md:min-w-[220px] md:items-end">
                           <div className="text-left md:text-right">
-                            <p className="text-2xl font-bold text-primary">AED {product.price.toFixed(0)}</p>
-                            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">Cash on delivery</p>
+                            <p className="text-2xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
+                            <p className={`mt-1 text-sm font-semibold ${(product.quantity ?? 0) > 0 ? 'text-emerald-700' : 'text-brandTextMedium'}`}>
+                              {(product.quantity ?? 0) > 0 ? `${product.quantity} in stock` : 'Currently unavailable'}
+                            </p>
                           </div>
-                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:w-full">
-                            <Link
-                              to={`/product/${product.id}`}
-                              className="inline-flex items-center justify-center rounded-xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
-                            >
-                              View details
-                            </Link>
-                            <button
-                              type="button"
-                              onClick={() => handleWhatsApp(product)}
-                              disabled={(product.quantity ?? 0) <= 0}
-                              className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
-                                (product.quantity ?? 0) > 0
-                                  ? 'bg-[#25D366] text-white hover:bg-[#1da851]'
-                                  : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                              }`}
-                            >
-                              <MessageCircle size={16} />
-                              {(product.quantity ?? 0) > 0 ? 'WhatsApp Us' : 'Out of stock'}
-                            </button>
-                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleWhatsApp(product)}
+                            className="inline-flex items-center justify-center gap-2 rounded-xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary md:w-full"
+                          >
+                            <MessageCircle size={16} className="text-[#25D366]" />
+                            Contact us
+                          </button>
                         </div>
                       </article>
                     ))}
@@ -282,7 +259,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                       Ask the team about availability and the closest configuration while this family is still being added to the storefront.
                     </p>
                     <a
-                      href="#buy-iphone-request-form"
+                      href="#buy-iphone-contact"
                       className="mt-4 inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
                     >
                       Request {group.family.title}
@@ -304,20 +281,18 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
 
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {missingFamilies.map((group) => (
-              <article key={group.family.key} className="overflow-hidden rounded-[24px] border border-brandBorder bg-slate-50">
-                <div className="h-32 bg-slate-100">
-                  <img src={group.family.imageUrl} alt={group.family.imageAlt} className="h-full w-full object-cover" />
+              <article key={group.family.key} className="rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
+                <div className="flex h-32 items-center justify-center rounded-[20px] border border-brandBorder bg-white p-4">
+                  <img src={group.family.imageUrl} alt={group.family.imageAlt} className="max-h-full w-auto object-contain" />
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-slate-950">{group.family.title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-brandTextMedium">{group.family.description}</p>
-                  <a
-                    href="#buy-iphone-request-form"
-                    className="mt-5 inline-flex items-center rounded-xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark hover:border-primary hover:text-primary transition-colors"
-                  >
-                    Request availability
-                  </a>
-                </div>
+                <h3 className="mt-5 text-xl font-bold text-slate-950">{group.family.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-brandTextMedium">{group.family.description}</p>
+                <a
+                  href="#buy-iphone-contact"
+                  className="mt-5 inline-flex items-center rounded-xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
+                >
+                  Request availability
+                </a>
               </article>
             ))}
           </div>
@@ -329,17 +304,16 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
           <h2 className="text-2xl font-bold text-gray-900 mb-4">What happens next</h2>
           <div className="space-y-4 text-brandTextDark">
             <p><span className="font-semibold text-primary">1.</span> Browse the live iPhone variants directly on this page.</p>
-            <p><span className="font-semibold text-primary">2.</span> Open product details or tap WhatsApp to start a conversation about in-stock devices.</p>
-            <p><span className="font-semibold text-primary">3.</span> If the model you want is missing, send an availability request and the team will follow up.</p>
+            <p><span className="font-semibold text-primary">2.</span> Tap <strong>Contact us</strong> on any product to start a WhatsApp conversation.</p>
+            <p><span className="font-semibold text-primary">3.</span> If the model you want is missing, message us and the team will follow up.</p>
           </div>
         </section>
 
-        <div id="buy-iphone-request-form">
-          <ServiceRequestForm
-            serviceSlug={service.slug}
-            serviceTitle={service.title}
-            sourcePath="/services/buy-iphone"
-            requestKinds={service.requestKinds}
+        <div id="buy-iphone-contact">
+          <WhatsAppCTA
+            title="Can't find your iPhone model?"
+            description="Tell us the model, storage, and color you want and the team will check availability."
+            prefilledMessage="Hi, I'm looking for a specific iPhone model. Can you check availability? (via pzm.ae/services/buy-iphone)"
           />
         </div>
       </div>

@@ -358,9 +358,9 @@ export class EmailService {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #00A76F 0%, #16a34a 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-          .header h1 { margin: 0; font-size: 28px; }
-          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+          .header { background: linear-gradient(135deg, #00A76F 0%, #16a34a 100%); color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header h1 { margin: 0; font-size: 22px; }
+          .content { background: #f9f9f9; padding: 24px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
           .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
           .detail-row { display: flex; justify-content: flex-start; padding: 10px 0; border-bottom: 1px solid #eee; }
           .detail-row:last-child { border-bottom: none; }
@@ -512,9 +512,9 @@ export class EmailService {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #00A76F; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-          .header h1 { margin: 0; font-size: 24px; }
-          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+          .header { background: #00A76F; color: white; padding: 16px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header h1 { margin: 0; font-size: 20px; }
+          .content { background: #f9f9f9; padding: 24px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
           .alert { background: #e8f5e9; border-left: 4px solid #00A76F; padding: 15px; margin: 20px 0; border-radius: 4px; }
           .customer-info { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
           .info-row { padding: 10px 0; border-bottom: 1px solid #eee; }
@@ -691,10 +691,10 @@ export class EmailService {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, ${info.color} 0%, ${info.color}dd 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-          .header h1 { margin: 0; font-size: 28px; }
-          .header .emoji { font-size: 40px; margin-bottom: 10px; }
-          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+          .header { background: linear-gradient(135deg, ${info.color} 0%, ${info.color}dd 100%); color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header h1 { margin: 0; font-size: 22px; }
+          .header .emoji { font-size: 28px; margin-bottom: 6px; }
+          .content { background: #f9f9f9; padding: 24px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
           .status-message { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid ${info.color}; }
           .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
           .product-item { background: #fafafa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid ${info.color}; }
@@ -780,9 +780,9 @@ export class EmailService {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, ${color} 0%, ${color}dd 100%); color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-          .header h1 { margin: 0; font-size: 24px; }
-          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+          .header { background: linear-gradient(135deg, ${color} 0%, ${color}dd 100%); color: white; padding: 16px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header h1 { margin: 0; font-size: 20px; }
+          .content { background: #f9f9f9; padding: 24px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
           .alert { background: #FFF3CD; border-left: 4px solid ${color}; padding: 15px; margin: 20px 0; border-radius: 4px; }
           .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
           .product-item { background: #fafafa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid ${color}; }
@@ -846,8 +846,8 @@ export class EmailService {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #00A76F 0%, #16a34a 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+          .header { background: linear-gradient(135deg, #00A76F 0%, #16a34a 100%); color: white; padding: 16px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background: #f9f9f9; padding: 24px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
           .details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
           .detail-row { display: flex; justify-content: flex-start; padding: 10px 0; border-bottom: 1px solid #eee; }
           .detail-row:last-child { border-bottom: none; }
@@ -912,8 +912,8 @@ export class EmailService {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #00A76F; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+          .header { background: #00A76F; color: white; padding: 16px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background: #f9f9f9; padding: 24px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
           .details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
           .detail-row { padding: 10px 0; border-bottom: 1px solid #eee; }
           .detail-row:last-child { border-bottom: none; }
@@ -965,8 +965,8 @@ export class EmailService {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #00A76F 0%, #16a34a 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+          .header { background: linear-gradient(135deg, #00A76F 0%, #16a34a 100%); color: white; padding: 16px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background: #f9f9f9; padding: 24px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
           .details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
           .detail-row { display: flex; justify-content: flex-start; padding: 10px 0; border-bottom: 1px solid #eee; }
           .detail-row:last-child { border-bottom: none; }
@@ -1032,9 +1032,9 @@ export class EmailService {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #25D366; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-          .header h1 { margin: 0; font-size: 24px; }
-          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+          .header { background: #25D366; color: white; padding: 16px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header h1 { margin: 0; font-size: 20px; }
+          .content { background: #f9f9f9; padding: 24px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
           .alert { background: #e8f5e9; border-left: 4px solid #25D366; padding: 15px; margin: 20px 0; border-radius: 4px; }
           .details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
           .info-row { padding: 10px 0; border-bottom: 1px solid #eee; }
@@ -1074,5 +1074,161 @@ export class EmailService {
       </body>
       </html>
     `;
+  }
+
+  // ============ DAILY & MONTHLY REPORTS ============
+
+  async sendDailyReport(data: {
+    date: string;
+    orders: number;
+    serviceRequests: number;
+    whatsappLeads: number;
+    recentLeads: WhatsAppLead[];
+    recentServiceRequests: ServiceRequest[];
+  }): Promise<boolean> {
+    const html = this.getDailyReportTemplate(data);
+    return this.sendEmail({
+      to: this.teamEmail,
+      subject: `PZM Daily Report – ${data.date}`,
+      htmlBody: html,
+    });
+  }
+
+  async sendMonthlyReport(data: {
+    month: string;
+    orders: number;
+    serviceRequests: number;
+    whatsappLeads: number;
+  }): Promise<boolean> {
+    const html = this.getMonthlyReportTemplate(data);
+    return this.sendEmail({
+      to: this.teamEmail,
+      subject: `PZM Monthly Report – ${data.month}`,
+      htmlBody: html,
+    });
+  }
+
+  private getDailyReportTemplate(data: {
+    date: string;
+    orders: number;
+    serviceRequests: number;
+    whatsappLeads: number;
+    recentLeads: WhatsAppLead[];
+    recentServiceRequests: ServiceRequest[];
+  }): string {
+    const leadsRows = data.recentLeads.length > 0
+      ? data.recentLeads.map(l => `
+        <tr>
+          <td style="padding:6px 10px;border-bottom:1px solid #eee;">${l.lead_type}</td>
+          <td style="padding:6px 10px;border-bottom:1px solid #eee;">${l.reference_label}</td>
+          <td style="padding:6px 10px;border-bottom:1px solid #eee;">${l.source_page || '-'}</td>
+          <td style="padding:6px 10px;border-bottom:1px solid #eee;">${l.status}</td>
+        </tr>`).join('')
+      : '<tr><td colspan="4" style="padding:10px;text-align:center;color:#999;">No leads yesterday</td></tr>';
+
+    const srRows = data.recentServiceRequests.length > 0
+      ? data.recentServiceRequests.map(sr => `
+        <tr>
+          <td style="padding:6px 10px;border-bottom:1px solid #eee;">${sr.service_type}</td>
+          <td style="padding:6px 10px;border-bottom:1px solid #eee;">${sr.customer_name}</td>
+          <td style="padding:6px 10px;border-bottom:1px solid #eee;">${sr.status}</td>
+        </tr>`).join('')
+      : '<tr><td colspan="3" style="padding:10px;text-align:center;color:#999;">No service requests yesterday</td></tr>';
+
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#f4f4f7;">
+      <div style="max-width:600px;margin:20px auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:20px 24px;color:#fff;">
+          <h1 style="margin:0;font-size:20px;">Daily Report – ${data.date}</h1>
+        </div>
+        <div style="padding:24px;">
+          <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+            <tr>
+              <td style="padding:12px;text-align:center;background:#f0f7ff;border-radius:6px;">
+                <div style="font-size:28px;font-weight:bold;color:#2563eb;">${data.whatsappLeads}</div>
+                <div style="font-size:12px;color:#666;margin-top:4px;">WhatsApp Leads</div>
+              </td>
+              <td style="width:8px;"></td>
+              <td style="padding:12px;text-align:center;background:#f0fdf4;border-radius:6px;">
+                <div style="font-size:28px;font-weight:bold;color:#16a34a;">${data.orders}</div>
+                <div style="font-size:12px;color:#666;margin-top:4px;">Orders</div>
+              </td>
+              <td style="width:8px;"></td>
+              <td style="padding:12px;text-align:center;background:#fefce8;border-radius:6px;">
+                <div style="font-size:28px;font-weight:bold;color:#ca8a04;">${data.serviceRequests}</div>
+                <div style="font-size:12px;color:#666;margin-top:4px;">Service Requests</div>
+              </td>
+            </tr>
+          </table>
+
+          <h3 style="margin:20px 0 8px;font-size:14px;color:#333;">Recent WhatsApp Leads</h3>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="background:#f9fafb;">
+              <th style="padding:6px 10px;text-align:left;">Type</th>
+              <th style="padding:6px 10px;text-align:left;">Reference</th>
+              <th style="padding:6px 10px;text-align:left;">Page</th>
+              <th style="padding:6px 10px;text-align:left;">Status</th>
+            </tr></thead>
+            <tbody>${leadsRows}</tbody>
+          </table>
+
+          <h3 style="margin:20px 0 8px;font-size:14px;color:#333;">Recent Service Requests</h3>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="background:#f9fafb;">
+              <th style="padding:6px 10px;text-align:left;">Service</th>
+              <th style="padding:6px 10px;text-align:left;">Customer</th>
+              <th style="padding:6px 10px;text-align:left;">Status</th>
+            </tr></thead>
+            <tbody>${srRows}</tbody>
+          </table>
+        </div>
+        <div style="padding:16px 24px;background:#f9fafb;text-align:center;font-size:12px;color:#999;">
+          <p style="margin:0;">© ${new Date().getFullYear()} PZM Shop – Automated Daily Report</p>
+        </div>
+      </div>
+    </body></html>`;
+  }
+
+  private getMonthlyReportTemplate(data: {
+    month: string;
+    orders: number;
+    serviceRequests: number;
+    whatsappLeads: number;
+  }): string {
+    const total = data.whatsappLeads + data.orders + data.serviceRequests;
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#f4f4f7;">
+      <div style="max-width:600px;margin:20px auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <div style="background:linear-gradient(135deg,#1e3a5f,#7c3aed);padding:20px 24px;color:#fff;">
+          <h1 style="margin:0;font-size:20px;">Monthly Report – ${data.month}</h1>
+        </div>
+        <div style="padding:24px;">
+          <p style="margin:0 0 16px;color:#555;">Here's your monthly summary for <strong>${data.month}</strong>.</p>
+          <table style="width:100%;border-collapse:collapse;">
+            <tr>
+              <td style="padding:16px;text-align:center;background:#f0f7ff;border-radius:6px;">
+                <div style="font-size:32px;font-weight:bold;color:#2563eb;">${data.whatsappLeads}</div>
+                <div style="font-size:12px;color:#666;margin-top:4px;">WhatsApp Leads</div>
+              </td>
+              <td style="width:8px;"></td>
+              <td style="padding:16px;text-align:center;background:#f0fdf4;border-radius:6px;">
+                <div style="font-size:32px;font-weight:bold;color:#16a34a;">${data.orders}</div>
+                <div style="font-size:12px;color:#666;margin-top:4px;">Orders</div>
+              </td>
+              <td style="width:8px;"></td>
+              <td style="padding:16px;text-align:center;background:#fefce8;border-radius:6px;">
+                <div style="font-size:32px;font-weight:bold;color:#ca8a04;">${data.serviceRequests}</div>
+                <div style="font-size:12px;color:#666;margin-top:4px;">Service Requests</div>
+              </td>
+            </tr>
+          </table>
+          <div style="margin-top:20px;padding:16px;background:#f9fafb;border-radius:6px;text-align:center;">
+            <div style="font-size:14px;color:#666;">Total Interactions</div>
+            <div style="font-size:36px;font-weight:bold;color:#1e3a5f;">${total}</div>
+          </div>
+        </div>
+        <div style="padding:16px 24px;background:#f9fafb;text-align:center;font-size:12px;color:#999;">
+          <p style="margin:0;">© ${new Date().getFullYear()} PZM Shop – Automated Monthly Report</p>
+        </div>
+      </div>
+    </body></html>`;
   }
 }

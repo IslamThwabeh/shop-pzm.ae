@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect } from 'react'
-import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import './App.css'
 import type { Product } from '@shared/types'
@@ -196,10 +196,6 @@ function AppContent() {
           <Route
             path="/blog-post"
             element={<BlogPostPage />}
-          />
-          <Route
-            path="/shop"
-            element={<Navigate to="/services/brand-new" replace />}
           />
           <Route
             path="/product/:id"

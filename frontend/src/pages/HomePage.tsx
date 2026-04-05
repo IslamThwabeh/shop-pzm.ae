@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, CalendarDays, Clock3, MapPin, MessageCircle, ShieldCheck, Wrench } from 'lucide-react'
+import { ArrowRight, CalendarDays, MessageCircle, Phone, ShieldCheck, Wrench } from 'lucide-react'
 import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
-import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
+import FaqAccordion from '../components/FaqAccordion'
+import TestimonialCards from '../components/TestimonialCards'
 import { areaCatalogList } from '../content/areaCatalog'
 import {
   homeAreaOrder,
@@ -40,8 +41,7 @@ function SectionHeader({ badge, title, description, align = 'center' }: SectionH
   )
 }
 
-const ELFSIGHT_REVIEWS_APP_ID = '69b4a752-7f66-44fe-8388-276e68bc6823'
-const ELFSIGHT_FAQ_APP_ID = 'f5d197a3-7325-43ff-a3fa-787de403682f'
+
 
 interface HomePageProps {
   products: Product[]
@@ -373,10 +373,8 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
           title="Customer Reviews"
           description="What customers are saying about PZM on Google and after real repair, trade-in, and purchase experiences."
         />
-        <div className="mt-14 overflow-hidden rounded-[30px] border border-brandBorder bg-white px-3 py-4 shadow-sm sm:px-5 sm:py-5">
-          <div
-            className={`elfsight-app-${ELFSIGHT_REVIEWS_APP_ID} min-h-[180px]`}
-          />
+        <div className="mt-14">
+          <TestimonialCards />
         </div>
       </section>
 
@@ -386,11 +384,8 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
           title="Frequently Asked Questions"
           description="Everything customers typically ask about warranty, repair timing, ordering, pickup, and how the store works in Dubai."
         />
-
-        <div className="mt-14 overflow-hidden rounded-[30px] border border-brandBorder bg-white px-3 py-4 shadow-sm sm:px-5 sm:py-5">
-          <div
-            className={`elfsight-app-${ELFSIGHT_FAQ_APP_ID} min-h-[180px]`}
-          />
+        <div className="mt-14">
+          <FaqAccordion items={homeFaqItems} />
         </div>
       </section>
 
@@ -413,32 +408,45 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
       </section>
 
       <section id="appointment" className="bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr,1.1fr] lg:items-center">
-          <div>
-            <SectionHeader
-              badge="Book Now"
-              title="Book Drop-Off or Pickup"
-              description="Choose whether you will bring the device to our Al Barsha store or ask us to collect and return it. Use the form to request service intake, pickup, or a callback from the team."
-              align="left"
-            />
+        <div className="mx-auto max-w-7xl">
+          <SectionHeader
+            badge="Get in Touch"
+            title="Ready to Visit or Need Help?"
+            description="Message us on WhatsApp, call the store, or visit our Al Barsha branch. We are open 7 days a week."
+          />
 
-            <div className="mt-8 space-y-4 rounded-[28px] border border-brandBorder bg-white/70 p-6 shadow-sm backdrop-blur">
-              <div className="flex items-start gap-3">
-                <Clock3 className="mt-1 text-primary" size={18} />
-                <p className="text-sm leading-7 text-brandTextDark">Store drop-off can be booked for the same day, while pickup and return needs at least 24 hours notice.</p>
-              </div>
-              <div className="flex items-start gap-3">
-                <MapPin className="mt-1 text-primary" size={18} />
-                <p className="text-sm leading-7 text-brandTextDark">Send the request online and the team will follow up with the details, availability, or next step.</p>
-              </div>
-              <div className="flex items-start gap-3">
-                <MessageCircle className="mt-1 text-primary" size={18} />
-                <p className="text-sm leading-7 text-brandTextDark">Need a product instead? Browse the shop and message the team on WhatsApp to order directly.</p>
-              </div>
-            </div>
+          <div className="mt-14 grid gap-6 md:grid-cols-3">
+            <a
+              href={siteContact.whatsappSupportHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm text-center transition-all hover:-translate-y-1 hover:shadow-lg"
+            >
+              <MessageCircle className="mx-auto text-[#25D366]" size={28} />
+              <h3 className="mt-5 text-xl font-bold text-slate-900">WhatsApp Us</h3>
+              <p className="mt-3 text-sm leading-7 text-brandTextMedium">Chat with the team instantly for orders, questions, or service requests.</p>
+            </a>
+
+            <a
+              href={siteContact.phoneHref}
+              className="group rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm text-center transition-all hover:-translate-y-1 hover:shadow-lg"
+            >
+              <Phone className="mx-auto text-primary" size={28} />
+              <h3 className="mt-5 text-xl font-bold text-slate-900">Call the Store</h3>
+              <p className="mt-3 text-sm leading-7 text-brandTextMedium">{siteContact.phoneDisplay} — open late, 7 days a week.</p>
+            </a>
+
+            <a
+              href={siteContact.mapsHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm text-center transition-all hover:-translate-y-1 hover:shadow-lg"
+            >
+              <CalendarDays className="mx-auto text-primary" size={28} />
+              <h3 className="mt-5 text-xl font-bold text-slate-900">Visit Our Store</h3>
+              <p className="mt-3 text-sm leading-7 text-brandTextMedium">Hessa Union Coop Hypermarket, Ground Floor — Al Barsha, Dubai.</p>
+            </a>
           </div>
-
-          <HomeAppointmentPanel />
         </div>
       </section>
     </div>

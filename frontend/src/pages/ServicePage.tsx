@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import Seo from '../components/Seo'
-import ServiceRequestForm from '../components/ServiceRequestForm'
+import WhatsAppCTA from '../components/WhatsAppCTA'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 
 const mapsLink = 'https://maps.app.goo.gl/e5Rhfo8YY3i8CatM7?g_st=ic'
@@ -69,10 +69,10 @@ export default function ServicePage() {
 
             <div className="flex flex-wrap gap-3">
               <a
-                href="#service-request-form"
+                href="#service-contact"
                 className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
               >
-                Start Request
+                Get in Touch
               </a>
             </div>
           </div>
@@ -99,9 +99,9 @@ export default function ServicePage() {
           <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">What happens next</h2>
             <div className="space-y-4 text-brandTextDark">
-              <p><span className="font-semibold text-primary">1.</span> Submit the form with the details the team needs to review your request.</p>
+              <p><span className="font-semibold text-primary">1.</span> Message us on WhatsApp or call with the details the team needs.</p>
               <p><span className="font-semibold text-primary">2.</span> PZM checks the service, stock, pricing, or consultation details for your request.</p>
-              <p><span className="font-semibold text-primary">3.</span> The team contacts you using your preferred method to confirm the next step.</p>
+              <p><span className="font-semibold text-primary">3.</span> The team follows up to confirm the next step.</p>
             </div>
           </section>
 
@@ -127,12 +127,11 @@ export default function ServicePage() {
           )}
         </div>
 
-        <div id="service-request-form">
-          <ServiceRequestForm
-            serviceSlug={service.slug}
-            serviceTitle={service.title}
-            sourcePath={`/services/${service.slug}`}
-            requestKinds={service.requestKinds}
+        <div id="service-contact">
+          <WhatsAppCTA
+            title={`Need help with ${service.title.toLowerCase()}?`}
+            description="Send us a message and the PZM team will follow up with pricing, availability, or next steps."
+            prefilledMessage={`Hi, I'm interested in ${service.title} from your website. Can you help? (via pzm.ae/services/${service.slug})`}
           />
         </div>
       </div>
