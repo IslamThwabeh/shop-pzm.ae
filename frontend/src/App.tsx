@@ -194,6 +194,10 @@ function AppContent() {
             element={<BlogPostPage />}
           />
           <Route
+            path="/blog-post"
+            element={<BlogPostPage />}
+          />
+          <Route
             path="/shop"
             element={<Navigate to="/services/brand-new" replace />}
           />

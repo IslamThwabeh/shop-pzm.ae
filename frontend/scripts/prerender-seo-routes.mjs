@@ -394,68 +394,18 @@ const canonicalRoutes = [
 
 const canonicalRouteMap = new Map(canonicalRoutes.map((route) => [normalizeCanonicalPath(route.canonicalPath || route.path), route]))
 const blogRoute = canonicalRouteMap.get('/blog/')
-const servicesRoute = canonicalRouteMap.get('/services')
-const areasRoute = canonicalRouteMap.get('/areas')
-const termsRoute = canonicalRouteMap.get('/terms')
-const returnPolicyRoute = canonicalRouteMap.get('/return-policy')
-const buyIphoneRoute = canonicalRouteMap.get('/services/buy-iphone')
-const brandNewRoute = canonicalRouteMap.get('/services/brand-new')
 const secondhandRoute = canonicalRouteMap.get('/services/secondhand')
 
+// NOTE: .html aliases removed for routes that have canonical clean-URL prerendered
+// pages. Cloudflare Pages Pretty URLs resolves /path to path.html, which would
+// serve the noindex alias instead of the canonical path/index.html.
+// Those .html URLs are handled by 301 redirects in _redirects instead.
 const aliasRoutes = [
-  {
-    ...blogRoute,
-    path: '/blog.html',
-    canonicalPath: '/blog/',
-    robots: 'noindex, follow',
-  },
   {
     ...blogRoute,
     path: '/blog-post.html',
     title: 'Tech Blog | PZM Dubai',
     canonicalPath: '/blog/',
-    robots: 'noindex, follow',
-  },
-  {
-    ...servicesRoute,
-    path: '/services/index.html',
-    canonicalPath: '/services',
-    robots: 'noindex, follow',
-  },
-  {
-    ...areasRoute,
-    path: '/areas/index.html',
-    canonicalPath: '/areas',
-    robots: 'noindex, follow',
-  },
-  {
-    ...termsRoute,
-    path: '/terms.html',
-    canonicalPath: '/terms',
-    robots: 'noindex, follow',
-  },
-  {
-    ...returnPolicyRoute,
-    path: '/return-policy.html',
-    canonicalPath: '/return-policy',
-    robots: 'noindex, follow',
-  },
-  {
-    ...buyIphoneRoute,
-    path: '/services/buy-iphone.html',
-    canonicalPath: '/services/buy-iphone',
-    robots: 'noindex, follow',
-  },
-  {
-    ...brandNewRoute,
-    path: '/services/brand-new.html',
-    canonicalPath: '/services/brand-new',
-    robots: 'noindex, follow',
-  },
-  {
-    ...secondhandRoute,
-    path: '/services/secondhand.html',
-    canonicalPath: '/services/secondhand',
     robots: 'noindex, follow',
   },
   {
