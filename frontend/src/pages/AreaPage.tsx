@@ -98,10 +98,10 @@ export default function AreaPage() {
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
-            to="/shop"
+            to="/services"
             className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
           >
-            Browse live shop
+            Explore device pages
           </Link>
           <Link
             to="/services"

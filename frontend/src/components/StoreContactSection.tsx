@@ -47,12 +47,14 @@ export default function StoreContactSection() {
                 <p className="mt-2 text-sm text-brandTextMedium">Use WhatsApp for quick support questions, follow-up, and store guidance.</p>
               </a>
               <a
-                href={siteContact.phoneHref}
+                href={siteContact.whatsappSupportHref}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="rounded-2xl border border-brandBorder p-5 hover:border-primary hover:bg-green-50 transition-colors"
               >
                 <Mail size={22} className="text-primary" />
-                <p className="mt-4 text-lg font-semibold text-brandTextDark">Email notifications only</p>
-                <p className="mt-2 text-sm text-brandTextMedium">{siteContact.noReplyEmail} is unmonitored. Use phone or WhatsApp for support.</p>
+                <p className="mt-4 text-lg font-semibold text-brandTextDark">Store guidance</p>
+                <p className="mt-2 text-sm text-brandTextMedium">Use WhatsApp for quick help with models, repairs, accessories, pickup, and store support.</p>
               </a>
             </div>
 
@@ -60,10 +62,10 @@ export default function StoreContactSection() {
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Quick paths</p>
               <div className="mt-4 flex flex-wrap gap-3">
                 <Link
-                  to="/shop"
+                  to="/services"
                   className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brandGreenDark transition-colors"
                 >
-                  Browse the shop
+                  Explore services
                 </Link>
                 <Link
                   to="/services"

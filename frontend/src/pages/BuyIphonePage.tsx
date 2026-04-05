@@ -154,10 +154,10 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                 Request Missing Model
               </a>
               <Link
-                to="/shop"
+                to="/services"
                 className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
               >
-                Open Full Shop
+                View All Service Pages
               </Link>
             </div>
 
@@ -198,8 +198,8 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
               This section is driven by the live product catalog so pricing, stock, and product actions stay aligned with the storefront.
             </p>
           </div>
-          <Link to="/shop" className="text-sm font-semibold text-primary hover:underline">
-            Browse full shop
+          <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
+            View all service pages
           </Link>
         </div>
 

@@ -169,10 +169,10 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
                 Trade In Your Device
               </Link>
               <Link
-                to="/shop"
+                to="/services"
                 className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
               >
-                Browse Full Shop
+                View All Service Pages
               </Link>
             </div>
 
@@ -245,8 +245,8 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
               This section follows the live storefront catalog, so used listings only appear here when they are actually available on the site.
             </p>
           </div>
-          <Link to="/shop" className="text-sm font-semibold text-primary hover:underline">
-            Browse full shop
+          <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
+            View all service pages
           </Link>
         </div>
 

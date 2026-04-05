@@ -256,8 +256,8 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
               This section is powered by the live storefront catalog so price, stock, and product actions stay aligned with the actual checkout flow.
             </p>
           </div>
-          <Link to="/shop" className="text-sm font-semibold text-primary hover:underline">
-            Browse full shop
+          <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
+            View all service pages
           </Link>
         </div>
 

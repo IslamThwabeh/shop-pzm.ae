@@ -405,15 +405,15 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   return (
     <div className="admin-portal min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(0,167,111,0.14),transparent_18%),radial-gradient(circle_at_bottom_left,rgba(30,41,59,0.1),transparent_22%),linear-gradient(180deg,#eef5fb_0%,#f7fbff_48%,#ffffff_100%)]">
       <header className="admin-glass sticky top-0 z-[1000] border-b border-white/30 bg-[rgba(255,255,255,0.72)]">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-          <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-[22px] bg-[linear-gradient(135deg,#0b8a60_0%,#11a36e_100%)] shadow-[0_18px_35px_rgba(11,138,96,0.18)]">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-[linear-gradient(135deg,#0b8a60_0%,#11a36e_100%)] shadow-[0_18px_35px_rgba(11,138,96,0.18)]">
               <img src="/images/Header/logo.svg" alt="PZM Logo" className="h-9" />
             </div>
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Lean Admin</p>
-              <h1 className="admin-heading-accent mt-2 text-3xl font-bold text-slate-950">Orders, service, and monthly reports</h1>
-              <p className="mt-2 max-w-2xl text-sm leading-7 text-brandTextMedium">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Lean Admin</p>
+              <h1 className="mt-1 text-2xl font-bold text-slate-950">Orders, service, and monthly reports</h1>
+              <p className="mt-1 max-w-2xl text-sm leading-6 text-brandTextMedium">
                 Keep the back office simple: manage pending, confirmed, and canceled work for both items and services.
               </p>
             </div>

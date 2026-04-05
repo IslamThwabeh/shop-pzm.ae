@@ -68,20 +68,11 @@ export class EmailService {
   }
 
   private getCustomerContactNoteHtml(): string {
-    return `
-      <div style="margin-top: 24px; padding: 16px; background: #eefbf5; border: 1px solid #cceee0; border-radius: 8px;">
-        <p style="margin: 0 0 8px 0;"><strong>Important:</strong> This email was sent from <strong>${this.senderEmail}</strong>, which is unmonitored.</p>
-        <p style="margin: 0;">If you have any concern, please message us on <a href="${CONTACT_WHATSAPP_URL}" style="color: #00A76F; font-weight: bold;">WhatsApp</a> or call <a href="tel:${CONTACT_PHONE_E164}" style="color: #00A76F; font-weight: bold;">${CONTACT_PHONE_DISPLAY}</a>.</p>
-      </div>
-    `;
+    return '';
   }
 
   private getInternalNotificationNoteHtml(): string {
-    return `
-      <div style="margin-top: 24px; padding: 16px; background: #eefbf5; border: 1px solid #cceee0; border-radius: 8px;">
-        <p style="margin: 0;"><strong>Automated email note:</strong> Customer-facing emails are sent from <strong>${this.senderEmail}</strong>. If a customer needs help, direct them to WhatsApp or phone at ${CONTACT_PHONE_DISPLAY}.</p>
-      </div>
-    `;
+    return '';
   }
 
   /**

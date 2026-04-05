@@ -1,11 +1,10 @@
 import { useState, useEffect, useLayoutEffect } from 'react'
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
 import './App.css'
 import type { Product } from '@shared/types'
 import { apiService } from './services/api'
-import ProductListing from './pages/ProductListing'
 import ProductDetails from './pages/ProductDetails'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
@@ -115,20 +114,21 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header
-        currentPage={currentPage}
-        onNavigate={(page) => {
-          // keep compatibility with previous onNavigate signature
-          if (page && (page as any).type) {
-            const p = page as any
-            if (p.type === 'home') navigateTo('/')
-            else if (p.type === 'shop') navigateTo('/shop')
-            else if (p.type === 'admin') navigateTo('/admin')
-            else if (p.type === 'cart') navigateTo('/cart')
-            else if (p.type === 'checkout') navigateTo('/checkout')
-          }
-        }}
-      />
+      {!isAdminRoute && (
+        <Header
+          currentPage={currentPage}
+          onNavigate={(page) => {
+            // keep compatibility with previous onNavigate signature
+            if (page && (page as any).type) {
+              const p = page as any
+              if (p.type === 'home') navigateTo('/')
+              else if (p.type === 'admin') navigateTo('/admin')
+              else if (p.type === 'cart') navigateTo('/cart')
+              else if (p.type === 'checkout') navigateTo('/checkout')
+            }
+          }}
+        />
+      )}
 
       <main className={isAdminRoute || isHomeRoute ? 'w-full' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'}>
         {error && (
@@ -141,7 +141,7 @@ function AppContent() {
           <Route path="/admin/orders/:id/invoice" element={<AdminInvoice />} />
           <Route
             path="/"
-            element={<HomePage products={products} onShopClick={() => navigateTo('/shop')} />}
+            element={<HomePage products={products} onShopClick={() => navigateTo('/services/brand-new')} />}
           />
           <Route
             path="/services"
@@ -217,7 +217,7 @@ function AppContent() {
           />
           <Route
             path="/shop"
-            element={<ProductListing products={products} loading={loading} />}
+            element={<Navigate to="/services/brand-new" replace />}
           />
           <Route
             path="/product/:id"
@@ -225,7 +225,7 @@ function AppContent() {
           />
           <Route
             path="/cart"
-            element={<Cart onContinueShopping={() => navigateTo('/shop')} onCheckout={() => navigateTo('/checkout')} />}
+            element={<Cart onContinueShopping={() => navigateTo('/services/brand-new')} onCheckout={() => navigateTo('/checkout')} />}
           />
           <Route
             path="/checkout"

@@ -186,7 +186,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
                 className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-4 text-base font-semibold text-white shadow-[0_10px_30px_rgba(0,167,111,0.25)] transition-transform hover:-translate-y-0.5 hover:bg-brandGreenDark"
               >
                 <ShoppingCart size={18} />
-                Shop Now
+                Browse Devices
               </button>
               <Link
                 to="/services/repair"
@@ -336,7 +336,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
               onClick={onShopClick}
               className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark md:mt-0"
             >
-              Browse Live Shop
+              Explore Device Pages
               <ArrowRight size={16} />
             </button>
           </div>

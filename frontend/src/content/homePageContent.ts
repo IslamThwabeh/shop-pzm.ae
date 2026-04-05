@@ -224,7 +224,7 @@ export const homeFaqItems: HomeFaqItem[] = [
   },
   {
     question: 'Can I order online and get delivery?',
-    answer: 'Yes. Browse the shop on the website, place the order through the cart and checkout flow, and use phone or chat only as support if needed.',
+    answer: 'Yes. Browse the device pages on the website, place the order through the cart and checkout flow, and use phone or chat only as support if needed.',
   },
   {
     question: 'What are your working hours?',

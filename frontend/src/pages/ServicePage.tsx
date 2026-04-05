@@ -68,17 +68,9 @@ export default function ServicePage() {
             <p className="text-lg text-brandTextMedium max-w-3xl mb-6">{service.heroDescription}</p>
 
             <div className="flex flex-wrap gap-3">
-              {service.shopPath && (
-                <Link
-                  to={service.shopPath}
-                  className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
-                >
-                  Browse Live Shop
-                </Link>
-              )}
               <a
                 href="#service-request-form"
-                className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
+                className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
               >
                 Start Request
               </a>

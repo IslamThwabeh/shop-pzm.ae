@@ -7,12 +7,6 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://shop.pzm.ae/shop</loc>
-    <lastmod>2026-04-05</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.95</priority>
-  </url>
-  <url>
     <loc>https://shop.pzm.ae/services</loc>
     <lastmod>2026-04-05</lastmod>
     <changefreq>weekly</changefreq>

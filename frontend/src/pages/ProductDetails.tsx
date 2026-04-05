@@ -16,7 +16,14 @@ export default function ProductDetails() {
   return (
     <ProductDetail
       productId={id}
-      onBack={() => navigate('/shop')}
+      onBack={() => {
+        if (window.history.length > 1) {
+          navigate(-1)
+          return
+        }
+
+        navigate('/services/brand-new')
+      }}
       onCheckout={() => navigate('/checkout')}
     />
   )

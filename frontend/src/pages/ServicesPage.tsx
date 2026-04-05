@@ -21,7 +21,7 @@ export default function ServicesPage() {
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Book services, ask for stock, or request a callback</h1>
             <p className="text-lg text-brandTextMedium max-w-3xl">
               Use these pages to request repairs, trade-ins, custom builds, accessories, device availability, and website work from PZM.
-              Where live inventory is available, you can also jump straight into the shop.
+              Use the dedicated service pages as the main browsing paths before checkout.
             </p>
           </div>
           <div className="min-h-[280px] bg-slate-100">
@@ -57,14 +57,6 @@ export default function ServicesPage() {
                 >
                   Open Service Page
                 </Link>
-                {service.shopPath && (
-                  <Link
-                    to={service.shopPath}
-                    className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
-                  >
-                    Browse Live Shop
-                  </Link>
-                )}
               </div>
             </div>
           </article>

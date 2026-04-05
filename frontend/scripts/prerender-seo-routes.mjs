@@ -241,15 +241,6 @@ const baseRoutes = [
     jsonLd: buildStoreJsonLd(),
   },
   {
-    path: '/shop',
-    title: 'Shop Devices in Dubai | PZM Computers & Phones',
-    description:
-      'Browse current device listings from PZM in Dubai with filters for condition, price, and availability, or jump into the dedicated new, used, and iPhone pages.',
-    canonicalPath: '/shop',
-    priority: '0.95',
-    changefreq: 'daily',
-  },
-  {
     path: '/services',
     title: 'Services in Dubai | PZM Computers & Phones',
     description:

@@ -15,7 +15,6 @@ export interface ServiceCatalogEntry {
   heroDescription: string
   highlights: string[]
   requestKinds: ServiceRequestOption[]
-  shopPath?: string
   imageUrl?: string
   imageAlt?: string
 }
@@ -99,7 +98,6 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       { value: 'quote', label: 'Request a bundle quote', description: 'Ask for pricing on multiple accessories together.' },
       { value: 'callback', label: 'Request a callback', description: 'Ask the team to contact you and guide the purchase.' },
     ],
-    shopPath: '/shop',
   },
   'brand-new': {
     slug: 'brand-new',
@@ -119,7 +117,6 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       { value: 'quote', label: 'Request a price confirmation', description: 'Ask for a confirmed price and stock status.' },
       { value: 'callback', label: 'Request a callback', description: 'Ask the team to help you choose before buying.' },
     ],
-    shopPath: '/shop',
   },
   'buy-iphone': {
     slug: 'buy-iphone',
@@ -139,7 +136,6 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       { value: 'quote', label: 'Request a confirmed offer', description: 'Ask for pricing confirmation before placing the order.' },
       { value: 'callback', label: 'Request a callback', description: 'Talk to the team before choosing the right device.' },
     ],
-    shopPath: '/shop',
   },
   secondhand: {
     slug: 'secondhand',
@@ -159,7 +155,6 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       { value: 'quote', label: 'Request a price confirmation', description: 'Ask for a confirmed price on a used device.' },
       { value: 'callback', label: 'Request a callback', description: 'Talk through the options before buying.' },
     ],
-    shopPath: '/shop',
   },
   'web-design': {
     slug: 'web-design',
