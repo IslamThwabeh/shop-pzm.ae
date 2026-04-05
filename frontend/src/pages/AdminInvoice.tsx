@@ -58,6 +58,12 @@ function formatOrderId(id: string) {
   return `PZM-${randomPart}`
 }
 
+function clearAdminSessionAndRedirect() {
+  localStorage.removeItem('adminToken')
+  localStorage.removeItem('adminUser')
+  window.location.replace('/admin')
+}
+
 export default function AdminInvoice() {
   const { id } = useParams<{ id: string }>()
   const [order, setOrder] = useState<OrderResponse | null>(null)
@@ -70,11 +76,22 @@ export default function AdminInvoice() {
         setLoading(true)
         setError(null)
         const authToken = localStorage.getItem('adminToken')
+        if (!authToken) {
+          clearAdminSessionAndRedirect()
+          return
+        }
+
         const res = await fetch(buildApiUrl(`/orders/${id}`), {
           headers: {
-            'Authorization': authToken ? `Bearer ${authToken}` : '',
+            'Authorization': `Bearer ${authToken}`,
           },
         })
+
+        if (res.status === 401 || res.status === 403) {
+          clearAdminSessionAndRedirect()
+          return
+        }
+
         if (!res.ok) throw new Error('Failed to load order')
         const data = await res.json()
         setOrder(data.data || data)

@@ -12,32 +12,18 @@ function findPostBySlug(slug) {
 
 function displayBlogPost() {
     const slug = getPostSlug();
-    const post = findPostBySlug(slug);
-    
-    if (!post) {
-        window.location.href = '/blog.html';
+    if (!slug) {
+        window.location.replace('/blog/');
         return;
     }
-    
-    const postContent = document.getElementById('post-content');
-    
-    postContent.innerHTML = `
-        <img src="${post.image_url}" alt="${post.title}" class="blog-post-image">
-        <div class="blog-post-content">
-            <span class="blog-category">${post.category}</span>
-            <h1>${post.title}</h1>
-            <div class="blog-meta">
-                <span>${new Date().toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                })}</span>
-            </div>
-            <div class="blog-content">
-                ${post.content}
-            </div>
-        </div>
-    `;
+
+    const post = findPostBySlug(slug);
+    if (!post) {
+        window.location.replace('/blog/');
+        return;
+    }
+
+    window.location.replace(`/blog/${post.slug}`);
 }
 
 // Initialize when DOM is ready

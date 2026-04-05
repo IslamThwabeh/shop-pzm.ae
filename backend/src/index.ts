@@ -547,6 +547,19 @@ app.get('/api/orders/:id', async (c) => {
   try {
     const orderId = c.req.param('id');
     logRequest('GET', `/api/orders/${orderId}`);
+    const authService = new AuthService(c.env.ADMIN_SECRET);
+    const authHeader = c.req.header('Authorization');
+    const token = authService.extractToken(authHeader);
+
+    if (!token) {
+      return c.json({ error: 'Unauthorized', status: 401 }, 401);
+    }
+
+    const payload = await authService.verifyToken(token);
+    if (!payload || payload.type !== 'admin') {
+      return c.json({ error: 'Forbidden', status: 403 }, 403);
+    }
+
     const db = new Database(c.env.DB);
     const order = await db.getOrder(orderId);
     if (!order) {
@@ -716,30 +729,39 @@ app.put('/api/orders/:id', async (c) => {
     // Send status update email if status changed
     if (body.status && body.status !== order.status) {
       const emailService = new EmailService(c.env.ZEPTOMAIL_API_TOKEN);
-      const product = await db.getProduct(order.product_id);
-      if (product) {
-        // Send to customer
-        await emailService.sendStatusUpdate(
-          order.customer_email,
-          order.customer_name,
-          orderId,
-          body.status,
-          product.model,
-          product.storage,
-          product.condition,
-          product.color
-        );
-        // Send to support team
-        await emailService.sendStatusUpdateToTeam(
-          orderId,
-          order.customer_name,
-          body.status,
-          product.model,
-          product.storage,
-          product.condition,
-          product.color
-        );
+      let orderItemsForEmail = order.items || [];
+
+      if (orderItemsForEmail.length === 0 && order.product_id) {
+        const legacyProduct = await db.getProduct(order.product_id);
+        if (legacyProduct) {
+          orderItemsForEmail = [
+            {
+              id: `legacy-${order.id}`,
+              order_id: order.id,
+              product_id: order.product_id,
+              quantity: order.quantity || 1,
+              unit_price: legacyProduct.price,
+              subtotal: legacyProduct.price * (order.quantity || 1),
+              created_at: order.created_at,
+              product: legacyProduct,
+            },
+          ];
+        }
       }
+
+      await emailService.sendStatusUpdate(
+        order.customer_email,
+        order.customer_name,
+        orderId,
+        body.status,
+        orderItemsForEmail
+      );
+      await emailService.sendStatusUpdateToTeam(
+        orderId,
+        order.customer_name,
+        body.status,
+        orderItemsForEmail
+      );
     }
 
     return c.json({ data: updated, status: 200 }, 200);
@@ -935,12 +957,17 @@ app.put('/api/service-requests/:id', async (c) => {
     }
 
     const db = new Database(c.env.DB);
+    const existingRequest = await db.getServiceRequest(requestId);
+    if (!existingRequest) {
+      return c.json({ error: 'Service request not found', status: 404 }, 404);
+    }
+
     const updated = await db.updateServiceRequest(requestId, updates as Partial<ServiceRequest>);
     if (!updated) {
       return c.json({ error: 'Service request not found', status: 404 }, 404);
     }
 
-    if (body.status && body.status !== request.status && updated.customer_email) {
+    if (body.status && body.status !== existingRequest.status && updated.customer_email) {
       const emailService = new EmailService(c.env.ZEPTOMAIL_API_TOKEN);
       await emailService.sendServiceRequestStatusUpdate(updated);
     }

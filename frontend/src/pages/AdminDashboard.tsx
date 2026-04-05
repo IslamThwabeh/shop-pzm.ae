@@ -80,8 +80,9 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
+        if (response.status === 401 || response.status === 403) {
           localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUser');
           onLogout();
           throw new Error('Session expired. Please login again.');
         }
@@ -116,6 +117,12 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       });
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUser');
+          onLogout();
+          throw new Error('Session expired. Please login again.');
+        }
         throw new Error('Failed to update order');
       }
 
@@ -133,6 +140,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
     onLogout();
   };
 

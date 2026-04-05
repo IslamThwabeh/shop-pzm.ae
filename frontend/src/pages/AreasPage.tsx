@@ -16,7 +16,7 @@ export default function AreasPage() {
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Areas we serve from Al Barsha across Dubai</h1>
         <p className="text-lg text-brandTextMedium max-w-3xl">
           PZM operates from Hessa Street in Al Barsha and serves nearby residential, office, and waterfront communities across Dubai.
-          Use the area pages to understand travel time, common request patterns, and the best route into the new tracked service and shop flows.
+          Use the area pages to understand travel time, nearby communities, and the quickest route into products and services from your part of Dubai.
         </p>
       </section>
 

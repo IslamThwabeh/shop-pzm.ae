@@ -98,7 +98,7 @@ export default function ProductCard({ product }: Props) {
         </div>
 
         <p className="mt-3 text-xs font-medium uppercase tracking-[0.14em] text-brandTextMedium">
-          Choose an action instead of opening the product page by accident.
+          Open the product page for full specs, photos, and delivery details.
         </p>
       </div>
     </article>

@@ -105,7 +105,7 @@ function displayBlogPosts() {
         <span class="blog-category">${post.category}</span>
         <h2>${post.title}</h2>
         <p>${post.excerpt}</p>
-        <a href="blog-post.html?slug=${post.slug}" class="read-more">Read More</a>
+        <a href="/blog/${post.slug}" class="read-more">Read More</a>
         <div class="blog-meta">
           <span>${new Date().toLocaleDateString('en-US', {
             year: 'numeric',

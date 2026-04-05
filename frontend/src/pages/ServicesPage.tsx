@@ -10,18 +10,18 @@ export default function ServicesPage() {
     <div className="space-y-10">
       <Seo
         title="Services in Dubai | PZM Computers & Phones"
-        description="Explore repair, trade-in, gaming PC, accessories, and device service pages with tracked request forms on the PZM website."
+        description="Explore repair, trade-in, gaming PC, accessories, iPhone, and device support pages from PZM Computers & Phones in Dubai."
         canonicalPath="/services"
       />
 
       <section className="overflow-hidden rounded-3xl border border-brandBorder bg-white shadow-md text-left">
         <div className="grid grid-cols-1 lg:grid-cols-[1.05fr,0.95fr] lg:items-stretch">
           <div className="p-8 md:p-12">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">Migration foundation</p>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Service funnels are moving on-site</h1>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">Dubai sales and support</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Book services, ask for stock, or request a callback</h1>
             <p className="text-lg text-brandTextMedium max-w-3xl">
-              This is the first implementation slice for replacing WhatsApp-first service funnels with trackable website requests.
-              The layout will keep evolving toward full parity with pzm.ae, but the conversion layer now starts inside the website itself.
+              Use these pages to request repairs, trade-ins, custom builds, accessories, device availability, and website work from PZM.
+              Where live inventory is available, you can also jump straight into the shop.
             </p>
           </div>
           <div className="min-h-[280px] bg-slate-100">

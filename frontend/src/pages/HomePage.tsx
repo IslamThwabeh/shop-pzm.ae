@@ -126,7 +126,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
     '@type': 'ComputerStore',
     name: siteIdentity.name,
     description:
-      'Buy, sell, fix, and build with PZM in Al Barsha, Dubai. New and used iPhones, MacBooks, gaming PCs, repairs, accessories, and tracked service requests.',
+      'Buy, sell, fix, and build with PZM in Al Barsha, Dubai. New and used iPhones, MacBooks, gaming PCs, repairs, accessories, and local service support.',
     url: buildSiteUrl('/'),
     telephone: '+971528026677',
     address: {
@@ -153,7 +153,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
     <div className="min-h-screen bg-[#f0f7ff] text-slate-900">
       <Seo
         title="Buy iPhones, Laptops and Repair Dubai | PZM Store"
-        description="PZM Computers and Phones Store in Al Barsha, Dubai for new and used devices, expert repairs, custom PC builds, accessories, and tracked service requests."
+        description="PZM Computers and Phones Store in Al Barsha, Dubai for new and used devices, expert repairs, custom PC builds, accessories, and local service support."
         canonicalPath="/"
         jsonLd={[storeJsonLd, faqJsonLd]}
       />
@@ -177,7 +177,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
               </span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-brandTextMedium">
-              Your integrated device solutions hub in Al Barsha, Dubai. Expert repairs, brand new and certified used devices, custom gaming PC builds, accessories, and tracked service requests under one roof.
+              Your integrated device solutions hub in Al Barsha, Dubai. Expert repairs, brand new and certified used devices, custom gaming PC builds, accessories, and direct support from one local team.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
@@ -199,7 +199,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
 
             <div className="mt-10 flex flex-wrap gap-3">
               <span className="rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">{inStockProducts.length} live products</span>
-              <span className="rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">8 core service funnels</span>
+              <span className="rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">8 service categories</span>
               <span className="rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">Open late, 7 days</span>
             </div>
           </div>
@@ -211,7 +211,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
                 <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-sky-700">Trust layer</p>
                 <h2 className="mt-2 text-xl font-bold text-slate-900">Warranty, repairs, and pickups</h2>
                 <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-                  The homepage now follows the legacy structure while pushing key product and service journeys into attributable on-site flows.
+                  Get clear service paths for repairs, device sales, pickups, and product browsing without leaving the site.
                 </p>
               </div>
 
@@ -220,7 +220,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
                 <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-emerald-700">Booking</p>
                 <h2 className="mt-2 text-xl font-bold text-slate-900">Book drop-off or pickup</h2>
                 <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-                  The legacy appointment block is preserved lower on the page, but now it writes directly into the service request backend.
+                  Use the appointment panel to request pickup, drop-off, or a callback from the PZM team.
                 </p>
               </div>
 
@@ -248,7 +248,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
         <SectionHeader
           badge="What We Do"
           title="Our Services"
-          description="From expert repairs to custom builds, everything your device needs is now mapped into first-party service pages and tracked requests."
+          description="From expert repairs to custom builds, explore the main ways PZM can help with your device, setup, or next purchase."
         />
 
         <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -477,7 +477,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
             <SectionHeader
               badge="Book Now"
               title="Book Drop-Off or Pickup"
-              description="Choose whether you will bring the device to our Al Barsha store or ask us to collect and return it. The structure stays close to the legacy site, but the request is now stored inside the website."
+              description="Choose whether you will bring the device to our Al Barsha store or ask us to collect and return it. Use the form to request service intake, pickup, or a callback from the team."
               align="left"
             />
 
@@ -488,7 +488,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
               </div>
               <div className="flex items-start gap-3">
                 <MapPin className="mt-1 text-primary" size={18} />
-                <p className="text-sm leading-7 text-brandTextDark">The booking panel uses the existing service request backend, so each request gets a reference ID immediately.</p>
+                <p className="text-sm leading-7 text-brandTextDark">Send the request online and the team will follow up with the details, availability, or next step.</p>
               </div>
               <div className="flex items-start gap-3">
                 <ShoppingCart className="mt-1 text-primary" size={18} />

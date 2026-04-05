@@ -69,7 +69,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     emoji: '✅',
     title: 'Certified Pre-Owned',
     description: 'Tested and graded iPhones, laptops, MacBooks, and tablets with warranty, transparent condition notes, and better value.',
-    to: '/services/buy-used.html',
+    to: '/services/secondhand',
     cta: 'Browse used devices',
     accentClassName: 'from-emerald-100 to-green-50',
     imageUrl: legacyMedia('buy_used/used_iphone_16_pro_max_main.webp'),
@@ -78,7 +78,7 @@ export const homeServiceCards: HomeServiceCard[] = [
   {
     emoji: '🖥️',
     title: 'Custom PC Build',
-    description: 'Plan a gaming or workstation PC around your budget and performance goals, then keep the request attributable on-site.',
+    description: 'Plan a gaming or workstation PC around your budget, performance goals, and preferred parts with help from the PZM team.',
     to: '/services/gaming-pc',
     cta: 'Start building',
     accentClassName: 'from-violet-100 to-purple-50',
@@ -88,7 +88,7 @@ export const homeServiceCards: HomeServiceCard[] = [
   {
     emoji: '📱',
     title: 'Buy iPhone',
-    description: 'Use the iPhone landing page and live catalog together for new and used models, cash on delivery, and store pickup support.',
+    description: 'Browse iPhone models with live product listings, local support, store pickup, and Cash on Delivery where available.',
     to: '/services/buy-iphone',
     cta: 'View iPhones',
     accentClassName: 'from-pink-100 to-rose-50',
@@ -98,7 +98,7 @@ export const homeServiceCards: HomeServiceCard[] = [
   {
     emoji: '💰',
     title: 'Sell Your Device',
-    description: 'Submit a tracked trade-in request for your phone, laptop, tablet, or console instead of starting from an untracked chat thread.',
+    description: 'Request a valuation for your phone, laptop, tablet, or console before you visit the store or agree to a trade-in.',
     to: '/services/sell-gadgets',
     cta: 'Get a quote',
     accentClassName: 'from-yellow-100 to-lime-50',
@@ -118,7 +118,7 @@ export const homeServiceCards: HomeServiceCard[] = [
   {
     emoji: '🌐',
     title: 'Website Design',
-    description: 'Professional, mobile-friendly websites starting from AED 1,500, captured through first-party request flow just like the rest of the service catalog.',
+    description: 'Professional, mobile-friendly websites for brochure sites, landing pages, online stores, and business redesigns.',
     to: '/services/web-design',
     cta: 'See what is included',
     accentClassName: 'from-lime-100 to-emerald-50',
@@ -138,7 +138,7 @@ export const homeFeaturedCategories: HomeFeaturedCategory[] = [
     tag: 'Certified Used',
     title: 'Pre-Owned Devices',
     description: 'Certified used phones, laptops, tablets, and gaming PCs with clear grading, testing, and warranty support.',
-    to: '/services/buy-used.html',
+    to: '/services/secondhand',
     imageUrl: legacyMedia('buy_used/used_iphone_16_pro_max_main.webp'),
     badgeClassName: 'bg-amber-100 text-amber-700',
   },
@@ -208,7 +208,7 @@ export const homeFaqItems: HomeFaqItem[] = [
   },
   {
     question: 'Can I sell my old phone or laptop to you?',
-    answer: 'Yes. Submit a tracked request through the Sell Your Device service page or the booking panel, or visit the store for evaluation.',
+    answer: 'Yes. Use the Sell Your Device service page or the booking panel to request a valuation, or visit the store for an in-person evaluation.',
   },
   {
     question: 'Do you build custom gaming PCs?',

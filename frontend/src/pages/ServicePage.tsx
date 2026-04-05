@@ -19,7 +19,7 @@ export default function ServicePage() {
           noindex={true}
         />
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Service page not found</h1>
-        <p className="text-brandTextMedium mb-6">This route is not mapped yet in the parity migration.</p>
+        <p className="text-brandTextMedium mb-6">The service page you requested is not available right now. You can browse the current services below.</p>
         <Link
           to="/services"
           className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
@@ -63,7 +63,7 @@ export default function ServicePage() {
       <section className="overflow-hidden rounded-3xl border border-brandBorder bg-white shadow-md text-left">
         <div className={`grid grid-cols-1 ${service.imageUrl ? 'lg:grid-cols-[1.05fr,0.95fr] lg:items-stretch' : ''}`}>
           <div className="p-8 md:p-12">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">Attribution-first service flow</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">PZM Dubai service</p>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{service.heroTitle}</h1>
             <p className="text-lg text-brandTextMedium max-w-3xl mb-6">{service.heroDescription}</p>
 
@@ -96,7 +96,7 @@ export default function ServicePage() {
       <div className="grid grid-cols-1 xl:grid-cols-[1.1fr,0.9fr] gap-8 items-start">
         <div className="space-y-8">
           <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">What this page does now</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">What we can help with</h2>
             <div className="space-y-3 text-brandTextDark">
               {service.highlights.map((highlight) => (
                 <p key={highlight}>• {highlight}</p>
@@ -107,9 +107,9 @@ export default function ServicePage() {
           <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">What happens next</h2>
             <div className="space-y-4 text-brandTextDark">
-              <p><span className="font-semibold text-primary">1.</span> Submit the form with enough detail for the team to act.</p>
-              <p><span className="font-semibold text-primary">2.</span> The request is stored with its own reference ID inside the new site backend.</p>
-              <p><span className="font-semibold text-primary">3.</span> The team follows up using the preferred contact method instead of starting from an untracked chat thread.</p>
+              <p><span className="font-semibold text-primary">1.</span> Submit the form with the details the team needs to review your request.</p>
+              <p><span className="font-semibold text-primary">2.</span> PZM checks the service, stock, pricing, or consultation details for your request.</p>
+              <p><span className="font-semibold text-primary">3.</span> The team contacts you using your preferred method to confirm the next step.</p>
             </div>
           </section>
         </div>

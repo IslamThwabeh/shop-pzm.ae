@@ -11,9 +11,9 @@ export default function StoreContactSection() {
           <div className="space-y-8 text-left">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Visit or Contact PZM</p>
-              <h2 className="mt-3 text-4xl font-bold text-brandTextDark">One Dubai storefront, multiple attributable paths</h2>
+              <h2 className="mt-3 text-4xl font-bold text-brandTextDark">One Dubai storefront for sales, repairs, and support</h2>
               <p className="mt-4 max-w-2xl text-lg text-brandTextMedium">
-                {siteIdentity.summary} Use product pages and tracked request forms first, then fall back to call, maps, or support chat only when you need them.
+                {siteIdentity.summary} Start with the right product or service page, or contact the team directly by phone, maps, or WhatsApp when you need help.
               </p>
             </div>
 
@@ -44,14 +44,14 @@ export default function StoreContactSection() {
               >
                 <MessageCircle size={22} className="text-primary" />
                 <p className="mt-4 text-lg font-semibold text-brandTextDark">Support on WhatsApp</p>
-                <p className="mt-2 text-sm text-brandTextMedium">Keep this as support, not the primary sales funnel.</p>
+                <p className="mt-2 text-sm text-brandTextMedium">Use WhatsApp for quick support questions, follow-up, and store guidance.</p>
               </a>
               <a
                 href={siteContact.phoneHref}
                 className="rounded-2xl border border-brandBorder p-5 hover:border-primary hover:bg-green-50 transition-colors"
               >
                 <Mail size={22} className="text-primary" />
-                <p className="mt-4 text-lg font-semibold text-brandTextDark">Automated emails only</p>
+                <p className="mt-4 text-lg font-semibold text-brandTextDark">Email notifications only</p>
                 <p className="mt-2 text-sm text-brandTextMedium">{siteContact.noReplyEmail} is unmonitored. Use phone or WhatsApp for support.</p>
               </a>
             </div>

@@ -23,7 +23,7 @@ export default function AreaPage() {
           noindex={true}
         />
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Area page not found</h1>
-        <p className="text-brandTextMedium mb-6">This route is not mapped yet in the parity migration.</p>
+        <p className="text-brandTextMedium mb-6">The area page you requested is not available right now. You can browse the current Dubai service areas below.</p>
         <Link
           to="/areas"
           className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
@@ -37,7 +37,7 @@ export default function AreaPage() {
   return (
     <div className="space-y-10">
       <Seo
-        title={`${area.metaTitle} | PZM Computers & Phones`}
+        title={area.metaTitle}
         description={area.description}
         canonicalPath={`/areas/${area.slug}`}
         jsonLd={{
@@ -115,7 +115,7 @@ export default function AreaPage() {
       <div className="grid grid-cols-1 xl:grid-cols-[1.1fr,0.9fr] gap-8 items-start">
         <div className="space-y-8">
           <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">What this page should help nearby customers do</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Why customers from {area.name} use this page</h2>
             <p className="text-brandTextMedium mb-5">{area.localSummary}</p>
             <div className="space-y-3 text-brandTextDark">
               {area.advantages.map((item) => (

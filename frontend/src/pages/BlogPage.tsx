@@ -30,7 +30,7 @@ export default function BlogPage() {
           Market updates, buying guides, repair advice, and device knowledge from Dubai
         </h1>
         <p className="mt-5 max-w-3xl text-lg leading-8 text-brandTextMedium">
-          Articles now use canonical routes, structured data, first-party media, and internal links that point directly into the migrated shop and service flows.
+          Read practical articles from the PZM team on local device pricing, repair decisions, used-tech buying, and the products people actually shop in Dubai.
         </p>
       </section>
 

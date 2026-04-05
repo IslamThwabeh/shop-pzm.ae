@@ -35,7 +35,7 @@ export default function BlogPostPage() {
           noindex={true}
         />
         <h1 className="text-3xl font-bold text-slate-950">Article not found</h1>
-        <p className="mt-4 text-brandTextMedium">This legacy blog URL is not mapped to a current article.</p>
+        <p className="mt-4 text-brandTextMedium">The article you requested is not available right now. You can browse the latest posts from the blog index.</p>
         <Link
           to="/blog"
           className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"

@@ -25,6 +25,8 @@ import ReturnPolicyPage from './pages/ReturnPolicyPage'
 import BlogPage from './pages/BlogPage'
 import BlogPostPage from './pages/BlogPostPage'
 import BuyIphonePage from './pages/BuyIphonePage'
+import BrandNewPage from './pages/BrandNewPage'
+import SecondhandPage from './pages/SecondhandPage'
 
 function AppContent() {
   const navigate = useNavigate()
@@ -156,6 +158,30 @@ function AppContent() {
           <Route
             path="/services/buy-iphone.html"
             element={<BuyIphonePage products={products} loading={loading} />}
+          />
+          <Route
+            path="/services/brand-new"
+            element={<BrandNewPage products={products} loading={loading} />}
+          />
+          <Route
+            path="/services/brand-new.html"
+            element={<BrandNewPage products={products} loading={loading} />}
+          />
+          <Route
+            path="/services/secondhand"
+            element={<SecondhandPage products={products} loading={loading} />}
+          />
+          <Route
+            path="/services/secondhand.html"
+            element={<SecondhandPage products={products} loading={loading} />}
+          />
+          <Route
+            path="/services/buy-used"
+            element={<SecondhandPage products={products} loading={loading} />}
+          />
+          <Route
+            path="/services/buy-used.html"
+            element={<SecondhandPage products={products} loading={loading} />}
           />
           <Route
             path="/services/:slug"

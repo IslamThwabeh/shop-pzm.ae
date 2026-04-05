@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && copy public\\_redirects dist\\_redirects",
-    "build:staging": "tsc && vite build --mode staging",
-    "build:production": "tsc && vite build --mode production",
+    "build": "tsc && vite build && copy public\\_redirects dist\\_redirects && node scripts/prerender-seo-routes.mjs",
+    "build:staging": "tsc && vite build --mode staging && copy public\\_redirects dist\\_redirects && node scripts/prerender-seo-routes.mjs",
+    "build:production": "tsc && vite build --mode production && copy public\\_redirects dist\\_redirects && node scripts/prerender-seo-routes.mjs",
     "preview": "vite preview",
     "deploy": "npm run build && wrangler pages deploy ./dist --project-name shop-pzm-ae-frontend",
     "deploy:staging": "npm run build:staging && wrangler pages deploy ./dist --branch staging --project-name shop-pzm-ae-frontend",

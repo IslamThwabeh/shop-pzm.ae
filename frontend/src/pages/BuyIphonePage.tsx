@@ -61,7 +61,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
     name: 'Buy iPhone in Dubai | PZM',
     url: buildSiteUrl('/services/buy-iphone'),
     description:
-      'Buy iPhone in Dubai through the migrated PZM retail flow with live stock, on-site conversion, and fallback availability requests for missing configurations.',
+      'Buy iPhone in Dubai with live stock, direct checkout, and fast availability support for missing configurations from PZM.',
     mainEntity: {
       '@type': 'ItemList',
       itemListElement: liveIphoneProducts.slice(0, 16).map((product, index) => ({
@@ -88,7 +88,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
     <div className="space-y-10">
       <Seo
         title="Buy iPhone 17 Pro Max, Pro, Air & iPhone 17 in Dubai | PZM"
-        description="Buy iPhone in Dubai through the migrated PZM retail flow with live stock, direct checkout, and tracked availability requests for missing models."
+        description="Buy iPhone in Dubai with live stock, direct checkout, and availability support for missing models from the PZM team."
         canonicalPath="/services/buy-iphone"
         imageUrl={heroImageUrl}
         jsonLd={jsonLd}
@@ -119,10 +119,10 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
       <section className="overflow-hidden rounded-[32px] border border-brandBorder bg-white shadow-md">
         <div className="grid grid-cols-1 lg:grid-cols-[1.05fr,0.95fr] lg:items-stretch">
           <div className="p-8 md:p-12">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">Retail migration slice</p>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Buy iPhone with the same category structure, but keep conversion on-site</h1>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">New iPhone collection</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Buy iPhone in Dubai with live stock and direct checkout</h1>
             <p className="text-lg text-brandTextMedium max-w-3xl mb-6">
-              The old page acted like a retail landing page, not just a contact funnel. This first slice brings that structure into the new site by showing live iPhone inventory directly on the route while keeping availability requests for the missing families.
+              Browse current iPhone 17 Pro Max, Pro, Air, and iPhone 17 models on this page, then move into product details or checkout when you are ready. If a configuration is missing, the request form keeps the conversation on-site.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -181,11 +181,11 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
       </section>
 
       <section className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm">
-        <h2 className="text-2xl font-bold text-slate-950">What this slice fixes</h2>
+        <h2 className="text-2xl font-bold text-slate-950">Why this page works</h2>
         <div className="mt-5 grid gap-4 md:grid-cols-3 text-brandTextDark">
-          <p>• The route now behaves like a real iPhone destination instead of only a request form.</p>
-          <p>• Live iPhone stock is visible directly on the service page so buyers do not have to guess what is listed.</p>
-          <p>• Missing families can still convert through a tracked availability request until the catalog is fully backfilled.</p>
+          <p>• Live iPhone stock is visible directly on the page so buyers do not have to guess what is listed.</p>
+          <p>• Families, prices, and configurations are easier to compare before you open the product detail page.</p>
+          <p>• Missing models can still convert through an availability request when the exact configuration is not listed yet.</p>
         </div>
       </section>
 
@@ -193,9 +193,9 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Live stock</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-950">Current iPhone inventory on the new site</h2>
+            <h2 className="mt-2 text-3xl font-bold text-slate-950">Current iPhone inventory on the site</h2>
             <p className="mt-3 max-w-3xl text-brandTextMedium">
-              This section is driven by the live product catalog, not static HTML. That keeps the page closer to the original retail intent without rebuilding the stale inventory problem.
+              This section is driven by the live product catalog so pricing, stock, and product actions stay aligned with the storefront.
             </p>
           </div>
           <Link to="/shop" className="text-sm font-semibold text-primary hover:underline">
@@ -282,9 +282,9 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                   </div>
                 ) : (
                   <div className="mt-6 rounded-[24px] border border-dashed border-brandBorder bg-slate-50 p-6">
-                    <p className="text-lg font-semibold text-slate-950">This family is missing from the live catalog right now.</p>
+                    <p className="text-lg font-semibold text-slate-950">This family is not listed in the live catalog right now.</p>
                     <p className="mt-2 text-brandTextMedium">
-                      Keep the demand on-site by sending buyers into an availability request until we backfill these missing SKUs from the legacy catalog.
+                      Ask the team about availability and the closest configuration while this family is still being added to the storefront.
                     </p>
                     <a
                       href="#buy-iphone-request-form"
@@ -302,9 +302,9 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
 
       {missingFamilies.length > 0 && (
         <section className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm">
-          <h2 className="text-2xl font-bold text-slate-950">Still missing from the migrated catalog</h2>
+          <h2 className="text-2xl font-bold text-slate-950">More iPhone families you can ask about</h2>
           <p className="mt-3 max-w-3xl text-brandTextMedium">
-            The legacy page covered more than the current live stock. These families need catalog backfill next so the route can match the original site more closely.
+            If a family is not listed yet, use the request form and the team can confirm availability or suggest the closest current option.
           </p>
 
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -333,9 +333,9 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
         <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">What happens next</h2>
           <div className="space-y-4 text-brandTextDark">
-            <p><span className="font-semibold text-primary">1.</span> Buyers can browse the live iPhone variants directly on this page.</p>
-            <p><span className="font-semibold text-primary">2.</span> Missing families still convert through a tracked availability request instead of leaving the site.</p>
-            <p><span className="font-semibold text-primary">3.</span> The next catalog slice should backfill Pro, Air, and standard iPhone 17 inventory so this page reaches real parity.</p>
+            <p><span className="font-semibold text-primary">1.</span> Browse the live iPhone variants directly on this page.</p>
+            <p><span className="font-semibold text-primary">2.</span> Open product details or add in-stock devices straight to the cart.</p>
+            <p><span className="font-semibold text-primary">3.</span> If the model you want is missing, send an availability request and the team will follow up.</p>
           </div>
         </section>
 

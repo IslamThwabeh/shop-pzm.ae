@@ -182,20 +182,14 @@ export class EmailService {
     customerName: string,
     orderId: string,
     status: string,
-    productModel: string,
-    productStorage: string,
-    productCondition: string,
-    productColor: string
+    orderItems: OrderItem[]
   ): Promise<boolean> {
     const displayId = this.formatOrderId(orderId);
     const htmlBody = this.getStatusUpdateTemplate(
       customerName,
       displayId,
       status,
-      productModel,
-      productStorage,
-      productCondition,
-      productColor
+      orderItems
     );
 
     const statusMessages: { [key: string]: string } = {
@@ -223,20 +217,14 @@ export class EmailService {
     orderId: string,
     customerName: string,
     status: string,
-    productModel: string,
-    productStorage: string,
-    productCondition: string,
-    productColor: string
+    orderItems: OrderItem[]
   ): Promise<boolean> {
     const displayId = this.formatOrderId(orderId);
     const htmlBody = this.getStatusUpdateTeamTemplate(
       displayId,
       customerName,
       status,
-      productModel,
-      productStorage,
-      productCondition,
-      productColor
+      orderItems
     );
 
     const statusMessages: { [key: string]: string } = {
@@ -600,6 +588,45 @@ export class EmailService {
     `;
   }
 
+  private getOrderItemsStatusHtml(orderItems: OrderItem[]): string {
+    if (orderItems.length === 0) {
+      return `
+        <div class="order-details">
+          <div class="detail-row">
+            <span class="label">Items:</span>
+            <span>Your order items are being processed. Contact support if you need a refreshed summary.</span>
+          </div>
+        </div>
+      `;
+    }
+
+    return orderItems.map((item, index) => `
+      <div class="product-item">
+        <div class="product-number">${index + 1}</div>
+        <div class="detail-row">
+          <span class="label">Product:</span>
+          <span>${item.product?.model || 'Order item'}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Storage:</span>
+          <span>${item.product?.storage || 'Not recorded'}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Condition:</span>
+          <span>${item.product?.condition === 'new' ? '✨ Brand New' : item.product?.condition === 'used' ? '📱 Used' : 'Not recorded'}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Color:</span>
+          <span>${item.product?.color || 'Not recorded'}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Quantity:</span>
+          <span>${item.quantity}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
   /**
    * Status Update Email Template
    */
@@ -607,10 +634,7 @@ export class EmailService {
     customerName: string,
     orderId: string,
     status: string,
-    productModel: string,
-    productStorage: string,
-    productCondition: string,
-    productColor: string
+    orderItems: OrderItem[]
   ): string {
     const statusInfo: { [key: string]: { emoji: string; title: string; message: string; color: string } } = {
       confirmed: {
@@ -667,6 +691,8 @@ export class EmailService {
           .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
           .status-message { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid ${info.color}; }
           .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+          .product-item { background: #fafafa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid ${info.color}; }
+          .product-number { display: inline-block; background: ${info.color}; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; margin-bottom: 10px; }
           .detail-row { display: flex; justify-content: flex-start; padding: 10px 0; border-bottom: 1px solid #eee; }
           .detail-row:last-child { border-bottom: none; }
           .label { font-weight: bold; color: ${info.color}; min-width: 140px; }
@@ -692,32 +718,14 @@ export class EmailService {
                 <span class="label">Order ID:</span>
                 <span><strong>${orderId}</strong></span>
               </div>
-              
-              <div class="detail-row">
-                <span class="label">Product:</span>
-                <span>${productModel}</span>
-              </div>
-              
-              <div class="detail-row">
-                <span class="label">Storage:</span>
-                <span>${productStorage}</span>
-              </div>
-              
-              <div class="detail-row">
-                <span class="label">Condition:</span>
-                <span>${productCondition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
-              </div>
-              
-              <div class="detail-row">
-                <span class="label">Color:</span>
-                <span>${productColor}</span>
-              </div>
-              
               <div class="detail-row">
                 <span class="label">Status:</span>
                 <span><strong>${status.replace(/_/g, ' ').toUpperCase()}</strong></span>
               </div>
             </div>
+
+            <h3 style="color: ${info.color}; margin-top: 20px;">Order Items (${orderItems.length || 0})</h3>
+            ${this.getOrderItemsStatusHtml(orderItems)}
             
             ${this.getCustomerContactNoteHtml()}
             
@@ -745,10 +753,7 @@ export class EmailService {
     orderId: string,
     customerName: string,
     status: string,
-    productModel: string,
-    productStorage: string,
-    productCondition: string,
-    productColor: string
+    orderItems: OrderItem[]
   ): string {
     const statusColors: { [key: string]: string } = {
       confirmed: '#00A76F',
@@ -774,6 +779,8 @@ export class EmailService {
           .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
           .alert { background: #FFF3CD; border-left: 4px solid ${color}; padding: 15px; margin: 20px 0; border-radius: 4px; }
           .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+          .product-item { background: #fafafa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid ${color}; }
+          .product-number { display: inline-block; background: ${color}; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; margin-bottom: 10px; }
           .detail-row { padding: 10px 0; border-bottom: 1px solid #eee; }
           .detail-row:last-child { border-bottom: none; }
           .label { font-weight: bold; color: ${color}; display: inline-block; width: 120px; }
@@ -802,26 +809,13 @@ export class EmailService {
                 <span>${customerName}</span>
               </div>
               <div class="detail-row">
-                <span class="label">Product: </span>
-                <span>${productModel}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Storage: </span>
-                <span>${productStorage}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Condition: </span>
-                <span>${productCondition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Color: </span>
-                <span>${productColor}</span>
-              </div>
-              <div class="detail-row">
                 <span class="label">New Status: </span>
                 <span><strong>${status.replace(/_/g, ' ').toUpperCase()}</strong></span>
               </div>
             </div>
+
+            <h3 style="color: ${color}; margin-top: 20px;">Order Items (${orderItems.length || 0})</h3>
+            ${this.getOrderItemsStatusHtml(orderItems)}
             
             <p><strong>Note:</strong> Customer has been notified about this status change.</p>
             ${this.getInternalNotificationNoteHtml()}
