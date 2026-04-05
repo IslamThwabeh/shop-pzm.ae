@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { LogOut, RefreshCw } from 'lucide-react';
-import ProductManagement from '../components/admin/ProductManagement';
 import ServiceRequestManagement from '../components/admin/ServiceRequestManagement';
 import { buildApiUrl } from '../utils/siteConfig';
 
@@ -38,13 +37,106 @@ interface Order {
   }>;
 }
 
+interface ReportServiceRequest {
+  id: string;
+  status: string;
+  created_at: string;
+}
+
+type AdminOrderStatus = 'pending' | 'confirmed' | 'delivered' | 'cancelled';
+
+const ADMIN_ORDER_STATUS_OPTIONS: Array<{ value: AdminOrderStatus; label: string }> = [
+  { value: 'pending', label: 'Pending' },
+  { value: 'confirmed', label: 'Active' },
+  { value: 'delivered', label: 'Delivered' },
+  { value: 'cancelled', label: 'Cancelled' },
+];
+
+function normalizeOrderStatus(status: string): AdminOrderStatus {
+  switch (status) {
+    case 'confirmed':
+    case 'in_progress':
+    case 'ready_for_delivery':
+    case 'shipped':
+      return 'confirmed';
+    case 'delivered':
+      return 'delivered';
+    case 'cancelled':
+      return 'cancelled';
+    case 'pending':
+    default:
+      return 'pending';
+  }
+}
+
+function formatAdminOrderStatus(status: string): string {
+  const normalizedStatus = normalizeOrderStatus(status);
+
+  switch (normalizedStatus) {
+    case 'confirmed':
+      return 'Active';
+    case 'delivered':
+      return 'Delivered';
+    case 'cancelled':
+      return 'Cancelled';
+    case 'pending':
+    default:
+      return 'Pending';
+  }
+}
+
+function getOrderStatusBadgeClass(status: string): string {
+  switch (normalizeOrderStatus(status)) {
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-700';
+    case 'confirmed':
+      return 'bg-sky-100 text-sky-700';
+    case 'delivered':
+      return 'bg-emerald-100 text-emerald-700';
+    case 'cancelled':
+      return 'bg-rose-100 text-rose-700';
+    default:
+      return 'bg-slate-100 text-slate-700';
+  }
+}
+
+function isInSelectedMonth(value: string, selectedMonth: string): boolean {
+  const [year, month] = selectedMonth.split('-');
+  const date = new Date(value);
+
+  return (
+    date.getFullYear() === Number.parseInt(year, 10) &&
+    String(date.getMonth() + 1).padStart(2, '0') === month
+  );
+}
+
+function formatMonthLabel(value: string): string {
+  const date = new Date(`${value}-01T00:00:00`);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+}
+
+function formatDisplayLabel(value: string): string {
+  return value
+    .split(/[_\s]+/)
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(' ');
+}
+
 export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [reportRequests, setReportRequests] = useState<ReportServiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reportsLoading, setReportsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<'orders' | 'serviceRequests' | 'products' | 'reports'>('orders');
+  const [statusFilter, setStatusFilter] = useState<AdminOrderStatus | 'all'>('all');
+  const [activeTab, setActiveTab] = useState<'orders' | 'serviceRequests' | 'reports'>('orders');
   const [selectedMonth, setSelectedMonth] = useState<string>(() => {
     const now = new Date();
     const year = now.getFullYear();
@@ -58,6 +150,43 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     const parts = id?.split('-');
     const randomPart = parts?.[parts.length - 1] || id || '000000';
     return `PZM-${randomPart}`;
+  };
+
+  const loadReportRequests = async () => {
+    setReportsLoading(true);
+
+    try {
+      const authToken = localStorage.getItem('adminToken');
+      if (!authToken) {
+        onLogout();
+        return;
+      }
+
+      const response = await fetch(buildApiUrl('/service-requests'), {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUser');
+          onLogout();
+          throw new Error('Session expired. Please login again.');
+        }
+        throw new Error('Failed to load service requests for reports');
+      }
+
+      const responseData = await response.json();
+      setReportRequests(responseData.data || []);
+    } catch (err) {
+      console.error(err);
+      setReportRequests([]);
+    } finally {
+      setReportsLoading(false);
+    }
   };
 
   const loadOrders = async () => {
@@ -146,26 +275,114 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
   useEffect(() => {
     loadOrders();
+    loadReportRequests();
   }, []);
 
   const filteredOrders =
     statusFilter === 'all'
       ? orders
-      : orders.filter((order) => order.status === statusFilter);
+      : orders.filter((order) => normalizeOrderStatus(order.status) === statusFilter);
 
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 10;
 
   const stats = {
     total: orders.length,
-    pending: orders.filter((o) => o.status === 'pending').length,
-    confirmed: orders.filter((o) => o.status === 'confirmed').length,
-    inProgress: orders.filter((o) => o.status === 'in_progress').length,
-    readyForDelivery: orders.filter((o) => o.status === 'ready_for_delivery').length,
-    shipped: orders.filter((o) => o.status === 'shipped').length,
-    delivered: orders.filter((o) => o.status === 'delivered').length,
-    cancelled: orders.filter((o) => o.status === 'cancelled').length,
+    pending: orders.filter((order) => normalizeOrderStatus(order.status) === 'pending').length,
+    confirmed: orders.filter((order) => normalizeOrderStatus(order.status) === 'confirmed').length,
+    delivered: orders.filter((order) => normalizeOrderStatus(order.status) === 'delivered').length,
+    cancelled: orders.filter((order) => normalizeOrderStatus(order.status) === 'cancelled').length,
   };
+
+  const monthLabel = useMemo(() => formatMonthLabel(selectedMonth), [selectedMonth]);
+
+  const monthOrders = useMemo(
+    () => orders.filter((order) => isInSelectedMonth(order.created_at, selectedMonth)),
+    [orders, selectedMonth]
+  );
+
+  const monthRequests = useMemo(
+    () => reportRequests.filter((request) => isInSelectedMonth(request.created_at, selectedMonth)),
+    [reportRequests, selectedMonth]
+  );
+
+  const monthlyReport = useMemo(() => {
+    const deliveredOrders = monthOrders.filter((order) => normalizeOrderStatus(order.status) === 'delivered');
+    const pendingOrders = monthOrders.filter((order) => normalizeOrderStatus(order.status) === 'pending');
+    const activeOrders = monthOrders.filter((order) => normalizeOrderStatus(order.status) === 'confirmed');
+    const cancelledOrders = monthOrders.filter((order) => normalizeOrderStatus(order.status) === 'cancelled');
+
+    const deliveredRevenue = deliveredOrders.reduce((sum, order) => sum + order.total_price, 0);
+    const pipelineValue = [...pendingOrders, ...activeOrders].reduce((sum, order) => sum + order.total_price, 0);
+    const cancelledValue = cancelledOrders.reduce((sum, order) => sum + order.total_price, 0);
+    const averageDeliveredOrderValue = deliveredOrders.length > 0 ? deliveredRevenue / deliveredOrders.length : 0;
+
+    const dailyMap = new Map<string, {
+      key: string;
+      label: string;
+      orders: number;
+      delivered: number;
+      revenue: number;
+      requests: number;
+      cancelled: number;
+    }>();
+
+    const ensureDay = (value: string) => {
+      const date = new Date(value);
+      const key = date.toISOString().slice(0, 10);
+      const existing = dailyMap.get(key);
+
+      if (existing) {
+        return existing;
+      }
+
+      const next = {
+        key,
+        label: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        orders: 0,
+        delivered: 0,
+        revenue: 0,
+        requests: 0,
+        cancelled: 0,
+      };
+      dailyMap.set(key, next);
+      return next;
+    };
+
+    monthOrders.forEach((order) => {
+      const status = normalizeOrderStatus(order.status);
+      const day = ensureDay(order.created_at);
+      day.orders += 1;
+
+      if (status === 'delivered') {
+        day.delivered += 1;
+        day.revenue += order.total_price;
+      }
+
+      if (status === 'cancelled') {
+        day.cancelled += 1;
+      }
+    });
+
+    monthRequests.forEach((request) => {
+      const day = ensureDay(request.created_at);
+      day.requests += 1;
+    });
+
+    return {
+      deliveredRevenue,
+      pipelineValue,
+      cancelledValue,
+      averageDeliveredOrderValue,
+      pendingOrders,
+      activeOrders,
+      deliveredOrders,
+      cancelledOrders,
+      serviceRequests: monthRequests,
+      completedRequests: monthRequests.filter((request) => request.status === 'completed').length,
+      dailyRows: Array.from(dailyMap.values()).sort((left, right) => right.key.localeCompare(left.key)),
+    };
+  }, [monthOrders, monthRequests]);
 
   // Pagination
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
@@ -179,264 +396,251 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   }, [statusFilter]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-[#00A76F] to-[#16a34a] text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#eff8f4_0%,#f7fbff_52%,#ffffff_100%)]">
+      <header className="border-b border-brandBorder bg-white/90 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div className="flex items-center gap-4">
-            <img src="/images/Header/logo.svg" alt="PZM Logo" className="h-12" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-[22px] bg-[linear-gradient(135deg,#0b8a60_0%,#11a36e_100%)] shadow-[0_18px_35px_rgba(11,138,96,0.18)]">
+              <img src="/images/Header/logo.svg" alt="PZM Logo" className="h-9" />
+            </div>
             <div>
-              <h1 className="text-3xl font-bold">PZM Admin Panel</h1>
-              <p className="text-green-100 text-sm mt-1">Manage your store efficiently</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Lean Admin</p>
+              <h1 className="mt-2 text-3xl font-bold text-slate-950">Orders, service, and monthly reports</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-7 text-brandTextMedium">
+                Keep the back office simple: manage orders, follow service requests, and review the month without exposing product setup.
+              </p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors font-medium"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-brandBorder bg-white px-5 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
           >
-            <LogOut size={20} />
+            <LogOut size={18} />
             Logout
           </button>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500 text-red-400 rounded-lg">
+          <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
             {error}
           </div>
         )}
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
-          <div className="bg-gradient-to-br from-[#00A76F] to-[#16a34a] rounded-lg shadow-lg p-4 text-white">
-            <p className="text-green-100 text-xs">Total Orders</p>
-            <p className="text-3xl font-bold mt-2">{stats.total}</p>
+        <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+          <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#eef9f4_0%,#ffffff_100%)] p-5 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Total Orders</p>
+            <p className="mt-3 text-3xl font-bold text-slate-950">{stats.total}</p>
+            <p className="mt-2 text-sm text-brandTextMedium">All orders in the system</p>
           </div>
-          <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg p-4 text-white">
-            <p className="text-yellow-100 text-xs">Pending</p>
-            <p className="text-3xl font-bold mt-2">{stats.pending}</p>
+          <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#fff8db_0%,#ffffff_100%)] p-5 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-700">Pending</p>
+            <p className="mt-3 text-3xl font-bold text-slate-950">{stats.pending}</p>
+            <p className="mt-2 text-sm text-brandTextMedium">Awaiting first action</p>
           </div>
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-4 text-white">
-            <p className="text-blue-100 text-xs">Confirmed</p>
-            <p className="text-3xl font-bold mt-2">{stats.confirmed}</p>
+          <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#e8f4fd_0%,#ffffff_100%)] p-5 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Active</p>
+            <p className="mt-3 text-3xl font-bold text-slate-950">{stats.confirmed}</p>
+            <p className="mt-2 text-sm text-brandTextMedium">In progress with the team</p>
           </div>
-          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-4 text-white">
-            <p className="text-purple-100 text-xs">In Progress</p>
-            <p className="text-3xl font-bold mt-2">{stats.inProgress}</p>
+          <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#eaf9f2_0%,#ffffff_100%)] p-5 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Delivered</p>
+            <p className="mt-3 text-3xl font-bold text-slate-950">{stats.delivered}</p>
+            <p className="mt-2 text-sm text-brandTextMedium">Closed successfully</p>
           </div>
-          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-lg p-4 text-white">
-            <p className="text-orange-100 text-xs">Ready</p>
-            <p className="text-3xl font-bold mt-2">{stats.readyForDelivery}</p>
-          </div>
-          <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-4 text-white">
-            <p className="text-indigo-100 text-xs">Shipped</p>
-            <p className="text-3xl font-bold mt-2">{stats.shipped}</p>
-          </div>
-          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-4 text-white">
-            <p className="text-green-100 text-xs">Delivered</p>
-            <p className="text-3xl font-bold mt-2">{stats.delivered}</p>
-          </div>
-          <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-lg p-4 text-white">
-            <p className="text-red-100 text-xs">Cancelled</p>
-            <p className="text-3xl font-bold mt-2">{stats.cancelled}</p>
+          <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#fff1f2_0%,#ffffff_100%)] p-5 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-700">Cancelled</p>
+            <p className="mt-3 text-3xl font-bold text-slate-950">{stats.cancelled}</p>
+            <p className="mt-2 text-sm text-brandTextMedium">Stopped or lost orders</p>
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="bg-slate-800 rounded-lg shadow-lg overflow-hidden">
-          <div className="flex border-b border-slate-700">
-            <button
-              onClick={() => setActiveTab('orders')}
-              className={`flex-1 px-6 py-4 font-medium transition-colors ${
-                activeTab === 'orders'
-                  ? 'bg-[#00A76F] text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              }`}
-            >
-              📋 Orders Management
-            </button>
-            <button
-              onClick={() => setActiveTab('serviceRequests')}
-              className={`flex-1 px-6 py-4 font-medium transition-colors ${
-                activeTab === 'serviceRequests'
-                  ? 'bg-[#00A76F] text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              }`}
-            >
-              🛠️ Service Requests
-            </button>
-            <button
-              onClick={() => setActiveTab('products')}
-              className={`flex-1 px-6 py-4 font-medium transition-colors ${
-                activeTab === 'products'
-                  ? 'bg-[#00A76F] text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              }`}
-            >
-              📱 Products Management
-            </button>
-            <button
-              onClick={() => setActiveTab('reports')}
-              className={`flex-1 px-6 py-4 font-medium transition-colors ${
-                activeTab === 'reports'
-                  ? 'bg-[#00A76F] text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              }`}
-            >
-              📊 Monthly Reports
-            </button>
+        <div className="overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm">
+          <div className="border-b border-slate-100 px-6 py-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Admin Workspace</p>
+                <h2 className="mt-2 text-2xl font-bold text-slate-950">Minimal operations for a small shop</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-7 text-brandTextMedium">
+                  Focus on the only things that matter here: current orders, service follow-up, and clear monthly performance.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setActiveTab('orders')}
+                  className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
+                    activeTab === 'orders'
+                      ? 'bg-primary text-white'
+                      : 'border border-brandBorder bg-white text-brandTextDark hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  Orders
+                </button>
+                <button
+                  onClick={() => setActiveTab('serviceRequests')}
+                  className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
+                    activeTab === 'serviceRequests'
+                      ? 'bg-primary text-white'
+                      : 'border border-brandBorder bg-white text-brandTextDark hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  Service Requests
+                </button>
+                <button
+                  onClick={() => setActiveTab('reports')}
+                  className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
+                    activeTab === 'reports'
+                      ? 'bg-primary text-white'
+                      : 'border border-brandBorder bg-white text-brandTextDark hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  Monthly Reports
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="p-6">
+          <div className="p-6 md:p-7">
             {activeTab === 'orders' && (
               <div>
-                {/* Order Controls */}
-                <div className="flex gap-4 mb-6">
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-4 py-2 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="all">All Orders</option>
-                    <option value="pending">Pending</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="ready_for_delivery">Ready for Delivery</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
+                <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Orders</p>
+                    <h3 className="mt-2 text-2xl font-bold text-slate-950">Current order queue</h3>
+                    <p className="mt-2 max-w-3xl text-sm leading-7 text-brandTextMedium">
+                      Work with the simplified business flow only: pending, active, delivered, or cancelled.
+                    </p>
+                  </div>
 
-                  <button
-                    onClick={loadOrders}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#00A76F] hover:bg-[#16a34a] text-white rounded-lg transition-colors font-medium"
-                  >
-                    <RefreshCw size={20} />
-                    Refresh
-                  </button>
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value as AdminOrderStatus | 'all')}
+                      className="rounded-2xl border border-brandBorder bg-white px-4 py-3 text-sm font-medium text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <option value="all">All Orders</option>
+                      {ADMIN_ORDER_STATUS_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+
+                    <button
+                      onClick={loadOrders}
+                      className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
+                    >
+                      <RefreshCw size={18} />
+                      Refresh
+                    </button>
+                  </div>
                 </div>
 
-                {/* Orders Table */}
                 {loading ? (
-                  <div className="text-center py-12">
-                    <p className="text-slate-400">Loading orders...</p>
+                  <div className="rounded-[24px] border border-brandBorder bg-[#f7fbff] p-10 text-center shadow-sm">
+                    <p className="text-lg font-semibold text-slate-950">Loading orders...</p>
+                    <p className="mt-2 text-sm text-brandTextMedium">Fetching the latest order activity from the admin API.</p>
                   </div>
                 ) : filteredOrders.length === 0 ? (
-                  <div className="text-center py-12">
-                    <p className="text-slate-400">No orders found</p>
+                  <div className="rounded-[24px] border border-brandBorder bg-[#f7fbff] p-10 text-center shadow-sm">
+                    <p className="text-lg font-semibold text-slate-950">No orders found</p>
+                    <p className="mt-2 text-sm text-brandTextMedium">Try another status filter or wait for new orders to come in.</p>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-slate-700">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-slate-200">Order ID</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-slate-200">Customer</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-slate-200">Amount</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-slate-200">Status</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-slate-200">Date</th>
-                          <th className="px-6 py-3 text-left text-sm font-semibold text-slate-200">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-700">
-                        {paginatedOrders.map((order) => (
-                          <tr key={order.id} className="hover:bg-slate-700/50 transition-colors">
-                            <td className="px-6 py-4 text-sm font-mono text-slate-300">{formatOrderId(order.id)}</td>
-                            <td className="px-6 py-4 text-sm">
-                              <button
-                                onClick={() => setSelectedOrder(order)}
-                                className="text-[#00A76F] hover:text-[#16a34a] font-medium transition-colors text-left"
-                              >
-                                {order.customer_name}
-                              </button>
-                            </td>
-                            <td className="px-6 py-4 text-sm font-semibold text-green-400">
-                              AED {order.total_price.toFixed(2)}
-                            </td>
-                            <td className="px-6 py-4 text-sm">
-                              <span
-                                className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                  order.status === 'pending'
-                                    ? 'bg-yellow-500/20 text-yellow-300'
-                                    : order.status === 'confirmed'
-                                    ? 'bg-blue-500/20 text-blue-300'
-                                    : order.status === 'in_progress'
-                                    ? 'bg-purple-500/20 text-purple-300'
-                                    : order.status === 'ready_for_delivery'
-                                    ? 'bg-orange-500/20 text-orange-300'
-                                    : order.status === 'shipped'
-                                    ? 'bg-indigo-500/20 text-indigo-300'
-                                    : order.status === 'delivered'
-                                    ? 'bg-green-500/20 text-green-300'
-                                    : 'bg-red-500/20 text-red-300'
-                                }`}
-                              >
-                                {order.status.replace(/_/g, ' ')}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 text-sm text-slate-400">
-                              {new Date(order.created_at).toLocaleDateString()}
-                            </td>
-                            <td className="px-6 py-4 text-sm">
-                              <button
-                                onClick={() => setSelectedOrder(order)}
-                                className="text-[#00A76F] hover:text-[#16a34a] font-medium transition-colors"
-                              >
-                                Manage
-                              </button>
-                            </td>
+                  <div className="overflow-hidden rounded-[24px] border border-brandBorder shadow-sm">
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-slate-50">
+                          <tr>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Order ID</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Customer</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Amount</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Status</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Date</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Action</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                      <div className="mt-6 flex items-center justify-between">
-                        <p className="text-sm text-slate-400">
-                          Showing {startIndex + 1} to {Math.min(endIndex, filteredOrders.length)} of {filteredOrders.length} orders
-                        </p>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                            disabled={currentPage === 1}
-                            className="px-4 py-2 bg-slate-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 transition-colors"
-                          >
-                            Previous
-                          </button>
-                          <div className="flex gap-1">
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                              <button
-                                key={page}
-                                onClick={() => setCurrentPage(page)}
-                                className={`px-3 py-2 rounded-lg transition-colors ${
-                                  currentPage === page
-                                    ? 'bg-[#00A76F] text-white'
-                                    : 'bg-slate-700 text-white hover:bg-slate-600'
-                                }`}
-                              >
-                                {page}
-                              </button>
-                            ))}
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 bg-white">
+                          {paginatedOrders.map((order) => (
+                            <tr key={order.id} className="transition-colors hover:bg-slate-50">
+                              <td className="px-6 py-4 text-sm font-mono text-slate-700">{formatOrderId(order.id)}</td>
+                              <td className="px-6 py-4 text-sm">
+                                <button
+                                  onClick={() => setSelectedOrder(order)}
+                                  className="text-left font-semibold text-primary transition-colors hover:text-brandGreenDark"
+                                >
+                                  {order.customer_name}
+                                </button>
+                              </td>
+                              <td className="px-6 py-4 text-sm font-semibold text-emerald-700">
+                                AED {order.total_price.toFixed(2)}
+                              </td>
+                              <td className="px-6 py-4 text-sm">
+                                <span
+                                  className={`rounded-full px-3 py-1 text-xs font-semibold ${getOrderStatusBadgeClass(order.status)}`}
+                                >
+                                  {formatAdminOrderStatus(order.status)}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-sm text-brandTextMedium">
+                                {new Date(order.created_at).toLocaleDateString()}
+                              </td>
+                              <td className="px-6 py-4 text-sm">
+                                <button
+                                  onClick={() => setSelectedOrder(order)}
+                                  className="font-semibold text-primary transition-colors hover:text-brandGreenDark"
+                                >
+                                  Manage
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      {totalPages > 1 && (
+                        <div className="flex items-center justify-between border-t border-slate-100 px-6 py-5">
+                          <p className="text-sm text-brandTextMedium">
+                            Showing {startIndex + 1} to {Math.min(endIndex, filteredOrders.length)} of {filteredOrders.length} orders
+                          </p>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                              disabled={currentPage === 1}
+                              className="rounded-xl border border-brandBorder bg-white px-4 py-2 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              Previous
+                            </button>
+                            <div className="flex gap-1">
+                              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                <button
+                                  key={page}
+                                  onClick={() => setCurrentPage(page)}
+                                  className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+                                    currentPage === page
+                                      ? 'bg-primary text-white'
+                                      : 'border border-brandBorder bg-white text-brandTextDark hover:border-primary hover:text-primary'
+                                  }`}
+                                >
+                                  {page}
+                                </button>
+                              ))}
+                            </div>
+                            <button
+                              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                              disabled={currentPage === totalPages}
+                              className="rounded-xl border border-brandBorder bg-white px-4 py-2 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              Next
+                            </button>
                           </div>
-                          <button
-                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                            disabled={currentPage === totalPages}
-                            className="px-4 py-2 bg-slate-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 transition-colors"
-                          >
-                            Next
-                          </button>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
-            )}
-
-            {activeTab === 'products' && (
-              <ProductManagement token={localStorage.getItem('adminToken') || ''} />
             )}
 
             {activeTab === 'serviceRequests' && (
@@ -445,151 +649,194 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
             {activeTab === 'reports' && (
               <div>
-                <h2 className="text-2xl font-bold text-white mb-6">Monthly Reports</h2>
+                <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Monthly Reports</p>
+                    <h2 className="mt-2 text-2xl font-bold text-slate-950">Track the month clearly</h2>
+                    <p className="mt-2 max-w-3xl text-sm leading-7 text-brandTextMedium">Track delivered revenue, open pipeline, cancellations, and service-request volume without extra workflow noise.</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      loadOrders();
+                      loadReportRequests();
+                    }}
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
+                  >
+                    <RefreshCw size={18} />
+                    Refresh report data
+                  </button>
+                </div>
                 
-                {/* Month Selection */}
-                <div className="mb-8">
-                  <label className="block text-sm font-medium text-slate-300 mb-3">Select Month</label>
+                <div className="mb-8 rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#f7fbff_0%,#ffffff_100%)] p-5 shadow-sm">
+                  <label className="mb-3 block text-sm font-medium text-brandTextDark">Select Month</label>
                   <input
                     type="month"
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="px-4 py-3 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00A76F]"
+                    className="rounded-2xl border border-brandBorder bg-white px-4 py-3 text-sm font-medium text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
-                {/* Monthly Report Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                  {(() => {
-                    const [year, month] = selectedMonth.split('-');
-                    const monthOrders = orders.filter(order => {
-                      const orderDate = new Date(order.created_at);
-                      return orderDate.getFullYear() === parseInt(year) && 
-                             (orderDate.getMonth() + 1).toString().padStart(2, '0') === month;
-                    });
-
-                    const totalRevenue = monthOrders.reduce((sum, order) => sum + order.total_price, 0);
-                    const deliveredOrders = monthOrders.filter(o => o.status === 'delivered').length;
-                    const averageOrderValue = monthOrders.length > 0 ? totalRevenue / monthOrders.length : 0;
-
-                    return (
-                      <>
-                        <div className="bg-gradient-to-br from-[#00A76F] to-[#16a34a] rounded-lg shadow-lg p-6 text-white">
-                          <p className="text-green-100 text-sm font-medium mb-2">Total Orders</p>
-                          <p className="text-4xl font-bold">{monthOrders.length}</p>
-                          <p className="text-xs text-green-100 mt-2">In {new Date(selectedMonth + '-01').toLocaleString('en-US', { month: 'long', year: 'numeric' })}</p>
-                        </div>
-
-                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
-                          <p className="text-blue-100 text-sm font-medium mb-2">Total Revenue</p>
-                          <p className="text-4xl font-bold">AED {totalRevenue.toFixed(2)}</p>
-                          <p className="text-xs text-blue-100 mt-2">Monthly earnings</p>
-                        </div>
-
-                        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
-                          <p className="text-green-100 text-sm font-medium mb-2">Delivered Orders</p>
-                          <p className="text-4xl font-bold">{deliveredOrders}</p>
-                          <p className="text-xs text-green-100 mt-2">{monthOrders.length > 0 ? ((deliveredOrders / monthOrders.length) * 100).toFixed(1) : 0}% completion</p>
-                        </div>
-
-                        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
-                          <p className="text-purple-100 text-sm font-medium mb-2">Average Order Value</p>
-                          <p className="text-4xl font-bold">AED {averageOrderValue.toFixed(2)}</p>
-                          <p className="text-xs text-purple-100 mt-2">Per order</p>
-                        </div>
-                      </>
-                    );
-                  })()}
-                </div>
-
-                {/* Detailed Monthly Orders Table */}
-                <div className="bg-slate-700 rounded-lg shadow-lg overflow-hidden">
-                  <div className="p-6 border-b border-slate-600">
-                    <h3 className="text-xl font-bold text-white">Orders in {new Date(selectedMonth + '-01').toLocaleString('en-US', { month: 'long', year: 'numeric' })}</h3>
+                {loading || reportsLoading ? (
+                  <div className="rounded-[24px] border border-brandBorder bg-[#f7fbff] p-10 text-center shadow-sm">
+                    <p className="text-lg font-semibold text-slate-950">Loading monthly data...</p>
+                    <p className="mt-2 text-sm text-brandTextMedium">Refreshing orders and service requests for {monthLabel}.</p>
                   </div>
+                ) : (
+                  <>
+                    <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+                      <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#eef9f4_0%,#ffffff_100%)] p-6 shadow-sm">
+                        <p className="text-sm font-medium text-primary">Orders Received</p>
+                        <p className="mt-3 text-4xl font-bold text-slate-950">{monthOrders.length}</p>
+                        <p className="mt-2 text-xs text-brandTextMedium">In {monthLabel}</p>
+                      </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-slate-600">
-                        <tr>
-                          <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Order ID</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Customer</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Amount</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Status</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Date</th>
-                          <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-600">
-                        {(() => {
-                          const [year, month] = selectedMonth.split('-');
-                          const monthOrders = orders.filter(order => {
-                            const orderDate = new Date(order.created_at);
-                            return orderDate.getFullYear() === parseInt(year) && 
-                                   (orderDate.getMonth() + 1).toString().padStart(2, '0') === month;
-                          });
+                      <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#e8f4fd_0%,#ffffff_100%)] p-6 shadow-sm">
+                        <p className="text-sm font-medium text-sky-700">Delivered Revenue</p>
+                        <p className="mt-3 text-4xl font-bold text-slate-950">AED {monthlyReport.deliveredRevenue.toFixed(2)}</p>
+                        <p className="mt-2 text-xs text-brandTextMedium">From {monthlyReport.deliveredOrders.length} delivered orders</p>
+                      </div>
 
-                          return monthOrders.length === 0 ? (
+                      <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#fff8db_0%,#ffffff_100%)] p-6 shadow-sm">
+                        <p className="text-sm font-medium text-amber-700">Open Pipeline</p>
+                        <p className="mt-3 text-4xl font-bold text-slate-950">{monthlyReport.pendingOrders.length + monthlyReport.activeOrders.length}</p>
+                        <p className="mt-2 text-xs text-brandTextMedium">AED {monthlyReport.pipelineValue.toFixed(2)} still open</p>
+                      </div>
+
+                      <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#f7f0ff_0%,#ffffff_100%)] p-6 shadow-sm">
+                        <p className="text-sm font-medium text-violet-700">Service Requests</p>
+                        <p className="mt-3 text-4xl font-bold text-slate-950">{monthlyReport.serviceRequests.length}</p>
+                        <p className="mt-2 text-xs text-brandTextMedium">{monthlyReport.completedRequests} completed this month</p>
+                      </div>
+                    </div>
+
+                    <div className="mb-8 grid grid-cols-2 gap-4 xl:grid-cols-4">
+                      <div className="rounded-[24px] border border-brandBorder bg-white p-5 shadow-sm">
+                        <p className="text-xs uppercase tracking-[0.18em] text-brandTextMedium">Pending</p>
+                        <p className="mt-3 text-3xl font-bold text-amber-700">{monthlyReport.pendingOrders.length}</p>
+                      </div>
+                      <div className="rounded-[24px] border border-brandBorder bg-white p-5 shadow-sm">
+                        <p className="text-xs uppercase tracking-[0.18em] text-brandTextMedium">Active</p>
+                        <p className="mt-3 text-3xl font-bold text-sky-700">{monthlyReport.activeOrders.length}</p>
+                      </div>
+                      <div className="rounded-[24px] border border-brandBorder bg-white p-5 shadow-sm">
+                        <p className="text-xs uppercase tracking-[0.18em] text-brandTextMedium">Cancelled</p>
+                        <p className="mt-3 text-3xl font-bold text-rose-700">{monthlyReport.cancelledOrders.length}</p>
+                        <p className="mt-2 text-xs text-brandTextMedium">AED {monthlyReport.cancelledValue.toFixed(2)} cancelled value</p>
+                      </div>
+                      <div className="rounded-[24px] border border-brandBorder bg-white p-5 shadow-sm">
+                        <p className="text-xs uppercase tracking-[0.18em] text-brandTextMedium">Avg Delivered Order</p>
+                        <p className="mt-3 text-3xl font-bold text-emerald-700">AED {monthlyReport.averageDeliveredOrderValue.toFixed(2)}</p>
+                      </div>
+                    </div>
+
+                    <div className="mb-8 overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm">
+                      <div className="border-b border-slate-100 p-6">
+                        <h3 className="text-xl font-bold text-slate-950">Daily Activity in {monthLabel}</h3>
+                        <p className="mt-2 text-sm text-brandTextMedium">Use this table for a quick day-by-day view of orders, delivered revenue, cancellations, and service-request volume.</p>
+                      </div>
+
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead className="bg-slate-50">
                             <tr>
-                              <td colSpan={6} className="px-6 py-8 text-center text-slate-400">
-                                No orders found for this month
-                              </td>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Date</th>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Orders</th>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Delivered</th>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Revenue</th>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Requests</th>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Cancelled</th>
                             </tr>
-                          ) : (
-                            monthOrders.map((order) => (
-                              <tr key={order.id} className="hover:bg-slate-700/50 transition-colors">
-                                <td className="px-6 py-4 text-sm font-mono text-slate-300">{formatOrderId(order.id)}</td>
-                                <td className="px-6 py-4 text-sm">
-                                  <button
-                                    onClick={() => setSelectedOrder(order)}
-                                    className="text-[#00A76F] hover:text-[#16a34a] font-medium transition-colors"
-                                  >
-                                    {order.customer_name}
-                                  </button>
-                                </td>
-                                <td className="px-6 py-4 text-sm font-semibold text-green-400">
-                                  AED {order.total_price.toFixed(2)}
-                                </td>
-                                <td className="px-6 py-4 text-sm">
-                                  <span
-                                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                      order.status === 'pending'
-                                        ? 'bg-yellow-500/20 text-yellow-300'
-                                        : order.status === 'confirmed'
-                                        ? 'bg-blue-500/20 text-blue-300'
-                                        : order.status === 'in_progress'
-                                        ? 'bg-purple-500/20 text-purple-300'
-                                        : order.status === 'ready_for_delivery'
-                                        ? 'bg-orange-500/20 text-orange-300'
-                                        : order.status === 'shipped'
-                                        ? 'bg-indigo-500/20 text-indigo-300'
-                                        : order.status === 'delivered'
-                                        ? 'bg-green-500/20 text-green-300'
-                                        : 'bg-red-500/20 text-red-300'
-                                    }`}
-                                  >
-                                    {order.status.replace(/_/g, ' ')}
-                                  </span>
-                                </td>
-                                <td className="px-6 py-4 text-sm text-slate-400">
-                                  {new Date(order.created_at).toLocaleDateString()}
-                                </td>
-                                <td className="px-6 py-4 text-sm">
-                                  <button
-                                    onClick={() => setSelectedOrder(order)}
-                                    className="text-[#00A76F] hover:text-[#16a34a] font-medium transition-colors"
-                                  >
-                                    View
-                                  </button>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 bg-white">
+                            {monthlyReport.dailyRows.length === 0 ? (
+                              <tr>
+                                <td colSpan={6} className="px-6 py-8 text-center text-brandTextMedium">
+                                  No order or request activity found for this month
                                 </td>
                               </tr>
-                            ))
-                          );
-                        })()}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                            ) : (
+                              monthlyReport.dailyRows.map((row) => (
+                                <tr key={row.key} className="transition-colors hover:bg-slate-50">
+                                  <td className="px-6 py-4 text-sm font-medium text-slate-950">{row.label}</td>
+                                  <td className="px-6 py-4 text-sm text-brandTextDark">{row.orders}</td>
+                                  <td className="px-6 py-4 text-sm text-emerald-700">{row.delivered}</td>
+                                  <td className="px-6 py-4 text-sm font-semibold text-emerald-700">AED {row.revenue.toFixed(2)}</td>
+                                  <td className="px-6 py-4 text-sm text-sky-700">{row.requests}</td>
+                                  <td className="px-6 py-4 text-sm text-rose-700">{row.cancelled}</td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <div className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm">
+                      <div className="border-b border-slate-100 p-6">
+                        <h3 className="text-xl font-bold text-slate-950">Orders in {monthLabel}</h3>
+                        <p className="mt-2 text-sm text-brandTextMedium">Detailed order list for the selected month with the simplified business status view.</p>
+                      </div>
+
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead className="bg-slate-50">
+                            <tr>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Order ID</th>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Customer</th>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Amount</th>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Status</th>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Date</th>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 bg-white">
+                            {monthOrders.length === 0 ? (
+                              <tr>
+                                <td colSpan={6} className="px-6 py-8 text-center text-brandTextMedium">
+                                  No orders found for this month
+                                </td>
+                              </tr>
+                            ) : (
+                              monthOrders.map((order) => (
+                                <tr key={order.id} className="transition-colors hover:bg-slate-50">
+                                  <td className="px-6 py-4 text-sm font-mono text-slate-700">{formatOrderId(order.id)}</td>
+                                  <td className="px-6 py-4 text-sm">
+                                    <button
+                                      onClick={() => setSelectedOrder(order)}
+                                      className="font-semibold text-primary transition-colors hover:text-brandGreenDark"
+                                    >
+                                      {order.customer_name}
+                                    </button>
+                                  </td>
+                                  <td className="px-6 py-4 text-sm font-semibold text-emerald-700">
+                                    AED {order.total_price.toFixed(2)}
+                                  </td>
+                                  <td className="px-6 py-4 text-sm">
+                                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${getOrderStatusBadgeClass(order.status)}`}>
+                                      {formatAdminOrderStatus(order.status)}
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 text-sm text-brandTextMedium">
+                                    {new Date(order.created_at).toLocaleDateString()}
+                                  </td>
+                                  <td className="px-6 py-4 text-sm">
+                                    <button
+                                      onClick={() => setSelectedOrder(order)}
+                                      className="font-semibold text-primary transition-colors hover:text-brandGreenDark"
+                                    >
+                                      View
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -606,25 +853,25 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
           />
           
           {/* Side Panel */}
-          <div className="fixed top-0 right-0 h-full w-full max-w-2xl bg-slate-800 shadow-2xl z-50 overflow-y-auto transform transition-transform">
+          <div className="fixed top-0 right-0 z-50 h-full w-full max-w-2xl overflow-y-auto border-l border-brandBorder bg-[#f7fbff] shadow-2xl">
             <div className="p-8">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-8 pb-6 border-b border-slate-700">
+              <div className="mb-8 flex items-center justify-between border-b border-slate-200 pb-6">
                 <div>
-                  <h2 className="text-3xl font-bold text-white mb-1">Order Details</h2>
-                  <p className="text-[#00A76F] font-mono text-lg">{formatOrderId(selectedOrder.id)}</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Order Details</p>
+                  <h2 className="mt-2 text-3xl font-bold text-slate-950">{selectedOrder.customer_name}</h2>
+                  <p className="mt-1 font-mono text-base text-brandTextMedium">{formatOrderId(selectedOrder.id)}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => window.open(`/admin/orders/${selectedOrder.id}/invoice`, '_blank', 'noopener,noreferrer')}
-                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors text-sm font-medium"
+                    className="rounded-2xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
                     title="Open printable invoice"
                   >
                     Print Invoice
                   </button>
                   <button
                     onClick={() => setSelectedOrder(null)}
-                    className="text-slate-400 hover:text-white transition-colors p-2"
+                    className="rounded-full border border-brandBorder bg-white p-2 text-brandTextMedium transition-colors hover:border-primary hover:text-primary"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -635,30 +882,30 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
               {/* Client Information Section */}
               <div className="mb-8">
-                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-[#00A76F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <h3 className="mb-4 flex items-center gap-2 text-xl font-semibold text-slate-950">
+                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                   Client Information
                 </h3>
-                <div className="bg-slate-900/50 rounded-lg p-6 space-y-4">
+                <div className="space-y-4 rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
                   <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <p className="text-slate-400 text-sm mb-1 font-medium">Full Name</p>
-                      <p className="text-white text-lg font-semibold">{selectedOrder.customer_name}</p>
+                      <p className="mb-1 text-sm font-medium text-brandTextMedium">Full Name</p>
+                      <p className="text-lg font-semibold text-slate-950">{selectedOrder.customer_name}</p>
                     </div>
                     <div>
-                      <p className="text-slate-400 text-sm mb-1 font-medium">Phone Number</p>
-                      <p className="text-white text-lg font-semibold">{selectedOrder.customer_phone}</p>
+                      <p className="mb-1 text-sm font-medium text-brandTextMedium">Phone Number</p>
+                      <p className="text-lg font-semibold text-slate-950">{selectedOrder.customer_phone}</p>
                     </div>
                   </div>
                   <div>
-                    <p className="text-slate-400 text-sm mb-1 font-medium">Email Address</p>
-                    <p className="text-white text-lg font-semibold break-all">{selectedOrder.customer_email}</p>
+                    <p className="mb-1 text-sm font-medium text-brandTextMedium">Email Address</p>
+                    <p className="break-all text-lg font-semibold text-slate-950">{selectedOrder.customer_email}</p>
                   </div>
                   <div>
-                    <p className="text-slate-400 text-sm mb-1 font-medium">Delivery Address</p>
-                    <p className="text-white text-lg leading-relaxed">{selectedOrder.customer_address}</p>
+                    <p className="mb-1 text-sm font-medium text-brandTextMedium">Delivery Address</p>
+                    <p className="text-lg leading-relaxed text-slate-950">{selectedOrder.customer_address}</p>
                   </div>
                 </div>
               </div>
@@ -666,68 +913,54 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               {/* Special Notes Section */}
               {selectedOrder.notes && selectedOrder.notes.trim().length > 0 && (
                 <div className="mb-8">
-                  <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-[#00A76F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <h3 className="mb-4 flex items-center gap-2 text-xl font-semibold text-slate-950">
+                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 20h9" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z" />
                     </svg>
                     Special Notes
                   </h3>
-                  <div className="bg-slate-900/50 rounded-lg p-6">
-                    <p className="text-slate-300 whitespace-pre-wrap">{selectedOrder.notes}</p>
+                  <div className="rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
+                    <p className="whitespace-pre-wrap text-brandTextDark">{selectedOrder.notes}</p>
                   </div>
                 </div>
               )}
 
               {/* Order Information Section */}
               <div className="mb-8">
-                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-[#00A76F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <h3 className="mb-4 flex items-center gap-2 text-xl font-semibold text-slate-950">
+                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                   Order Information
                 </h3>
-                <div className="bg-slate-900/50 rounded-lg p-6 space-y-4">
+                <div className="space-y-4 rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
                   <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <p className="text-slate-400 text-sm mb-1 font-medium">Order Date</p>
-                      <p className="text-white text-lg">{new Date(selectedOrder.created_at).toLocaleDateString('en-US', { 
+                      <p className="mb-1 text-sm font-medium text-brandTextMedium">Order Date</p>
+                      <p className="text-lg text-slate-950">{new Date(selectedOrder.created_at).toLocaleDateString('en-US', { 
                         year: 'numeric', 
                         month: 'long', 
                         day: 'numeric' 
                       })}</p>
                     </div>
                     <div>
-                      <p className="text-slate-400 text-sm mb-1 font-medium">Payment Method</p>
-                      <p className="text-white text-lg capitalize">{selectedOrder.payment_method}</p>
+                      <p className="mb-1 text-sm font-medium text-brandTextMedium">Payment Method</p>
+                      <p className="text-lg text-slate-950">{formatDisplayLabel(selectedOrder.payment_method)}</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <p className="text-slate-400 text-sm mb-1 font-medium">Current Status</p>
+                      <p className="mb-1 text-sm font-medium text-brandTextMedium">Current Status</p>
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
-                          selectedOrder.status === 'pending'
-                            ? 'bg-yellow-500/20 text-yellow-300'
-                            : selectedOrder.status === 'confirmed'
-                            ? 'bg-blue-500/20 text-blue-300'
-                            : selectedOrder.status === 'in_progress'
-                            ? 'bg-purple-500/20 text-purple-300'
-                            : selectedOrder.status === 'ready_for_delivery'
-                            ? 'bg-orange-500/20 text-orange-300'
-                            : selectedOrder.status === 'shipped'
-                            ? 'bg-indigo-500/20 text-indigo-300'
-                            : selectedOrder.status === 'delivered'
-                            ? 'bg-green-500/20 text-green-300'
-                            : 'bg-red-500/20 text-red-300'
-                        }`}
+                        className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${getOrderStatusBadgeClass(selectedOrder.status)}`}
                       >
-                        {selectedOrder.status.replace(/_/g, ' ')}
+                        {formatAdminOrderStatus(selectedOrder.status)}
                       </span>
                     </div>
                     <div>
-                      <p className="text-slate-400 text-sm mb-1 font-medium">Total Amount</p>
-                      <p className="text-[#00A76F] font-bold text-2xl">AED {selectedOrder.total_price.toFixed(2)}</p>
+                      <p className="mb-1 text-sm font-medium text-brandTextMedium">Total Amount</p>
+                      <p className="text-2xl font-bold text-primary">AED {selectedOrder.total_price.toFixed(2)}</p>
                     </div>
                   </div>
                 </div>
@@ -736,49 +969,49 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               {/* Order Items Section */}
               {selectedOrder.items && selectedOrder.items.length > 0 && (
                 <div className="mb-8">
-                  <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-[#00A76F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <h3 className="mb-4 flex items-center gap-2 text-xl font-semibold text-slate-950">
+                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
                     Order Items ({selectedOrder.items.length})
                   </h3>
-                  <div className="bg-slate-900/50 rounded-lg p-6 space-y-4">
+                  <div className="space-y-4 rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
                     {selectedOrder.items.map((item) => (
-                      <div key={item.id} className="border-b border-slate-700 pb-4 last:border-b-0 last:pb-0">
-                        <div className="flex justify-between items-start mb-3">
+                      <div key={item.id} className="border-b border-slate-100 pb-4 last:border-b-0 last:pb-0">
+                        <div className="mb-3 flex items-start justify-between">
                           <div className="flex-1">
                             {item.product && (
                               <>
-                                <h4 className="text-white font-semibold text-lg">{item.product.model}</h4>
-                                <div className="grid grid-cols-2 gap-3 mt-2 text-sm">
+                                <h4 className="text-lg font-semibold text-slate-950">{item.product.model}</h4>
+                                <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
                                   <div>
-                                    <span className="text-slate-400">Storage:</span>
-                                    <span className="ml-2 text-white font-medium">{item.product.storage}</span>
+                                    <span className="text-brandTextMedium">Storage:</span>
+                                    <span className="ml-2 font-medium text-slate-950">{item.product.storage}</span>
                                   </div>
                                   <div>
-                                    <span className="text-slate-400">Color:</span>
-                                    <span className="ml-2 text-white font-medium">{item.product.color}</span>
+                                    <span className="text-brandTextMedium">Color:</span>
+                                    <span className="ml-2 font-medium text-slate-950">{item.product.color}</span>
                                   </div>
                                   <div>
-                                    <span className="text-slate-400">Condition:</span>
-                                    <span className="ml-2 text-white font-medium">{item.product.condition === 'new' ? '✨ Brand New' : '📱 Used'}</span>
+                                    <span className="text-brandTextMedium">Condition:</span>
+                                    <span className="ml-2 font-medium text-slate-950">{item.product.condition === 'new' ? 'Brand New' : 'Used'}</span>
                                   </div>
                                   <div>
-                                    <span className="text-slate-400">Quantity:</span>
-                                    <span className="ml-2 text-white font-medium">{item.quantity}</span>
+                                    <span className="text-brandTextMedium">Quantity:</span>
+                                    <span className="ml-2 font-medium text-slate-950">{item.quantity}</span>
                                   </div>
                                 </div>
                               </>
                             )}
                           </div>
                           <div className="text-right">
-                            <p className="text-slate-400 text-sm">Unit Price</p>
-                            <p className="text-[#00A76F] font-bold text-lg">AED {item.unit_price.toFixed(2)}</p>
+                            <p className="text-sm text-brandTextMedium">Unit Price</p>
+                            <p className="text-lg font-bold text-primary">AED {item.unit_price.toFixed(2)}</p>
                           </div>
                         </div>
-                        <div className="flex justify-between items-center pt-3 border-t border-slate-600/50">
-                          <span className="text-slate-400">Subtotal ({item.quantity} item{item.quantity > 1 ? 's' : ''}):</span>
-                          <span className="text-white font-semibold text-lg">AED {item.subtotal.toFixed(2)}</span>
+                        <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+                          <span className="text-brandTextMedium">Subtotal ({item.quantity} item{item.quantity > 1 ? 's' : ''}):</span>
+                          <span className="text-lg font-semibold text-slate-950">AED {item.subtotal.toFixed(2)}</span>
                         </div>
                       </div>
                     ))}
@@ -788,14 +1021,14 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
               {/* Update Status Section */}
               <div className="mb-8">
-                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-[#00A76F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <h3 className="mb-4 flex items-center gap-2 text-xl font-semibold text-slate-950">
+                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                   Update Order Status
                 </h3>
-                <div className="bg-slate-900/50 rounded-lg p-6">
-                  <label className="block text-sm font-medium text-slate-300 mb-3">Select New Status</label>
+                <div className="rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
+                  <label className="mb-3 block text-sm font-medium text-brandTextDark">Select New Status</label>
                   <select
                     onChange={(e) => {
                       if (e.target.value) {
@@ -803,25 +1036,23 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                       }
                     }}
                     value=""
-                    className="w-full px-4 py-3 bg-slate-700 border border-slate-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00A76F] text-base"
+                    className="w-full rounded-2xl border border-brandBorder bg-white px-4 py-3 text-base text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="">Select new status</option>
-                    <option value="pending">Pending</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="ready_for_delivery">Ready for Delivery</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="cancelled">Cancelled</option>
+                    {ADMIN_ORDER_STATUS_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
-                  <p className="text-slate-400 text-sm mt-3">Selecting a status will automatically update the order and send notifications.</p>
+                  <p className="mt-3 text-sm text-brandTextMedium">Selecting a status will automatically update the order and send notifications.</p>
                 </div>
               </div>
 
               {/* Close Button */}
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="w-full bg-slate-700 hover:bg-slate-600 text-white py-3 rounded-lg font-medium transition-colors text-lg"
+                className="w-full rounded-2xl border border-brandBorder bg-white py-3 text-lg font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
               >
                 Close Panel
               </button>

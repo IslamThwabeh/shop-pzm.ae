@@ -58,6 +58,14 @@ function formatOrderId(id: string) {
   return `PZM-${randomPart}`
 }
 
+function formatPaymentMethodLabel(value: string) {
+  return value
+    .split(/[_\s]+/)
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(' ')
+}
+
 function clearAdminSessionAndRedirect() {
   localStorage.removeItem('adminToken')
   localStorage.removeItem('adminUser')
@@ -163,9 +171,38 @@ export default function AdminInvoice() {
     }
   }, [loading, order])
 
-  if (loading) return <div className="p-8">Loading...</div>
-  if (error) return <div className="p-8 text-red-600">{error}</div>
-  if (!order) return <div className="p-8">Order not found.</div>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[linear-gradient(180deg,#eff8f4_0%,#f7fbff_52%,#ffffff_100%)] px-4 py-10">
+        <div className="mx-auto max-w-3xl rounded-[28px] border border-brandBorder bg-white p-10 text-center shadow-sm">
+          <p className="text-lg font-semibold text-slate-950">Loading invoice...</p>
+          <p className="mt-2 text-sm text-brandTextMedium">Fetching the latest order details from the admin API.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[linear-gradient(180deg,#eff8f4_0%,#f7fbff_52%,#ffffff_100%)] px-4 py-10">
+        <div className="mx-auto max-w-3xl rounded-[28px] border border-red-200 bg-white p-10 text-center shadow-sm">
+          <p className="text-lg font-semibold text-red-700">Failed to load invoice</p>
+          <p className="mt-2 text-sm text-red-600">{error}</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!order) {
+    return (
+      <div className="min-h-screen bg-[linear-gradient(180deg,#eff8f4_0%,#f7fbff_52%,#ffffff_100%)] px-4 py-10">
+        <div className="mx-auto max-w-3xl rounded-[28px] border border-brandBorder bg-white p-10 text-center shadow-sm">
+          <p className="text-lg font-semibold text-slate-950">Order not found</p>
+          <p className="mt-2 text-sm text-brandTextMedium">This invoice could not be generated because the order details are unavailable.</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="invoice-wrapper">
@@ -174,68 +211,101 @@ export default function AdminInvoice() {
         @media print {
           .no-print { display: none !important; }
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .invoice-wrapper { background: #ffffff !important; padding: 0 !important; }
+          .invoice-shell { box-shadow: none !important; border: none !important; }
+          .invoice-container { max-width: 100% !important; }
         }
-        .invoice-container { max-width: 800px; margin: 0 auto; background: #fff; color: #0f172a; }
-        .invoice-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 16px; }
-        .company { display: flex; align-items: center; gap: 16px; }
-        .company img { height: 56px; }
-        .muted { color: #6b7280; }
-        .title { font-size: 24px; font-weight: 700; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-        .table th { text-align: left; padding: 12px; background: #f8fafc; border-bottom: 1px solid #e5e7eb; }
-        .table td { padding: 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
-        .totals { width: 320px; margin-left: auto; }
-        .totals-row { display: flex; justify-content: space-between; padding: 8px 0; }
-        .totals-row.total { font-weight: 700; border-top: 2px solid #e5e7eb; margin-top: 4px; padding-top: 12px; }
-        .footer { margin-top: 24px; font-size: 12px; color: #6b7280; }
-        .badge { display:inline-block; padding:2px 8px; border-radius: 999px; background:#eef2ff; color:#3730a3; font-size:12px; }
-        .actions { position: sticky; top: 0; background: #f8fafc; border-bottom: 1px solid #e5e7eb; padding: 12px; margin-bottom: 16px; }
-        .btn { display:inline-block; padding:10px 14px; border-radius:8px; border:1px solid #e5e7eb; background:#111827; color:#fff; font-weight:600; }
-        .btn.secondary { background:#fff; color:#111827; }
+        .invoice-wrapper { min-height: 100vh; background: linear-gradient(180deg, #eff8f4 0%, #f7fbff 52%, #ffffff 100%); padding: 32px 16px 56px; }
+        .invoice-shell { max-width: 960px; margin: 0 auto; }
+        .invoice-container { max-width: 860px; margin: 0 auto; border: 1px solid #d9e6df; border-radius: 32px; background: #ffffff; color: #0f172a; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08); overflow: hidden; }
+        .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; border-bottom: 1px solid #e5e7eb; padding: 32px; background: linear-gradient(180deg, #f7fbff 0%, #ffffff 100%); }
+        .company { display: flex; align-items: center; gap: 18px; }
+        .company-logo { width: 72px; height: 72px; border-radius: 22px; background: linear-gradient(135deg, #0b8a60 0%, #11a36e 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 18px 35px rgba(11, 138, 96, 0.18); }
+        .company img { height: 40px; }
+        .company-name { font-size: 18px; font-weight: 700; color: #020617; }
+        .muted { color: #64748b; }
+        .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #0b8a60; }
+        .title { font-size: 28px; font-weight: 700; color: #020617; }
+        .header-meta { text-align: right; }
+        .header-badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 32px 0; }
+        .panel { border: 1px solid #d9e6df; border-radius: 24px; background: #ffffff; padding: 20px; }
+        .panel-title { font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #0b8a60; margin-bottom: 10px; }
+        .table-wrap { margin: 24px 32px 0; border: 1px solid #d9e6df; border-radius: 24px; overflow: hidden; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th { text-align: left; padding: 14px 16px; background: #f8fafc; border-bottom: 1px solid #e5e7eb; color: #334155; font-size: 13px; }
+        .table td { padding: 14px 16px; border-bottom: 1px solid #e5e7eb; vertical-align: top; color: #0f172a; }
+        .table tbody tr:last-child td { border-bottom: none; }
+        .totals { width: 340px; margin: 24px 32px 0 auto; border: 1px solid #d9e6df; border-radius: 24px; padding: 18px 20px; background: linear-gradient(180deg, #f7fbff 0%, #ffffff 100%); }
+        .totals-row { display: flex; justify-content: space-between; padding: 10px 0; color: #334155; }
+        .totals-row.total { font-weight: 700; color: #020617; border-top: 1px solid #d9e6df; margin-top: 6px; padding-top: 14px; }
+        .footer { margin: 24px 32px 32px; border-top: 1px solid #e5e7eb; padding-top: 18px; font-size: 12px; color: #64748b; }
+        .badge { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+        .badge-payment { background: #eaf9f2; color: #0b8a60; }
+        .badge-status { background: #e8f4fd; color: #0369a1; }
+        .actions { position: sticky; top: 0; z-index: 2; display: flex; justify-content: center; gap: 12px; margin: 0 auto 20px; padding: 12px; border: 1px solid #d9e6df; border-radius: 999px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); width: fit-content; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 999px; border: 1px solid #0b8a60; background: #0b8a60; color: #ffffff; font-weight: 600; }
+        .btn.secondary { border-color: #d9e6df; background: #ffffff; color: #0f172a; }
+        @media (max-width: 768px) {
+          .invoice-wrapper { padding: 20px 12px 40px; }
+          .invoice-header { flex-direction: column; padding: 24px; }
+          .header-meta { text-align: left; }
+          .header-badges { justify-content: flex-start; }
+          .grid { grid-template-columns: 1fr; margin: 20px 24px 0; }
+          .table-wrap { margin: 20px 24px 0; }
+          .totals { width: auto; margin: 20px 24px 0; }
+          .footer { margin: 20px 24px 24px; }
+          .actions { width: 100%; border-radius: 24px; }
+        }
       `}</style>
 
+      <div className="invoice-shell">
       <div className="actions no-print">
         <button className="btn" onClick={() => window.print()}>Print</button>
-        <span style={{ marginLeft: 12 }} />
         <button className="btn secondary" onClick={() => window.close()}>Close</button>
       </div>
 
       <div className="invoice-container">
         <div className="invoice-header">
           <div className="company">
-            <img src={COMPANY.logo} alt="Company Logo" />
+            <div className="company-logo">
+              <img src={COMPANY.logo} alt="Company Logo" />
+            </div>
             <div>
-              <div style={{ fontWeight: 700 }}>{COMPANY.name}</div>
+              <div className="eyebrow">PZM Invoice</div>
+              <div className="company-name">{COMPANY.name}</div>
               <div className="muted">{COMPANY.address}</div>
               <div className="muted">{COMPANY.phone} • WhatsApp and phone support</div>
             </div>
           </div>
-          <div style={{ textAlign: 'right' }}>
+          <div className="header-meta">
             <div className="title">Invoice</div>
             <div className="muted">Invoice No: {formatOrderId(order.id)}</div>
             <div className="muted">Date: {new Date(order.created_at).toLocaleDateString()}</div>
-            <div><span className="badge">Cash on Delivery</span></div>
+            <div className="header-badges">
+              <span className="badge badge-payment">{formatPaymentMethodLabel(order.payment_method)}</span>
+              <span className="badge badge-status">{formatPaymentMethodLabel(order.status)}</span>
+            </div>
           </div>
         </div>
 
-        <div style={{ marginTop: 16 }} className="grid">
-          <div>
-            <div style={{ fontWeight: 600, marginBottom: 8 }}>Bill To</div>
+        <div className="grid">
+          <div className="panel">
+            <div className="panel-title">Bill To</div>
             <div>{order.customer_name}</div>
             <div className="muted">{order.customer_phone}</div>
             {order.customer_email && <div className="muted">{order.customer_email}</div>}
             <div className="muted" style={{ marginTop: 4 }}>{order.customer_address}</div>
           </div>
-          <div>
-            <div style={{ fontWeight: 600, marginBottom: 8 }}>Notes / Terms</div>
+          <div className="panel">
+            <div className="panel-title">Notes / Terms</div>
             <div className="muted" style={{ whiteSpace: 'pre-wrap' }}>
               {order.notes || 'Payment by cash on delivery. Please have exact amount ready.'}
             </div>
           </div>
         </div>
 
-        <div style={{ marginTop: 16 }}>
+        <div className="table-wrap">
           <table className="table">
             <thead>
               <tr>
@@ -266,7 +336,7 @@ export default function AdminInvoice() {
           </table>
         </div>
 
-        <div style={{ marginTop: 8 }} className="totals">
+        <div className="totals">
           <div className="totals-row">
             <span>Subtotal</span>
             <span>AED {subtotal.toFixed(2)}</span>
@@ -284,6 +354,7 @@ export default function AdminInvoice() {
         <div className="footer">
           Thank you for your purchase! If you have questions about this invoice, contact us on WhatsApp or by phone at {COMPANY.phone}.
         </div>
+      </div>
       </div>
     </div>
   )

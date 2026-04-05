@@ -52,6 +52,22 @@ export class EmailService {
       .join(' ');
   }
 
+  private formatServiceRequestStatusLabel(status: string): string {
+    switch (status) {
+      case 'contacted':
+      case 'quoted':
+      case 'scheduled':
+        return 'Active';
+      case 'completed':
+        return 'Completed';
+      case 'cancelled':
+        return 'Cancelled';
+      case 'pending':
+      default:
+        return 'Pending';
+    }
+  }
+
   private getCustomerContactNoteHtml(): string {
     return `
       <div style="margin-top: 24px; padding: 16px; background: #eefbf5; border: 1px solid #cceee0; border-radius: 8px;">
@@ -949,7 +965,7 @@ export class EmailService {
   }
 
   private getServiceRequestStatusUpdateTemplate(request: ServiceRequest, requestId: string): string {
-    const statusTitle = this.formatLabel(request.status);
+    const statusTitle = this.formatServiceRequestStatusLabel(request.status);
 
     return `
       <!DOCTYPE html>
