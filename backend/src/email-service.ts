@@ -57,11 +57,10 @@ export class EmailService {
       case 'contacted':
       case 'quoted':
       case 'scheduled':
-        return 'Active';
       case 'completed':
-        return 'Completed';
+        return 'Confirmed';
       case 'cancelled':
-        return 'Cancelled';
+        return 'Canceled';
       case 'pending':
       default:
         return 'Pending';

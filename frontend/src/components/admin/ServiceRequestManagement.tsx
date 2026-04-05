@@ -7,15 +7,14 @@ interface ServiceRequestManagementProps {
   onUnauthorized: () => void;
 }
 
-type AdminServiceRequestStatus = 'pending' | 'active' | 'completed' | 'cancelled';
+type AdminServiceRequestStatus = 'pending' | 'confirmed' | 'cancelled';
 
-const STATUS_OPTIONS: Array<AdminServiceRequestStatus | 'all'> = ['all', 'pending', 'active', 'completed', 'cancelled'];
+const STATUS_OPTIONS: Array<AdminServiceRequestStatus | 'all'> = ['all', 'pending', 'confirmed', 'cancelled'];
 
 const ADMIN_STATUS_LABELS: Record<AdminServiceRequestStatus, string> = {
   pending: 'Pending',
-  active: 'Active',
-  completed: 'Completed',
-  cancelled: 'Cancelled',
+  confirmed: 'Confirmed',
+  cancelled: 'Canceled',
 };
 
 function normalizeServiceRequestStatus(status: ServiceRequestStatus): AdminServiceRequestStatus {
@@ -23,9 +22,8 @@ function normalizeServiceRequestStatus(status: ServiceRequestStatus): AdminServi
     case 'contacted':
     case 'quoted':
     case 'scheduled':
-      return 'active';
     case 'completed':
-      return 'completed';
+      return 'confirmed';
     case 'cancelled':
       return 'cancelled';
     case 'pending':
@@ -36,10 +34,8 @@ function normalizeServiceRequestStatus(status: ServiceRequestStatus): AdminServi
 
 function toStoredServiceRequestStatus(status: AdminServiceRequestStatus): ServiceRequestStatus {
   switch (status) {
-    case 'active':
+    case 'confirmed':
       return 'contacted';
-    case 'completed':
-      return 'completed';
     case 'cancelled':
       return 'cancelled';
     case 'pending':
@@ -90,9 +86,7 @@ function statusBadgeClass(status: ServiceRequestStatus) {
   switch (normalizeServiceRequestStatus(status)) {
     case 'pending':
       return 'bg-yellow-100 text-yellow-800';
-    case 'active':
-      return 'bg-sky-100 text-sky-800';
-    case 'completed':
+    case 'confirmed':
       return 'bg-emerald-100 text-emerald-800';
     case 'cancelled':
       return 'bg-rose-100 text-rose-800';
@@ -230,34 +224,32 @@ export default function ServiceRequestManagement({ onUnauthorized }: ServiceRequ
   const stats = {
     total: requests.length,
     pending: requests.filter((request) => normalizeServiceRequestStatus(request.status) === 'pending').length,
-    active: requests.filter((request) => normalizeServiceRequestStatus(request.status) === 'active').length,
-    completed: requests.filter((request) => request.status === 'completed').length,
+    confirmed: requests.filter((request) => normalizeServiceRequestStatus(request.status) === 'confirmed').length,
     cancelled: requests.filter((request) => request.status === 'cancelled').length,
   };
 
   return (
-    <div className="space-y-6">
+    <div className="admin-portal space-y-6">
       {error && (
         <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
           {error}
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-        <StatCard label="Total" value={stats.total} note="All requests" className="bg-[linear-gradient(180deg,#f0f7ff_0%,#ffffff_100%)]" />
-        <StatCard label="Pending" value={stats.pending} note="Need first response" className="bg-[linear-gradient(180deg,#fff8db_0%,#ffffff_100%)]" />
-        <StatCard label="Active" value={stats.active} note="In progress with the team" className="bg-[linear-gradient(180deg,#e8f4fd_0%,#ffffff_100%)]" />
-        <StatCard label="Completed" value={stats.completed} note="Closed successfully" className="bg-[linear-gradient(180deg,#eaf9f2_0%,#ffffff_100%)]" />
-        <StatCard label="Cancelled" value={stats.cancelled} note="No longer active" className="bg-[linear-gradient(180deg,#fff1f2_0%,#ffffff_100%)]" />
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <StatCard label="Total" value={stats.total} note="All requests" className="admin-glass-soft bg-white/68" />
+        <StatCard label="Pending" value={stats.pending} note="Need confirmation" className="admin-glass-soft bg-white/68" />
+        <StatCard label="Confirmed" value={stats.confirmed} note="Approved service work" className="admin-glass-soft bg-white/68" />
+        <StatCard label="Canceled" value={stats.cancelled} note="No longer active" className="admin-glass-soft bg-white/68" />
       </div>
 
-      <section className="rounded-[28px] border border-brandBorder bg-white p-5 shadow-sm md:p-6">
+      <section className="admin-glass rounded-[28px] bg-[rgba(255,255,255,0.64)] p-5 md:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Service Requests</p>
             <h2 className="mt-2 text-2xl font-bold text-slate-950">Current request pipeline</h2>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-brandTextMedium">
-              Keep the service flow simple: pending, active, completed, or cancelled. Older detailed stages are grouped into active.
+              Keep the service flow simple: pending, confirmed, or canceled. Older detailed stages are grouped into confirmed.
             </p>
           </div>
 
@@ -265,7 +257,7 @@ export default function ServiceRequestManagement({ onUnauthorized }: ServiceRequ
             <select
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value as AdminServiceRequestStatus | 'all')}
-              className="rounded-2xl border border-brandBorder bg-white px-4 py-3 text-sm font-medium text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
+              className="rounded-full border border-white/60 bg-white/82 px-4 py-3 text-sm font-medium text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
             >
               {STATUS_OPTIONS.map((status) => (
                 <option key={status} value={status}>
@@ -276,7 +268,7 @@ export default function ServiceRequestManagement({ onUnauthorized }: ServiceRequ
 
             <button
               onClick={loadRequests}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,#7adf38_0%,#00A76F_100%)] px-5 py-3 text-sm font-semibold text-white transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
             >
               <RefreshCw size={18} />
               Refresh
@@ -286,17 +278,17 @@ export default function ServiceRequestManagement({ onUnauthorized }: ServiceRequ
       </section>
 
       {loading ? (
-        <div className="rounded-[28px] border border-brandBorder bg-white p-10 text-center shadow-sm">
+        <div className="admin-glass-soft rounded-[28px] bg-white/68 p-10 text-center">
           <p className="text-lg font-semibold text-slate-950">Loading service requests...</p>
           <p className="mt-2 text-sm text-brandTextMedium">Fetching the latest requests from the admin API.</p>
         </div>
       ) : filteredRequests.length === 0 ? (
-        <div className="rounded-[28px] border border-brandBorder bg-white p-10 text-center shadow-sm">
+        <div className="admin-glass-soft rounded-[28px] bg-white/68 p-10 text-center">
           <p className="text-lg font-semibold text-slate-950">No service requests found</p>
           <p className="mt-2 text-sm text-brandTextMedium">Try switching the filter or wait for new requests to come in.</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm">
+        <div className="admin-glass-soft overflow-hidden rounded-[28px] bg-white/68">
           <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-slate-50">
@@ -392,7 +384,7 @@ export default function ServiceRequestManagement({ onUnauthorized }: ServiceRequ
             onClick={() => setSelectedRequest(null)}
           />
 
-          <div className="fixed top-0 right-0 z-50 h-full w-full max-w-2xl overflow-y-auto border-l border-brandBorder bg-[#f7fbff] shadow-2xl">
+          <div className="admin-glass fixed top-0 right-0 z-50 h-full w-full max-w-2xl overflow-y-auto border-l border-white/40 bg-[rgba(255,255,255,0.74)] shadow-[var(--shadow-xl)]">
             <div className="p-8">
               <div className="mb-8 flex items-center justify-between border-b border-slate-200 pb-6">
                 <div>
@@ -402,7 +394,7 @@ export default function ServiceRequestManagement({ onUnauthorized }: ServiceRequ
                 </div>
                 <button
                   onClick={() => setSelectedRequest(null)}
-                  className="rounded-full border border-brandBorder bg-white p-2 text-brandTextMedium transition-colors hover:border-primary hover:text-primary"
+                  className="rounded-full border border-white/60 bg-white/82 p-2 text-brandTextMedium transition-colors hover:border-primary hover:text-primary"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -412,7 +404,7 @@ export default function ServiceRequestManagement({ onUnauthorized }: ServiceRequ
 
               <div className="mb-8">
                 <h3 className="mb-4 text-xl font-semibold text-slate-950">Customer Information</h3>
-                <div className="space-y-4 rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
+                <div className="admin-glass-soft space-y-4 rounded-[24px] bg-white/68 p-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <p className="mb-1 text-sm font-medium text-brandTextMedium">Full Name</p>
@@ -444,7 +436,7 @@ export default function ServiceRequestManagement({ onUnauthorized }: ServiceRequ
 
               <div className="mb-8">
                 <h3 className="mb-4 text-xl font-semibold text-slate-950">Request Details</h3>
-                <div className="space-y-4 rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
+                <div className="admin-glass-soft space-y-4 rounded-[24px] bg-white/68 p-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <p className="mb-1 text-sm font-medium text-brandTextMedium">Service</p>
@@ -484,14 +476,14 @@ export default function ServiceRequestManagement({ onUnauthorized }: ServiceRequ
 
               <div className="mb-8">
                 <h3 className="mb-4 text-xl font-semibold text-slate-950">Customer Notes</h3>
-                <div className="rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
+                <div className="admin-glass-soft rounded-[24px] bg-white/68 p-6">
                   <p className="whitespace-pre-wrap leading-relaxed text-brandTextDark">{selectedRequest.details}</p>
                 </div>
               </div>
 
               <div className="mb-8">
                 <h3 className="mb-4 text-xl font-semibold text-slate-950">Update Status</h3>
-                <div className="space-y-4 rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
+                <div className="admin-glass-soft space-y-4 rounded-[24px] bg-white/68 p-6">
                   <div>
                     <p className="mb-2 text-sm font-medium text-brandTextMedium">Current Status</p>
                     <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${statusBadgeClass(selectedRequest.status)}`}>
@@ -503,7 +495,7 @@ export default function ServiceRequestManagement({ onUnauthorized }: ServiceRequ
                     <select
                       value={draftStatus}
                       onChange={(event) => setDraftStatus(event.target.value as AdminServiceRequestStatus)}
-                      className="flex-1 rounded-2xl border border-brandBorder bg-white px-4 py-3 text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="flex-1 rounded-full border border-white/60 bg-white/82 px-4 py-3 text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       {STATUS_OPTIONS.filter((status) => status !== 'all').map((status) => (
                         <option key={status} value={status}>
@@ -515,14 +507,14 @@ export default function ServiceRequestManagement({ onUnauthorized }: ServiceRequ
                     <button
                       onClick={() => handleUpdateStatus(selectedRequest.id, toStoredServiceRequestStatus(draftStatus))}
                       disabled={savingStatus || draftStatus === normalizeServiceRequestStatus(selectedRequest.status)}
-                      className="rounded-2xl bg-primary px-5 py-3 font-semibold text-white transition-colors hover:bg-brandGreenDark disabled:cursor-not-allowed disabled:opacity-50"
+                      className="rounded-full bg-[linear-gradient(135deg,#7adf38_0%,#00A76F_100%)] px-5 py-3 font-semibold text-white transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {savingStatus ? 'Saving...' : 'Save Status'}
                     </button>
                   </div>
 
                   <p className="text-xs text-brandTextMedium">
-                    Active covers older detailed states such as contacted, quoted, and scheduled.
+                    Confirmed groups older detailed states such as contacted, quoted, scheduled, and completed.
                   </p>
                 </div>
               </div>

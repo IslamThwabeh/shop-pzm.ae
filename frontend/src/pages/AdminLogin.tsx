@@ -45,62 +45,62 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
   }
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[#f0f7ff] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-16">
+    <div className="admin-portal min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_right,rgba(0,167,111,0.16),transparent_20%),radial-gradient(circle_at_bottom_left,rgba(30,41,59,0.14),transparent_26%),linear-gradient(135deg,#0f172a_0%,#172033_48%,#1a2744_100%)] px-4 py-10 text-slate-900 sm:px-6 lg:px-8 lg:py-16">
       <div className="pointer-events-none absolute right-0 top-0 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(14,165,233,0.16),transparent_70%)]" />
       <div className="pointer-events-none absolute left-0 bottom-0 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(0,167,111,0.14),transparent_70%)]" />
 
       <div className="relative mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.02fr,0.82fr] lg:items-center">
-        <section className="overflow-hidden rounded-[32px] border border-brandBorder bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] p-8 shadow-sm md:p-12">
-          <span className="inline-flex rounded-full bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-sky-700 shadow-sm">
+        <section className="admin-glass overflow-hidden rounded-[32px] bg-[rgba(255,255,255,0.12)] p-8 shadow-[var(--shadow-xl)] md:p-12">
+          <span className="inline-flex rounded-full bg-white/18 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-emerald-200 shadow-sm">
             PZM Admin
           </span>
-          <h1 className="mt-5 max-w-3xl text-4xl font-extrabold tracking-tight text-slate-950 md:text-5xl">
-            One clean place for orders, service follow-up, and monthly reporting
+          <h1 className="admin-heading-accent mt-5 max-w-3xl text-4xl font-extrabold tracking-tight text-white md:text-5xl">
+            One clean place to track pending, confirmed, and canceled work
           </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-8 text-brandTextMedium">
-            The admin side now stays lean on purpose. Track customer orders, follow service requests, and review monthly performance without turning this into a heavy back-office system.
+          <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-200">
+            The portal stays intentionally small. Use it to confirm item orders, confirm service jobs, and review the month without turning it into a heavy operations system.
           </p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            <div className="rounded-[28px] border border-white/70 bg-white/80 p-5 shadow-sm">
-              <ClipboardList className="text-primary" size={22} />
-              <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-primary">Orders</p>
-              <p className="mt-2 text-sm leading-7 text-brandTextMedium">Keep the order workflow limited to the key business states the shop actually uses.</p>
+            <div className="admin-glass-soft rounded-[28px] bg-white/14 p-5">
+              <ClipboardList className="text-emerald-200" size={22} />
+              <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-emerald-200">Orders</p>
+              <p className="mt-2 text-sm leading-7 text-slate-200">Track item orders with only the states that matter: pending, confirmed, and canceled.</p>
             </div>
-            <div className="rounded-[28px] border border-white/70 bg-white/80 p-5 shadow-sm">
-              <Wrench className="text-primary" size={22} />
-              <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-primary">Service</p>
-              <p className="mt-2 text-sm leading-7 text-brandTextMedium">Handle repair and callback requests with the same simplified status model.</p>
+            <div className="admin-glass-soft rounded-[28px] bg-white/14 p-5">
+              <Wrench className="text-emerald-200" size={22} />
+              <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-emerald-200">Services</p>
+              <p className="mt-2 text-sm leading-7 text-slate-200">Handle service jobs with the same simple confirmation flow used for product orders.</p>
             </div>
-            <div className="rounded-[28px] border border-white/70 bg-white/80 p-5 shadow-sm">
-              <BarChart3 className="text-primary" size={22} />
-              <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-primary">Reports</p>
-              <p className="mt-2 text-sm leading-7 text-brandTextMedium">Review monthly revenue, open pipeline, cancellations, and service-request demand.</p>
+            <div className="admin-glass-soft rounded-[28px] bg-white/14 p-5">
+              <BarChart3 className="text-emerald-200" size={22} />
+              <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-emerald-200">Reports</p>
+              <p className="mt-2 text-sm leading-7 text-slate-200">Review confirmed revenue, pending value, and canceled work for both items and services.</p>
             </div>
           </div>
 
-          <div className="mt-8 rounded-[28px] border border-white/70 bg-white/80 p-6 shadow-sm">
+          <div className="admin-glass-soft mt-8 rounded-[28px] bg-white/14 p-6">
             <div className="flex items-start gap-4">
-              <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-primary">
+              <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/18 text-emerald-200">
                 <ShieldCheck size={22} />
               </span>
               <div>
-                <h2 className="text-xl font-bold text-slate-950">Built for a small-shop workflow</h2>
-                <p className="mt-2 text-sm leading-7 text-brandTextMedium">
-                  Product data stays code-managed, while the admin stays focused on customer communication, delivery progress, and monthly business visibility.
+                <h2 className="text-xl font-bold text-white">Built for a simple shared workflow</h2>
+                <p className="mt-2 text-sm leading-7 text-slate-200">
+                  Product setup stays out of the portal. The admin is only for checking what is pending, what got confirmed, and what was canceled.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="rounded-[32px] border border-brandBorder bg-white/90 p-8 shadow-[0_24px_70px_rgba(15,23,42,0.12)] backdrop-blur md:p-10">
+        <section className="admin-glass rounded-[32px] bg-white/76 p-8 md:p-10">
           <div className="text-center">
-            <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-brandLight text-primary shadow-sm">
+            <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(0,167,111,0.12)] text-primary shadow-sm">
               <Lock size={30} />
             </div>
             <h2 className="mt-5 text-3xl font-bold text-slate-950">Admin Login</h2>
-            <p className="mt-3 text-brandTextMedium">Sign in to access order follow-up, service requests, and monthly reporting.</p>
+            <p className="mt-3 text-brandTextMedium">Sign in to review pending work, confirmed work, and canceled work.</p>
           </div>
 
           {error && (
@@ -122,7 +122,7 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter your username"
-                  className="w-full rounded-2xl border border-brandBorder bg-white px-12 py-3 text-brandTextDark placeholder:text-brandTextMedium focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-full border border-white/60 bg-white/82 px-12 py-3 text-brandTextDark placeholder:text-brandTextMedium focus:outline-none focus:ring-2 focus:ring-primary"
                   required
                 />
               </div>
@@ -140,7 +140,7 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full rounded-2xl border border-brandBorder bg-white px-12 py-3 text-brandTextDark placeholder:text-brandTextMedium focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-full border border-white/60 bg-white/82 px-12 py-3 text-brandTextDark placeholder:text-brandTextMedium focus:outline-none focus:ring-2 focus:ring-primary"
                   required
                 />
               </div>
@@ -150,14 +150,14 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-full bg-[linear-gradient(135deg,#7adf38_0%,#00A76F_100%)] px-5 py-3 text-sm font-semibold text-white transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? 'Logging in...' : 'Open Admin'}
               </button>
               <button
                 type="button"
                 onClick={onCancel}
-                className="w-full rounded-2xl border border-brandBorder bg-slate-50 px-5 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
+                className="w-full rounded-full border border-white/60 bg-white/82 px-5 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
               >
                 Back
               </button>

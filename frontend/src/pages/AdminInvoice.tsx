@@ -66,6 +66,22 @@ function formatPaymentMethodLabel(value: string) {
     .join(' ')
 }
 
+function formatOrderStatusLabel(status: string) {
+  switch (status) {
+    case 'confirmed':
+    case 'in_progress':
+    case 'ready_for_delivery':
+    case 'shipped':
+    case 'delivered':
+      return 'Confirmed'
+    case 'cancelled':
+      return 'Canceled'
+    case 'pending':
+    default:
+      return 'Pending'
+  }
+}
+
 function clearAdminSessionAndRedirect() {
   localStorage.removeItem('adminToken')
   localStorage.removeItem('adminUser')
@@ -205,7 +221,7 @@ export default function AdminInvoice() {
   }
 
   return (
-    <div className="invoice-wrapper">
+    <div className="invoice-wrapper admin-portal">
       <style>{`
         @page { size: A4; margin: 16mm; }
         @media print {
@@ -217,8 +233,8 @@ export default function AdminInvoice() {
         }
         .invoice-wrapper { min-height: 100vh; background: linear-gradient(180deg, #eff8f4 0%, #f7fbff 52%, #ffffff 100%); padding: 32px 16px 56px; }
         .invoice-shell { max-width: 960px; margin: 0 auto; }
-        .invoice-container { max-width: 860px; margin: 0 auto; border: 1px solid #d9e6df; border-radius: 32px; background: #ffffff; color: #0f172a; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08); overflow: hidden; }
-        .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; border-bottom: 1px solid #e5e7eb; padding: 32px; background: linear-gradient(180deg, #f7fbff 0%, #ffffff 100%); }
+        .invoice-container { max-width: 860px; margin: 0 auto; border: 1px solid var(--glass-border); border-radius: 32px; background: var(--glass-bg); color: #0f172a; box-shadow: var(--shadow-xl); overflow: hidden; -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+        .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; border-bottom: 1px solid rgba(255,255,255,0.45); padding: 32px; background: linear-gradient(180deg, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.62) 100%); }
         .company { display: flex; align-items: center; gap: 18px; }
         .company-logo { width: 72px; height: 72px; border-radius: 22px; background: linear-gradient(135deg, #0b8a60 0%, #11a36e 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 18px 35px rgba(11, 138, 96, 0.18); }
         .company img { height: 40px; }
@@ -229,21 +245,21 @@ export default function AdminInvoice() {
         .header-meta { text-align: right; }
         .header-badges { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 12px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 32px 0; }
-        .panel { border: 1px solid #d9e6df; border-radius: 24px; background: #ffffff; padding: 20px; }
+        .panel { border: 1px solid var(--glass-border); border-radius: 24px; background: rgba(255,255,255,0.7); padding: 20px; -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
         .panel-title { font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #0b8a60; margin-bottom: 10px; }
-        .table-wrap { margin: 24px 32px 0; border: 1px solid #d9e6df; border-radius: 24px; overflow: hidden; }
+        .table-wrap { margin: 24px 32px 0; border: 1px solid var(--glass-border); border-radius: 24px; overflow: hidden; background: rgba(255,255,255,0.68); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
         .table { width: 100%; border-collapse: collapse; }
         .table th { text-align: left; padding: 14px 16px; background: #f8fafc; border-bottom: 1px solid #e5e7eb; color: #334155; font-size: 13px; }
         .table td { padding: 14px 16px; border-bottom: 1px solid #e5e7eb; vertical-align: top; color: #0f172a; }
         .table tbody tr:last-child td { border-bottom: none; }
-        .totals { width: 340px; margin: 24px 32px 0 auto; border: 1px solid #d9e6df; border-radius: 24px; padding: 18px 20px; background: linear-gradient(180deg, #f7fbff 0%, #ffffff 100%); }
+        .totals { width: 340px; margin: 24px 32px 0 auto; border: 1px solid var(--glass-border); border-radius: 24px; padding: 18px 20px; background: linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.62) 100%); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
         .totals-row { display: flex; justify-content: space-between; padding: 10px 0; color: #334155; }
         .totals-row.total { font-weight: 700; color: #020617; border-top: 1px solid #d9e6df; margin-top: 6px; padding-top: 14px; }
         .footer { margin: 24px 32px 32px; border-top: 1px solid #e5e7eb; padding-top: 18px; font-size: 12px; color: #64748b; }
         .badge { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
         .badge-payment { background: #eaf9f2; color: #0b8a60; }
         .badge-status { background: #e8f4fd; color: #0369a1; }
-        .actions { position: sticky; top: 0; z-index: 2; display: flex; justify-content: center; gap: 12px; margin: 0 auto 20px; padding: 12px; border: 1px solid #d9e6df; border-radius: 999px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); width: fit-content; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08); }
+        .actions { position: sticky; top: 0; z-index: 2; display: flex; justify-content: center; gap: 12px; margin: 0 auto 20px; padding: 12px; border: 1px solid var(--glass-border); border-radius: 999px; background: var(--glass-bg); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); width: fit-content; box-shadow: var(--shadow-lg); }
         .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 999px; border: 1px solid #0b8a60; background: #0b8a60; color: #ffffff; font-weight: 600; }
         .btn.secondary { border-color: #d9e6df; background: #ffffff; color: #0f172a; }
         @media (max-width: 768px) {
@@ -284,7 +300,7 @@ export default function AdminInvoice() {
             <div className="muted">Date: {new Date(order.created_at).toLocaleDateString()}</div>
             <div className="header-badges">
               <span className="badge badge-payment">{formatPaymentMethodLabel(order.payment_method)}</span>
-              <span className="badge badge-status">{formatPaymentMethodLabel(order.status)}</span>
+              <span className="badge badge-status">{formatOrderStatusLabel(order.status)}</span>
             </div>
           </div>
         </div>

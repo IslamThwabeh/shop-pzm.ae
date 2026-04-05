@@ -43,13 +43,13 @@ interface ReportServiceRequest {
   created_at: string;
 }
 
-type AdminOrderStatus = 'pending' | 'confirmed' | 'delivered' | 'cancelled';
+type AdminOrderStatus = 'pending' | 'confirmed' | 'cancelled';
+type AdminReportServiceStatus = 'pending' | 'confirmed' | 'cancelled';
 
 const ADMIN_ORDER_STATUS_OPTIONS: Array<{ value: AdminOrderStatus; label: string }> = [
   { value: 'pending', label: 'Pending' },
-  { value: 'confirmed', label: 'Active' },
-  { value: 'delivered', label: 'Delivered' },
-  { value: 'cancelled', label: 'Cancelled' },
+  { value: 'confirmed', label: 'Confirmed' },
+  { value: 'cancelled', label: 'Canceled' },
 ];
 
 function normalizeOrderStatus(status: string): AdminOrderStatus {
@@ -58,9 +58,8 @@ function normalizeOrderStatus(status: string): AdminOrderStatus {
     case 'in_progress':
     case 'ready_for_delivery':
     case 'shipped':
-      return 'confirmed';
     case 'delivered':
-      return 'delivered';
+      return 'confirmed';
     case 'cancelled':
       return 'cancelled';
     case 'pending':
@@ -74,11 +73,9 @@ function formatAdminOrderStatus(status: string): string {
 
   switch (normalizedStatus) {
     case 'confirmed':
-      return 'Active';
-    case 'delivered':
-      return 'Delivered';
+      return 'Confirmed';
     case 'cancelled':
-      return 'Cancelled';
+      return 'Canceled';
     case 'pending':
     default:
       return 'Pending';
@@ -90,13 +87,26 @@ function getOrderStatusBadgeClass(status: string): string {
     case 'pending':
       return 'bg-yellow-100 text-yellow-700';
     case 'confirmed':
-      return 'bg-sky-100 text-sky-700';
-    case 'delivered':
       return 'bg-emerald-100 text-emerald-700';
     case 'cancelled':
       return 'bg-rose-100 text-rose-700';
     default:
       return 'bg-slate-100 text-slate-700';
+  }
+}
+
+function normalizeReportServiceStatus(status: string): AdminReportServiceStatus {
+  switch (status) {
+    case 'contacted':
+    case 'quoted':
+    case 'scheduled':
+    case 'completed':
+      return 'confirmed';
+    case 'cancelled':
+      return 'cancelled';
+    case 'pending':
+    default:
+      return 'pending';
   }
 }
 
@@ -290,7 +300,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     total: orders.length,
     pending: orders.filter((order) => normalizeOrderStatus(order.status) === 'pending').length,
     confirmed: orders.filter((order) => normalizeOrderStatus(order.status) === 'confirmed').length,
-    delivered: orders.filter((order) => normalizeOrderStatus(order.status) === 'delivered').length,
     cancelled: orders.filter((order) => normalizeOrderStatus(order.status) === 'cancelled').length,
   };
 
@@ -307,21 +316,20 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   );
 
   const monthlyReport = useMemo(() => {
-    const deliveredOrders = monthOrders.filter((order) => normalizeOrderStatus(order.status) === 'delivered');
+    const confirmedOrders = monthOrders.filter((order) => normalizeOrderStatus(order.status) === 'confirmed');
     const pendingOrders = monthOrders.filter((order) => normalizeOrderStatus(order.status) === 'pending');
-    const activeOrders = monthOrders.filter((order) => normalizeOrderStatus(order.status) === 'confirmed');
     const cancelledOrders = monthOrders.filter((order) => normalizeOrderStatus(order.status) === 'cancelled');
 
-    const deliveredRevenue = deliveredOrders.reduce((sum, order) => sum + order.total_price, 0);
-    const pipelineValue = [...pendingOrders, ...activeOrders].reduce((sum, order) => sum + order.total_price, 0);
+    const confirmedRevenue = confirmedOrders.reduce((sum, order) => sum + order.total_price, 0);
+    const pendingValue = pendingOrders.reduce((sum, order) => sum + order.total_price, 0);
     const cancelledValue = cancelledOrders.reduce((sum, order) => sum + order.total_price, 0);
-    const averageDeliveredOrderValue = deliveredOrders.length > 0 ? deliveredRevenue / deliveredOrders.length : 0;
+    const averageConfirmedOrderValue = confirmedOrders.length > 0 ? confirmedRevenue / confirmedOrders.length : 0;
 
     const dailyMap = new Map<string, {
       key: string;
       label: string;
       orders: number;
-      delivered: number;
+      confirmed: number;
       revenue: number;
       requests: number;
       cancelled: number;
@@ -340,7 +348,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         key,
         label: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
         orders: 0,
-        delivered: 0,
+        confirmed: 0,
         revenue: 0,
         requests: 0,
         cancelled: 0,
@@ -354,8 +362,8 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       const day = ensureDay(order.created_at);
       day.orders += 1;
 
-      if (status === 'delivered') {
-        day.delivered += 1;
+      if (status === 'confirmed') {
+        day.confirmed += 1;
         day.revenue += order.total_price;
       }
 
@@ -370,16 +378,15 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     });
 
     return {
-      deliveredRevenue,
-      pipelineValue,
+      confirmedRevenue,
+      pendingValue,
       cancelledValue,
-      averageDeliveredOrderValue,
+      averageConfirmedOrderValue,
       pendingOrders,
-      activeOrders,
-      deliveredOrders,
+      confirmedOrders,
       cancelledOrders,
       serviceRequests: monthRequests,
-      completedRequests: monthRequests.filter((request) => request.status === 'completed').length,
+      confirmedRequests: monthRequests.filter((request) => normalizeReportServiceStatus(request.status) === 'confirmed').length,
       dailyRows: Array.from(dailyMap.values()).sort((left, right) => right.key.localeCompare(left.key)),
     };
   }, [monthOrders, monthRequests]);
@@ -396,8 +403,8 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   }, [statusFilter]);
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#eff8f4_0%,#f7fbff_52%,#ffffff_100%)]">
-      <header className="border-b border-brandBorder bg-white/90 backdrop-blur">
+    <div className="admin-portal min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(0,167,111,0.14),transparent_18%),radial-gradient(circle_at_bottom_left,rgba(30,41,59,0.1),transparent_22%),linear-gradient(180deg,#eef5fb_0%,#f7fbff_48%,#ffffff_100%)]">
+      <header className="admin-glass sticky top-0 z-[1000] border-b border-white/30 bg-[rgba(255,255,255,0.72)]">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div className="flex items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-[22px] bg-[linear-gradient(135deg,#0b8a60_0%,#11a36e_100%)] shadow-[0_18px_35px_rgba(11,138,96,0.18)]">
@@ -405,15 +412,15 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
             </div>
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Lean Admin</p>
-              <h1 className="mt-2 text-3xl font-bold text-slate-950">Orders, service, and monthly reports</h1>
+              <h1 className="admin-heading-accent mt-2 text-3xl font-bold text-slate-950">Orders, service, and monthly reports</h1>
               <p className="mt-2 max-w-2xl text-sm leading-7 text-brandTextMedium">
-                Keep the back office simple: manage orders, follow service requests, and review the month without exposing product setup.
+                Keep the back office simple: manage pending, confirmed, and canceled work for both items and services.
               </p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-brandBorder bg-white px-5 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/60 bg-white/82 px-5 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
           >
             <LogOut size={18} />
             Logout
@@ -428,35 +435,30 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
           </div>
         )}
 
-        <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
-          <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#eef9f4_0%,#ffffff_100%)] p-5 shadow-sm">
+        <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="admin-glass-soft rounded-[24px] bg-white/68 p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Total Orders</p>
             <p className="mt-3 text-3xl font-bold text-slate-950">{stats.total}</p>
             <p className="mt-2 text-sm text-brandTextMedium">All orders in the system</p>
           </div>
-          <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#fff8db_0%,#ffffff_100%)] p-5 shadow-sm">
+          <div className="admin-glass-soft rounded-[24px] bg-white/68 p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-700">Pending</p>
             <p className="mt-3 text-3xl font-bold text-slate-950">{stats.pending}</p>
-            <p className="mt-2 text-sm text-brandTextMedium">Awaiting first action</p>
+            <p className="mt-2 text-sm text-brandTextMedium">Awaiting confirmation</p>
           </div>
-          <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#e8f4fd_0%,#ffffff_100%)] p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Active</p>
+          <div className="admin-glass-soft rounded-[24px] bg-white/68 p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Confirmed</p>
             <p className="mt-3 text-3xl font-bold text-slate-950">{stats.confirmed}</p>
-            <p className="mt-2 text-sm text-brandTextMedium">In progress with the team</p>
+            <p className="mt-2 text-sm text-brandTextMedium">Paid and confirmed work</p>
           </div>
-          <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#eaf9f2_0%,#ffffff_100%)] p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Delivered</p>
-            <p className="mt-3 text-3xl font-bold text-slate-950">{stats.delivered}</p>
-            <p className="mt-2 text-sm text-brandTextMedium">Closed successfully</p>
-          </div>
-          <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#fff1f2_0%,#ffffff_100%)] p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-700">Cancelled</p>
+          <div className="admin-glass-soft rounded-[24px] bg-white/68 p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-700">Canceled</p>
             <p className="mt-3 text-3xl font-bold text-slate-950">{stats.cancelled}</p>
             <p className="mt-2 text-sm text-brandTextMedium">Stopped or lost orders</p>
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm">
+        <div className="admin-glass overflow-hidden rounded-[28px] bg-[rgba(255,255,255,0.64)] shadow-[var(--shadow-xl)]">
           <div className="border-b border-slate-100 px-6 py-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
@@ -509,7 +511,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Orders</p>
                     <h3 className="mt-2 text-2xl font-bold text-slate-950">Current order queue</h3>
                     <p className="mt-2 max-w-3xl text-sm leading-7 text-brandTextMedium">
-                      Work with the simplified business flow only: pending, active, delivered, or cancelled.
+                      Work with the simplified business flow only: pending, confirmed, or canceled.
                     </p>
                   </div>
 
@@ -517,7 +519,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     <select
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value as AdminOrderStatus | 'all')}
-                      className="rounded-2xl border border-brandBorder bg-white px-4 py-3 text-sm font-medium text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="rounded-full border border-white/60 bg-white/82 px-4 py-3 text-sm font-medium text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       <option value="all">All Orders</option>
                       {ADMIN_ORDER_STATUS_OPTIONS.map((option) => (
@@ -529,7 +531,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
                     <button
                       onClick={loadOrders}
-                      className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
+                      className="inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,#7adf38_0%,#00A76F_100%)] px-5 py-3 text-sm font-semibold text-white transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
                     >
                       <RefreshCw size={18} />
                       Refresh
@@ -538,17 +540,17 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 </div>
 
                 {loading ? (
-                  <div className="rounded-[24px] border border-brandBorder bg-[#f7fbff] p-10 text-center shadow-sm">
+                  <div className="admin-glass-soft rounded-[24px] bg-white/68 p-10 text-center">
                     <p className="text-lg font-semibold text-slate-950">Loading orders...</p>
                     <p className="mt-2 text-sm text-brandTextMedium">Fetching the latest order activity from the admin API.</p>
                   </div>
                 ) : filteredOrders.length === 0 ? (
-                  <div className="rounded-[24px] border border-brandBorder bg-[#f7fbff] p-10 text-center shadow-sm">
+                  <div className="admin-glass-soft rounded-[24px] bg-white/68 p-10 text-center">
                     <p className="text-lg font-semibold text-slate-950">No orders found</p>
                     <p className="mt-2 text-sm text-brandTextMedium">Try another status filter or wait for new orders to come in.</p>
                   </div>
                 ) : (
-                  <div className="overflow-hidden rounded-[24px] border border-brandBorder shadow-sm">
+                  <div className="admin-glass-soft overflow-hidden rounded-[24px] bg-white/7">
                     <div className="overflow-x-auto">
                       <table className="w-full">
                         <thead className="bg-slate-50">
@@ -653,87 +655,87 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   <div>
                     <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Monthly Reports</p>
                     <h2 className="mt-2 text-2xl font-bold text-slate-950">Track the month clearly</h2>
-                    <p className="mt-2 max-w-3xl text-sm leading-7 text-brandTextMedium">Track delivered revenue, open pipeline, cancellations, and service-request volume without extra workflow noise.</p>
+                    <p className="mt-2 max-w-3xl text-sm leading-7 text-brandTextMedium">Track confirmed revenue, pending value, cancellations, and service workload without extra workflow noise.</p>
                   </div>
                   <button
                     onClick={() => {
                       loadOrders();
                       loadReportRequests();
                     }}
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,#7adf38_0%,#00A76F_100%)] px-5 py-3 text-sm font-semibold text-white transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
                   >
                     <RefreshCw size={18} />
                     Refresh report data
                   </button>
                 </div>
                 
-                <div className="mb-8 rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#f7fbff_0%,#ffffff_100%)] p-5 shadow-sm">
+                <div className="admin-glass-soft mb-8 rounded-[24px] bg-white/68 p-5">
                   <label className="mb-3 block text-sm font-medium text-brandTextDark">Select Month</label>
                   <input
                     type="month"
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="rounded-2xl border border-brandBorder bg-white px-4 py-3 text-sm font-medium text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="rounded-full border border-white/60 bg-white/82 px-4 py-3 text-sm font-medium text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 {loading || reportsLoading ? (
-                  <div className="rounded-[24px] border border-brandBorder bg-[#f7fbff] p-10 text-center shadow-sm">
+                  <div className="admin-glass-soft rounded-[24px] bg-white/68 p-10 text-center">
                     <p className="text-lg font-semibold text-slate-950">Loading monthly data...</p>
                     <p className="mt-2 text-sm text-brandTextMedium">Refreshing orders and service requests for {monthLabel}.</p>
                   </div>
                 ) : (
                   <>
                     <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-                      <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#eef9f4_0%,#ffffff_100%)] p-6 shadow-sm">
+                      <div className="admin-glass-soft rounded-[24px] bg-white/68 p-6">
                         <p className="text-sm font-medium text-primary">Orders Received</p>
                         <p className="mt-3 text-4xl font-bold text-slate-950">{monthOrders.length}</p>
                         <p className="mt-2 text-xs text-brandTextMedium">In {monthLabel}</p>
                       </div>
 
-                      <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#e8f4fd_0%,#ffffff_100%)] p-6 shadow-sm">
-                        <p className="text-sm font-medium text-sky-700">Delivered Revenue</p>
-                        <p className="mt-3 text-4xl font-bold text-slate-950">AED {monthlyReport.deliveredRevenue.toFixed(2)}</p>
-                        <p className="mt-2 text-xs text-brandTextMedium">From {monthlyReport.deliveredOrders.length} delivered orders</p>
+                      <div className="admin-glass-soft rounded-[24px] bg-white/68 p-6">
+                        <p className="text-sm font-medium text-emerald-700">Confirmed Revenue</p>
+                        <p className="mt-3 text-4xl font-bold text-slate-950">AED {monthlyReport.confirmedRevenue.toFixed(2)}</p>
+                        <p className="mt-2 text-xs text-brandTextMedium">From {monthlyReport.confirmedOrders.length} confirmed orders</p>
                       </div>
 
-                      <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#fff8db_0%,#ffffff_100%)] p-6 shadow-sm">
-                        <p className="text-sm font-medium text-amber-700">Open Pipeline</p>
-                        <p className="mt-3 text-4xl font-bold text-slate-950">{monthlyReport.pendingOrders.length + monthlyReport.activeOrders.length}</p>
-                        <p className="mt-2 text-xs text-brandTextMedium">AED {monthlyReport.pipelineValue.toFixed(2)} still open</p>
+                      <div className="admin-glass-soft rounded-[24px] bg-white/68 p-6">
+                        <p className="text-sm font-medium text-amber-700">Pending Value</p>
+                        <p className="mt-3 text-4xl font-bold text-slate-950">{monthlyReport.pendingOrders.length}</p>
+                        <p className="mt-2 text-xs text-brandTextMedium">AED {monthlyReport.pendingValue.toFixed(2)} awaiting confirmation</p>
                       </div>
 
-                      <div className="rounded-[24px] border border-brandBorder bg-[linear-gradient(180deg,#f7f0ff_0%,#ffffff_100%)] p-6 shadow-sm">
+                      <div className="admin-glass-soft rounded-[24px] bg-white/68 p-6">
                         <p className="text-sm font-medium text-violet-700">Service Requests</p>
                         <p className="mt-3 text-4xl font-bold text-slate-950">{monthlyReport.serviceRequests.length}</p>
-                        <p className="mt-2 text-xs text-brandTextMedium">{monthlyReport.completedRequests} completed this month</p>
+                        <p className="mt-2 text-xs text-brandTextMedium">{monthlyReport.confirmedRequests} confirmed this month</p>
                       </div>
                     </div>
 
                     <div className="mb-8 grid grid-cols-2 gap-4 xl:grid-cols-4">
-                      <div className="rounded-[24px] border border-brandBorder bg-white p-5 shadow-sm">
+                      <div className="admin-glass-soft rounded-[24px] bg-white/68 p-5">
                         <p className="text-xs uppercase tracking-[0.18em] text-brandTextMedium">Pending</p>
                         <p className="mt-3 text-3xl font-bold text-amber-700">{monthlyReport.pendingOrders.length}</p>
                       </div>
-                      <div className="rounded-[24px] border border-brandBorder bg-white p-5 shadow-sm">
-                        <p className="text-xs uppercase tracking-[0.18em] text-brandTextMedium">Active</p>
-                        <p className="mt-3 text-3xl font-bold text-sky-700">{monthlyReport.activeOrders.length}</p>
+                      <div className="admin-glass-soft rounded-[24px] bg-white/68 p-5">
+                        <p className="text-xs uppercase tracking-[0.18em] text-brandTextMedium">Confirmed</p>
+                        <p className="mt-3 text-3xl font-bold text-emerald-700">{monthlyReport.confirmedOrders.length}</p>
                       </div>
-                      <div className="rounded-[24px] border border-brandBorder bg-white p-5 shadow-sm">
-                        <p className="text-xs uppercase tracking-[0.18em] text-brandTextMedium">Cancelled</p>
+                      <div className="admin-glass-soft rounded-[24px] bg-white/68 p-5">
+                        <p className="text-xs uppercase tracking-[0.18em] text-brandTextMedium">Canceled</p>
                         <p className="mt-3 text-3xl font-bold text-rose-700">{monthlyReport.cancelledOrders.length}</p>
-                        <p className="mt-2 text-xs text-brandTextMedium">AED {monthlyReport.cancelledValue.toFixed(2)} cancelled value</p>
+                        <p className="mt-2 text-xs text-brandTextMedium">AED {monthlyReport.cancelledValue.toFixed(2)} canceled value</p>
                       </div>
-                      <div className="rounded-[24px] border border-brandBorder bg-white p-5 shadow-sm">
-                        <p className="text-xs uppercase tracking-[0.18em] text-brandTextMedium">Avg Delivered Order</p>
-                        <p className="mt-3 text-3xl font-bold text-emerald-700">AED {monthlyReport.averageDeliveredOrderValue.toFixed(2)}</p>
+                      <div className="admin-glass-soft rounded-[24px] bg-white/68 p-5">
+                        <p className="text-xs uppercase tracking-[0.18em] text-brandTextMedium">Avg Confirmed Order</p>
+                        <p className="mt-3 text-3xl font-bold text-emerald-700">AED {monthlyReport.averageConfirmedOrderValue.toFixed(2)}</p>
                       </div>
                     </div>
 
-                    <div className="mb-8 overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm">
+                    <div className="admin-glass-soft mb-8 overflow-hidden rounded-[24px] bg-white/68">
                       <div className="border-b border-slate-100 p-6">
                         <h3 className="text-xl font-bold text-slate-950">Daily Activity in {monthLabel}</h3>
-                        <p className="mt-2 text-sm text-brandTextMedium">Use this table for a quick day-by-day view of orders, delivered revenue, cancellations, and service-request volume.</p>
+                        <p className="mt-2 text-sm text-brandTextMedium">Use this table for a quick day-by-day view of orders, confirmed revenue, cancellations, and service-request volume.</p>
                       </div>
 
                       <div className="overflow-x-auto">
@@ -742,10 +744,10 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                             <tr>
                               <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Date</th>
                               <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Orders</th>
-                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Delivered</th>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Confirmed</th>
                               <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Revenue</th>
                               <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Requests</th>
-                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Cancelled</th>
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Canceled</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-100 bg-white">
@@ -760,7 +762,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                                 <tr key={row.key} className="transition-colors hover:bg-slate-50">
                                   <td className="px-6 py-4 text-sm font-medium text-slate-950">{row.label}</td>
                                   <td className="px-6 py-4 text-sm text-brandTextDark">{row.orders}</td>
-                                  <td className="px-6 py-4 text-sm text-emerald-700">{row.delivered}</td>
+                                  <td className="px-6 py-4 text-sm text-emerald-700">{row.confirmed}</td>
                                   <td className="px-6 py-4 text-sm font-semibold text-emerald-700">AED {row.revenue.toFixed(2)}</td>
                                   <td className="px-6 py-4 text-sm text-sky-700">{row.requests}</td>
                                   <td className="px-6 py-4 text-sm text-rose-700">{row.cancelled}</td>
@@ -772,7 +774,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                       </div>
                     </div>
 
-                    <div className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm">
+                    <div className="admin-glass-soft overflow-hidden rounded-[24px] bg-white/68">
                       <div className="border-b border-slate-100 p-6">
                         <h3 className="text-xl font-bold text-slate-950">Orders in {monthLabel}</h3>
                         <p className="mt-2 text-sm text-brandTextMedium">Detailed order list for the selected month with the simplified business status view.</p>
@@ -853,7 +855,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
           />
           
           {/* Side Panel */}
-          <div className="fixed top-0 right-0 z-50 h-full w-full max-w-2xl overflow-y-auto border-l border-brandBorder bg-[#f7fbff] shadow-2xl">
+          <div className="admin-glass fixed top-0 right-0 z-50 h-full w-full max-w-2xl overflow-y-auto border-l border-white/40 bg-[rgba(255,255,255,0.74)] shadow-[var(--shadow-xl)]">
             <div className="p-8">
               <div className="mb-8 flex items-center justify-between border-b border-slate-200 pb-6">
                 <div>
@@ -864,14 +866,14 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => window.open(`/admin/orders/${selectedOrder.id}/invoice`, '_blank', 'noopener,noreferrer')}
-                    className="rounded-2xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
+                    className="rounded-full bg-[linear-gradient(135deg,#7adf38_0%,#00A76F_100%)] px-4 py-2 text-sm font-semibold text-white transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
                     title="Open printable invoice"
                   >
                     Print Invoice
                   </button>
                   <button
                     onClick={() => setSelectedOrder(null)}
-                    className="rounded-full border border-brandBorder bg-white p-2 text-brandTextMedium transition-colors hover:border-primary hover:text-primary"
+                    className="rounded-full border border-white/60 bg-white/82 p-2 text-brandTextMedium transition-colors hover:border-primary hover:text-primary"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -888,7 +890,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   </svg>
                   Client Information
                 </h3>
-                <div className="space-y-4 rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
+                <div className="admin-glass-soft space-y-4 rounded-[24px] bg-white/68 p-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <p className="mb-1 text-sm font-medium text-brandTextMedium">Full Name</p>
@@ -920,7 +922,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     </svg>
                     Special Notes
                   </h3>
-                  <div className="rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
+                  <div className="admin-glass-soft rounded-[24px] bg-white/68 p-6">
                     <p className="whitespace-pre-wrap text-brandTextDark">{selectedOrder.notes}</p>
                   </div>
                 </div>
@@ -934,7 +936,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   </svg>
                   Order Information
                 </h3>
-                <div className="space-y-4 rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
+                <div className="admin-glass-soft space-y-4 rounded-[24px] bg-white/68 p-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <p className="mb-1 text-sm font-medium text-brandTextMedium">Order Date</p>
@@ -975,7 +977,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     </svg>
                     Order Items ({selectedOrder.items.length})
                   </h3>
-                  <div className="space-y-4 rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
+                  <div className="admin-glass-soft space-y-4 rounded-[24px] bg-white/68 p-6">
                     {selectedOrder.items.map((item) => (
                       <div key={item.id} className="border-b border-slate-100 pb-4 last:border-b-0 last:pb-0">
                         <div className="mb-3 flex items-start justify-between">
@@ -1027,7 +1029,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   </svg>
                   Update Order Status
                 </h3>
-                <div className="rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
+                <div className="admin-glass-soft rounded-[24px] bg-white/68 p-6">
                   <label className="mb-3 block text-sm font-medium text-brandTextDark">Select New Status</label>
                   <select
                     onChange={(e) => {
@@ -1036,7 +1038,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                       }
                     }}
                     value=""
-                    className="w-full rounded-2xl border border-brandBorder bg-white px-4 py-3 text-base text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full rounded-full border border-white/60 bg-white/82 px-4 py-3 text-base text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="">Select new status</option>
                     {ADMIN_ORDER_STATUS_OPTIONS.map((option) => (
@@ -1052,7 +1054,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               {/* Close Button */}
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="w-full rounded-2xl border border-brandBorder bg-white py-3 text-lg font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
+                className="w-full rounded-full border border-white/60 bg-white/82 py-3 text-lg font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
               >
                 Close Panel
               </button>
