@@ -1,3 +1,5 @@
+import { buildApiUrl } from '../utils/siteConfig'
+
 export interface BlogServiceLink {
   label: string
   to: string
@@ -16,6 +18,8 @@ export interface BlogPostEntry {
   relatedServiceLinks: BlogServiceLink[]
 }
 
+const blogMedia = (filename: string) => buildApiUrl(`/media/blog/${filename}`)
+
 export const blogPosts: BlogPostEntry[] = [
   {
     title: 'Gold Prices Hit Record Highs - What It Means for Tech Buyers in Dubai (2026)',
@@ -25,7 +29,7 @@ export const blogPosts: BlogPostEntry[] = [
     seoDescription:
       'Gold prices are at record highs in 2026. Learn how that affects iPhone, laptop, used-device, and gaming PC buying decisions in Dubai.',
     category: 'Market',
-    imageUrl: 'https://images.pexels.com/photos/610525/pexels-photo-610525.jpeg',
+    imageUrl: blogMedia('pexels-photo-610525.jpeg'),
     publishedAt: '2026-03-28',
     themeClassName: 'from-amber-200 via-orange-100 to-white',
     relatedServiceLinks: [
@@ -66,7 +70,7 @@ export const blogPosts: BlogPostEntry[] = [
     seoDescription:
       'US tariff changes in 2026 are affecting iPhone, laptop, accessory, and gaming PC pricing in Dubai. Here is what buyers should know.',
     category: 'Market',
-    imageUrl: 'https://images.pexels.com/photos/3943716/pexels-photo-3943716.jpeg',
+    imageUrl: blogMedia('pexels-photo-3943716.jpeg'),
     publishedAt: '2026-03-28',
     themeClassName: 'from-sky-200 via-cyan-100 to-white',
     relatedServiceLinks: [
@@ -112,7 +116,7 @@ export const blogPosts: BlogPostEntry[] = [
     seoDescription:
       'A practical 2026 guide to buying used laptops in Dubai, including battery checks, activation lock checks, best-value models, and trade-up advice.',
     category: 'Guide',
-    imageUrl: 'https://images.pexels.com/photos/18105/pexels-photo.jpg',
+    imageUrl: blogMedia('pexels-photo.jpg'),
     publishedAt: '2026-03-28',
     themeClassName: 'from-emerald-200 via-green-100 to-white',
     relatedServiceLinks: [
@@ -156,7 +160,7 @@ export const blogPosts: BlogPostEntry[] = [
     seoDescription:
       'A practical 2026 gaming PC build guide for Dubai buyers, including CPU, GPU, RAM, storage, PSU, cooling, and sourcing advice.',
     category: 'Gaming',
-    imageUrl: '/images/blog/gaming-pc-build.jpg',
+    imageUrl: blogMedia('gaming-pc-build.jpg'),
     publishedAt: '2026-03-24',
     themeClassName: 'from-violet-200 via-fuchsia-100 to-white',
     relatedServiceLinks: [
@@ -189,7 +193,7 @@ export const blogPosts: BlogPostEntry[] = [
     seoDescription:
       'Learn the most useful iPhone repair and maintenance tips for 2026, including screens, batteries, charging ports, software issues, and upgrade decisions.',
     category: 'Repair',
-    imageUrl: 'https://images.pexels.com/photos/4195325/pexels-photo-4195325.jpeg',
+    imageUrl: blogMedia('pexels-photo-4195325.jpeg'),
     publishedAt: '2026-03-22',
     themeClassName: 'from-rose-200 via-pink-100 to-white',
     relatedServiceLinks: [
@@ -222,7 +226,7 @@ export const blogPosts: BlogPostEntry[] = [
     seoDescription:
       'Essential 2026 PC maintenance advice for Dubai users, including cleaning, thermals, SSD health, updates, and when to seek repair help.',
     category: 'PC',
-    imageUrl: 'https://images.pexels.com/photos/2582937/pexels-photo-2582937.jpeg',
+    imageUrl: blogMedia('pexels-photo-2582937.jpeg'),
     publishedAt: '2026-03-20',
     themeClassName: 'from-slate-300 via-slate-100 to-white',
     relatedServiceLinks: [
@@ -257,7 +261,7 @@ export const blogPosts: BlogPostEntry[] = [
     seoDescription:
       'A practical guide to useful phone and laptop accessories in 2026, including cases, chargers, wireless stands, hubs, and portable SSDs.',
     category: 'Accessories',
-    imageUrl: 'https://images.pexels.com/photos/47261/pexels-photo-47261.jpeg',
+    imageUrl: blogMedia('pexels-photo-47261.jpeg'),
     publishedAt: '2026-03-18',
     themeClassName: 'from-indigo-200 via-blue-100 to-white',
     relatedServiceLinks: [
@@ -297,7 +301,7 @@ export const blogPosts: BlogPostEntry[] = [
     seoDescription:
       'Understand what really drains your phone battery in 2026, how charging habits affect battery life, and when to replace the battery or upgrade.',
     category: 'Mobile',
-    imageUrl: 'https://images.pexels.com/photos/4526407/pexels-photo-4526407.jpeg',
+    imageUrl: blogMedia('pexels-photo-4526407.jpeg'),
     publishedAt: '2026-03-16',
     themeClassName: 'from-lime-200 via-emerald-100 to-white',
     relatedServiceLinks: [
@@ -327,7 +331,7 @@ export const blogPosts: BlogPostEntry[] = [
     seoDescription:
       'Learn how regional Iran-US tensions can affect shipping, pricing, and availability for phones, laptops, PCs, and accessories in the UAE.',
     category: 'Market',
-    imageUrl: 'https://images.pexels.com/photos/325229/pexels-photo-325229.jpeg',
+    imageUrl: blogMedia('pexels-photo-325229.jpeg'),
     publishedAt: '2026-03-14',
     themeClassName: 'from-red-200 via-orange-100 to-white',
     relatedServiceLinks: [

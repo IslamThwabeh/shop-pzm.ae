@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useLayoutEffect } from 'react'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
@@ -24,6 +24,7 @@ import AreaPage from './pages/AreaPage'
 import ReturnPolicyPage from './pages/ReturnPolicyPage'
 import BlogPage from './pages/BlogPage'
 import BlogPostPage from './pages/BlogPostPage'
+import BuyIphonePage from './pages/BuyIphonePage'
 
 function AppContent() {
   const navigate = useNavigate()
@@ -69,6 +70,23 @@ function AppContent() {
 
     loadProducts()
   }, [])
+
+  useEffect(() => {
+    if (!('scrollRestoration' in window.history)) {
+      return undefined
+    }
+
+    const previousValue = window.history.scrollRestoration
+    window.history.scrollRestoration = 'manual'
+
+    return () => {
+      window.history.scrollRestoration = previousValue
+    }
+  }, [])
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [location.pathname, location.search])
 
   const navigateTo = (path: string) => {
     navigate(path)
@@ -130,6 +148,14 @@ function AppContent() {
           <Route
             path="/services/index.html"
             element={<ServicesPage />}
+          />
+          <Route
+            path="/services/buy-iphone"
+            element={<BuyIphonePage products={products} loading={loading} />}
+          />
+          <Route
+            path="/services/buy-iphone.html"
+            element={<BuyIphonePage products={products} loading={loading} />}
           />
           <Route
             path="/services/:slug"

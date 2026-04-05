@@ -33,6 +33,7 @@ export interface HomeBlogTeaser {
   href: string
   date: string
   themeClassName: string
+  imageUrl: string
 }
 
 export interface HomeFaqItem {
@@ -41,6 +42,7 @@ export interface HomeFaqItem {
 }
 
 const legacyMedia = (path: string) => buildApiUrl(`/media/legacy/${path}`)
+const blogMedia = (filename: string) => buildApiUrl(`/media/blog/${filename}`)
 
 export const homeServiceCards: HomeServiceCard[] = [
   {
@@ -173,6 +175,7 @@ export const homeBlogTeasers: HomeBlogTeaser[] = [
     href: '/blog/gold-record-highs-tech-buyers-dubai-2026',
     date: 'March 28, 2026',
     themeClassName: 'from-amber-200 via-orange-100 to-white',
+    imageUrl: blogMedia('pexels-photo-610525.jpeg'),
   },
   {
     tag: 'Market',
@@ -181,6 +184,7 @@ export const homeBlogTeasers: HomeBlogTeaser[] = [
     href: '/blog/us-tariffs-2026-electronics-prices-dubai',
     date: 'March 28, 2026',
     themeClassName: 'from-sky-200 via-cyan-100 to-white',
+    imageUrl: blogMedia('pexels-photo-3943716.jpeg'),
   },
   {
     tag: 'Guide',
@@ -189,6 +193,7 @@ export const homeBlogTeasers: HomeBlogTeaser[] = [
     href: '/blog/ultimate-guide-buying-used-laptops',
     date: 'March 28, 2026',
     themeClassName: 'from-emerald-200 via-green-100 to-white',
+    imageUrl: blogMedia('pexels-photo.jpg'),
   },
 ]
 

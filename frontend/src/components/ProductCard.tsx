@@ -1,16 +1,32 @@
 import { Link } from 'react-router-dom'
 import type { Product } from '@shared/types'
+import { useCart } from '../context/CartContext'
 
 interface Props {
   product: Product
 }
 
 export default function ProductCard({ product }: Props) {
+  const { addItem } = useCart()
+
+  const handleAddToCart = () => {
+    if ((product.quantity ?? 0) <= 0) {
+      return
+    }
+
+    addItem({
+      id: product.id,
+      model: product.model,
+      price: product.price,
+      quantity: 1,
+      color: product.color,
+      storage: product.storage,
+      condition: product.condition,
+    })
+  }
+
   return (
-    <Link
-      to={`/product/${product.id}`}
-      className="block bg-white rounded-lg border border-brandBorder shadow-sm hover:shadow-md transition-shadow overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
-    >
+    <article className="bg-white rounded-lg border border-brandBorder shadow-sm hover:shadow-md transition-shadow overflow-hidden">
       <div className="w-full h-56 md:h-56 lg:h-64 bg-green-50 flex items-center justify-center">
         {product.image_url || product.images?.[0] ? (
           <img
@@ -60,12 +76,31 @@ export default function ProductCard({ product }: Props) {
           <p className="text-sm text-brandTextMedium mt-3 line-clamp-2 leading-relaxed">{product.description}</p>
         )}
 
-        <div className="mt-4">
-          <span className="inline-block w-full text-center bg-primary hover:bg-brandGreenDark text-white h-11 rounded-md font-medium flex items-center justify-center transition-colors">
+        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Link
+            to={`/product/${product.id}`}
+            className="inline-flex w-full items-center justify-center rounded-md border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
+          >
             View Details
-          </span>
+          </Link>
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            disabled={(product.quantity ?? 0) <= 0}
+            className={`inline-flex w-full items-center justify-center rounded-md px-4 py-3 text-sm font-semibold transition-colors ${
+              (product.quantity ?? 0) > 0
+                ? 'bg-primary text-white hover:bg-brandGreenDark'
+                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            {(product.quantity ?? 0) > 0 ? 'Add to Cart' : 'Out of Stock'}
+          </button>
         </div>
+
+        <p className="mt-3 text-xs font-medium uppercase tracking-[0.14em] text-brandTextMedium">
+          Choose an action instead of opening the product page by accident.
+        </p>
       </div>
-    </Link>
+    </article>
   )
 }

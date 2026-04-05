@@ -30,7 +30,7 @@ export default function BlogPage() {
           Market updates, buying guides, repair advice, and device knowledge from Dubai
         </h1>
         <p className="mt-5 max-w-3xl text-lg leading-8 text-brandTextMedium">
-          The blog now lives inside the React app, so articles can use canonical routes, structured data, and internal links that point into the migrated shop and service flows.
+          Articles now use canonical routes, structured data, first-party media, and internal links that point directly into the migrated shop and service flows.
         </p>
       </section>
 
@@ -40,10 +40,19 @@ export default function BlogPage() {
             to={`/blog/${featuredPost.slug}`}
             className="overflow-hidden rounded-[30px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
           >
-            <div className={`h-52 bg-gradient-to-br ${featuredPost.themeClassName} p-8 md:h-64`}>
-              <span className="inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-700 shadow-sm">
-                {featuredPost.category}
-              </span>
+            <div className="relative h-52 overflow-hidden md:h-64">
+              <img
+                src={featuredPost.imageUrl}
+                alt={featuredPost.title}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-transparent" />
+              <div className={`absolute inset-0 bg-gradient-to-br ${featuredPost.themeClassName} opacity-25`} />
+              <div className="absolute inset-x-0 top-0 p-8">
+                <span className="inline-flex rounded-full bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-700 shadow-sm">
+                  {featuredPost.category}
+                </span>
+              </div>
             </div>
             <div className="p-8">
               <p className="text-sm font-semibold text-brandTextMedium">{formatPublishedDate(featuredPost.publishedAt)}</p>
@@ -61,16 +70,28 @@ export default function BlogPage() {
               <Link
                 key={post.slug}
                 to={`/blog/${post.slug}`}
-                className="rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+                className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
               >
-                <div className="flex items-center justify-between gap-3">
-                  <span className="rounded-full bg-brandLight px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-primary">
-                    {post.category}
-                  </span>
-                  <span className="text-xs font-semibold text-brandTextMedium">{formatPublishedDate(post.publishedAt)}</span>
+                <div className="relative h-36 overflow-hidden">
+                  <img src={post.imageUrl} alt={post.title} className="h-full w-full object-cover" loading="lazy" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-slate-950/15 to-transparent" />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${post.themeClassName} opacity-20`} />
+                  <div className="absolute inset-x-0 top-0 p-5">
+                    <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-primary">
+                      {post.category}
+                    </span>
+                  </div>
                 </div>
-                <h3 className="mt-4 text-xl font-bold leading-8 text-slate-950">{post.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-brandTextMedium">{post.excerpt}</p>
+                <div className="p-6">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="rounded-full bg-brandLight px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-primary">
+                      {post.category}
+                    </span>
+                    <span className="text-xs font-semibold text-brandTextMedium">{formatPublishedDate(post.publishedAt)}</span>
+                  </div>
+                  <h3 className="mt-4 text-xl font-bold leading-8 text-slate-950">{post.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-brandTextMedium">{post.excerpt}</p>
+                </div>
               </Link>
             ))}
           </div>
@@ -84,10 +105,15 @@ export default function BlogPage() {
             to={`/blog/${post.slug}`}
             className="overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
           >
-            <div className={`h-44 bg-gradient-to-br ${post.themeClassName} p-6`}>
-              <span className="inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-700 shadow-sm">
-                {post.category}
-              </span>
+            <div className="relative h-44 overflow-hidden">
+              <img src={post.imageUrl} alt={post.title} className="h-full w-full object-cover" loading="lazy" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent" />
+              <div className={`absolute inset-0 bg-gradient-to-br ${post.themeClassName} opacity-20`} />
+              <div className="absolute inset-x-0 top-0 p-6">
+                <span className="inline-flex rounded-full bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-700 shadow-sm">
+                  {post.category}
+                </span>
+              </div>
             </div>
             <div className="p-7">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">{formatPublishedDate(post.publishedAt)}</p>

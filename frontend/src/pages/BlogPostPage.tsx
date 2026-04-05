@@ -94,13 +94,16 @@ export default function BlogPostPage() {
       </div>
 
       <article className="overflow-hidden rounded-[32px] border border-brandBorder bg-white shadow-sm">
-        <div className={`h-56 bg-gradient-to-br ${post.themeClassName} p-8 md:h-72`}>
-          <div className="flex h-full items-end">
+        <div className="relative h-56 overflow-hidden md:h-72">
+          <img src={post.imageUrl} alt={post.title} className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/25 to-transparent" />
+          <div className={`absolute inset-0 bg-gradient-to-br ${post.themeClassName} opacity-25`} />
+          <div className="absolute inset-0 flex items-end p-8">
             <div className="max-w-3xl">
-              <span className="inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-700 shadow-sm">
+              <span className="inline-flex rounded-full bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-700 shadow-sm">
                 {post.category}
               </span>
-              <h1 className="mt-5 text-4xl font-extrabold leading-tight tracking-tight text-slate-950 md:text-5xl">
+              <h1 className="mt-5 text-4xl font-extrabold leading-tight tracking-tight text-white md:text-5xl">
                 {post.title}
               </h1>
             </div>

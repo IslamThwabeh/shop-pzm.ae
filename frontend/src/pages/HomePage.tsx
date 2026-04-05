@@ -366,21 +366,26 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
           <SectionHeader
             badge="Latest Updates"
             title="Tech Blog"
-            description="The blog routes still need full migration, but the homepage can already preserve the legacy content surface and link users into the existing article pages."
+            description="The React blog now runs on canonical routes with first-party media, so the homepage can send visitors straight into the migrated article experience."
           />
 
           <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-3">
             {homeBlogTeasers.map((post) => (
-              <a
+              <Link
                 key={post.title}
-                href={post.href}
+                to={post.href}
                 className="overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
               >
-                <div className={`h-36 bg-gradient-to-br ${post.themeClassName} p-6`}>
-                  <span className="inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-700 shadow-sm">
-                    {post.tag}
-                  </span>
-                  <p className="mt-10 text-sm font-semibold text-slate-700">{post.date}</p>
+                <div className="relative h-36 overflow-hidden">
+                  <img src={post.imageUrl} alt={post.title} className="h-full w-full object-cover" loading="lazy" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/15 to-transparent" />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${post.themeClassName} opacity-20`} />
+                  <div className="absolute inset-0 p-6">
+                    <span className="inline-flex rounded-full bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-700 shadow-sm">
+                      {post.tag}
+                    </span>
+                    <p className="mt-10 text-sm font-semibold text-white">{post.date}</p>
+                  </div>
                 </div>
                 <div className="p-7">
                   <h3 className="text-xl font-bold leading-8 text-slate-900">{post.title}</h3>
@@ -390,18 +395,18 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
                     <ArrowRight size={16} />
                   </span>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
 
           <div className="mt-8 text-center">
-            <a
-              href="/blog.html"
+            <Link
+              to="/blog/"
               className="inline-flex items-center gap-2 rounded-full border border-brandBorder bg-white px-5 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
             >
               Open Blog
               <ArrowRight size={16} />
-            </a>
+            </Link>
           </div>
         </div>
       </section>
