@@ -24,7 +24,6 @@ export default function ProductDetails() {
 
         navigate('/services/brand-new')
       }}
-      onCheckout={() => navigate('/checkout')}
     />
   )
 }

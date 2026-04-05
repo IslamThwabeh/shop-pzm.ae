@@ -1,8 +1,7 @@
-import { ShoppingCart, LogOut, ChevronDown, Menu, MessageCircle, Phone, X } from 'lucide-react'
-import { useCart } from '../context/CartContext'
+import { LogOut, ChevronDown, Menu, MessageCircle, Phone, X } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { areaNavigationLinks, serviceNavigationLinks, siteContact, siteIdentity } from '../content/siteData'
 
 interface HeaderProps {
@@ -11,16 +10,14 @@ interface HeaderProps {
 }
 
 export default function Header({ onNavigate, currentPage }: HeaderProps) {
-  const { items } = useCart()
   const { isAuthenticated, logout } = useAuth()
+  const location = useLocation()
   const [isShrunk, setIsShrunk] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const isHomePage = currentPage === 'home'
-  const isServicesPage = currentPage === 'services'
-  const isAreasPage = currentPage === 'areas'
+  const isServicesPage = location.pathname === '/services' || location.pathname === '/services/'
+  const isAreasPage = location.pathname === '/areas' || location.pathname === '/areas/'
   const isBlogPage = currentPage === 'blog'
-
-  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
   useEffect(() => {
     // Only enable shrink behavior on small screens
@@ -45,7 +42,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
 
   useEffect(() => {
     setIsMobileMenuOpen(false)
-  }, [currentPage])
+  }, [location.pathname])
 
   const desktopLinkClass = (active: boolean) =>
     `border-b-2 px-1 py-2 text-sm font-semibold transition-colors ${
@@ -79,13 +76,13 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
             </Link>
 
             <div className="relative group">
-              <button className={desktopLinkClass(isServicesPage)}>
+              <button type="button" className={desktopLinkClass(isServicesPage)}>
                 <span className="inline-flex items-center gap-2">
                   Services
                   <ChevronDown size={16} />
                 </span>
               </button>
-              <div className="invisible absolute left-0 top-full mt-3 w-64 rounded-2xl border border-brandBorder bg-white p-3 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <div className="invisible absolute left-0 top-full mt-3 w-64 rounded-2xl border border-brandBorder bg-white p-3 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100">
                 {serviceNavigationLinks.map((link) => (
                   <Link
                     key={link.to}
@@ -99,13 +96,13 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
             </div>
 
             <div className="relative group">
-              <button className={desktopLinkClass(isAreasPage)}>
+              <button type="button" className={desktopLinkClass(isAreasPage)}>
                 <span className="inline-flex items-center gap-2">
                   Areas
                   <ChevronDown size={16} />
                 </span>
               </button>
-              <div className="invisible absolute left-0 top-full mt-3 w-64 rounded-2xl border border-brandBorder bg-white p-3 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <div className="invisible absolute left-0 top-full mt-3 w-64 rounded-2xl border border-brandBorder bg-white p-3 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100">
                 <Link to="/areas" className="block rounded-xl px-3 py-2 text-sm font-medium text-brandTextDark hover:bg-green-50 hover:text-primary">
                   All Areas
                 </Link>
@@ -148,19 +145,6 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                 WhatsApp
               </a>
             </div>
-
-            {cartCount > 0 && (
-              <button
-                onClick={() => onNavigate({ type: 'cart' })}
-                className="relative rounded-full border border-brandBorder p-3 text-brandTextMedium transition-colors hover:border-primary hover:text-primary"
-                aria-label="Open cart"
-              >
-                <ShoppingCart size={20} />
-                <span className="absolute -top-1 -right-1 bg-brandRed text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartCount}
-                </span>
-              </button>
-            )}
 
             <button
               onClick={() => setIsMobileMenuOpen((value) => !value)}
@@ -256,15 +240,6 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
               </a>
             </div>
 
-            {cartCount > 0 && (
-              <button
-                onClick={() => onNavigate({ type: 'cart' })}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
-              >
-                <ShoppingCart size={16} />
-                Open Cart ({cartCount})
-              </button>
-            )}
           </div>
         </div>
       </div>

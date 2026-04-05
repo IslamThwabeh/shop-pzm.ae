@@ -163,7 +163,7 @@ export const homeTrustCards: HomeTrustCard[] = [
   {
     emoji: '🚗',
     title: 'Pickup and Delivery',
-    description: 'Use the booking panel to request pickup and return without losing the lead outside the site.',
+    description: 'Can\'t visit? We\'ll pick up your device and deliver it back after repair or service.',
   },
 ]
 
@@ -224,7 +224,7 @@ export const homeFaqItems: HomeFaqItem[] = [
   },
   {
     question: 'Can I order online and get delivery?',
-    answer: 'Yes. Browse the device pages on the website, place the order through the cart and checkout flow, and use phone or chat only as support if needed.',
+    answer: 'Yes. Browse the device pages on the website, tap WhatsApp Us on any product, and the team will handle delivery details directly in the chat.',
   },
   {
     question: 'What are your working hours?',

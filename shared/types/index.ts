@@ -130,7 +130,7 @@ export interface JWTPayload {
   exp: number
 }
 
-// Cart Types
+// Cart Types (deprecated – kept for backward compat)
 export interface CartItem {
   id: string
   model: string
@@ -140,13 +140,31 @@ export interface CartItem {
   storage: string
 }
 
-// Checkout Types
+// Checkout Types (deprecated – kept for backward compat)
 export interface CheckoutForm {
   customerName: string
   customerEmail: string
   customerPhone: string
   customerAddress: string
   notes?: string
+}
+
+// WhatsApp Lead Types
+export type WhatsAppLeadType = 'product' | 'service' | 'appointment'
+export type WhatsAppLeadStatus = 'pending' | 'confirmed' | 'cancelled'
+
+export interface WhatsAppLead {
+  id: string
+  lead_type: WhatsAppLeadType
+  reference_id?: string
+  reference_label: string
+  reference_price?: number
+  source_page?: string
+  whatsapp_message: string
+  status: WhatsAppLeadStatus
+  notes?: string
+  created_at: string
+  updated_at: string
 }
 
 // API Response Types

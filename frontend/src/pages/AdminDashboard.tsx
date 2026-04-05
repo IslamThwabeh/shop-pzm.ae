@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { LogOut, RefreshCw } from 'lucide-react';
 import ServiceRequestManagement from '../components/admin/ServiceRequestManagement';
+import WhatsAppLeadManagement from '../components/admin/WhatsAppLeadManagement';
 import { buildApiUrl } from '../utils/siteConfig';
 
 interface AdminDashboardProps {
@@ -146,7 +147,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [statusFilter, setStatusFilter] = useState<AdminOrderStatus | 'all'>('all');
-  const [activeTab, setActiveTab] = useState<'orders' | 'serviceRequests' | 'reports'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'serviceRequests' | 'whatsappLeads' | 'reports'>('orders');
   const [selectedMonth, setSelectedMonth] = useState<string>(() => {
     const now = new Date();
     const year = now.getFullYear();
@@ -405,22 +406,19 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   return (
     <div className="admin-portal min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(0,167,111,0.14),transparent_18%),radial-gradient(circle_at_bottom_left,rgba(30,41,59,0.1),transparent_22%),linear-gradient(180deg,#eef5fb_0%,#f7fbff_48%,#ffffff_100%)]">
       <header className="admin-glass sticky top-0 z-[1000] border-b border-white/30 bg-[rgba(255,255,255,0.72)]">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-[linear-gradient(135deg,#0b8a60_0%,#11a36e_100%)] shadow-[0_18px_35px_rgba(11,138,96,0.18)]">
-              <img src="/images/Header/logo.svg" alt="PZM Logo" className="h-9" />
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[18px] bg-white shadow-[0_14px_32px_rgba(15,23,42,0.08)] ring-1 ring-slate-200/80">
+              <img src="/images/mini_logo.png" alt="PZM logo" className="h-8 w-auto object-contain" />
             </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Lean Admin</p>
-              <h1 className="mt-1 text-2xl font-bold text-slate-950">Orders, service, and monthly reports</h1>
-              <p className="mt-1 max-w-2xl text-sm leading-6 text-brandTextMedium">
-                Keep the back office simple: manage pending, confirmed, and canceled work for both items and services.
-              </p>
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">PZM Admin</p>
+              <h1 className="mt-1 text-lg font-bold leading-tight text-slate-950 sm:text-xl">Orders, requests, and reports</h1>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/60 bg-white/82 px-5 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/60 bg-white/82 px-4 py-2.5 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
           >
             <LogOut size={18} />
             Logout
@@ -459,14 +457,11 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         </div>
 
         <div className="admin-glass overflow-hidden rounded-[28px] bg-[rgba(255,255,255,0.64)] shadow-[var(--shadow-xl)]">
-          <div className="border-b border-slate-100 px-6 py-5">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="border-b border-slate-100 px-6 py-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Admin Workspace</p>
-                <h2 className="mt-2 text-2xl font-bold text-slate-950">Minimal operations for a small shop</h2>
-                <p className="mt-2 max-w-3xl text-sm leading-7 text-brandTextMedium">
-                  Focus on the only things that matter here: current orders, service follow-up, and clear monthly performance.
-                </p>
+                <h2 className="mt-1 text-xl font-bold text-slate-950">Keep today's work moving</h2>
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
@@ -488,6 +483,16 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   }`}
                 >
                   Service Requests
+                </button>
+                <button
+                  onClick={() => setActiveTab('whatsappLeads')}
+                  className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
+                    activeTab === 'whatsappLeads'
+                      ? 'bg-[#25D366] text-white'
+                      : 'border border-brandBorder bg-white text-brandTextDark hover:border-[#25D366] hover:text-[#25D366]'
+                  }`}
+                >
+                  WhatsApp Leads
                 </button>
                 <button
                   onClick={() => setActiveTab('reports')}
@@ -647,6 +652,10 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
             {activeTab === 'serviceRequests' && (
               <ServiceRequestManagement onUnauthorized={handleLogout} />
+            )}
+
+            {activeTab === 'whatsappLeads' && (
+              <WhatsAppLeadManagement onUnauthorized={handleLogout} />
             )}
 
             {activeTab === 'reports' && (

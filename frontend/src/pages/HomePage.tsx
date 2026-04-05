@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, CalendarDays, ChevronDown, Clock3, MapPin, ShieldCheck, ShoppingCart, Wrench } from 'lucide-react'
+import { ArrowRight, CalendarDays, Clock3, MapPin, MessageCircle, ShieldCheck, Wrench } from 'lucide-react'
 import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
@@ -15,6 +15,7 @@ import {
 } from '../content/homePageContent'
 import { siteContact, siteIdentity } from '../content/siteData'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
+import { buildApiUrl } from '../utils/siteConfig'
 
 type SectionHeaderProps = {
   badge: string
@@ -39,52 +40,8 @@ function SectionHeader({ badge, title, description, align = 'center' }: SectionH
   )
 }
 
-function ReviewCard(props: { name: string, rating: number, text: string }) {
-  return (
-    <div className="h-full rounded-3xl border border-brandBorder bg-white p-6 shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md">
-      <div className="mb-3 flex items-center gap-2">
-        <span className="font-bold text-gray-900">{props.name}</span>
-        <span className="text-yellow-400">{'★'.repeat(props.rating)}</span>
-      </div>
-      <p className="text-sm leading-7 text-gray-700">{props.text}</p>
-    </div>
-  )
-}
-
-function CustomerReviewsFallback() {
-  const reviews = [
-    { name: '9airafi', rating: 5, text: 'Amazing store full of everything. I came here to sell my iPhone and the process was super fast with instant cash.' },
-    { name: 'Matallah Mohamed', rating: 5, text: 'They handle both hardware and software repairs very well, and their used laptops and phones are priced competitively for Dubai.' },
-    { name: 'Margarette Ann Tamo', rating: 5, text: 'PZM fixed my water-damaged phone after other shops could not. Very professional team and I was very happy with the result.' },
-    { name: 'Ahmed Hekal', rating: 5, text: 'Very good store for new and used phones and laptops, and a strong choice for repairs and gaming PC builds as well.' },
-    { name: 'Muhammad Nazeer Rakha', rating: 5, text: 'I brought a MacBook Pro and the team upgraded and restored it well. Customer service was strong and they wanted the job done properly.' },
-    { name: 'Niyati Desai', rating: 5, text: 'Excellent work by PZM. They repaired our PlayStation quickly, at a good price, and were very easy to deal with.' },
-  ]
-
-  return (
-    <div className="mt-10 space-y-8">
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {reviews.map((review) => (
-          <div key={review.name}>
-            <ReviewCard {...review} />
-          </div>
-        ))}
-      </div>
-
-      <div className="text-center">
-        <a
-          href="https://www.google.com/maps/place/PZM+Computers+%26+Phones+Store+-Buy%E2%80%A2Sell%E2%80%A2Fix%E2%80%A2Used%E2%80%A2PC%E2%80%A2Build/@25.0849294,55.1966838,17z/data=!4m18!1m9!3m8!1s0x3e5f6dc0bc49a6d5:0x158c13f2d688b32e!2zUFpNIENvbXB1dGVycyAmIFBob25lcyBTdG9yZSAtQnV54oCiU2VsbOKAokZpeOKAolVzZWTigKJQQ-KAokJ1aWxk!8m2!3d25.0849246!4d55.1992587!9m1!1b1!16s%2Fg%2F11vtbpyx8l!3m7!1s0x3e5f6dc0bc49a6d5:0x158c13f2d688b32e!8m2!3d25.0849246!4d55.1992587!9m1!1b1!16s%2Fg%2F11vtbpyx8l?entry=ttu&g_ep=EgoyMDI2MDEyOC4wIKXMDSoASAFQAw%3D%3D"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-full border border-brandBorder bg-white px-5 py-3 text-base font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
-        >
-          See All Reviews on Google Maps
-          <ArrowRight size={16} />
-        </a>
-      </div>
-    </div>
-  )
-}
+const ELFSIGHT_REVIEWS_APP_ID = '69b4a752-7f66-44fe-8388-276e68bc6823'
+const ELFSIGHT_FAQ_APP_ID = 'f5d197a3-7325-43ff-a3fa-787de403682f'
 
 interface HomePageProps {
   products: Product[]
@@ -92,8 +49,6 @@ interface HomePageProps {
 }
 
 export default function HomePage({ products, onShopClick }: HomePageProps) {
-  const [openFaqIndex, setOpenFaqIndex] = useState(0)
-
   const inStockProducts = useMemo(
     () => products.filter((product) => (product.quantity ?? 0) > 0),
     [products]
@@ -159,8 +114,9 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
       />
 
       <section id="home" className="relative overflow-hidden bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_55%,#f0f7ff_100%)] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-        <div className="pointer-events-none absolute -right-20 top-0 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(14,165,233,0.18),transparent_70%)]" />
-        <div className="pointer-events-none absolute -left-16 bottom-0 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(0,200,150,0.16),transparent_70%)]" />
+        <div className="pointer-events-none absolute inset-0 opacity-[0.07]">
+          <img src={buildApiUrl('/media/legacy/Services/all_services_pic.jpg')} alt="" className="h-full w-full object-cover" />
+        </div>
 
         <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
           <div>
@@ -185,7 +141,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
                 onClick={onShopClick}
                 className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-4 text-base font-semibold text-white shadow-[0_10px_30px_rgba(0,167,111,0.25)] transition-transform hover:-translate-y-0.5 hover:bg-brandGreenDark"
               >
-                <ShoppingCart size={18} />
+                <MessageCircle size={18} />
                 Browse Devices
               </button>
               <Link
@@ -208,10 +164,10 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-3xl bg-gradient-to-br from-sky-50 to-white p-5 ring-1 ring-sky-100">
                 <ShieldCheck className="text-sky-600" size={22} />
-                <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-sky-700">Trust layer</p>
+                <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-sky-700">Why PZM</p>
                 <h2 className="mt-2 text-xl font-bold text-slate-900">Warranty, repairs, and pickups</h2>
                 <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-                  Get clear service paths for repairs, device sales, pickups, and product browsing without leaving the site.
+                  Genuine warranty coverage, same-day repair for many devices, and pickup and delivery across Dubai.
                 </p>
               </div>
 
@@ -329,8 +285,8 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
 
           <div className="mt-8 rounded-[28px] border border-brandBorder bg-white px-6 py-5 shadow-sm md:flex md:items-center md:justify-between md:gap-6">
             <div>
-              <p className="text-lg font-semibold text-slate-900">Live inventory already exists behind the category pages</p>
-              <p className="mt-1 text-sm text-brandTextMedium">Use the storefront for product checkout, and use service pages for repair, trade-in, and callback funnels.</p>
+              <p className="text-lg font-semibold text-slate-900">Browse live stock behind each category</p>
+              <p className="mt-1 text-sm text-brandTextMedium">Tap into brand new or certified used listings, check availability, and message the team directly via WhatsApp.</p>
             </div>
             <button
               onClick={onShopClick}
@@ -347,7 +303,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
         <SectionHeader
           badge="Why PZM"
           title="Trusted by Dubai Residents"
-          description="Serving Al Barsha and the wider Dubai corridor with quality devices, dependable repair handling, and clearer website conversion paths."
+          description="Serving Al Barsha and all of Dubai with quality devices, expert service, and dependable after-sales support."
         />
 
         <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -366,7 +322,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
           <SectionHeader
             badge="Latest Updates"
             title="Tech Blog"
-            description="The React blog now runs on canonical routes with first-party media, so the homepage can send visitors straight into the migrated article experience."
+            description="Stay informed with the latest tech news, buying guides, and market insights from Dubai."
           />
 
           <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -417,7 +373,11 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
           title="Customer Reviews"
           description="What customers are saying about PZM on Google and after real repair, trade-in, and purchase experiences."
         />
-        <CustomerReviewsFallback />
+        <div className="mt-14 overflow-hidden rounded-[30px] border border-brandBorder bg-white px-3 py-4 shadow-sm sm:px-5 sm:py-5">
+          <div
+            className={`elfsight-app-${ELFSIGHT_REVIEWS_APP_ID} min-h-[180px]`}
+          />
+        </div>
       </section>
 
       <section id="faq" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
@@ -427,29 +387,10 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
           description="Everything customers typically ask about warranty, repair timing, ordering, pickup, and how the store works in Dubai."
         />
 
-        <div className="mt-14 grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {homeFaqItems.map((item, index) => {
-            const isOpen = openFaqIndex === index
-
-            return (
-              <div key={item.question} className="overflow-hidden rounded-[22px] border border-brandBorder bg-white shadow-sm transition-shadow hover:shadow-md">
-                <button
-                  onClick={() => setOpenFaqIndex(isOpen ? -1 : index)}
-                  className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
-                >
-                  <span className="text-base font-semibold text-slate-900">{item.question}</span>
-                  <span className={`inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-all ${isOpen ? 'rotate-180 bg-primary text-white' : ''}`}>
-                    <ChevronDown size={18} />
-                  </span>
-                </button>
-                <div className={`grid transition-[grid-template-rows] duration-300 ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-                  <div className="overflow-hidden">
-                    <p className="px-6 pb-6 text-sm leading-7 text-brandTextMedium">{item.answer}</p>
-                  </div>
-                </div>
-              </div>
-            )
-          })}
+        <div className="mt-14 overflow-hidden rounded-[30px] border border-brandBorder bg-white px-3 py-4 shadow-sm sm:px-5 sm:py-5">
+          <div
+            className={`elfsight-app-${ELFSIGHT_FAQ_APP_ID} min-h-[180px]`}
+          />
         </div>
       </section>
 
@@ -491,8 +432,8 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
                 <p className="text-sm leading-7 text-brandTextDark">Send the request online and the team will follow up with the details, availability, or next step.</p>
               </div>
               <div className="flex items-start gap-3">
-                <ShoppingCart className="mt-1 text-primary" size={18} />
-                <p className="text-sm leading-7 text-brandTextDark">Product buying still belongs in the live storefront and checkout flow. Booking is reserved for service-style journeys.</p>
+                <MessageCircle className="mt-1 text-primary" size={18} />
+                <p className="text-sm leading-7 text-brandTextDark">Need a product instead? Browse the shop and message the team on WhatsApp to order directly.</p>
               </div>
             </div>
           </div>

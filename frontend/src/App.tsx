@@ -1,13 +1,10 @@
 import { useState, useEffect, useLayoutEffect } from 'react'
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
-import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
 import './App.css'
 import type { Product } from '@shared/types'
 import { apiService } from './services/api'
 import ProductDetails from './pages/ProductDetails'
-import Cart from './pages/Cart'
-import Checkout from './pages/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation'
 import AdminPage from './pages/AdminPage'
 import HomePage from './pages/HomePage'
@@ -37,22 +34,6 @@ function AppContent() {
     ? 'home'
     : (location.pathname.split('/')[1] || 'home').replace(/\.html$/i, '')
   const currentPage = currentPageRaw === 'blog-post' ? 'blog' : currentPageRaw
-
-  // Load Elfsight widget script for Google Reviews
-  useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://static.elfsight.com/platform/platform.js'
-    script.setAttribute('data-use-service-core', '')
-    script.async = true
-    document.body.appendChild(script)
-
-    return () => {
-      // Cleanup
-      if (document.body.contains(script)) {
-        document.body.removeChild(script)
-      }
-    }
-  }, [])
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -100,8 +81,6 @@ function AppContent() {
   const showStoreContactSection =
     !isInvoiceRoute &&
     !isAdminRoute &&
-    location.pathname !== '/cart' &&
-    location.pathname !== '/checkout' &&
     !location.pathname.startsWith('/order/')
 
   if (isInvoiceRoute) {
@@ -123,8 +102,7 @@ function AppContent() {
               const p = page as any
               if (p.type === 'home') navigateTo('/')
               else if (p.type === 'admin') navigateTo('/admin')
-              else if (p.type === 'cart') navigateTo('/cart')
-              else if (p.type === 'checkout') navigateTo('/checkout')
+
             }
           }}
         />
@@ -223,14 +201,7 @@ function AppContent() {
             path="/product/:id"
             element={<ProductDetails />}
           />
-          <Route
-            path="/cart"
-            element={<Cart onContinueShopping={() => navigateTo('/services/brand-new')} onCheckout={() => navigateTo('/checkout')} />}
-          />
-          <Route
-            path="/checkout"
-            element={<Checkout onBack={() => navigateTo('/cart')} onSuccess={(orderId) => navigateTo(`/order/${orderId}`)} />}
-          />
+
           <Route
             path="/order/:id"
             element={<OrderConfirmation onContinueShopping={() => navigateTo('/')} orderId={undefined as any} />}
@@ -266,11 +237,9 @@ function AppContent() {
 
 function App() {
   return (
-    <CartProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </CartProvider>
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   )
 }
 

@@ -3,7 +3,7 @@
  * Handles sending transactional emails for order confirmations and status updates
  */
 
-import type { OrderItem, ServiceRequest } from '../../shared/types';
+import type { OrderItem, ServiceRequest, WhatsAppLead } from '../../shared/types';
 
 interface EmailOptions {
   to: string;
@@ -993,6 +993,82 @@ export class EmailService {
           <div class="footer">
             <p>© ${new Date().getFullYear()} PZM Computers & Phones Store. All rights reserved.</p>
             <p>This is an automated email from ${this.senderEmail}. Replies are not monitored.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  // ============ WHATSAPP LEAD EMAILS ============
+
+  async sendWhatsAppLeadNotification(lead: WhatsAppLead): Promise<boolean> {
+    const displayId = this.formatWhatsAppLeadId(lead.id);
+    const htmlBody = this.getWhatsAppLeadNotificationTemplate(lead, displayId);
+
+    return this.sendEmail({
+      to: this.teamEmail,
+      subject: `New WhatsApp Lead - ${displayId} (${this.formatLabel(lead.lead_type)})`,
+      htmlBody,
+    });
+  }
+
+  private formatWhatsAppLeadId(id: string): string {
+    const parts = id?.split('-');
+    const randomPart = parts?.[parts.length - 1] || id || '000000';
+    return `WAL-${randomPart.toUpperCase()}`;
+  }
+
+  private getWhatsAppLeadNotificationTemplate(lead: WhatsAppLead, displayId: string): string {
+    const priceHtml = lead.reference_price != null
+      ? `<div class="info-row"><span class="label">Price:</span><span>AED ${lead.reference_price.toFixed(2)}</span></div>`
+      : '';
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #25D366; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header h1 { margin: 0; font-size: 24px; }
+          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+          .alert { background: #e8f5e9; border-left: 4px solid #25D366; padding: 15px; margin: 20px 0; border-radius: 4px; }
+          .details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+          .info-row { padding: 10px 0; border-bottom: 1px solid #eee; }
+          .info-row:last-child { border-bottom: none; }
+          .label { font-weight: bold; color: #00A76F; display: inline-block; min-width: 140px; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>💬 New WhatsApp Lead</h1>
+          </div>
+          <div class="content">
+            <div class="alert">
+              <strong>A visitor clicked the WhatsApp button</strong> on the site. The lead is registered as <strong>${displayId}</strong>.
+            </div>
+            <div class="details">
+              <div class="info-row"><span class="label">Lead ID:</span><span><strong>${displayId}</strong></span></div>
+              <div class="info-row"><span class="label">Type:</span><span>${this.formatLabel(lead.lead_type)}</span></div>
+              <div class="info-row"><span class="label">Item:</span><span>${lead.reference_label}</span></div>
+              ${priceHtml}
+              <div class="info-row"><span class="label">Source Page:</span><span>${lead.source_page || 'Unknown'}</span></div>
+              <div class="info-row"><span class="label">Status:</span><span>${this.formatLabel(lead.status)}</span></div>
+              <div class="info-row"><span class="label">Time:</span><span>${lead.created_at}</span></div>
+            </div>
+            <p><strong>WhatsApp message sent by visitor:</strong></p>
+            <div class="details" style="background: #e8f5e9;">
+              <p style="margin: 0;">${lead.whatsapp_message}</p>
+            </div>
+            <p>Check the WhatsApp Business inbox for an incoming message and follow up accordingly.</p>
+          </div>
+          <div class="footer">
+            <p>© ${new Date().getFullYear()} PZM Shop - Internal Lead Notification</p>
           </div>
         </div>
       </body>

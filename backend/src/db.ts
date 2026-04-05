@@ -1,4 +1,4 @@
-import type { Product, Order, OrderItem, Customer, AdminUser, ServiceRequest } from '../../shared/types';
+import type { Product, Order, OrderItem, Customer, AdminUser, ServiceRequest, WhatsAppLead } from '../../shared/types';
 
 export class Database {
   constructor(private db: D1Database) {}
@@ -541,6 +541,88 @@ export class Database {
       return updated;
     } catch (error) {
       console.error('Error updating service request:', error);
+      return null;
+    }
+  }
+
+  // ============ WHATSAPP LEADS ============
+
+  async getWhatsAppLeads(): Promise<WhatsAppLead[]> {
+    try {
+      const result = await this.db
+        .prepare('SELECT * FROM whatsapp_leads ORDER BY created_at DESC')
+        .all();
+      return (result.results as WhatsAppLead[]) || [];
+    } catch (error) {
+      console.error('Error fetching whatsapp leads:', error);
+      return [];
+    }
+  }
+
+  async getWhatsAppLead(id: string): Promise<WhatsAppLead | null> {
+    try {
+      const result = await this.db
+        .prepare('SELECT * FROM whatsapp_leads WHERE id = ?')
+        .bind(id)
+        .first();
+      return (result as WhatsAppLead) || null;
+    } catch (error) {
+      console.error('Error fetching whatsapp lead:', error);
+      return null;
+    }
+  }
+
+  async createWhatsAppLead(lead: WhatsAppLead): Promise<WhatsAppLead> {
+    try {
+      await this.db
+        .prepare(
+          `INSERT INTO whatsapp_leads (id, lead_type, reference_id, reference_label, reference_price, source_page, whatsapp_message, status, notes, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        )
+        .bind(
+          lead.id,
+          lead.lead_type,
+          lead.reference_id || null,
+          lead.reference_label,
+          lead.reference_price ?? null,
+          lead.source_page || null,
+          lead.whatsapp_message,
+          lead.status,
+          lead.notes || null,
+          lead.created_at,
+          lead.updated_at
+        )
+        .run();
+
+      return lead;
+    } catch (error) {
+      console.error('Error creating whatsapp lead:', error);
+      throw error;
+    }
+  }
+
+  async updateWhatsAppLead(id: string, updates: Partial<WhatsAppLead>): Promise<WhatsAppLead | null> {
+    try {
+      const lead = await this.getWhatsAppLead(id);
+      if (!lead) return null;
+
+      const updated = { ...lead, ...updates, updated_at: new Date().toISOString() };
+
+      await this.db
+        .prepare(
+          `UPDATE whatsapp_leads SET status = ?, notes = ?, updated_at = ? WHERE id = ?`
+        )
+        .bind(
+          updated.status,
+          updated.notes || null,
+          updated.updated_at,
+          id
+        )
+        .run();
+
+      return updated;
+    } catch (error) {
+      console.error('Error updating whatsapp lead:', error);
       return null;
     }
   }

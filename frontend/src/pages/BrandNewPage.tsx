@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Briefcase, CreditCard, Gamepad2, Laptop, ShieldCheck, Smartphone, Truck } from 'lucide-react'
+import { Briefcase, CreditCard, Gamepad2, Laptop, MessageCircle, ShieldCheck, Smartphone, Truck } from 'lucide-react'
 import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
 import ServiceRequestForm from '../components/ServiceRequestForm'
 import { brandNewCategories, brandNewHero, getBrandNewCategoryGroups, getBrandNewProducts } from '../content/brandNewCatalog'
-import { useCart } from '../context/CartContext'
+import { openWhatsAppLead } from '../utils/whatsappLead'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
@@ -33,25 +33,18 @@ function getCategoryIcon(categoryKey: typeof brandNewCategories[number]['key']) 
 
 export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
   const service = resolveServiceSlug('brand-new')
-  const { addItem } = useCart()
 
   if (!service) {
     return null
   }
 
-  const handleAddToCart = (product: Product) => {
-    if ((product.quantity ?? 0) <= 0) {
-      return
-    }
-
-    addItem({
-      id: product.id,
-      model: product.model,
-      price: product.price,
-      quantity: 1,
-      color: product.color,
-      storage: product.storage,
-      condition: product.condition,
+  const handleWhatsApp = (product: Product) => {
+    openWhatsAppLead({
+      leadType: 'product',
+      referenceId: product.id,
+      referenceLabel: `${product.model} ${product.storage} ${product.color}`,
+      referencePrice: product.price,
+      sourcePage: '/services/brand-new',
     })
   }
 
@@ -133,8 +126,8 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">Brand-new retail</p>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Brand-new devices with live stock where it matters most</h1>
             <p className="text-lg text-brandTextMedium max-w-3xl mb-6">
-              This page covers the same new-device intent as the legacy brand-new route: phones, tablets, laptops, gaming hardware, and business setups.
-              Today the live storefront is strongest in the iPhone lineup, and the rest can still convert through quick availability requests.
+              Shop the latest brand-new phones, tablets, laptops, gaming hardware, and business setups in Dubai.
+              Browse live stock with real-time pricing, or request availability for any device not yet listed.
             </p>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -253,7 +246,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Live stock</p>
             <h2 className="mt-2 text-3xl font-bold text-slate-950">Current brand-new devices on the site</h2>
             <p className="mt-3 max-w-3xl text-brandTextMedium">
-              This section is powered by the live storefront catalog so price, stock, and product actions stay aligned with the actual checkout flow.
+              Browse brand-new devices currently available with real-time pricing and stock levels.
             </p>
           </div>
           <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
@@ -335,15 +328,16 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                             </Link>
                             <button
                               type="button"
-                              onClick={() => handleAddToCart(product)}
+                              onClick={() => handleWhatsApp(product)}
                               disabled={(product.quantity ?? 0) <= 0}
-                              className={`inline-flex items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
+                              className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
                                 (product.quantity ?? 0) > 0
-                                  ? 'bg-primary text-white hover:bg-brandGreenDark'
+                                  ? 'bg-[#25D366] text-white hover:bg-[#1da851]'
                                   : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                               }`}
                             >
-                              {(product.quantity ?? 0) > 0 ? 'Add to cart' : 'Out of stock'}
+                              <MessageCircle size={16} />
+                              {(product.quantity ?? 0) > 0 ? 'WhatsApp Us' : 'Out of stock'}
                             </button>
                           </div>
                         </div>
@@ -428,23 +422,23 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
       <section className="grid gap-5 md:grid-cols-3">
         <article className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm">
           <ShieldCheck className="text-primary" size={22} />
-          <h2 className="mt-5 text-xl font-bold text-slate-950">Stock and version checks</h2>
+          <h2 className="mt-5 text-xl font-bold text-slate-950">Official warranty coverage</h2>
           <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-            Ask the team about color, storage, region version, and warranty guidance before you place the order.
+            Every brand-new device sold by PZM includes official manufacturer warranty. We handle warranty claims and after-sales support directly.
           </p>
         </article>
         <article className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm">
           <Truck className="text-primary" size={22} />
-          <h2 className="mt-5 text-xl font-bold text-slate-950">Pickup or delivery support</h2>
+          <h2 className="mt-5 text-xl font-bold text-slate-950">Same-day pickup or delivery</h2>
           <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-            Use the live storefront for direct checkout, then confirm pickup at the Hessa Street branch or delivery details for Dubai.
+            Pick up your device from our Hessa Street store in Al Barsha, or get same-day delivery across Dubai with cash on delivery available.
           </p>
         </article>
         <article className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm">
           <CreditCard className="text-primary" size={22} />
-          <h2 className="mt-5 text-xl font-bold text-slate-950">Payment and setup help</h2>
+          <h2 className="mt-5 text-xl font-bold text-slate-950">Setup assistance included</h2>
           <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-            Compare models, ask about accessories, and confirm the right configuration before you commit to the purchase.
+            We offer free device setup, data transfer from your old device, screen protector installation, and accessory recommendations at no extra charge.
           </p>
         </article>
       </section>
@@ -454,7 +448,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">What happens next</h2>
           <div className="space-y-4 text-brandTextDark">
             <p><span className="font-semibold text-primary">1.</span> Browse the live brand-new products listed on this page.</p>
-            <p><span className="font-semibold text-primary">2.</span> Open product details or add in-stock devices straight to the cart.</p>
+            <p><span className="font-semibold text-primary">2.</span> Tap <strong>WhatsApp Us</strong> on any in-stock device to chat with the team instantly.</p>
             <p><span className="font-semibold text-primary">3.</span> If your category or model is missing, send an availability request and the team will follow up.</p>
           </div>
         </section>

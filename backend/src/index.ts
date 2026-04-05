@@ -5,7 +5,7 @@ import { AuthService } from './auth';
 import { EmailService } from './email-service';
 import { StorageService } from './storage';
 import { getCorsHeaders, handleCors, generateId, validateRequired, parseRequestBody, logRequest, logError } from './utils';
-import type { Product, Order, ServiceRequest } from '../../shared/types';
+import type { Product, Order, ServiceRequest, WhatsAppLead } from '../../shared/types';
 
 interface Env {
   DB: D1Database;
@@ -976,6 +976,128 @@ app.put('/api/service-requests/:id', async (c) => {
   } catch (error) {
     logError(error, 'PUT /api/service-requests/:id');
     return c.json({ error: 'Failed to update service request', status: 500 }, 500);
+  }
+});
+
+// ============ WHATSAPP LEADS API ============
+
+const WHATSAPP_LEAD_TYPES = ['product', 'service', 'appointment'];
+const WHATSAPP_LEAD_STATUSES = ['pending', 'confirmed', 'cancelled'];
+
+app.post('/api/whatsapp-leads', async (c) => {
+  try {
+    logRequest('POST', '/api/whatsapp-leads');
+    const body = await parseRequestBody(c);
+    if (!body) {
+      return c.json({ error: 'Invalid request body', status: 400 }, 400);
+    }
+
+    const validation = validateRequired(body, ['lead_type', 'reference_label', 'whatsapp_message']);
+    if (validation) {
+      return c.json({ error: validation, status: 400 }, 400);
+    }
+
+    if (!WHATSAPP_LEAD_TYPES.includes(body.lead_type)) {
+      return c.json({ error: 'Invalid lead type', status: 400 }, 400);
+    }
+
+    const now = new Date().toISOString();
+    const lead: WhatsAppLead = {
+      id: generateId('wal'),
+      lead_type: body.lead_type,
+      reference_id: body.reference_id || undefined,
+      reference_label: body.reference_label,
+      reference_price: body.reference_price != null ? Number(body.reference_price) : undefined,
+      source_page: body.source_page || undefined,
+      whatsapp_message: body.whatsapp_message,
+      status: 'pending',
+      created_at: now,
+      updated_at: now,
+    };
+
+    const db = new Database(c.env.DB);
+    const created = await db.createWhatsAppLead(lead);
+
+    const emailService = new EmailService(c.env.ZEPTOMAIL_API_TOKEN);
+    await emailService.sendWhatsAppLeadNotification(created);
+
+    return c.json({ data: created, status: 201 }, 201);
+  } catch (error) {
+    logError(error, 'POST /api/whatsapp-leads');
+    return c.json({ error: 'Failed to create whatsapp lead', status: 500 }, 500);
+  }
+});
+
+app.get('/api/whatsapp-leads', async (c) => {
+  try {
+    logRequest('GET', '/api/whatsapp-leads');
+    const authService = new AuthService(c.env.ADMIN_SECRET);
+    const authHeader = c.req.header('Authorization');
+    const token = authService.extractToken(authHeader);
+
+    if (!token) {
+      return c.json({ error: 'Unauthorized', status: 401 }, 401);
+    }
+
+    const payload = await authService.verifyToken(token);
+    if (!payload || payload.type !== 'admin') {
+      return c.json({ error: 'Forbidden', status: 403 }, 403);
+    }
+
+    const db = new Database(c.env.DB);
+    const leads = await db.getWhatsAppLeads();
+    return c.json({ data: leads, status: 200 }, 200);
+  } catch (error) {
+    logError(error, 'GET /api/whatsapp-leads');
+    return c.json({ error: 'Failed to fetch whatsapp leads', status: 500 }, 500);
+  }
+});
+
+app.put('/api/whatsapp-leads/:id', async (c) => {
+  try {
+    const leadId = c.req.param('id');
+    logRequest('PUT', `/api/whatsapp-leads/${leadId}`);
+    const authService = new AuthService(c.env.ADMIN_SECRET);
+    const authHeader = c.req.header('Authorization');
+    const token = authService.extractToken(authHeader);
+
+    if (!token) {
+      return c.json({ error: 'Unauthorized', status: 401 }, 401);
+    }
+
+    const payload = await authService.verifyToken(token);
+    if (!payload || payload.type !== 'admin') {
+      return c.json({ error: 'Forbidden', status: 403 }, 403);
+    }
+
+    const body = await parseRequestBody(c);
+    if (!body) {
+      return c.json({ error: 'Invalid request body', status: 400 }, 400);
+    }
+
+    if (body.status && !WHATSAPP_LEAD_STATUSES.includes(body.status)) {
+      return c.json({ error: 'Invalid lead status', status: 400 }, 400);
+    }
+
+    const allowedFields = ['status', 'notes'];
+    const updates = Object.fromEntries(
+      Object.entries(body).filter(([key]) => allowedFields.includes(key))
+    );
+
+    if (Object.keys(updates).length === 0) {
+      return c.json({ error: 'No valid fields provided', status: 400 }, 400);
+    }
+
+    const db = new Database(c.env.DB);
+    const updated = await db.updateWhatsAppLead(leadId, updates as Partial<WhatsAppLead>);
+    if (!updated) {
+      return c.json({ error: 'Lead not found', status: 404 }, 404);
+    }
+
+    return c.json({ data: updated, status: 200 }, 200);
+  } catch (error) {
+    logError(error, 'PUT /api/whatsapp-leads/:id');
+    return c.json({ error: 'Failed to update whatsapp lead', status: 500 }, 500);
   }
 });
 

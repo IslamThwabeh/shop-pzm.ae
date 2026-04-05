@@ -1,10 +1,11 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { MessageCircle } from 'lucide-react'
 import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
 import ServiceRequestForm from '../components/ServiceRequestForm'
 import { buyIphoneFamilies, getBuyIphoneFamilyGroups, getBuyIphoneProducts } from '../content/buyIphoneCatalog'
-import { useCart } from '../context/CartContext'
+import { openWhatsAppLead } from '../utils/whatsappLead'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
@@ -23,25 +24,18 @@ function getVariantDescriptor(product: Product, familyTitle: string) {
 
 export default function BuyIphonePage({ products, loading }: BuyIphonePageProps) {
   const service = resolveServiceSlug('buy-iphone')
-  const { addItem } = useCart()
 
   if (!service) {
     return null
   }
 
-  const handleAddToCart = (product: Product) => {
-    if ((product.quantity ?? 0) <= 0) {
-      return
-    }
-
-    addItem({
-      id: product.id,
-      model: product.model,
-      price: product.price,
-      quantity: 1,
-      color: product.color,
-      storage: product.storage,
-      condition: product.condition,
+  const handleWhatsApp = (product: Product) => {
+    openWhatsAppLead({
+      leadType: 'product',
+      referenceId: product.id,
+      referenceLabel: `${product.model} ${product.storage} ${product.color}`,
+      referencePrice: product.price,
+      sourcePage: '/services/buy-iphone',
     })
   }
 
@@ -265,15 +259,16 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                             </Link>
                             <button
                               type="button"
-                              onClick={() => handleAddToCart(product)}
+                              onClick={() => handleWhatsApp(product)}
                               disabled={(product.quantity ?? 0) <= 0}
-                              className={`inline-flex items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
+                              className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
                                 (product.quantity ?? 0) > 0
-                                  ? 'bg-primary text-white hover:bg-brandGreenDark'
+                                  ? 'bg-[#25D366] text-white hover:bg-[#1da851]'
                                   : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                               }`}
                             >
-                              {(product.quantity ?? 0) > 0 ? 'Add to cart' : 'Out of stock'}
+                              <MessageCircle size={16} />
+                              {(product.quantity ?? 0) > 0 ? 'WhatsApp Us' : 'Out of stock'}
                             </button>
                           </div>
                         </div>
@@ -334,7 +329,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
           <h2 className="text-2xl font-bold text-gray-900 mb-4">What happens next</h2>
           <div className="space-y-4 text-brandTextDark">
             <p><span className="font-semibold text-primary">1.</span> Browse the live iPhone variants directly on this page.</p>
-            <p><span className="font-semibold text-primary">2.</span> Open product details or add in-stock devices straight to the cart.</p>
+            <p><span className="font-semibold text-primary">2.</span> Open product details or tap WhatsApp to start a conversation about in-stock devices.</p>
             <p><span className="font-semibold text-primary">3.</span> If the model you want is missing, send an availability request and the team will follow up.</p>
           </div>
         </section>

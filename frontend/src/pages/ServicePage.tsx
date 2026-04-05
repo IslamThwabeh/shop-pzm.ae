@@ -104,6 +104,27 @@ export default function ServicePage() {
               <p><span className="font-semibold text-primary">3.</span> The team contacts you using your preferred method to confirm the next step.</p>
             </div>
           </section>
+
+          {service.detailSections && service.detailSections.length > 0 && (
+            <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Service Details</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {service.detailSections.map((section) => (
+                  <div key={section.title}>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">{section.title}</h3>
+                    <ul className="space-y-1.5 text-brandTextDark text-sm">
+                      {section.items.map((item) => (
+                        <li key={item} className="flex items-start gap-2">
+                          <span className="text-primary mt-1 shrink-0">✓</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
 
         <div id="service-request-form">

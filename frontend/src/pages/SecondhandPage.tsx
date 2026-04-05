@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { BatteryCharging, Gamepad2, Laptop, RefreshCcw, ShieldCheck, Smartphone, Tablet } from 'lucide-react'
+import { BatteryCharging, Gamepad2, Laptop, MessageCircle, RefreshCcw, ShieldCheck, Smartphone, Tablet } from 'lucide-react'
 import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
 import ServiceRequestForm from '../components/ServiceRequestForm'
 import { getSecondhandCategoryGroups, getSecondhandProducts, secondhandCategories, secondhandHero } from '../content/secondhandCatalog'
-import { useCart } from '../context/CartContext'
+import { openWhatsAppLead } from '../utils/whatsappLead'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
@@ -33,25 +33,18 @@ function getCategoryIcon(categoryKey: typeof secondhandCategories[number]['key']
 
 export default function SecondhandPage({ products, loading }: SecondhandPageProps) {
   const service = resolveServiceSlug('secondhand')
-  const { addItem } = useCart()
-
   if (!service) {
     return null
   }
 
-  const handleAddToCart = (product: Product) => {
-    if ((product.quantity ?? 0) <= 0) {
-      return
-    }
-
-    addItem({
-      id: product.id,
-      model: product.model,
-      price: product.price,
-      quantity: 1,
-      color: product.color,
-      storage: product.storage,
-      condition: product.condition,
+  const handleWhatsApp = (product: Product) => {
+    if ((product.quantity ?? 0) <= 0) return
+    openWhatsAppLead({
+      leadType: 'product',
+      referenceId: product.id,
+      referenceLabel: product.model,
+      referencePrice: product.price,
+      sourcePage: '/services/secondhand',
     })
   }
 
@@ -324,15 +317,16 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
                             </Link>
                             <button
                               type="button"
-                              onClick={() => handleAddToCart(product)}
+                              onClick={() => handleWhatsApp(product)}
                               disabled={(product.quantity ?? 0) <= 0}
-                              className={`inline-flex items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
+                              className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
                                 (product.quantity ?? 0) > 0
-                                  ? 'bg-primary text-white hover:bg-brandGreenDark'
+                                  ? 'bg-[#25D366] text-white hover:bg-[#1da851]'
                                   : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                               }`}
                             >
-                              {(product.quantity ?? 0) > 0 ? 'Add to cart' : 'Out of stock'}
+                              <MessageCircle size={16} />
+                              {(product.quantity ?? 0) > 0 ? 'WhatsApp Us' : 'Out of stock'}
                             </button>
                           </div>
                         </div>
@@ -367,26 +361,54 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
         )}
       </section>
 
+      <section className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm">
+        <h2 className="text-2xl font-bold text-slate-950 mb-2">Device Grading System</h2>
+        <p className="text-brandTextMedium mb-6">Every used device at PZM is inspected and graded so you know exactly what you're getting.</p>
+        <div className="grid gap-5 md:grid-cols-3">
+          <div className="rounded-2xl border border-brandBorder bg-green-50 p-6">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white font-bold text-lg">A</span>
+            <h3 className="mt-4 text-lg font-bold text-slate-950">Grade A — Like New</h3>
+            <p className="mt-2 text-sm leading-7 text-brandTextDark">
+              Minimal signs of use. Screen is flawless, body has no visible scratches or dents. Battery health 85%+. Looks and feels like a new device.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-brandBorder bg-yellow-50 p-6">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-yellow-500 text-white font-bold text-lg">B</span>
+            <h3 className="mt-4 text-lg font-bold text-slate-950">Grade B — Good Condition</h3>
+            <p className="mt-2 text-sm leading-7 text-brandTextDark">
+              Minor cosmetic wear — light scratches on screen or body. All functions work perfectly. Battery health 75%+. Great value for everyday use.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-brandBorder bg-orange-50 p-6">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-white font-bold text-lg">C</span>
+            <h3 className="mt-4 text-lg font-bold text-slate-950">Grade C — Fair Condition</h3>
+            <p className="mt-2 text-sm leading-7 text-brandTextDark">
+              Noticeable wear — visible scratches, scuffs, or minor dents. Fully functional with all features working. Battery health 65%+. Best price point.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section className="grid gap-5 md:grid-cols-3">
         <article className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm">
           <ShieldCheck className="text-primary" size={22} />
-          <h2 className="mt-5 text-xl font-bold text-slate-950">Condition and testing guidance</h2>
+          <h2 className="mt-5 text-xl font-bold text-slate-950">30-day warranty included</h2>
           <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-            Ask about cosmetic wear, battery health, charging, cameras, screen condition, and any other checks you want confirmed before you buy.
+            All certified pre-owned devices come with a 30-day warranty covering hardware defects. Battery health, screen, and all components are tested before sale.
           </p>
         </article>
         <article className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm">
           <BatteryCharging className="text-primary" size={22} />
-          <h2 className="mt-5 text-xl font-bold text-slate-950">Warranty and setup support</h2>
+          <h2 className="mt-5 text-xl font-bold text-slate-950">Full testing & certification</h2>
           <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-            Many used devices include short warranty support and setup guidance. Ask the team for the exact warranty and support path for the model you want.
+            Every device passes a multi-point inspection: battery health, screen quality, cameras, speakers, charging, Face ID / Touch ID, and connectivity.
           </p>
         </article>
         <article className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm">
           <RefreshCcw className="text-primary" size={22} />
           <h2 className="mt-5 text-xl font-bold text-slate-950">Trade-in and upgrade path</h2>
           <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-            If you are upgrading from an older phone or laptop, use the sell-device route to check trade-in value before you commit to the replacement.
+            Trade in your old device and get credit toward a certified used or brand-new upgrade. Visit us or use the sell-device page for an instant quote.
           </p>
         </article>
       </section>

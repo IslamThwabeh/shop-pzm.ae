@@ -1,27 +1,20 @@
 import { Link } from 'react-router-dom'
+import { MessageCircle } from 'lucide-react'
 import type { Product } from '@shared/types'
-import { useCart } from '../context/CartContext'
+import { openWhatsAppLead } from '../utils/whatsappLead'
 
 interface Props {
   product: Product
 }
 
 export default function ProductCard({ product }: Props) {
-  const { addItem } = useCart()
-
-  const handleAddToCart = () => {
-    if ((product.quantity ?? 0) <= 0) {
-      return
-    }
-
-    addItem({
-      id: product.id,
-      model: product.model,
-      price: product.price,
-      quantity: 1,
-      color: product.color,
-      storage: product.storage,
-      condition: product.condition,
+  const handleWhatsApp = () => {
+    openWhatsAppLead({
+      leadType: 'product',
+      referenceId: product.id,
+      referenceLabel: `${product.model} ${product.storage} ${product.color}`,
+      referencePrice: product.price,
+      sourcePage: window.location.pathname,
     })
   }
 
@@ -85,15 +78,16 @@ export default function ProductCard({ product }: Props) {
           </Link>
           <button
             type="button"
-            onClick={handleAddToCart}
+            onClick={handleWhatsApp}
             disabled={(product.quantity ?? 0) <= 0}
-            className={`inline-flex w-full items-center justify-center rounded-md px-4 py-3 text-sm font-semibold transition-colors ${
+            className={`inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-semibold transition-colors ${
               (product.quantity ?? 0) > 0
-                ? 'bg-primary text-white hover:bg-brandGreenDark'
+                ? 'bg-[#25D366] text-white hover:bg-[#1da851]'
                 : 'bg-gray-200 text-gray-500 cursor-not-allowed'
             }`}
           >
-            {(product.quantity ?? 0) > 0 ? 'Add to Cart' : 'Out of Stock'}
+            <MessageCircle size={16} />
+            {(product.quantity ?? 0) > 0 ? 'WhatsApp Us' : 'Out of Stock'}
           </button>
         </div>
 

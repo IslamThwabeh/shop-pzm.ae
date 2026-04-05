@@ -7,6 +7,11 @@ export interface ServiceRequestOption {
   description: string
 }
 
+export interface ServiceDetailSection {
+  title: string
+  items: string[]
+}
+
 export interface ServiceCatalogEntry {
   slug: string
   title: string
@@ -17,6 +22,7 @@ export interface ServiceCatalogEntry {
   requestKinds: ServiceRequestOption[]
   imageUrl?: string
   imageAlt?: string
+  detailSections?: ServiceDetailSection[]
 }
 
 const legacyMedia = (path: string) => buildApiUrl(`/media/legacy/${path}`)
@@ -45,6 +51,53 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       { value: 'quote', label: 'Request repair estimate', description: 'Describe the issue and ask for a cost estimate first.' },
       { value: 'callback', label: 'Request a callback', description: 'Ask the team to contact you and discuss the issue.' },
     ],
+    detailSections: [
+      {
+        title: 'Smartphone Repair Services',
+        items: [
+          'Screen replacements using original quality displays',
+          'Battery replacements with genuine cells',
+          'Water damage recovery and treatment',
+          'Camera module repairs and replacements',
+          'Charging port and power issue fixes',
+          'Software troubleshooting and updates',
+          'Data recovery services',
+        ],
+      },
+      {
+        title: 'Laptop & Computer Repairs',
+        items: [
+          'Hardware diagnostics and repairs',
+          'Screen and keyboard replacements',
+          'Motherboard-level repairs',
+          'Hard drive and SSD upgrades',
+          'RAM and storage expansions',
+          'Virus removal and software optimization',
+          'Operating system installations',
+        ],
+      },
+      {
+        title: 'Professional Repair Process',
+        items: [
+          'Detailed initial diagnosis',
+          'Free repair quote with no hidden costs',
+          'Use of genuine or high-quality compatible parts',
+          'Thorough testing after repairs',
+          'Quality assurance checks',
+          '90-day warranty on all repairs',
+        ],
+      },
+      {
+        title: 'Additional Services',
+        items: [
+          'Express repair service for urgent needs',
+          'Device pickup and delivery across Dubai',
+          'Regular maintenance services',
+          'Performance optimization',
+          'Hardware upgrades',
+        ],
+      },
+    ],
   },
   'sell-gadgets': {
     slug: 'sell-gadgets',
@@ -60,6 +113,53 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
     imageUrl: legacyMedia('Services/Sell_Your_Old_iPhones.jpg'),
     imageAlt: 'Sell your old iPhone at PZM',
     requestKinds: quoteAndCallback,
+    detailSections: [
+      {
+        title: 'Devices We Buy',
+        items: [
+          'iPhones (iPhone X and newer models)',
+          'Samsung Galaxy phones (S series, Note series)',
+          'Other premium Android smartphones',
+          'MacBooks and Apple laptops',
+          'Windows laptops and ultrabooks',
+          'Gaming laptops and desktops',
+          'iPads and tablets',
+          'Gaming consoles and accessories',
+          'Smartwatches and wearables',
+        ],
+      },
+      {
+        title: 'Evaluation Process',
+        items: [
+          'Professional device inspection',
+          'Market value assessment',
+          'Condition-based pricing',
+          'Instant price quotes',
+          'Same-day payment',
+        ],
+      },
+      {
+        title: 'What We Check',
+        items: [
+          'Overall physical condition',
+          'Screen and display quality',
+          'Battery health status',
+          'Functionality of all components',
+          'Internal storage capacity',
+          'Warranty status',
+        ],
+      },
+      {
+        title: 'Tips for Maximum Value',
+        items: [
+          'Back up your data before selling',
+          'Remove any screen protectors or cases',
+          'Bring original accessories if available',
+          'Reset device to factory settings',
+          'Bring proof of purchase if possible',
+        ],
+      },
+    ],
   },
   'gaming-pc': {
     slug: 'gaming-pc',
@@ -79,6 +179,56 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       { value: 'callback', label: 'Talk through the build', description: 'Ask the team to call you and discuss parts and timing.' },
       { value: 'booking', label: 'Schedule a consultation', description: 'Reserve a time to review the build in more detail.' },
     ],
+    detailSections: [
+      {
+        title: 'Premium Components',
+        items: [
+          'Latest-generation CPUs (Intel & AMD)',
+          'High-performance graphics cards (NVIDIA & AMD)',
+          'Fast NVMe SSD storage solutions',
+          'High-speed DDR5 memory kits',
+          'Premium motherboards and power supplies',
+          'Custom RGB lighting and cable management',
+        ],
+      },
+      {
+        title: 'Custom Cooling Solutions',
+        items: [
+          'Advanced air cooling setups',
+          'All-in-one liquid cooling systems',
+          'Custom loop water cooling',
+          'Thermal optimization and testing',
+        ],
+      },
+      {
+        title: 'Professional Assembly & Testing',
+        items: [
+          'Expert component installation',
+          'Full system stress testing',
+          'Operating system setup and drivers',
+          'Performance benchmarking and tuning',
+          'Quality assurance before delivery',
+        ],
+      },
+      {
+        title: 'Customization Options',
+        items: [
+          'Case selection and modification',
+          'RGB lighting configuration',
+          'Software and game pre-installation',
+          'Future upgrade planning',
+        ],
+      },
+      {
+        title: 'After-Sales Support',
+        items: [
+          'Component warranty assistance',
+          'Performance maintenance',
+          'Hardware upgrade service',
+          'Troubleshooting and diagnostics',
+        ],
+      },
+    ],
   },
   accessories: {
     slug: 'accessories',
@@ -97,6 +247,68 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       { value: 'availability', label: 'Check availability', description: 'Ask whether a specific accessory is in stock.' },
       { value: 'quote', label: 'Request a bundle quote', description: 'Ask for pricing on multiple accessories together.' },
       { value: 'callback', label: 'Request a callback', description: 'Ask the team to contact you and guide the purchase.' },
+    ],
+    detailSections: [
+      {
+        title: 'Smartphone Protection',
+        items: [
+          'Premium cases and covers',
+          'Tempered glass screen protectors',
+          'Camera lens protectors',
+          'MagSafe compatible accessories',
+          'Wireless charging pads and stands',
+          'Car mounts and holders',
+          'Power banks and portable chargers',
+          'Lightning and USB-C cables',
+        ],
+      },
+      {
+        title: 'Computing Accessories',
+        items: [
+          'Laptop sleeves and bags',
+          'USB-C hubs and docking stations',
+          'External monitors and stands',
+          'Wireless keyboards and mice',
+          'Webcams and microphones',
+          'Laptop cooling pads',
+          'External SSDs and storage',
+          'Ergonomic desk accessories',
+        ],
+      },
+      {
+        title: 'Gaming Peripherals',
+        items: [
+          'Gaming headsets and earphones',
+          'Controllers and gamepads',
+          'Gaming mice and mousepads',
+          'Mechanical keyboards',
+          'Console accessories (PS5, Xbox, Switch)',
+          'Capture cards and streaming gear',
+          'Gaming chairs and desks',
+        ],
+      },
+      {
+        title: 'Quality Assurance',
+        items: [
+          'All products tested before sale',
+          'Compatible with latest devices',
+          'Warranty on all accessories',
+          'Genuine and certified products',
+          'Easy return and exchange',
+          'Expert compatibility advice',
+        ],
+      },
+      {
+        title: 'Featured Brands',
+        items: [
+          'Apple (MagSafe, AirPods, Cables)',
+          'Samsung (Cases, Chargers)',
+          'Logitech (Keyboards, Mice)',
+          'Anker (Chargers, Power Banks)',
+          'Razer (Gaming Peripherals)',
+          'Sony (Audio, Gaming)',
+        ],
+      },
     ],
   },
   'brand-new': {
