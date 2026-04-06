@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { MessageCircle } from 'lucide-react'
 import type { Product } from '@shared/types'
+import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { buyIphoneFamilies, getBuyIphoneFamilyGroups, getBuyIphoneProducts } from '../content/buyIphoneCatalog'
@@ -110,11 +111,11 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
         </div>
       </div>
 
-      <section className="rounded-[32px] border border-brandBorder bg-white px-6 py-10 shadow-sm md:px-10 md:py-12">
+      <section className="rounded-[32px] border border-brandBorder bg-white px-5 py-8 shadow-sm md:px-8 md:py-10">
         <div className="mx-auto max-w-4xl text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Apple retail</p>
-          <h1 className="mt-4 text-3xl font-bold text-slate-950 md:text-4xl">All iPhone models in one clean view</h1>
-          <p className="mt-4 text-base leading-8 text-brandTextMedium md:text-lg">
+          <h1 className="mt-4 text-[2rem] font-bold text-slate-950 md:text-[2.45rem]">All iPhone models in one clean view</h1>
+          <p className="mt-4 text-[0.98rem] leading-7 text-brandTextMedium md:text-base">
             Browse the current iPhone families first, then open the exact storage and color you want. If a configuration is missing, request it directly from the same page.
           </p>
         </div>
@@ -147,7 +148,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
           <h2 className="mt-2 text-3xl font-bold text-slate-950">Start with the iPhone line</h2>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {buyIphoneFamilies.map((family) => {
             const liveCount = familyGroups.find((group) => group.family.key === family.key)?.products.length ?? 0
 
@@ -157,12 +158,8 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                 href={`#${family.key}`}
                 className="group rounded-[28px] border border-brandBorder bg-white p-6 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary"
               >
-                <div className="flex h-36 items-center justify-center rounded-[24px] bg-white p-4">
-                  <img
-                    src={family.imageUrl}
-                    alt={family.imageAlt}
-                    className="max-h-full w-auto object-contain transition-transform duration-300 group-hover:scale-[1.02]"
-                  />
+                <div className="retail-card-media retail-card-media--contain rounded-[24px]">
+                  <RetailMediaPlaceholder name={family.title} variant="card" className="transition-transform duration-300 group-hover:scale-[1.02]" />
                 </div>
                 <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-brandTextMedium">{family.shortTitle}</p>
                 <h3 className="mt-2 text-xl font-bold text-slate-950">{family.title}</h3>
@@ -186,7 +183,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Live stock</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-950">Current iPhone inventory on the site</h2>
+            <h2 className="mt-2 text-[2rem] font-bold text-slate-950 md:text-[2.25rem]">Current iPhone inventory on the site</h2>
             <p className="mt-3 max-w-3xl text-brandTextMedium">
               This section is driven by the live product catalog so pricing, stock, and product actions stay aligned with the storefront.
             </p>
@@ -207,7 +204,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                 <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
                   <div className="flex items-start gap-4">
                     <div className="h-24 w-24 shrink-0 overflow-hidden rounded-[20px] bg-slate-100 md:h-28 md:w-28">
-                      <img src={group.family.imageUrl} alt={group.family.imageAlt} className="h-full w-full object-cover" />
+                      <RetailMediaPlaceholder name={group.family.title} variant="thumb" />
                     </div>
                     <div>
                       <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{group.family.shortTitle}</p>
@@ -273,7 +270,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
       </section>
 
       {missingFamilies.length > 0 && (
-        <section className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm">
+        <section className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm md:p-8">
           <h2 className="text-2xl font-bold text-slate-950">More iPhone families you can ask about</h2>
           <p className="mt-3 max-w-3xl text-brandTextMedium">
             If a family is not listed yet, use the request form and the team can confirm availability or suggest the closest current option.
@@ -282,8 +279,8 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {missingFamilies.map((group) => (
               <article key={group.family.key} className="rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
-                <div className="flex h-32 items-center justify-center rounded-[20px] border border-brandBorder bg-white p-4">
-                  <img src={group.family.imageUrl} alt={group.family.imageAlt} className="max-h-full w-auto object-contain" />
+                <div className="retail-card-media retail-card-media--contain rounded-[20px] border border-brandBorder">
+                  <RetailMediaPlaceholder name={group.family.title} variant="card" />
                 </div>
                 <h3 className="mt-5 text-xl font-bold text-slate-950">{group.family.title}</h3>
                 <p className="mt-3 text-sm leading-7 text-brandTextMedium">{group.family.description}</p>

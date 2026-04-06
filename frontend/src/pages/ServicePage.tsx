@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import Seo from '../components/Seo'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
+import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 
@@ -69,12 +70,12 @@ export default function ServicePage() {
         </div>
       </div>
 
-      <section className="overflow-hidden rounded-3xl border border-brandBorder bg-white shadow-md text-left">
+      <section className="overflow-hidden rounded-3xl border border-brandBorder bg-white text-left shadow-md">
         <div className={`grid grid-cols-1 ${service.imageUrl || service.cardImageUrl ? 'lg:grid-cols-[1.05fr,0.95fr] lg:items-stretch' : ''}`}>
-          <div className="p-8 md:p-12">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">PZM Dubai service</p>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{service.heroTitle}</h1>
-            <p className="text-base text-brandTextMedium max-w-3xl mb-6">{service.heroDescription}</p>
+          <div className="p-6 md:p-10">
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-primary">PZM Dubai service</p>
+            <h1 className="mb-4 text-[2rem] font-bold text-gray-900 md:text-[2.5rem]">{service.heroTitle}</h1>
+            <p className="mb-6 max-w-3xl text-[0.98rem] text-brandTextMedium md:text-base">{service.heroDescription}</p>
 
             <div className="flex flex-wrap gap-3">
               <a
@@ -87,14 +88,14 @@ export default function ServicePage() {
           </div>
 
           {(service.cardImageUrl || service.imageUrl) && (
-            <div className="min-h-[280px] bg-slate-100">
-              <img src={service.cardImageUrl || service.imageUrl} alt={service.imageAlt || service.title} className="h-full w-full object-cover" />
+            <div className="retail-panel-media min-h-0 bg-slate-100">
+              <RetailMediaPlaceholder name={service.title} variant="panel" />
             </div>
           )}
         </div>
       </section>
 
-      <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
+      <section className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
         <h2 className="text-xl font-bold text-gray-900 mb-4">What we can help with</h2>
         <ul className="space-y-2 text-brandTextDark">
           {service.highlights.map((highlight) => (
@@ -116,7 +117,7 @@ export default function ServicePage() {
       </section>
 
       {service.detailSections && service.detailSections.length > 0 && (
-        <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
+        <section className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
           <h2 className="text-xl font-bold text-gray-900 mb-6">Service Details</h2>
           <div className="space-y-4">
             {service.detailSections.map((section, index) => (
@@ -148,7 +149,7 @@ export default function ServicePage() {
       )}
 
       {hasAppointment && (
-        <section id="appointment" className="bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] rounded-3xl border border-brandBorder p-6 md:p-8">
+        <section id="appointment" className="rounded-3xl border border-brandBorder bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] p-6 md:p-8">
           <div className="mb-6 text-left">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Appointment</p>
             <h2 className="mt-2 text-2xl font-bold text-slate-900">Book a Service Appointment</h2>

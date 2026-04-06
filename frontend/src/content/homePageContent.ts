@@ -139,7 +139,7 @@ export const homeFeaturedCategories: HomeFeaturedCategory[] = [
     title: 'Latest Devices',
     description: 'iPhones, Samsung, MacBooks, and gaming consoles with official warranty and fast support from the Hessa Street branch.',
     to: '/services/brand-new',
-    imageUrl: legacyMedia('Catigories/brand_new.jpg'),
+    imageUrl: '/images/Catigories/mini_brand_new.webp',
     badgeClassName: 'bg-emerald-100 text-emerald-700',
   },
   {
@@ -147,7 +147,7 @@ export const homeFeaturedCategories: HomeFeaturedCategory[] = [
     title: 'Pre-Owned Devices',
     description: 'Certified used phones, laptops, tablets, and gaming PCs with clear grading, testing, and warranty support.',
     to: '/services/secondhand',
-    imageUrl: legacyMedia('buy_used/used_iphone_16_pro_max_main.webp'),
+    imageUrl: '/images/Catigories/mini_Used_Phones.webp',
     badgeClassName: 'bg-amber-100 text-amber-700',
   },
 ]

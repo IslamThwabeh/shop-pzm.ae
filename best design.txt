@@ -1,64 +1,40 @@
-You are an expert front‑end developer. Redesign my site using the following design system
-Redesign my website's CSS to use a modern 2026 glass-morphism design system. Apply these exact design principles based on the attached logo colors and add preferrable colors:
+PZM retail design standard
 
-Lets start with the home page only, then after agreeing on it, we will spread that along side all pages.
+Direction
+- Clean retail UI, not glassmorphism.
+- White surfaces, restrained gradients, thin borders, soft shadows, and generous but controlled spacing.
+- Product and category media should never dominate the viewport on mobile unless it is an intentional hero banner.
 
-Color System (CSS Variables)
-Glass-Morphism (apply to navbar, cards, panels)
+Sizing benchmark
+- Card media height on mobile: 160px to 200px.
+- Card media height on tablet: 184px to 208px.
+- Card media height on desktop: 208px to 240px.
+- Feature panel media on mobile: around 172px.
+- Feature panel media on desktop: around 232px.
+- Standard content width: 1280px max with responsive gutters.
 
---glass-bg: rgba(255, 255, 255, 0.72)
---glass-border: rgba(255, 255, 255, 0.5)
-backdrop-filter: blur(20px)
--webkit-backdrop-filter: blur(20px)
-border: 1px solid var(--glass-border)
+Layout rules
+- Default grid progression: 1 column mobile, 2 columns tablet, 3 columns desktop.
+- Use 4 columns only for simple, high-scan cards on wide desktops.
+- Avoid forced tall aspect-ratio cards for catalog and service browsing.
+- Section spacing should feel calm, not oversized: 64px mobile, 76px tablet, 88px desktop.
 
-Use this for: sticky navbar, inventory/product list containers, floating cards.
+Card rules
+- Product cards: white background, thin border, soft shadow, 20px to 24px radius.
+- Product imagery: framed on white or near-white background, object-contain when selling a device, object-cover when showing environment or service photography.
+- Card padding: 20px mobile, 24px desktop.
 
-Typography & Spacing
-Font: 'Inter' from Google Fonts (weights 300–900)
-Headings: weight 800, letter-spacing: -0.5px, color var(--dark)
-H1 underline accent: 60px × 4px gradient bar (linear-gradient(to right, var(--accent), var(--primary))) centered below
-Border-radius: 16px for cards/sections, 10px for smaller elements, 50px for pill buttons
-4-tier shadow system: sm 0 1px 3px, md 0 4px 20px, lg 0 10px 40px, xl 0 20px 60px (all rgba(0,0,0, 0.06–0.12))
-Navbar
-position: sticky; top: 0; z-index: 1000
-Glass-morphism background (semi-transparent white + blur)
-72px height desktop, 60px mobile
-Nav links: gray-600, hover to dark with 2px green underline animation (width: 0 → 100%)
-CTA button: green pill (border-radius: 50px, white text, var(--primary) bg)
-IMPORTANT: backdrop-filter creates a CSS containing block. Any position: fixed children (like mobile menus) must use height: calc(100dvh - 60px) instead of bottom: 0, or be appended to <body> via JS.
-Mobile Menu
-Hamburger at ≤768px, full-screen overlay from top: 60px
-Links: large tap targets (padding: 14px 16px, font-size: 1.05rem)
-Dropdown sub-menus: collapse/expand with max-height + opacity transition
-Bottom action bar: fixed to viewport bottom (move to <body> to escape backdrop-filter containing block)
-Cards & Sections
-White background, border-radius: 16px, box-shadow: var(--shadow-md), border: 1px solid var(--gray-200)
-Content sections: max-width: 900px, centered
-CTA sections: subtle gradient bg linear-gradient(135deg, rgba(accent, 0.06), rgba(primary, 0.06))
-Buttons: gradient pill linear-gradient(135deg, var(--accent), var(--primary)), white text, border-radius: 50px, hover lifts up 2px with stronger shadow
-Hero Banners
-Dark gradient backgrounds: linear-gradient(135deg, var(--dark) 0%, #1a2744 50%, var(--accent-dark) 100%)
-Decorative radial gradients as ::before pseudo-elements for depth
-White text, large heading (2.5rem, weight 800)
-Footer
-Background: var(--dark) (navy)
-Logo in white, tagline in gray-400
-Links in gray-400, hover to white
-Bottom bar: thin rgba(255,255,255,0.06) top border, centered small text
-Scroll Animations
-.fade-up class: starts with opacity: 0; transform: translateY(30px), transitions to visible with 0.6s ease
-Add .visible class via IntersectionObserver on scroll
-Contact Section
-3-column grid (info, address card, embedded map)
-Address card: var(--gray-100) background, rounded
-Contact methods: icon + link rows with hover highlight
-Store status: green/red pill badges
-Key Gotchas
-Always include -webkit-backdrop-filter for Safari
-backdrop-filter on navbar breaks position: fixed for children — plan for this in mobile menu
-Use 100dvh (dynamic viewport height) for mobile to account for browser chrome
-Transitions: 0.15s for micro-interactions, 0.3s for UI changes, 0.5s for entrance animations
+Typography rules
+- Keep retail copy compact and scannable.
+- Avoid oversized blog or service headings on mobile.
+- Body text should usually sit around 15px to 16px on content-heavy pages.
 
-Swap the colors (--primary, --accent) with your brand colors and you're set. The core glass-morphism + shadow + radius + typography system works with any color palette.
+Theme tokens
+- Source of truth for React app: frontend/src/index.css.
+- Legacy static CSS must mirror the same shadows, spacing rhythm, and media caps.
+
+Do not use
+- Heavy glassmorphism panels.
+- Full-viewport card images in catalog sections.
+- Decorative gradients or shadows that compete with product discovery.
 

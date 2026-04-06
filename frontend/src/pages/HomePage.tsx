@@ -5,6 +5,7 @@ import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
 import FaqAccordion from '../components/FaqAccordion'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
+import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
 import TestimonialCards from '../components/TestimonialCards'
 import { areaCatalogList } from '../content/areaCatalog'
 import {
@@ -33,8 +34,8 @@ function SectionHeader({ badge, title, description, align = 'center' }: SectionH
       <span className="inline-flex rounded-full bg-gradient-to-r from-sky-100 to-emerald-100 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-sky-700">
         {badge}
       </span>
-      <h2 className="mt-5 text-2xl font-bold tracking-tight text-slate-950 md:text-3xl">{title}</h2>
-      <p className={`mt-4 text-sm leading-7 text-brandTextMedium md:text-base ${align === 'center' ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
+      <h2 className="mt-5 text-[1.9rem] font-bold tracking-tight text-slate-950 sm:text-[2.1rem] lg:text-[2.35rem]">{title}</h2>
+      <p className={`mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.95rem] ${align === 'center' ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
         {description}
       </p>
     </div>
@@ -141,9 +142,9 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         jsonLd={[storeJsonLd, faqJsonLd]}
       />
 
-      <section id="home" className="reveal-on-scroll px-4 py-14 sm:px-6 sm:py-20 lg:px-8 lg:py-28 text-center">
+      <section id="home" className="reveal-on-scroll px-4 py-12 text-center sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-3xl">
-          <h1 className="text-3xl font-extrabold leading-[1.1] tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
+          <h1 className="text-[2.25rem] font-extrabold leading-[1.08] tracking-tight text-slate-950 sm:text-[2.8rem] lg:text-[3.5rem]">
             PZM Computers
             <br />
             &amp; Phones Store
@@ -152,11 +153,11 @@ export default function HomePage({ onShopClick }: HomePageProps) {
               New • Used • Repair • PC Build
             </span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-brandTextMedium">
+          <p className="mx-auto mt-5 max-w-2xl text-[0.98rem] leading-7 text-brandTextMedium md:text-base">
             Your integrated device solutions hub in Al Barsha, Dubai. Expert repairs, brand new &amp; certified used devices, custom gaming PC builds — all under one roof.
           </p>
 
-          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+          <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
             <button
               onClick={onShopClick}
               className="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-full bg-primary px-7 py-4 text-base font-semibold text-white shadow-[0_10px_30px_rgba(0,167,111,0.25)] transition-transform hover:-translate-y-0.5 hover:bg-brandGreenDark sm:w-auto sm:max-w-none"
@@ -175,7 +176,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section id="products" className="reveal-on-scroll border-y border-slate-200/70 bg-slate-50/80 px-4 py-20 sm:px-6 lg:px-8">
+      <section id="products" className="reveal-on-scroll border-y border-slate-200/70 bg-slate-50/80 px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-7xl">
           <SectionHeader
             badge="Featured"
@@ -183,7 +184,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
             description="Brand new devices with official warranty and certified pre-owned stock at prices that make sense in Dubai."
           />
 
-          <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="mt-12 grid grid-cols-1 gap-5 lg:grid-cols-2">
             {homeFeaturedCategories.map((category, index) => (
               <Link
                 key={category.title}
@@ -191,17 +192,17 @@ export default function HomePage({ onShopClick }: HomePageProps) {
                 className="reveal-on-scroll group overflow-hidden rounded-[30px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
                 style={{ animationDelay: `${index * 90}ms` }}
               >
-                <div className="grid min-h-[240px] grid-cols-1 md:grid-cols-[180px,1fr]">
-                  <div className="bg-slate-100">
-                    <img src={category.imageUrl} alt={category.title} className="h-full w-full object-cover" />
+                <div className="grid grid-cols-1 md:grid-cols-[minmax(0,190px),1fr]">
+                  <div className="h-44 overflow-hidden bg-slate-100 sm:h-48 md:min-h-[13rem] md:h-full lg:min-h-[14rem]">
+                    <RetailMediaPlaceholder name={category.title} variant="panel" />
                   </div>
-                  <div className="flex flex-col justify-center p-7 md:p-8">
+                  <div className="flex flex-col justify-center p-5 md:p-7">
                     <span className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] ${category.badgeClassName}`}>
                       {category.tag}
                     </span>
-                    <h3 className="mt-5 text-xl font-bold text-slate-900">{category.title}</h3>
+                    <h3 className="mt-4 text-xl font-bold text-slate-900">{category.title}</h3>
                     <p className="mt-3 text-sm leading-7 text-brandTextMedium">{category.description}</p>
-                    <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-700 transition-all group-hover:gap-3 group-hover:text-primary">
+                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-700 transition-all group-hover:gap-3 group-hover:text-primary">
                       Open category
                       <ArrowRight size={16} />
                     </span>
@@ -211,7 +212,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
             ))}
           </div>
 
-          <div className="mt-8 rounded-[28px] border border-brandBorder bg-white px-6 py-5 shadow-sm md:flex md:items-center md:justify-between md:gap-6">
+          <div className="mt-7 rounded-[28px] border border-brandBorder bg-white px-5 py-4 shadow-sm md:flex md:items-center md:justify-between md:gap-6 md:px-6 md:py-5">
             <div>
               <p className="text-lg font-semibold text-slate-900">Browse live stock behind each category</p>
               <p className="mt-1 text-sm text-brandTextMedium">Tap into brand new or certified used listings, check availability, and message the team directly via WhatsApp.</p>
@@ -227,34 +228,28 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section id="services" className="reveal-on-scroll mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section id="services" className="reveal-on-scroll mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <SectionHeader
           badge="What We Do"
           title="Our Services"
           description="Everything you need for phones, laptops & PCs — all under one roof at our Al Barsha store on Hessa Street, Dubai."
         />
 
-        <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {homeServiceCards.map((card, index) => (
             <Link
               key={card.title}
               to={card.to}
-              className="reveal-on-scroll group flex flex-col items-center rounded-xl border border-brandBorder bg-white p-5 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
+              className="reveal-on-scroll group flex flex-col items-center rounded-[24px] border border-brandBorder bg-white p-5 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
               style={{ animationDelay: `${index * 70}ms` }}
             >
-              {card.cardImageUrl ? (
-                <div className="w-full overflow-hidden rounded-lg mb-4">
-                  <img
-                    src={card.cardImageUrl}
-                    alt={card.title}
-                    className="w-full h-36 object-cover transition-transform group-hover:scale-105"
-                  />
-                </div>
-              ) : (
-                <div className="w-full h-36 flex items-center justify-center rounded-lg bg-slate-50 mb-4 text-5xl">
-                  {card.emoji}
-                </div>
-              )}
+              <div className="retail-card-media mb-4 w-full overflow-hidden rounded-[16px]">
+                <RetailMediaPlaceholder
+                  name={card.title}
+                  variant="card"
+                  className="transition-transform group-hover:scale-[1.02]"
+                />
+              </div>
               <h3 className="text-base font-semibold text-slate-900 group-hover:text-primary transition-colors">{card.title}</h3>
               <p className="mt-1 text-sm text-brandTextMedium">{card.description}</p>
               <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
@@ -266,7 +261,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section id="appointment" className="reveal-on-scroll bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] px-4 py-20 sm:px-6 lg:px-8">
+      <section id="appointment" className="reveal-on-scroll bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-7xl">
           <SectionHeader
             badge="Book Appointment"
@@ -280,16 +275,16 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section className="reveal-on-scroll mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section className="reveal-on-scroll mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <SectionHeader
           badge="Why PZM"
           title="Trusted by Dubai Residents"
           description="Serving Al Barsha and all of Dubai with quality devices, expert service, and dependable after-sales support."
         />
 
-        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
           {homeTrustCards.map((card, index) => (
-            <div key={card.title} className="reveal-on-scroll rounded-[28px] border border-brandBorder bg-white p-8 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg" style={{ animationDelay: `${index * 70}ms` }}>
+            <div key={card.title} className="reveal-on-scroll rounded-[28px] border border-brandBorder bg-white p-6 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg md:p-7" style={{ animationDelay: `${index * 70}ms` }}>
               <div className="text-4xl">{card.emoji}</div>
               <h3 className="mt-5 text-lg font-bold text-slate-900">{card.title}</h3>
               <p className="mt-3 text-sm leading-7 text-brandTextMedium">{card.description}</p>
@@ -298,7 +293,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section id="blog" className="reveal-on-scroll bg-[linear-gradient(180deg,#f8fafc_0%,#f0f7ff_100%)] px-4 py-20 sm:px-6 lg:px-8">
+      <section id="blog" className="reveal-on-scroll bg-[linear-gradient(180deg,#f8fafc_0%,#f0f7ff_100%)] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-7xl">
           <SectionHeader
             badge="Latest Updates"
@@ -306,7 +301,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
             description="Stay informed with the latest tech news, buying guides, and market insights from Dubai."
           />
 
-          <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="mt-12 grid grid-cols-1 gap-5 lg:grid-cols-3">
             {homeBlogTeasers.map((post, index) => (
               <Link
                 key={post.title}
@@ -314,8 +309,8 @@ export default function HomePage({ onShopClick }: HomePageProps) {
                 className="reveal-on-scroll overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
                 style={{ animationDelay: `${index * 80}ms` }}
               >
-                <div className="relative h-32 overflow-hidden">
-                  <img src={post.imageUrl} alt={post.title} className="h-full w-full object-cover" loading="lazy" />
+                <div className="relative h-36 overflow-hidden sm:h-40">
+                  <RetailMediaPlaceholder name={post.tag} variant="article" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/15 to-transparent" />
                   <div className={`absolute inset-0 bg-gradient-to-br ${post.themeClassName} opacity-20`} />
                   <div className="absolute inset-0 p-6">
@@ -325,7 +320,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
                     <p className="mt-10 text-sm font-semibold text-white">{post.date}</p>
                   </div>
                 </div>
-                <div className="p-7">
+                <div className="p-6 md:p-7">
                   <h3 className="text-lg font-bold leading-8 text-slate-900">{post.title}</h3>
                   <p className="mt-3 text-sm leading-7 text-brandTextMedium">{post.description}</p>
                   <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-700">
@@ -349,7 +344,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section className="reveal-on-scroll mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section className="reveal-on-scroll mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <SectionHeader
           badge="Testimonials"
           title="Customer Reviews"
@@ -360,7 +355,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section id="faq" className="reveal-on-scroll mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section id="faq" className="reveal-on-scroll mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <SectionHeader
           badge="FAQ"
           title="Frequently Asked Questions"
@@ -371,7 +366,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section className="reveal-on-scroll bg-slate-950 px-4 py-16 text-white sm:px-6 lg:px-8">
+      <section className="reveal-on-scroll bg-slate-950 px-4 py-14 text-white sm:px-6 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl text-center">
           <h2 className="text-2xl font-bold tracking-tight">Areas We Serve in Dubai</h2>
           <p className="mt-3 text-base text-slate-300 md:text-lg">Based in Al Barsha, proudly serving customers from across Dubai.</p>

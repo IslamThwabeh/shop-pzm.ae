@@ -310,7 +310,7 @@ export default function HomeAppointmentPanel({
             min={mode === 'pickup' ? pickupMinDate : today}
             value={preferredDate}
             onChange={(event) => setPreferredDate(event.target.value)}
-            className="w-full rounded-xl border border-brandBorder px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
+            className="ios-date-input w-full rounded-xl border border-brandBorder px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
           />
         </label>
       </div>

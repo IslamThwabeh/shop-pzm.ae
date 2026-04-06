@@ -1,5 +1,6 @@
 import { MessageCircle } from 'lucide-react'
 import type { Product } from '@shared/types'
+import RetailMediaPlaceholder from './RetailMediaPlaceholder'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 
 interface Props {
@@ -18,23 +19,13 @@ export default function ProductCard({ product }: Props) {
   }
 
   return (
-    <article className="bg-white rounded-lg border border-brandBorder shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-      <div className="w-full h-56 md:h-56 lg:h-64 bg-green-50 flex items-center justify-center">
-        {product.image_url || product.images?.[0] ? (
-          <img
-            src={product.image_url || product.images?.[0] || ''}
-            alt={product.model}
-            className="w-full h-full object-contain"
-          />
-        ) : (
-          <div className="text-center">
-            <p className="text-gray-500 text-sm">No image</p>
-          </div>
-        )}
+    <article className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm transition-shadow hover:shadow-md">
+      <div className="retail-card-media retail-card-media--contain border-b border-brandBorder bg-white">
+        <RetailMediaPlaceholder name={product.model} variant="card" />
       </div>
 
-      <div className="p-4 md:p-6">
-        <h3 className="text-xl md:text-lg font-semibold text-brandTextDark leading-tight">{product.model}</h3>
+      <div className="p-5 md:p-6">
+        <h3 className="text-lg font-semibold leading-tight text-brandTextDark md:text-xl">{product.model}</h3>
 
         <div className="flex justify-between items-start mt-2">
           <div>
@@ -48,7 +39,7 @@ export default function ProductCard({ product }: Props) {
           </span>
         </div>
 
-        <p className="text-3xl md:text-2xl font-bold text-primary mt-4 leading-tight">AED {product.price.toFixed(2)}</p>
+        <p className="mt-4 text-2xl font-bold leading-tight text-primary md:text-[1.75rem]">AED {product.price.toFixed(2)}</p>
 
         <div className="mt-2">
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-green-100 text-primary text-xs font-semibold">

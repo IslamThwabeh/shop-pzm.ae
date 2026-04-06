@@ -29,6 +29,15 @@ export default function AdminPage({ onLogout }: AdminPageProps) {
     onLogout?.()
   }
 
+  const handleCancel = () => {
+    if (onLogout) {
+      onLogout()
+      return
+    }
+
+    window.location.assign('/')
+  }
+
   if (!isLoggedIn) {
     return (
       <>
@@ -38,7 +47,7 @@ export default function AdminPage({ onLogout }: AdminPageProps) {
           canonicalPath="/admin"
           noindex={true}
         />
-        <AdminLogin onSuccess={handleLoginSuccess} onCancel={() => {}} />
+        <AdminLogin onSuccess={handleLoginSuccess} onCancel={handleCancel} />
       </>
     )
   }

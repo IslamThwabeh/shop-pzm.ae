@@ -7,15 +7,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        // pzm.ae brand palette
-        primary: '#00A76F', // Brand Green (from logo)
-        secondary: '#161C24', // Dark Gray
-        brandLight: '#F0F6FF',
-        brandTextDark: '#333333',
-        brandTextMedium: '#666666',
-        brandBorder: '#E0E0E0',
-        brandGreen: '#00A76F', // Same as primary
-        brandGreenDark: '#16a34a', // Darker green for hover/active
+        primary: 'var(--primary-color)',
+        secondary: 'var(--secondary-color)',
+        brandLight: 'var(--brand-light)',
+        brandTextDark: 'var(--brand-text-dark)',
+        brandTextMedium: 'var(--brand-text-medium)',
+        brandBorder: 'var(--brand-border)',
+        brandGreen: 'var(--primary-color)',
+        brandGreenDark: '#008f5f',
         brandRed: '#DC3545',
       },
       fontFamily: {

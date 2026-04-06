@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
+import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
 import Seo from '../components/Seo'
 import { getRelatedBlogPosts, resolveBlogPost } from '../content/blogCatalog'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
@@ -94,23 +95,23 @@ export default function BlogPostPage() {
       </div>
 
       <article className="overflow-hidden rounded-[32px] border border-brandBorder bg-white shadow-sm">
-        <div className="relative h-56 overflow-hidden md:h-72">
-          <img src={post.imageUrl} alt={post.title} className="h-full w-full object-cover" />
+        <div className="relative h-44 overflow-hidden sm:h-52 md:h-64">
+          <RetailMediaPlaceholder name={post.category} variant="article" />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/25 to-transparent" />
           <div className={`absolute inset-0 bg-gradient-to-br ${post.themeClassName} opacity-25`} />
-          <div className="absolute inset-0 flex items-end p-8">
+          <div className="absolute inset-0 flex items-end p-6 md:p-8">
             <div className="max-w-3xl">
               <span className="inline-flex rounded-full bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-700 shadow-sm">
                 {post.category}
               </span>
-              <h1 className="mt-5 text-4xl font-extrabold leading-tight tracking-tight text-white md:text-5xl">
+              <h1 className="mt-5 text-[2.2rem] font-extrabold leading-tight tracking-tight text-white md:text-[3.1rem]">
                 {post.title}
               </h1>
             </div>
           </div>
         </div>
 
-        <div className="p-8 md:p-12">
+        <div className="p-6 md:p-10">
           <div
             className="text-base leading-8 text-brandTextDark [&_a]:font-semibold [&_a]:text-primary [&_a]:underline [&_code]:rounded [&_code]:bg-slate-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_h3]:mt-10 [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:tracking-tight [&_li]:mt-2 [&_p]:mt-5 [&_ul]:mt-5 [&_ul]:list-disc [&_ul]:pl-6"
             dangerouslySetInnerHTML={{ __html: post.bodyHtml }}
@@ -118,7 +119,7 @@ export default function BlogPostPage() {
         </div>
       </article>
 
-      <section className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm">
+      <section className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm md:p-8">
         <h2 className="text-2xl font-bold tracking-tight text-slate-950">Next steps related to this article</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {post.relatedServiceLinks.map((link) => (

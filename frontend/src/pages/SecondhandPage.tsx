@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { BatteryCharging, Gamepad2, Laptop, MessageCircle, RefreshCcw, ShieldCheck, Smartphone, Tablet } from 'lucide-react'
 import type { Product } from '@shared/types'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
+import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { getSecondhandCategoryGroups, getSecondhandProducts, secondhandCategories, secondhandHero } from '../content/secondhandCatalog'
@@ -121,11 +122,11 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
         </div>
       </div>
 
-      <section className="rounded-[32px] border border-brandBorder bg-white px-6 py-10 shadow-sm md:px-10 md:py-12">
+      <section className="rounded-[32px] border border-brandBorder bg-white px-5 py-8 shadow-sm md:px-8 md:py-10">
         <div className="mx-auto max-w-4xl text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Certified pre-owned</p>
-          <h1 className="mt-4 text-2xl font-bold text-slate-950 md:text-3xl">Used devices in a calmer, easier-to-scan layout</h1>
-          <p className="mt-4 text-sm leading-8 text-brandTextMedium md:text-base">
+          <h1 className="mt-4 text-[1.9rem] font-bold text-slate-950 md:text-[2.25rem]">Used devices in a calmer, easier-to-scan layout</h1>
+          <p className="mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.98rem]">
             Browse certified pre-owned devices with clearer category entry points, cleaner product tiles, and straightforward next steps when live used stock is low.
           </p>
         </div>
@@ -248,12 +249,8 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
                   <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                     {group.products.map((product) => (
                       <article key={product.id} className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm">
-                        <div className="aspect-[4/3] border-b border-brandBorder bg-white p-6">
-                          <img
-                            src={product.image_url || product.images?.[0] || secondhandHero.imageUrl}
-                            alt={product.model}
-                            className="h-full w-full object-contain"
-                          />
+                        <div className="retail-card-media retail-card-media--contain border-b border-brandBorder bg-white">
+                          <RetailMediaPlaceholder name={group.category.title} variant="card" />
                         </div>
 
                         <div className="p-5">
@@ -313,7 +310,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
         )}
       </section>
 
-      <section className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm">
+      <section className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm md:p-8">
         <h2 className="text-xl font-bold text-slate-950 mb-2">Device Grading System</h2>
         <p className="text-brandTextMedium mb-6">Every used device at PZM is inspected and graded so you know exactly what you're getting.</p>
         <div className="grid gap-5 md:grid-cols-3">
@@ -384,8 +381,8 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
         </div>
       </section>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[1.1fr,0.9fr] gap-8 items-start">
-        <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
+      <div className="grid grid-cols-1 gap-8 items-start xl:grid-cols-[1.1fr,0.9fr]">
+        <section className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Buying Flow</h2>
           <div className="space-y-4 text-brandTextDark">
             <p><span className="font-semibold text-primary">1.</span> Browse current used listings and condition details above.</p>

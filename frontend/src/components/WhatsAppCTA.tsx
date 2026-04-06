@@ -17,7 +17,7 @@ export default function WhatsAppCTA({
   prefilledMessage,
 }: WhatsAppCTAProps) {
   return (
-    <div className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm text-left">
+    <div className="rounded-[28px] border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
       <h2 className="text-2xl font-bold text-slate-900">{title}</h2>
       <p className="mt-3 text-sm leading-7 text-brandTextMedium">{description}</p>
 

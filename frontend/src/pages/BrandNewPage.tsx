@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Briefcase, CreditCard, Gamepad2, Laptop, MessageCircle, ShieldCheck, Smartphone, Truck } from 'lucide-react'
 import type { Product } from '@shared/types'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
+import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { brandNewCategories, brandNewHero, getBrandNewCategoryGroups, getBrandNewProducts } from '../content/brandNewCatalog'
@@ -121,11 +122,11 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         </div>
       </div>
 
-      <section className="rounded-[32px] border border-brandBorder bg-white px-6 py-10 shadow-sm md:px-10 md:py-12">
+      <section className="rounded-[32px] border border-brandBorder bg-white px-5 py-8 shadow-sm md:px-8 md:py-10">
         <div className="mx-auto max-w-4xl text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Brand-new retail</p>
-          <h1 className="mt-4 text-2xl font-bold text-slate-950 md:text-3xl">Brand-new devices in a cleaner catalog view</h1>
-          <p className="mt-4 text-sm leading-8 text-brandTextMedium md:text-base">
+          <h1 className="mt-4 text-[1.9rem] font-bold text-slate-950 md:text-[2.25rem]">Brand-new devices in a cleaner catalog view</h1>
+          <p className="mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.98rem]">
             Shop current phones, tablets, laptops, gaming hardware, and work devices without the extra visual noise. Live stock stays visible, while missing categories stay request-friendly.
           </p>
         </div>
@@ -256,12 +257,8 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                   <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                     {group.products.map((product) => (
                       <article key={product.id} className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm">
-                        <div className="aspect-[4/3] border-b border-brandBorder bg-white p-6">
-                          <img
-                            src={product.image_url || product.images?.[0] || brandNewHero.imageUrl}
-                            alt={product.model}
-                            className="h-full w-full object-contain"
-                          />
+                        <div className="retail-card-media retail-card-media--contain border-b border-brandBorder bg-white">
+                          <RetailMediaPlaceholder name={group.category.title} variant="card" />
                         </div>
 
                         <div className="p-5">
@@ -329,7 +326,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
       </section>
 
       {requestCategoryGroups.length > 0 && (
-        <section className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm">
+        <section className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm md:p-8">
           <h2 className="text-2xl font-bold text-slate-950">More brand-new categories you can request now</h2>
           <p className="mt-3 max-w-3xl text-brandTextMedium">
             The broader brand-new route covers more than the current live listings. If the category you want is not on the storefront yet, send an availability request and the team can confirm stock, pricing, or the closest option.
