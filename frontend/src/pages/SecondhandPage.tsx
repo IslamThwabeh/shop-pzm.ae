@@ -124,8 +124,8 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
       <section className="rounded-[32px] border border-brandBorder bg-white px-6 py-10 shadow-sm md:px-10 md:py-12">
         <div className="mx-auto max-w-4xl text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Certified pre-owned</p>
-          <h1 className="mt-4 text-3xl font-bold text-slate-950 md:text-4xl">Used devices in a calmer, easier-to-scan layout</h1>
-          <p className="mt-4 text-base leading-8 text-brandTextMedium md:text-lg">
+          <h1 className="mt-4 text-2xl font-bold text-slate-950 md:text-3xl">Used devices in a calmer, easier-to-scan layout</h1>
+          <p className="mt-4 text-sm leading-8 text-brandTextMedium md:text-base">
             Browse certified pre-owned devices with clearer category entry points, cleaner product tiles, and straightforward next steps when live used stock is low.
           </p>
         </div>
@@ -161,7 +161,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
       <section className="space-y-4">
         <div className="text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Browse by category</p>
-          <h2 className="mt-2 text-3xl font-bold text-slate-950">Pick the used device type first</h2>
+          <h2 className="mt-2 text-2xl font-bold text-slate-950">Pick the used device type first</h2>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -207,7 +207,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Live stock</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-950">Current used inventory on the site</h2>
+            <h2 className="mt-2 text-2xl font-bold text-slate-950">Current used inventory on the site</h2>
             <p className="mt-3 max-w-3xl text-brandTextMedium">
               This section follows the live storefront catalog, so used listings only appear here when they are actually available on the site.
             </p>
@@ -235,7 +235,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
                       </span>
                       <div>
                         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{group.category.shortTitle}</p>
-                        <h3 className="mt-2 text-2xl font-bold text-slate-950">{group.category.title}</h3>
+                        <h3 className="mt-2 text-xl font-bold text-slate-950">{group.category.title}</h3>
                         <p className="mt-3 max-w-3xl text-brandTextMedium">{group.category.description}</p>
                       </div>
                     </div>
@@ -261,12 +261,12 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
                             Used • {product.storage} • {product.color}
                           </p>
 
-                          <h4 className="mt-3 text-lg font-bold text-slate-950">{product.model}</h4>
+                          <h4 className="mt-3 text-base font-bold text-slate-950">{product.model}</h4>
                           <p className="mt-2 text-sm leading-7 text-brandTextMedium">{product.description || `${product.color} ${product.model}`}</p>
 
                           <div className="mt-4 flex items-end justify-between gap-4">
                             <div>
-                              <p className="text-2xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
+                              <p className="text-xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
                             </div>
                             <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
                               {(product.quantity ?? 0) > 0 ? `${product.quantity} in stock` : 'Out of stock'}
@@ -314,7 +314,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
       </section>
 
       <section className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm">
-        <h2 className="text-2xl font-bold text-slate-950 mb-2">Device Grading System</h2>
+        <h2 className="text-xl font-bold text-slate-950 mb-2">Device Grading System</h2>
         <p className="text-brandTextMedium mb-6">Every used device at PZM is inspected and graded so you know exactly what you're getting.</p>
         <div className="grid gap-5 md:grid-cols-3">
           <div className="rounded-2xl border border-brandBorder bg-white p-6 shadow-sm">
@@ -369,7 +369,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.1fr,0.9fr] lg:items-start">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Book Appointment</p>
-            <h2 className="mt-3 text-3xl font-bold text-slate-950">Need help finding the right used device?</h2>
+            <h2 className="mt-3 text-2xl font-bold text-slate-950">Need help finding the right used device?</h2>
             <p className="mt-4 text-brandTextMedium leading-7">
               Book a quick consultation for used phones, laptops, tablets, or gaming devices and get matched options by budget and condition.
             </p>
@@ -386,7 +386,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
 
       <div className="grid grid-cols-1 xl:grid-cols-[1.1fr,0.9fr] gap-8 items-start">
         <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Quick Buying Flow</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Buying Flow</h2>
           <div className="space-y-4 text-brandTextDark">
             <p><span className="font-semibold text-primary">1.</span> Browse current used listings and condition details above.</p>
             <p><span className="font-semibold text-primary">2.</span> Tap <strong>Contact us</strong> on any matching device for availability confirmation.</p>

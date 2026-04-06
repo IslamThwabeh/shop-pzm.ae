@@ -6,6 +6,12 @@ import { resolveServiceSlug } from '../content/serviceCatalog'
 
 const mapsLink = 'https://maps.app.goo.gl/e5Rhfo8YY3i8CatM7?g_st=ic'
 
+const appointmentServiceTypes: Partial<Record<string, string>> = {
+  repair: 'repair-mobile',
+  'gaming-pc': 'gaming-pc',
+  'sell-gadgets': 'sell-gadgets',
+}
+
 export default function ServicePage() {
   const { slug } = useParams()
   const service = resolveServiceSlug(slug)
@@ -30,6 +36,8 @@ export default function ServicePage() {
       </div>
     )
   }
+
+  const hasAppointment = Boolean(appointmentServiceTypes[service.slug])
 
   return (
     <div className="space-y-8">
@@ -65,15 +73,15 @@ export default function ServicePage() {
         <div className={`grid grid-cols-1 ${service.imageUrl || service.cardImageUrl ? 'lg:grid-cols-[1.05fr,0.95fr] lg:items-stretch' : ''}`}>
           <div className="p-8 md:p-12">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">PZM Dubai service</p>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{service.heroTitle}</h1>
-            <p className="text-lg text-brandTextMedium max-w-3xl mb-6">{service.heroDescription}</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{service.heroTitle}</h1>
+            <p className="text-base text-brandTextMedium max-w-3xl mb-6">{service.heroDescription}</p>
 
             <div className="flex flex-wrap gap-3">
               <a
-                href={service.slug === 'repair' ? '#appointment' : '#service-contact'}
+                href={hasAppointment ? '#appointment' : '#service-contact'}
                 className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
               >
-                {service.slug === 'repair' ? 'Book Appointment' : 'Get in Touch'}
+                {hasAppointment ? 'Book Appointment' : 'Get in Touch'}
               </a>
             </div>
           </div>
@@ -87,7 +95,7 @@ export default function ServicePage() {
       </section>
 
       <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">What we can help with</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">What we can help with</h2>
         <ul className="space-y-2 text-brandTextDark">
           {service.highlights.map((highlight) => (
             <li key={highlight} className="flex items-start gap-2">
@@ -98,18 +106,18 @@ export default function ServicePage() {
         </ul>
 
         <div className="mt-8 border-t border-brandBorder pt-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">How it works</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">How it works</h3>
           <div className="grid gap-3 md:grid-cols-3 text-sm text-brandTextDark">
-            <p><span className="font-semibold text-primary">1.</span> Share the device model and issue.</p>
-            <p><span className="font-semibold text-primary">2.</span> We review and confirm timing and estimate.</p>
-            <p><span className="font-semibold text-primary">3.</span> Visit, drop off, or schedule pickup.</p>
+            <p><span className="font-semibold text-primary">1.</span> Share what you need and your preferred timing.</p>
+            <p><span className="font-semibold text-primary">2.</span> We review options, pricing, and availability.</p>
+            <p><span className="font-semibold text-primary">3.</span> Confirm the next step: visit, booking, or follow-up.</p>
           </div>
         </div>
       </section>
 
       {service.detailSections && service.detailSections.length > 0 && (
         <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Service Details</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Service Details</h2>
           <div className="space-y-4">
             {service.detailSections.map((section, index) => (
               <details
@@ -117,16 +125,21 @@ export default function ServicePage() {
                 open={index === 0}
                 className="rounded-xl border border-brandBorder bg-slate-50/60 p-4"
               >
-                <summary className="cursor-pointer text-lg font-semibold text-gray-900">
+                <summary className="cursor-pointer text-base font-semibold text-gray-900">
                   {section.title}
                 </summary>
                 <ul className="mt-3 space-y-1.5 text-brandTextDark text-sm">
-                  {section.items.map((item) => (
+                  {section.items.slice(0, 6).map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <span className="text-primary mt-1 shrink-0">✓</span>
                       <span>{item}</span>
                     </li>
                   ))}
+                  {section.items.length > 6 && (
+                    <li className="pl-5 text-xs font-medium text-brandTextMedium">
+                      +{section.items.length - 6} more points
+                    </li>
+                  )}
                 </ul>
               </details>
             ))}
@@ -134,16 +147,16 @@ export default function ServicePage() {
         </section>
       )}
 
-      {service.slug === 'repair' && (
+      {hasAppointment && (
         <section id="appointment" className="bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] rounded-3xl border border-brandBorder p-6 md:p-8">
           <div className="mb-6 text-left">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Appointment</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-900">Book Repair Drop-Off or Pickup</h2>
-            <p className="mt-3 text-brandTextMedium">Choose a preferred time in Dubai and submit a tracked repair booking request.</p>
+            <h2 className="mt-2 text-2xl font-bold text-slate-900">Book a Service Appointment</h2>
+            <p className="mt-3 text-brandTextMedium">Choose a preferred time in Dubai and submit a tracked request for this service.</p>
           </div>
           <HomeAppointmentPanel
             sourcePage={`/services/${service.slug}#appointment`}
-            defaultServiceType="repair-mobile"
+            defaultServiceType={appointmentServiceTypes[service.slug]}
           />
         </section>
       )}

@@ -33,8 +33,8 @@ function SectionHeader({ badge, title, description, align = 'center' }: SectionH
       <span className="inline-flex rounded-full bg-gradient-to-r from-sky-100 to-emerald-100 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-sky-700">
         {badge}
       </span>
-      <h2 className="mt-5 text-3xl font-bold tracking-tight text-slate-950 md:text-4xl">{title}</h2>
-      <p className={`mt-4 text-base leading-7 text-brandTextMedium md:text-lg ${align === 'center' ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
+      <h2 className="mt-5 text-2xl font-bold tracking-tight text-slate-950 md:text-3xl">{title}</h2>
+      <p className={`mt-4 text-sm leading-7 text-brandTextMedium md:text-base ${align === 'center' ? 'mx-auto max-w-3xl' : 'max-w-3xl'}`}>
         {description}
       </p>
     </div>
@@ -143,7 +143,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
 
       <section id="home" className="reveal-on-scroll px-4 py-20 sm:px-6 lg:px-8 lg:py-28 text-center">
         <div className="mx-auto max-w-3xl">
-          <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+          <h1 className="text-3xl font-extrabold leading-[1.1] tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
             PZM Computers
             <br />
             &amp; Phones Store
@@ -152,7 +152,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
               New•Used•Repair•PC•Build
             </span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-brandTextMedium">
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-brandTextMedium">
             Your integrated device solutions hub in Al Barsha, Dubai. Expert repairs, brand new &amp; certified used devices, custom gaming PC builds — all under one roof.
           </p>
 
@@ -191,7 +191,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
                 className="reveal-on-scroll group overflow-hidden rounded-[30px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
                 style={{ animationDelay: `${index * 90}ms` }}
               >
-                <div className="grid min-h-[280px] grid-cols-1 md:grid-cols-[220px,1fr]">
+                <div className="grid min-h-[240px] grid-cols-1 md:grid-cols-[180px,1fr]">
                   <div className="bg-slate-100">
                     <img src={category.imageUrl} alt={category.title} className="h-full w-full object-cover" />
                   </div>
@@ -199,7 +199,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
                     <span className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] ${category.badgeClassName}`}>
                       {category.tag}
                     </span>
-                    <h3 className="mt-5 text-2xl font-bold text-slate-900">{category.title}</h3>
+                    <h3 className="mt-5 text-xl font-bold text-slate-900">{category.title}</h3>
                     <p className="mt-3 text-sm leading-7 text-brandTextMedium">{category.description}</p>
                     <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-700 transition-all group-hover:gap-3 group-hover:text-primary">
                       Open category
@@ -247,11 +247,11 @@ export default function HomePage({ onShopClick }: HomePageProps) {
                   <img
                     src={card.cardImageUrl}
                     alt={card.title}
-                    className="w-full h-44 object-cover transition-transform group-hover:scale-105"
+                    className="w-full h-36 object-cover transition-transform group-hover:scale-105"
                   />
                 </div>
               ) : (
-                <div className="w-full h-44 flex items-center justify-center rounded-lg bg-slate-50 mb-4 text-5xl">
+                <div className="w-full h-36 flex items-center justify-center rounded-lg bg-slate-50 mb-4 text-5xl">
                   {card.emoji}
                 </div>
               )}
@@ -291,7 +291,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
           {homeTrustCards.map((card, index) => (
             <div key={card.title} className="reveal-on-scroll rounded-[28px] border border-brandBorder bg-white p-8 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg" style={{ animationDelay: `${index * 70}ms` }}>
               <div className="text-4xl">{card.emoji}</div>
-              <h3 className="mt-5 text-xl font-bold text-slate-900">{card.title}</h3>
+              <h3 className="mt-5 text-lg font-bold text-slate-900">{card.title}</h3>
               <p className="mt-3 text-sm leading-7 text-brandTextMedium">{card.description}</p>
             </div>
           ))}
@@ -314,7 +314,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
                 className="reveal-on-scroll overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
                 style={{ animationDelay: `${index * 80}ms` }}
               >
-                <div className="relative h-36 overflow-hidden">
+                <div className="relative h-32 overflow-hidden">
                   <img src={post.imageUrl} alt={post.title} className="h-full w-full object-cover" loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/15 to-transparent" />
                   <div className={`absolute inset-0 bg-gradient-to-br ${post.themeClassName} opacity-20`} />
@@ -326,7 +326,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
                   </div>
                 </div>
                 <div className="p-7">
-                  <h3 className="text-xl font-bold leading-8 text-slate-900">{post.title}</h3>
+                  <h3 className="text-lg font-bold leading-8 text-slate-900">{post.title}</h3>
                   <p className="mt-3 text-sm leading-7 text-brandTextMedium">{post.description}</p>
                   <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-700">
                     Read article
@@ -373,7 +373,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
 
       <section className="reveal-on-scroll bg-slate-950 px-4 py-16 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight">Areas We Serve in Dubai</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Areas We Serve in Dubai</h2>
           <p className="mt-3 text-base text-slate-300 md:text-lg">Based in Al Barsha, proudly serving customers from across Dubai.</p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             {orderedAreas.map((area) => (

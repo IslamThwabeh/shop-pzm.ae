@@ -124,8 +124,8 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
       <section className="rounded-[32px] border border-brandBorder bg-white px-6 py-10 shadow-sm md:px-10 md:py-12">
         <div className="mx-auto max-w-4xl text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Brand-new retail</p>
-          <h1 className="mt-4 text-3xl font-bold text-slate-950 md:text-4xl">Brand-new devices in a cleaner catalog view</h1>
-          <p className="mt-4 text-base leading-8 text-brandTextMedium md:text-lg">
+          <h1 className="mt-4 text-2xl font-bold text-slate-950 md:text-3xl">Brand-new devices in a cleaner catalog view</h1>
+          <p className="mt-4 text-sm leading-8 text-brandTextMedium md:text-base">
             Shop current phones, tablets, laptops, gaming hardware, and work devices without the extra visual noise. Live stock stays visible, while missing categories stay request-friendly.
           </p>
         </div>
@@ -162,7 +162,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
       <section className="space-y-4">
         <div className="text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Browse by category</p>
-          <h2 className="mt-2 text-3xl font-bold text-slate-950">Choose the device type first</h2>
+          <h2 className="mt-2 text-2xl font-bold text-slate-950">Choose the device type first</h2>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -215,7 +215,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Live stock</p>
-            <h2 className="mt-2 text-3xl font-bold text-slate-950">Current brand-new devices on the site</h2>
+            <h2 className="mt-2 text-2xl font-bold text-slate-950">Current brand-new devices on the site</h2>
             <p className="mt-3 max-w-3xl text-brandTextMedium">
               Browse brand-new devices currently available with real-time pricing and stock levels.
             </p>
@@ -243,7 +243,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                       </span>
                       <div>
                         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{group.category.shortTitle}</p>
-                        <h3 className="mt-2 text-2xl font-bold text-slate-950">{group.category.title}</h3>
+                        <h3 className="mt-2 text-xl font-bold text-slate-950">{group.category.title}</h3>
                         <p className="mt-3 max-w-3xl text-brandTextMedium">{group.category.description}</p>
                       </div>
                     </div>
@@ -269,12 +269,12 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                             Brand new • {product.storage} • {product.color}
                           </p>
 
-                          <h4 className="mt-3 text-lg font-bold text-slate-950">{product.model}</h4>
+                          <h4 className="mt-3 text-base font-bold text-slate-950">{product.model}</h4>
                           <p className="mt-2 text-sm leading-7 text-brandTextMedium">{product.description || `${product.color} ${product.model}`}</p>
 
                           <div className="mt-4 flex items-end justify-between gap-4">
                             <div>
-                              <p className="text-2xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
+                              <p className="text-xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
                             </div>
                             <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
                               {(product.quantity ?? 0) > 0 ? `${product.quantity} in stock` : 'Out of stock'}
@@ -396,7 +396,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.1fr,0.9fr] lg:items-start">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Book Appointment</p>
-            <h2 className="mt-3 text-3xl font-bold text-slate-950">Need help choosing a brand-new device?</h2>
+            <h2 className="mt-3 text-2xl font-bold text-slate-950">Need help choosing a brand-new device?</h2>
             <p className="mt-4 text-brandTextMedium leading-7">
               Book a quick in-store or pickup consultation and let the team help you confirm model, storage, color, pricing, and availability.
             </p>
@@ -413,7 +413,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
 
       <div className="grid grid-cols-1 xl:grid-cols-[1.1fr,0.9fr] gap-8 items-start">
         <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Quick Buying Flow</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Buying Flow</h2>
           <div className="space-y-4 text-brandTextDark">
             <p><span className="font-semibold text-primary">1.</span> Browse live brand-new products listed above.</p>
             <p><span className="font-semibold text-primary">2.</span> Tap <strong>Contact us</strong> on any product to lock model, color, and price.</p>
