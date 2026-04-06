@@ -236,7 +236,7 @@ export const homeFaqItems: HomeFaqItem[] = [
   },
   {
     question: 'What are your working hours?',
-    answer: 'We are open 7 days a week. Sunday is 10 AM to 1 AM, Monday to Friday is 10 AM to 11 PM, and Saturday is 10 AM to 12 AM Dubai time.',
+    answer: 'Please check the Contact Us section on this page for our latest and most accurate working hours, or message us on WhatsApp for instant confirmation.',
   },
 ]
 
