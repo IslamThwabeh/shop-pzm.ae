@@ -199,9 +199,9 @@ export default function HomeAppointmentPanel({
 
   if (successId) {
     return (
-      <div className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-xl">
+      <div className="rounded-2xl border border-brandBorder bg-white p-6 shadow-xl">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Request submitted</p>
-        <h3 className="mt-3 text-3xl font-bold text-slate-900">Your booking request is now in the system</h3>
+        <h3 className="mt-3 text-2xl font-bold text-slate-900">Your booking request is now in the system</h3>
         <p className="mt-4 text-brandTextMedium">
           We saved your request under reference <span className="font-semibold text-primary">{successId}</span>. The team can now follow it up as a first-party lead instead of relying on WhatsApp history.
         </p>
@@ -210,13 +210,13 @@ export default function HomeAppointmentPanel({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-[28px] border border-white/70 bg-white/90 p-6 shadow-2xl backdrop-blur md:p-8">
-      <div className="mb-6 flex items-start justify-between gap-4">
+    <form onSubmit={handleSubmit} className="rounded-2xl border border-white/70 bg-white/90 p-5 shadow-2xl backdrop-blur md:p-6">
+      <div className="mb-5 flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Book now</p>
-          <h3 className="mt-2 text-2xl font-bold text-slate-900">Book drop-off or pickup</h3>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Book now</p>
+          <h3 className="mt-2 text-xl font-bold text-slate-900">Book drop-off or pickup</h3>
         </div>
-        <CalendarDays className="text-primary" size={28} />
+        <CalendarDays className="text-primary" size={22} />
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
@@ -229,9 +229,9 @@ export default function HomeAppointmentPanel({
               : 'border-brandBorder bg-white hover:border-primary'
           }`}
         >
-          <div className="flex items-start gap-3">
-            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-primary ring-1 ring-brandBorder">
-              <Store size={18} />
+          <div className="flex items-start gap-2.5">
+            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-primary ring-1 ring-brandBorder">
+              <Store size={16} />
             </span>
             <div>
               <p className="font-semibold text-slate-900">I will bring my device</p>
@@ -249,9 +249,9 @@ export default function HomeAppointmentPanel({
               : 'border-brandBorder bg-white hover:border-primary'
           }`}
         >
-          <div className="flex items-start gap-3">
-            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-primary ring-1 ring-brandBorder">
-              <Truck size={18} />
+          <div className="flex items-start gap-2.5">
+            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-primary ring-1 ring-brandBorder">
+              <Truck size={16} />
             </span>
             <div>
               <p className="font-semibold text-slate-900">Pick up and return</p>
@@ -267,13 +267,13 @@ export default function HomeAppointmentPanel({
         </div>
       )}
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
+      <div className="mt-5 grid gap-3 md:grid-cols-2">
         <label className="block">
           <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">Required service</span>
           <select
             value={serviceType}
             onChange={(event) => setServiceType(event.target.value)}
-            className="w-full rounded-2xl border border-brandBorder px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
+            className="w-full rounded-xl border border-brandBorder px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
           >
             {SERVICE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>{option.label}</option>
@@ -287,19 +287,19 @@ export default function HomeAppointmentPanel({
             value={customerName}
             onChange={(event) => setCustomerName(event.target.value)}
             placeholder="Enter your name"
-            className="w-full rounded-2xl border border-brandBorder px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
+            className="w-full rounded-xl border border-brandBorder px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
           />
         </label>
       </div>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
+      <div className="mt-3 grid gap-3 md:grid-cols-2">
         <label className="block">
           <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">Phone</span>
           <input
             value={customerPhone}
             onChange={(event) => setCustomerPhone(event.target.value)}
             placeholder="+971 5X XXX XXXX"
-            className="w-full rounded-2xl border border-brandBorder px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
+            className="w-full rounded-xl border border-brandBorder px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
           />
         </label>
 
@@ -310,7 +310,7 @@ export default function HomeAppointmentPanel({
             min={mode === 'pickup' ? pickupMinDate : today}
             value={preferredDate}
             onChange={(event) => setPreferredDate(event.target.value)}
-            className="w-full rounded-2xl border border-brandBorder px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
+            className="w-full rounded-xl border border-brandBorder px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
           />
         </label>
       </div>
@@ -324,13 +324,13 @@ export default function HomeAppointmentPanel({
               value={pickupAddress}
               onChange={(event) => setPickupAddress(event.target.value)}
               placeholder="Dubai, Al Barsha"
-              className="w-full rounded-2xl border border-brandBorder py-3 pl-11 pr-4 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
+              className="w-full rounded-xl border border-brandBorder py-2.5 pl-10 pr-3 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
             />
           </div>
         </label>
       )}
 
-      <div className="mt-6">
+      <div className="mt-5">
         <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">
           <Clock3 size={14} />
           Time period
@@ -341,7 +341,7 @@ export default function HomeAppointmentPanel({
               key={period}
               type="button"
               onClick={() => setTimePeriod(period)}
-              className={`rounded-full px-4 py-3 text-sm font-semibold capitalize transition-colors ${
+              className={`rounded-full px-3 py-2 text-sm font-semibold capitalize transition-colors ${
                 timePeriod === period
                   ? 'bg-primary text-white'
                   : 'border border-brandBorder bg-white text-brandTextDark hover:border-primary hover:text-primary'
@@ -362,7 +362,7 @@ export default function HomeAppointmentPanel({
                 key={slot.label}
                 type="button"
                 onClick={() => setSelectedSlot(slot.label)}
-                className={`rounded-2xl border px-3 py-3 text-sm font-medium transition-colors ${
+                className={`rounded-xl border px-2.5 py-2.5 text-sm font-medium transition-colors ${
                   selectedSlot === slot.label
                     ? 'border-primary bg-brandLight text-primary'
                     : 'border-brandBorder bg-white text-brandTextDark hover:border-primary hover:text-primary'
@@ -382,18 +382,18 @@ export default function HomeAppointmentPanel({
       <label className="mt-4 block">
         <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">Device or service summary</span>
         <textarea
-          rows={4}
+          rows={3}
           value={details}
           onChange={(event) => setDetails(event.target.value)}
           placeholder="Tell us the device model, issue, or what you want collected or repaired."
-          className="w-full rounded-2xl border border-brandBorder px-4 py-3 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
+          className="w-full rounded-xl border border-brandBorder px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
         />
       </label>
 
       <button
         type="submit"
         disabled={submitting}
-        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-primary px-6 py-4 text-base font-semibold text-white transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-primary px-6 py-3 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {submitting ? 'Submitting tracked booking...' : 'Submit Tracked Booking'}
       </button>
