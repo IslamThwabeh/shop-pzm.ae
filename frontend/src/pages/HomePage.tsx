@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, MapPin, MessageCircle, Phone, Wrench } from 'lucide-react'
 import type { Product } from '@shared/types'
@@ -57,6 +57,39 @@ export default function HomePage({ onShopClick }: HomePageProps) {
     .map((slug) => areaLookup.get(slug))
     .filter((area): area is NonNullable<typeof area> => Boolean(area))
 
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined
+    }
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const elements = Array.from(document.querySelectorAll<HTMLElement>('.reveal-on-scroll'))
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      elements.forEach((element) => element.classList.add('is-visible'))
+      return undefined
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      {
+        threshold: 0.18,
+        rootMargin: '0px 0px -40px 0px',
+      }
+    )
+
+    elements.forEach((element) => observer.observe(element))
+
+    return () => observer.disconnect()
+  }, [])
+
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -107,7 +140,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         jsonLd={[storeJsonLd, faqJsonLd]}
       />
 
-      <section id="home" className="px-4 py-20 sm:px-6 lg:px-8 lg:py-28 text-center">
+      <section id="home" className="reveal-on-scroll px-4 py-20 sm:px-6 lg:px-8 lg:py-28 text-center">
         <div className="mx-auto max-w-3xl">
           <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
             PZM Computers
@@ -141,7 +174,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section id="services" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section id="services" className="reveal-on-scroll mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <SectionHeader
           badge="What We Do"
           title="Our Services"
@@ -149,11 +182,12 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         />
 
         <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {homeServiceCards.map((card) => (
+          {homeServiceCards.map((card, index) => (
             <Link
               key={card.title}
               to={card.to}
-              className="group flex flex-col items-center rounded-xl border border-brandBorder bg-white p-5 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
+              className="reveal-on-scroll group flex flex-col items-center rounded-xl border border-brandBorder bg-white p-5 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
+              style={{ animationDelay: `${index * 70}ms` }}
             >
               {card.cardImageUrl ? (
                 <div className="w-full overflow-hidden rounded-lg mb-4">
@@ -179,7 +213,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section id="products" className="border-y border-slate-200/70 bg-slate-50/80 px-4 py-20 sm:px-6 lg:px-8">
+      <section id="products" className="reveal-on-scroll border-y border-slate-200/70 bg-slate-50/80 px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeader
             badge="Featured"
@@ -188,11 +222,12 @@ export default function HomePage({ onShopClick }: HomePageProps) {
           />
 
           <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-2">
-            {homeFeaturedCategories.map((category) => (
+            {homeFeaturedCategories.map((category, index) => (
               <Link
                 key={category.title}
                 to={category.to}
-                className="group overflow-hidden rounded-[30px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+                className="reveal-on-scroll group overflow-hidden rounded-[30px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+                style={{ animationDelay: `${index * 90}ms` }}
               >
                 <div className="grid min-h-[280px] grid-cols-1 md:grid-cols-[220px,1fr]">
                   <div className="bg-slate-100">
@@ -230,7 +265,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section className="reveal-on-scroll mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <SectionHeader
           badge="Why PZM"
           title="Trusted by Dubai Residents"
@@ -238,8 +273,8 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         />
 
         <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {homeTrustCards.map((card) => (
-            <div key={card.title} className="rounded-[28px] border border-brandBorder bg-white p-8 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
+          {homeTrustCards.map((card, index) => (
+            <div key={card.title} className="reveal-on-scroll rounded-[28px] border border-brandBorder bg-white p-8 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg" style={{ animationDelay: `${index * 70}ms` }}>
               <div className="text-4xl">{card.emoji}</div>
               <h3 className="mt-5 text-xl font-bold text-slate-900">{card.title}</h3>
               <p className="mt-3 text-sm leading-7 text-brandTextMedium">{card.description}</p>
@@ -248,7 +283,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section id="blog" className="bg-[linear-gradient(180deg,#f8fafc_0%,#f0f7ff_100%)] px-4 py-20 sm:px-6 lg:px-8">
+      <section id="blog" className="reveal-on-scroll bg-[linear-gradient(180deg,#f8fafc_0%,#f0f7ff_100%)] px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeader
             badge="Latest Updates"
@@ -257,11 +292,12 @@ export default function HomePage({ onShopClick }: HomePageProps) {
           />
 
           <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-3">
-            {homeBlogTeasers.map((post) => (
+            {homeBlogTeasers.map((post, index) => (
               <Link
                 key={post.title}
                 to={post.href}
-                className="overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+                className="reveal-on-scroll overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+                style={{ animationDelay: `${index * 80}ms` }}
               >
                 <div className="relative h-36 overflow-hidden">
                   <img src={post.imageUrl} alt={post.title} className="h-full w-full object-cover" loading="lazy" />
@@ -298,7 +334,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section className="reveal-on-scroll mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <SectionHeader
           badge="Testimonials"
           title="Customer Reviews"
@@ -309,7 +345,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section id="faq" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section id="faq" className="reveal-on-scroll mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <SectionHeader
           badge="FAQ"
           title="Frequently Asked Questions"
@@ -320,7 +356,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section className="bg-slate-950 px-4 py-16 text-white sm:px-6 lg:px-8">
+      <section className="reveal-on-scroll bg-slate-950 px-4 py-16 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl text-center">
           <h2 className="text-3xl font-bold tracking-tight">Areas We Serve in Dubai</h2>
           <p className="mt-3 text-base text-slate-300 md:text-lg">Based in Al Barsha, proudly serving customers from across Dubai.</p>
@@ -338,7 +374,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section id="appointment" className="bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] px-4 py-20 sm:px-6 lg:px-8">
+      <section id="appointment" className="reveal-on-scroll bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeader
             badge="Get in Touch"

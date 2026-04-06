@@ -9,14 +9,6 @@ export default function StoreContactSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 xl:grid-cols-[0.95fr,1.05fr] gap-10 items-start">
           <div className="space-y-8 text-left">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Visit or Contact PZM</p>
-              <h2 className="mt-3 text-4xl font-bold text-brandTextDark">One Dubai storefront for sales, repairs, and support</h2>
-              <p className="mt-4 max-w-2xl text-lg text-brandTextMedium">
-                {siteIdentity.summary} Start with the right product or service page, or contact the team directly by phone, maps, or WhatsApp when you need help.
-              </p>
-            </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <a
                 href={siteContact.phoneHref}
