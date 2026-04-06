@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, CalendarDays, MessageCircle, Phone, ShieldCheck, Wrench } from 'lucide-react'
+import { ArrowRight, MapPin, MessageCircle, Phone, Wrench } from 'lucide-react'
 import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
 import FaqAccordion from '../components/FaqAccordion'
@@ -16,7 +16,6 @@ import {
 } from '../content/homePageContent'
 import { siteContact, siteIdentity } from '../content/siteData'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
-import { buildApiUrl } from '../utils/siteConfig'
 
 type SectionHeaderProps = {
   badge: string
@@ -48,12 +47,7 @@ interface HomePageProps {
   onShopClick: () => void
 }
 
-export default function HomePage({ products, onShopClick }: HomePageProps) {
-  const inStockProducts = useMemo(
-    () => products.filter((product) => (product.quantity ?? 0) > 0),
-    [products]
-  )
-
+export default function HomePage({ onShopClick }: HomePageProps) {
   const areaLookup = useMemo(
     () => new Map(areaCatalogList.map((area) => [area.slug, area])),
     []
@@ -113,89 +107,36 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
         jsonLd={[storeJsonLd, faqJsonLd]}
       />
 
-      <section id="home" className="relative overflow-hidden bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_55%,#f0f7ff_100%)] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-        <div className="pointer-events-none absolute inset-0 opacity-[0.07]">
-          <img src={buildApiUrl('/media/legacy/Services/all_services_pic.jpg')} alt="" className="h-full w-full object-cover" />
-        </div>
-
-        <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
-          <div>
-            <span className="inline-flex rounded-full border border-white/80 bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-sky-700 shadow-sm backdrop-blur">
-              Al Barsha, Dubai
+      <section id="home" className="px-4 py-20 sm:px-6 lg:px-8 lg:py-28 text-center">
+        <div className="mx-auto max-w-3xl">
+          <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+            PZM Computers
+            <br />
+            &amp; Phones Store
+            <br />
+            <span className="bg-gradient-to-r from-sky-500 to-primary bg-clip-text text-transparent">
+              New•Used•Repair•PC•Build
             </span>
-            <h1 className="mt-6 text-4xl font-extrabold leading-[1.05] tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-              PZM Computers
-              <br />
-              and Phones Store
-              <br />
-              <span className="bg-gradient-to-r from-sky-500 to-primary bg-clip-text text-transparent">
-                New Used Repair PC Build
-              </span>
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-brandTextMedium">
-              Your integrated device solutions hub in Al Barsha, Dubai. Expert repairs, brand new and certified used devices, custom gaming PC builds, accessories, and direct support from one local team.
-            </p>
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-brandTextMedium">
+            Your integrated device solutions hub in Al Barsha, Dubai. Expert repairs, brand new &amp; certified used devices, custom gaming PC builds — all under one roof.
+          </p>
 
-            <div className="mt-8 flex flex-wrap gap-4">
-              <button
-                onClick={onShopClick}
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-4 text-base font-semibold text-white shadow-[0_10px_30px_rgba(0,167,111,0.25)] transition-transform hover:-translate-y-0.5 hover:bg-brandGreenDark"
-              >
-                <MessageCircle size={18} />
-                Browse Devices
-              </button>
-              <Link
-                to="/services/repair"
-                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-7 py-4 text-base font-semibold text-slate-900 transition-colors hover:border-primary hover:text-primary"
-              >
-                <Wrench size={18} />
-                Repair Services
-              </Link>
-            </div>
-
-            <div className="mt-10 flex flex-wrap gap-3">
-              <span className="rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">{inStockProducts.length} live products</span>
-              <span className="rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">8 service categories</span>
-              <span className="rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">Open late, 7 days</span>
-            </div>
-          </div>
-
-          <div className="rounded-[32px] border border-white/70 bg-white/80 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.12)] backdrop-blur md:p-8">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-3xl bg-gradient-to-br from-sky-50 to-white p-5 ring-1 ring-sky-100">
-                <ShieldCheck className="text-sky-600" size={22} />
-                <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-sky-700">Why PZM</p>
-                <h2 className="mt-2 text-xl font-bold text-slate-900">Warranty, repairs, and pickups</h2>
-                <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-                  Genuine warranty coverage, same-day repair for many devices, and pickup and delivery across Dubai.
-                </p>
-              </div>
-
-              <div className="rounded-3xl bg-gradient-to-br from-emerald-50 to-white p-5 ring-1 ring-emerald-100">
-                <CalendarDays className="text-primary" size={22} />
-                <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-emerald-700">Booking</p>
-                <h2 className="mt-2 text-xl font-bold text-slate-900">Book drop-off or pickup</h2>
-                <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-                  Use the appointment panel to request pickup, drop-off, or a callback from the PZM team.
-                </p>
-              </div>
-
-              <div className="rounded-3xl bg-slate-950 p-5 text-white sm:col-span-2">
-                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-sky-200">Store details</p>
-                <h2 className="mt-2 text-2xl font-bold">{siteIdentity.name}</h2>
-                <div className="mt-4 grid gap-3 text-sm text-slate-200 md:grid-cols-3">
-                  <a href={siteContact.phoneHref} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 transition-colors hover:bg-white/10">
-                    Call {siteContact.phoneDisplay}
-                  </a>
-                  <a href={siteContact.mapsHref} target="_blank" rel="noopener noreferrer" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 transition-colors hover:bg-white/10">
-                    Get directions
-                  </a>
-                  <Link to="/services" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 transition-colors hover:bg-white/10">
-                    Explore services
-                  </Link>
-                </div>
-              </div>
-            </div>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <button
+              onClick={onShopClick}
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-4 text-base font-semibold text-white shadow-[0_10px_30px_rgba(0,167,111,0.25)] transition-transform hover:-translate-y-0.5 hover:bg-brandGreenDark"
+            >
+              <MessageCircle size={18} />
+              Shop Now
+            </button>
+            <Link
+              to="/services/repair"
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-7 py-4 text-base font-semibold text-slate-900 transition-colors hover:border-primary hover:text-primary"
+            >
+              <Wrench size={18} />
+              Repair Services
+            </Link>
           </div>
         </div>
       </section>
@@ -204,45 +145,35 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
         <SectionHeader
           badge="What We Do"
           title="Our Services"
-          description="From expert repairs to custom builds, explore the main ways PZM can help with your device, setup, or next purchase."
+          description="Everything you need for phones, laptops & PCs — all under one roof at our Al Barsha store on Hessa Street, Dubai."
         />
 
-        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {homeServiceCards.map((card) => (
             <Link
               key={card.title}
               to={card.to}
-              className="group relative overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1.5 hover:border-transparent hover:shadow-xl"
+              className="group flex flex-col items-center rounded-xl border border-brandBorder bg-white p-5 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
             >
-              {card.imageUrl ? (
-                <div className="relative h-40 overflow-hidden bg-slate-100">
+              {card.cardImageUrl ? (
+                <div className="w-full overflow-hidden rounded-lg mb-4">
                   <img
-                    src={card.imageUrl}
-                    alt={card.imageAlt || card.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    src={card.cardImageUrl}
+                    alt={card.title}
+                    className="w-full h-44 object-cover transition-transform group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/45 via-slate-950/10 to-transparent" />
-                  <div className={`absolute left-5 top-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${card.accentClassName} text-2xl shadow-sm`}>
-                    {card.emoji}
-                  </div>
                 </div>
               ) : (
-                <div className="p-7 pb-0">
-                  <div className={`inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${card.accentClassName} text-2xl shadow-sm`}>
-                    {card.emoji}
-                  </div>
+                <div className="w-full h-44 flex items-center justify-center rounded-lg bg-slate-50 mb-4 text-5xl">
+                  {card.emoji}
                 </div>
               )}
-
-              <div className="p-7">
-                <h3 className="text-xl font-bold text-slate-900">{card.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-brandTextMedium">{card.description}</p>
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-700 transition-all group-hover:gap-3 group-hover:text-primary">
-                  {card.cta}
-                  <ArrowRight size={16} />
-                </span>
-              </div>
-              <div className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-sky-500 to-primary transition-transform group-hover:scale-x-100" />
+              <h3 className="text-base font-semibold text-slate-900 group-hover:text-primary transition-colors">{card.title}</h3>
+              <p className="mt-1 text-sm text-brandTextMedium">{card.description}</p>
+              <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+                {card.cta}
+                <ArrowRight size={14} />
+              </span>
             </Link>
           ))}
         </div>
@@ -442,7 +373,7 @@ export default function HomePage({ products, onShopClick }: HomePageProps) {
               rel="noopener noreferrer"
               className="group rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm text-center transition-all hover:-translate-y-1 hover:shadow-lg"
             >
-              <CalendarDays className="mx-auto text-primary" size={28} />
+              <MapPin className="mx-auto text-primary" size={28} />
               <h3 className="mt-5 text-xl font-bold text-slate-900">Visit Our Store</h3>
               <p className="mt-3 text-sm leading-7 text-brandTextMedium">Hessa Union Coop Hypermarket, Ground Floor — Al Barsha, Dubai.</p>
             </a>

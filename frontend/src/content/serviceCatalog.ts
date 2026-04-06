@@ -22,6 +22,8 @@ export interface ServiceCatalogEntry {
   requestKinds: ServiceRequestOption[]
   imageUrl?: string
   imageAlt?: string
+  cardImageUrl?: string
+  cardDescription?: string
   detailSections?: ServiceDetailSection[]
 }
 
@@ -46,6 +48,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
     ],
     imageUrl: legacyMedia('Services/repairing_services.jpg'),
     imageAlt: 'Repair services at PZM',
+    cardImageUrl: '/images/Catigories/mini_laptop_maintenance.webp',
+    cardDescription: 'Expert device repair and maintenance',
     requestKinds: [
       { value: 'booking', label: 'Book repair or drop-off', description: 'Reserve a repair visit, drop-off, or pickup slot.' },
       { value: 'quote', label: 'Request repair estimate', description: 'Describe the issue and ask for a cost estimate first.' },
@@ -112,6 +116,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
     ],
     imageUrl: legacyMedia('Services/Sell_Your_Old_iPhones.jpg'),
     imageAlt: 'Sell your old iPhone at PZM',
+    cardImageUrl: '/images/Catigories/mini_sell-gadgets.webp',
+    cardDescription: 'Get the best price for your devices',
     requestKinds: quoteAndCallback,
     detailSections: [
       {
@@ -174,6 +180,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
     ],
     imageUrl: legacyMedia('Catigories/GamingPC.JPG'),
     imageAlt: 'Gaming PC builds at PZM',
+    cardImageUrl: '/images/Catigories/mini_GamingPC.webp',
+    cardDescription: 'Custom gaming PC builds',
     requestKinds: [
       { value: 'quote', label: 'Request a build quote', description: 'Share your budget and goal to get a recommended configuration.' },
       { value: 'callback', label: 'Talk through the build', description: 'Ask the team to call you and discuss parts and timing.' },
@@ -243,6 +251,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
     ],
     imageUrl: legacyMedia('Catigories/mobile_accessories.jpg'),
     imageAlt: 'Accessories and peripherals at PZM',
+    cardImageUrl: '/images/Catigories/mini_mobile_accessories.webp',
+    cardDescription: 'Wide range of genuine accessories',
     requestKinds: [
       { value: 'availability', label: 'Check availability', description: 'Ask whether a specific accessory is in stock.' },
       { value: 'quote', label: 'Request a bundle quote', description: 'Ask for pricing on multiple accessories together.' },
@@ -324,6 +334,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
     ],
     imageUrl: legacyMedia('Catigories/brand_new.jpg'),
     imageAlt: 'Brand new device range at PZM',
+    cardImageUrl: '/images/Catigories/mini_brand_new.webp',
+    cardDescription: 'Latest smartphones, laptops, and accessories',
     requestKinds: [
       { value: 'availability', label: 'Check model availability', description: 'Ask about a model or configuration before ordering.' },
       { value: 'quote', label: 'Request a price confirmation', description: 'Ask for a confirmed price and stock status.' },
@@ -343,6 +355,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
     ],
     imageUrl: legacyMedia('buy_iphone/iPhone_17_Pro_Max_all_colors.jpg'),
     imageAlt: 'iPhone 17 Pro Max color lineup at PZM',
+    cardImageUrl: '/images/Catigories/mini_buy_iphone.webp',
+    cardDescription: 'iPhone 17 series in all colors — Cash on Delivery',
     requestKinds: [
       { value: 'availability', label: 'Check iPhone availability', description: 'Ask whether a model, storage option, or color is available.' },
       { value: 'quote', label: 'Request a confirmed offer', description: 'Ask for pricing confirmation before placing the order.' },
@@ -362,6 +376,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
     ],
     imageUrl: legacyMedia('buy_used/used_iphone_16_pro_max_main.webp'),
     imageAlt: 'Used devices at PZM',
+    cardImageUrl: '/images/Catigories/mini_Used_Phones.webp',
+    cardDescription: 'Quality checked pre-owned devices',
     requestKinds: [
       { value: 'availability', label: 'Check used stock', description: 'Ask about stock, condition, or configuration.' },
       { value: 'quote', label: 'Request a price confirmation', description: 'Ask for a confirmed price on a used device.' },

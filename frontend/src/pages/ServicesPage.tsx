@@ -1,11 +1,8 @@
 import { Link } from 'react-router-dom'
 import Seo from '../components/Seo'
 import { serviceCatalogList } from '../content/serviceCatalog'
-import { buildApiUrl } from '../utils/siteConfig'
 
 export default function ServicesPage() {
-  const servicesHeroImage = buildApiUrl('/media/legacy/Services/all_services_pic.jpg')
-
   return (
     <div className="space-y-10">
       <Seo
@@ -14,52 +11,41 @@ export default function ServicesPage() {
         canonicalPath="/services"
       />
 
-      <section className="overflow-hidden rounded-3xl border border-brandBorder bg-white shadow-md text-left">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr,0.95fr] lg:items-stretch">
-          <div className="p-8 md:p-12">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">Dubai sales and support</p>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Book services, ask for stock, or request a callback</h1>
-            <p className="text-lg text-brandTextMedium max-w-3xl">
-              Use these pages to request repairs, trade-ins, custom builds, accessories, device availability, and website work from PZM.
-              Use the dedicated service pages as the main browsing paths before checkout.
-            </p>
-          </div>
-          <div className="min-h-[280px] bg-slate-100">
-            <img src={servicesHeroImage} alt="PZM services overview" className="h-full w-full object-cover" />
-          </div>
-        </div>
+      <section className="text-center">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Our Services</h1>
+        <p className="text-brandTextMedium max-w-xl mx-auto">
+          Everything you need for phones, laptops &amp; PCs — all under one roof at our Al Barsha store on Hessa Street, Dubai.
+        </p>
       </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {serviceCatalogList.map((service) => (
-          <article key={service.slug} className="overflow-hidden rounded-2xl border border-brandBorder bg-white shadow-sm text-left">
-            {service.imageUrl && (
-              <div className="h-52 bg-slate-100">
-                <img src={service.imageUrl} alt={service.imageAlt || service.title} className="h-full w-full object-cover" />
+          <Link
+            key={service.slug}
+            to={`/services/${service.slug}`}
+            className="group flex flex-col items-center rounded-xl border border-brandBorder bg-white p-5 text-center shadow-sm transition-all hover:shadow-md hover:-translate-y-1"
+          >
+            {service.cardImageUrl ? (
+              <div className="w-full overflow-hidden rounded-lg mb-4">
+                <img
+                  src={service.cardImageUrl}
+                  alt={service.title}
+                  className="w-full h-48 object-cover transition-transform group-hover:scale-105"
+                />
+              </div>
+            ) : (
+              <div className="w-full h-48 flex items-center justify-center rounded-lg bg-slate-50 mb-4 text-5xl">
+                🌐
               </div>
             )}
-
-            <div className="p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary mb-3">{service.title}</p>
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">{service.heroTitle}</h2>
-              <p className="text-brandTextMedium mb-5">{service.heroDescription}</p>
-
-              <div className="space-y-2 mb-6">
-                {service.highlights.slice(0, 2).map((highlight) => (
-                  <p key={highlight} className="text-sm text-brandTextDark">• {highlight}</p>
-                ))}
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  to={`/services/${service.slug}`}
-                  className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
-                >
-                  Open Service Page
-                </Link>
-              </div>
-            </div>
-          </article>
+            <h2 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-primary transition-colors">
+              {service.title}
+            </h2>
+            <p className="text-sm text-brandTextMedium mb-3">
+              {service.cardDescription || service.description}
+            </p>
+            <span className="mt-auto text-sm font-medium text-primary">Learn more</span>
+          </Link>
         ))}
       </section>
     </div>
