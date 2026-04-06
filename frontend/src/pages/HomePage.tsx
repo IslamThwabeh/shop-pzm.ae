@@ -271,7 +271,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
           <SectionHeader
             badge="Book Appointment"
             title="Book Drop-Off or Pickup"
-            description="Reserve a repair slot with real Dubai timing. Choose in-store drop-off or pickup and return."
+            description="Choose drop-off or pickup and submit your booking request."
           />
 
           <div className="mx-auto mt-12 max-w-4xl">

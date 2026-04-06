@@ -129,11 +129,6 @@ export default function HomeAppointmentPanel({
     }
   }, [availableSlots, selectedSlot])
 
-  const bookingNote =
-    mode === 'store'
-      ? 'Same-day booking is available for store drop-off. For today, only upcoming Dubai time slots are shown.'
-      : 'Pickup and return requires at least 24 hours notice. Add your area or address so the team can confirm transport.'
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
@@ -234,9 +229,15 @@ export default function HomeAppointmentPanel({
               : 'border-brandBorder bg-white hover:border-primary'
           }`}
         >
-          <Store size={18} className="text-primary" />
-          <p className="mt-3 font-semibold text-slate-900">I will bring my device</p>
-          <p className="mt-1 text-sm text-brandTextMedium">Same-day drop-off at the Al Barsha store.</p>
+          <div className="flex items-start gap-3">
+            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-primary ring-1 ring-brandBorder">
+              <Store size={18} />
+            </span>
+            <div>
+              <p className="font-semibold text-slate-900">I will bring my device</p>
+              <p className="mt-1 text-sm text-brandTextMedium">Same-day drop-off at the Al Barsha store.</p>
+            </div>
+          </div>
         </button>
 
         <button
@@ -248,14 +249,16 @@ export default function HomeAppointmentPanel({
               : 'border-brandBorder bg-white hover:border-primary'
           }`}
         >
-          <Truck size={18} className="text-primary" />
-          <p className="mt-3 font-semibold text-slate-900">Pick up and return</p>
-          <p className="mt-1 text-sm text-brandTextMedium">We collect it from you and return it after service.</p>
+          <div className="flex items-start gap-3">
+            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-primary ring-1 ring-brandBorder">
+              <Truck size={18} />
+            </span>
+            <div>
+              <p className="font-semibold text-slate-900">Pick up and return</p>
+              <p className="mt-1 text-sm text-brandTextMedium">We collect it from you and return it after service.</p>
+            </div>
+          </div>
         </button>
-      </div>
-
-      <div className="mt-4 rounded-2xl border border-primary/10 bg-brandLight px-4 py-3 text-sm text-brandTextDark">
-        {bookingNote}
       </div>
 
       {error && (
