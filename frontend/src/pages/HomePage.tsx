@@ -1,9 +1,10 @@
 import { useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, MapPin, MessageCircle, Phone, Wrench } from 'lucide-react'
+import { ArrowRight, MessageCircle, Wrench } from 'lucide-react'
 import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
 import FaqAccordion from '../components/FaqAccordion'
+import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
 import TestimonialCards from '../components/TestimonialCards'
 import { areaCatalogList } from '../content/areaCatalog'
 import {
@@ -174,45 +175,6 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section id="services" className="reveal-on-scroll mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <SectionHeader
-          badge="What We Do"
-          title="Our Services"
-          description="Everything you need for phones, laptops & PCs — all under one roof at our Al Barsha store on Hessa Street, Dubai."
-        />
-
-        <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {homeServiceCards.map((card, index) => (
-            <Link
-              key={card.title}
-              to={card.to}
-              className="reveal-on-scroll group flex flex-col items-center rounded-xl border border-brandBorder bg-white p-5 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
-              style={{ animationDelay: `${index * 70}ms` }}
-            >
-              {card.cardImageUrl ? (
-                <div className="w-full overflow-hidden rounded-lg mb-4">
-                  <img
-                    src={card.cardImageUrl}
-                    alt={card.title}
-                    className="w-full h-44 object-cover transition-transform group-hover:scale-105"
-                  />
-                </div>
-              ) : (
-                <div className="w-full h-44 flex items-center justify-center rounded-lg bg-slate-50 mb-4 text-5xl">
-                  {card.emoji}
-                </div>
-              )}
-              <h3 className="text-base font-semibold text-slate-900 group-hover:text-primary transition-colors">{card.title}</h3>
-              <p className="mt-1 text-sm text-brandTextMedium">{card.description}</p>
-              <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
-                {card.cta}
-                <ArrowRight size={14} />
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
       <section id="products" className="reveal-on-scroll border-y border-slate-200/70 bg-slate-50/80 px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeader
@@ -261,6 +223,59 @@ export default function HomePage({ onShopClick }: HomePageProps) {
               Explore Device Pages
               <ArrowRight size={16} />
             </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="services" className="reveal-on-scroll mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeader
+          badge="What We Do"
+          title="Our Services"
+          description="Everything you need for phones, laptops & PCs — all under one roof at our Al Barsha store on Hessa Street, Dubai."
+        />
+
+        <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {homeServiceCards.map((card, index) => (
+            <Link
+              key={card.title}
+              to={card.to}
+              className="reveal-on-scroll group flex flex-col items-center rounded-xl border border-brandBorder bg-white p-5 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
+              style={{ animationDelay: `${index * 70}ms` }}
+            >
+              {card.cardImageUrl ? (
+                <div className="w-full overflow-hidden rounded-lg mb-4">
+                  <img
+                    src={card.cardImageUrl}
+                    alt={card.title}
+                    className="w-full h-44 object-cover transition-transform group-hover:scale-105"
+                  />
+                </div>
+              ) : (
+                <div className="w-full h-44 flex items-center justify-center rounded-lg bg-slate-50 mb-4 text-5xl">
+                  {card.emoji}
+                </div>
+              )}
+              <h3 className="text-base font-semibold text-slate-900 group-hover:text-primary transition-colors">{card.title}</h3>
+              <p className="mt-1 text-sm text-brandTextMedium">{card.description}</p>
+              <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+                {card.cta}
+                <ArrowRight size={14} />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section id="appointment" className="reveal-on-scroll bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeader
+            badge="Book Appointment"
+            title="Book Drop-Off or Pickup"
+            description="Reserve a repair slot with real Dubai timing. Choose in-store drop-off or pickup and return."
+          />
+
+          <div className="mx-auto mt-12 max-w-4xl">
+            <HomeAppointmentPanel sourcePage="/#appointment" defaultServiceType="repair-mobile" />
           </div>
         </div>
       </section>
@@ -374,48 +389,6 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         </div>
       </section>
 
-      <section id="appointment" className="reveal-on-scroll bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeader
-            badge="Get in Touch"
-            title="Ready to Visit or Need Help?"
-            description="Message us on WhatsApp, call the store, or visit our Al Barsha branch. We are open 7 days a week."
-          />
-
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            <a
-              href={siteContact.whatsappSupportHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm text-center transition-all hover:-translate-y-1 hover:shadow-lg"
-            >
-              <MessageCircle className="mx-auto text-[#25D366]" size={28} />
-              <h3 className="mt-5 text-xl font-bold text-slate-900">WhatsApp Us</h3>
-              <p className="mt-3 text-sm leading-7 text-brandTextMedium">Chat with the team instantly for orders, questions, or service requests.</p>
-            </a>
-
-            <a
-              href={siteContact.phoneHref}
-              className="group rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm text-center transition-all hover:-translate-y-1 hover:shadow-lg"
-            >
-              <Phone className="mx-auto text-primary" size={28} />
-              <h3 className="mt-5 text-xl font-bold text-slate-900">Call the Store</h3>
-              <p className="mt-3 text-sm leading-7 text-brandTextMedium">{siteContact.phoneDisplay} — open late, 7 days a week.</p>
-            </a>
-
-            <a
-              href={siteContact.mapsHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm text-center transition-all hover:-translate-y-1 hover:shadow-lg"
-            >
-              <MapPin className="mx-auto text-primary" size={28} />
-              <h3 className="mt-5 text-xl font-bold text-slate-900">Visit Our Store</h3>
-              <p className="mt-3 text-sm leading-7 text-brandTextMedium">Hessa Union Coop Hypermarket, Ground Floor — Al Barsha, Dubai.</p>
-            </a>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }
