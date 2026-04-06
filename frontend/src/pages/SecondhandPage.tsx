@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { BatteryCharging, Gamepad2, Laptop, MessageCircle, RefreshCcw, ShieldCheck, Smartphone, Tablet } from 'lucide-react'
 import type { Product } from '@shared/types'
+import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { getSecondhandCategoryGroups, getSecondhandProducts, secondhandCategories, secondhandHero } from '../content/secondhandCatalog'
@@ -364,13 +365,32 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
         </article>
       </section>
 
+      <section id="appointment" className="rounded-[28px] border border-brandBorder bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] p-6 shadow-sm md:p-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.1fr,0.9fr] lg:items-start">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Book Appointment</p>
+            <h2 className="mt-3 text-3xl font-bold text-slate-950">Need help finding the right used device?</h2>
+            <p className="mt-4 text-brandTextMedium leading-7">
+              Book a quick consultation for used phones, laptops, tablets, or gaming devices and get matched options by budget and condition.
+            </p>
+            <div className="mt-5 space-y-2 text-sm text-brandTextDark">
+              <p><span className="font-semibold text-primary">1.</span> Share model, budget, and condition preference.</p>
+              <p><span className="font-semibold text-primary">2.</span> We check tested inventory and best-fit options.</p>
+              <p><span className="font-semibold text-primary">3.</span> Confirm store visit, pickup, or next step.</p>
+            </div>
+          </div>
+
+          <HomeAppointmentPanel sourcePage="/services/secondhand#appointment" defaultServiceType="other-inquiry" />
+        </div>
+      </section>
+
       <div className="grid grid-cols-1 xl:grid-cols-[1.1fr,0.9fr] gap-8 items-start">
         <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">What happens next</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Quick Buying Flow</h2>
           <div className="space-y-4 text-brandTextDark">
-            <p><span className="font-semibold text-primary">1.</span> Tell us the model, budget, storage, and condition level you want.</p>
-            <p><span className="font-semibold text-primary">2.</span> The team checks current used options, pricing, and condition details for the closest match.</p>
-            <p><span className="font-semibold text-primary">3.</span> You get a follow-up with the next step, whether that is visiting the store, confirming availability, or comparing alternatives.</p>
+            <p><span className="font-semibold text-primary">1.</span> Browse current used listings and condition details above.</p>
+            <p><span className="font-semibold text-primary">2.</span> Tap <strong>Contact us</strong> on any matching device for availability confirmation.</p>
+            <p><span className="font-semibold text-primary">3.</span> Use appointment booking if you want guided matching by budget and condition.</p>
           </div>
         </section>
 

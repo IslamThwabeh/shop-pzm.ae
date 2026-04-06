@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Briefcase, CreditCard, Gamepad2, Laptop, MessageCircle, ShieldCheck, Smartphone, Truck } from 'lucide-react'
 import type { Product } from '@shared/types'
+import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { brandNewCategories, brandNewHero, getBrandNewCategoryGroups, getBrandNewProducts } from '../content/brandNewCatalog'
@@ -391,13 +392,32 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         </article>
       </section>
 
+      <section id="appointment" className="rounded-[28px] border border-brandBorder bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] p-6 shadow-sm md:p-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.1fr,0.9fr] lg:items-start">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Book Appointment</p>
+            <h2 className="mt-3 text-3xl font-bold text-slate-950">Need help choosing a brand-new device?</h2>
+            <p className="mt-4 text-brandTextMedium leading-7">
+              Book a quick in-store or pickup consultation and let the team help you confirm model, storage, color, pricing, and availability.
+            </p>
+            <div className="mt-5 space-y-2 text-sm text-brandTextDark">
+              <p><span className="font-semibold text-primary">1.</span> Tell us the model or budget you need.</p>
+              <p><span className="font-semibold text-primary">2.</span> We check current stock and suitable alternatives.</p>
+              <p><span className="font-semibold text-primary">3.</span> Confirm drop-off, pickup, or store visit.</p>
+            </div>
+          </div>
+
+          <HomeAppointmentPanel sourcePage="/services/brand-new#appointment" defaultServiceType="other-inquiry" />
+        </div>
+      </section>
+
       <div className="grid grid-cols-1 xl:grid-cols-[1.1fr,0.9fr] gap-8 items-start">
         <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">What happens next</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Quick Buying Flow</h2>
           <div className="space-y-4 text-brandTextDark">
-            <p><span className="font-semibold text-primary">1.</span> Browse the live brand-new products listed on this page.</p>
-            <p><span className="font-semibold text-primary">2.</span> Tap <strong>Contact us</strong> on any in-stock device to chat with the team instantly.</p>
-            <p><span className="font-semibold text-primary">3.</span> If your category or model is missing, message us and the team will follow up.</p>
+            <p><span className="font-semibold text-primary">1.</span> Browse live brand-new products listed above.</p>
+            <p><span className="font-semibold text-primary">2.</span> Tap <strong>Contact us</strong> on any product to lock model, color, and price.</p>
+            <p><span className="font-semibold text-primary">3.</span> Use appointment booking for guided selection, delivery, or pickup planning.</p>
           </div>
         </section>
 
