@@ -9,6 +9,24 @@ interface FaqAccordionProps {
 export default function FaqAccordion({ items }: FaqAccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
+  const renderAnswer = (answer: string) => {
+    if (!answer.includes('Contact Us')) {
+      return answer
+    }
+
+    const segments = answer.split('Contact Us')
+
+    return (
+      <>
+        {segments[0]}
+        <a href="#appointment" className="font-semibold text-primary underline underline-offset-2">
+          Contact Us
+        </a>
+        {segments[1] ?? ''}
+      </>
+    )
+  }
+
   return (
     <div className="mx-auto max-w-3xl divide-y divide-brandBorder rounded-[28px] border border-brandBorder bg-white shadow-sm">
       {items.map((item, index) => {
@@ -29,7 +47,7 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
             </button>
             {isOpen && (
               <div className="px-6 pb-5 text-sm leading-7 text-brandTextMedium">
-                {item.answer}
+                {renderAnswer(item.answer)}
               </div>
             )}
           </div>

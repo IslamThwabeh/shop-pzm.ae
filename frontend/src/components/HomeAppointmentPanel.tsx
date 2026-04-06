@@ -65,7 +65,15 @@ function formatDateInput(date: Date) {
   return `${year}-${month}-${day}`
 }
 
-export default function HomeAppointmentPanel() {
+type HomeAppointmentPanelProps = {
+  sourcePage?: string
+  defaultServiceType?: string
+}
+
+export default function HomeAppointmentPanel({
+  sourcePage = '/#appointment',
+  defaultServiceType,
+}: HomeAppointmentPanelProps) {
   const today = useMemo(() => formatDateInput(getDubaiNow()), [])
   const pickupMinDate = useMemo(() => {
     const nextDay = getDubaiNow()
@@ -74,7 +82,13 @@ export default function HomeAppointmentPanel() {
   }, [])
 
   const [mode, setMode] = useState<BookingMode>('store')
-  const [serviceType, setServiceType] = useState(SERVICE_OPTIONS[0].value)
+  const [serviceType, setServiceType] = useState(() => {
+    if (defaultServiceType && SERVICE_OPTIONS.some((option) => option.value === defaultServiceType)) {
+      return defaultServiceType
+    }
+
+    return SERVICE_OPTIONS[0].value
+  })
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
   const [preferredDate, setPreferredDate] = useState(today)
@@ -173,7 +187,7 @@ export default function HomeAppointmentPanel() {
         preferred_date: preferredDate,
         preferred_time_period: timePeriod,
         preferred_contact_method: 'phone',
-        source_page: '/#appointment',
+        source_page: sourcePage,
       })
 
       if (!request) {
