@@ -141,32 +141,32 @@ export default function HomePage({ onShopClick }: HomePageProps) {
         jsonLd={[storeJsonLd, faqJsonLd]}
       />
 
-      <section id="home" className="reveal-on-scroll px-4 py-20 sm:px-6 lg:px-8 lg:py-28 text-center">
+      <section id="home" className="reveal-on-scroll px-4 py-14 sm:px-6 sm:py-20 lg:px-8 lg:py-28 text-center">
         <div className="mx-auto max-w-3xl">
           <h1 className="text-3xl font-extrabold leading-[1.1] tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
             PZM Computers
             <br />
             &amp; Phones Store
             <br />
-            <span className="bg-gradient-to-r from-sky-500 to-primary bg-clip-text text-transparent">
-              New•Used•Repair•PC•Build
+            <span className="block bg-gradient-to-r from-sky-500 to-primary bg-clip-text text-transparent leading-[1.15]">
+              New • Used • Repair • PC Build
             </span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-brandTextMedium">
             Your integrated device solutions hub in Al Barsha, Dubai. Expert repairs, brand new &amp; certified used devices, custom gaming PC builds — all under one roof.
           </p>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
             <button
               onClick={onShopClick}
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-4 text-base font-semibold text-white shadow-[0_10px_30px_rgba(0,167,111,0.25)] transition-transform hover:-translate-y-0.5 hover:bg-brandGreenDark"
+              className="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-full bg-primary px-7 py-4 text-base font-semibold text-white shadow-[0_10px_30px_rgba(0,167,111,0.25)] transition-transform hover:-translate-y-0.5 hover:bg-brandGreenDark sm:w-auto sm:max-w-none"
             >
               <MessageCircle size={18} />
               Shop Now
             </button>
             <Link
               to="/services/repair"
-              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-7 py-4 text-base font-semibold text-slate-900 transition-colors hover:border-primary hover:text-primary"
+              className="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-7 py-4 text-base font-semibold text-slate-900 transition-colors hover:border-primary hover:text-primary sm:w-auto sm:max-w-none"
             >
               <Wrench size={18} />
               Repair Services

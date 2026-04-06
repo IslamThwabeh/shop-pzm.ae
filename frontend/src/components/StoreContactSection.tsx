@@ -3,7 +3,7 @@ import { siteContact, siteIdentity } from '../content/siteData'
 
 export default function StoreContactSection() {
   return (
-    <section className="border-t border-brandBorder bg-white">
+    <section id="contact" className="border-t border-brandBorder bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-3xl border border-brandBorder bg-white p-6 shadow-sm md:p-8">

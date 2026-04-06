@@ -19,7 +19,7 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
     return (
       <>
         {segments[0]}
-        <a href="#appointment" className="font-semibold text-primary underline underline-offset-2">
+        <a href="#contact" className="font-semibold text-primary underline underline-offset-2">
           Contact Us
         </a>
         {segments[1] ?? ''}
