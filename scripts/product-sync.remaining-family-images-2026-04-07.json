@@ -85,6 +85,13 @@
       ]
     },
     {
+      "id": "prod-mnnyljzi-16mj7n",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/android-tablets/surface-pro-family.webp"
+      ]
+    },
+    {
       "id": "prod-mnnyll1d-42xb7j",
       "replaceImages": true,
       "imagePaths": [
@@ -208,6 +215,13 @@
       "replaceImages": true,
       "imagePaths": [
         "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-family.webp"
+      ]
+    },
+    {
+      "id": "prod-mnnz7lck-2n3b85",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/android-tablets/android-tablet-family.webp"
       ]
     },
     {
