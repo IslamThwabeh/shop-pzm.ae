@@ -2,13 +2,14 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { MessageCircle } from 'lucide-react'
 import type { Product } from '@shared/types'
-import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
+import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { buyIphoneFamilies, getBuyIphoneFamilyGroups, getBuyIphoneProducts } from '../content/buyIphoneCatalog'
+import { getPrimaryProductImage } from '../utils/productPresentation'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { resolveServiceSlug } from '../content/serviceCatalog'
-import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
+import { buildCanonicalUrl, buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 const mapsLink = 'https://maps.app.goo.gl/e5Rhfo8YY3i8CatM7?g_st=ic'
 
@@ -21,6 +22,10 @@ function getVariantDescriptor(product: Product, familyTitle: string) {
   const familyPattern = new RegExp(familyTitle.replace(/\s+/g, '\\s+'), 'i')
   const descriptor = product.model.replace(familyPattern, '').replace(/\s+/g, ' ').trim()
   return descriptor || product.model
+}
+
+function getFamilyDisplayImage(family: typeof buyIphoneFamilies[number], products: Product[]) {
+  return getPrimaryProductImage(products[0]) || family.imageUrl
 }
 
 export default function BuyIphonePage({ products, loading }: BuyIphonePageProps) {
@@ -51,7 +56,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: 'Buy iPhone in Dubai | PZM',
-    url: buildSiteUrl('/services/buy-iphone'),
+    url: buildCanonicalUrl('/services/buy-iphone'),
     description: 'Buy iPhone in Dubai from PZM with direct WhatsApp ordering and local support.',
     mainEntity: {
       '@type': 'ItemList',
@@ -85,7 +90,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
       />
 
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <Link to="/services" className="text-primary font-semibold hover:underline">
+        <Link to="/services/" className="text-primary font-semibold hover:underline">
           ← Back to services
         </Link>
         <div className="flex gap-3 flex-wrap">
@@ -145,7 +150,9 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {buyIphoneFamilies.map((family) => {
-            const liveCount = familyGroups.find((group) => group.family.key === family.key)?.products.length ?? 0
+            const familyGroup = familyGroups.find((group) => group.family.key === family.key)
+            const liveCount = familyGroup?.products.length ?? 0
+            const familyImage = getFamilyDisplayImage(family, familyGroup?.products || [])
 
             return (
               <a
@@ -154,7 +161,13 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                 className="group rounded-[28px] border border-brandBorder bg-white p-6 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary"
               >
                 <div className="retail-card-media retail-card-media--contain rounded-[24px]">
-                  <RetailMediaPlaceholder name={family.title} variant="card" className="transition-transform duration-300 group-hover:scale-[1.02]" />
+                  <RetailImage
+                    src={familyImage}
+                    alt={family.imageAlt}
+                    name={family.title}
+                    variant="card"
+                    className="transition-transform duration-300 group-hover:scale-[1.02]"
+                  />
                 </div>
                 <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-brandTextMedium">{family.shortTitle}</p>
                 <h3 className="mt-2 text-xl font-bold text-slate-950">{family.title}</h3>
@@ -183,7 +196,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
               Browse the iPhone models listed now and message us for the one you want.
             </p>
           </div>
-          <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
+          <Link to="/services/" className="text-sm font-semibold text-primary hover:underline">
             View all service pages
           </Link>
         </div>
@@ -196,10 +209,20 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
           <div className="space-y-8">
             {familyGroups.map((group) => (
               <section key={group.family.key} id={group.family.key} className="rounded-[28px] border border-brandBorder bg-white shadow-sm p-6 md:p-8">
+                {/** Display the live family image when it exists, otherwise fall back to the catalog family artwork. */}
+                {(() => {
+                  const familyImage = getFamilyDisplayImage(group.family, group.products)
+
+                  return (
                 <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
                   <div className="flex items-start gap-4">
                     <div className="h-24 w-24 shrink-0 overflow-hidden rounded-[20px] bg-slate-100 md:h-28 md:w-28">
-                      <RetailMediaPlaceholder name={group.family.title} variant="thumb" />
+                      <RetailImage
+                        src={familyImage}
+                        alt={group.family.imageAlt}
+                        name={group.family.title}
+                        variant="thumb"
+                      />
                     </div>
                     <div>
                       <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{group.family.shortTitle}</p>
@@ -212,17 +235,29 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                     {group.products.length > 0 ? 'Listed now' : 'Ask us'}
                   </span>
                 </div>
+                  )
+                })()}
 
                 {group.products.length > 0 ? (
                   <div className="mt-6 overflow-hidden rounded-[24px] border border-brandBorder">
                     {group.products.map((product) => (
                       <article key={product.id} className="flex flex-col gap-4 border-t border-brandBorder/70 p-5 first:border-t-0 md:flex-row md:items-center md:justify-between">
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brandTextMedium">
-                            {product.storage} • {product.color}
-                          </p>
-                          <h4 className="mt-3 text-lg font-bold text-slate-950">{getVariantDescriptor(product, group.family.title)}</h4>
-                          <p className="mt-2 text-sm leading-7 text-brandTextMedium">{product.description || product.model}</p>
+                        <div className="flex min-w-0 flex-1 items-start gap-4">
+                          <div className="h-24 w-24 shrink-0 overflow-hidden rounded-[20px] border border-brandBorder bg-white">
+                            <RetailImage
+                              src={getPrimaryProductImage(product) || group.family.imageUrl}
+                              alt={`${product.model} ${product.storage} ${product.color}`.trim()}
+                              name={product.model}
+                              variant="thumb"
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brandTextMedium">
+                              {product.storage} • {product.color}
+                            </p>
+                            <h4 className="mt-3 text-lg font-bold text-slate-950">{getVariantDescriptor(product, group.family.title)}</h4>
+                            <p className="mt-2 text-sm leading-7 text-brandTextMedium">{product.description || product.model}</p>
+                          </div>
                         </div>
 
                         <div className="flex flex-col gap-4 md:min-w-[220px] md:items-end">
@@ -272,7 +307,12 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
             {missingFamilies.map((group) => (
               <article key={group.family.key} className="rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm">
                 <div className="retail-card-media retail-card-media--contain rounded-[20px] border border-brandBorder">
-                  <RetailMediaPlaceholder name={group.family.title} variant="card" />
+                  <RetailImage
+                    src={group.family.imageUrl}
+                    alt={group.family.imageAlt}
+                    name={group.family.title}
+                    variant="card"
+                  />
                 </div>
                 <h3 className="mt-5 text-xl font-bold text-slate-950">{group.family.title}</h3>
                 <p className="mt-3 text-sm leading-7 text-brandTextMedium">{group.family.description}</p>

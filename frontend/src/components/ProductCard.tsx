@@ -1,6 +1,7 @@
 import { MessageCircle } from 'lucide-react'
 import type { Product } from '@shared/types'
-import RetailMediaPlaceholder from './RetailMediaPlaceholder'
+import { getPrimaryProductImage } from '../utils/productPresentation'
+import RetailImage from './RetailImage'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 
 interface Props {
@@ -21,7 +22,12 @@ export default function ProductCard({ product }: Props) {
   return (
     <article className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm transition-shadow hover:shadow-md">
       <div className="retail-card-media retail-card-media--contain border-b border-brandBorder bg-white">
-        <RetailMediaPlaceholder name={product.model} variant="card" />
+        <RetailImage
+          src={getPrimaryProductImage(product)}
+          alt={`${product.model} ${product.storage} ${product.color}`.trim()}
+          name={product.model}
+          variant="card"
+        />
       </div>
 
       <div className="p-5 md:p-6">

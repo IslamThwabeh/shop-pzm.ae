@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom'
 import { Briefcase, CreditCard, Gamepad2, Laptop, MessageCircle, ShieldCheck, Smartphone, Truck } from 'lucide-react'
 import type { Product } from '@shared/types'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
-import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
+import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { brandNewCategories, brandNewHero, getBrandNewCategoryGroups, getBrandNewProducts } from '../content/brandNewCatalog'
+import { getPrimaryProductImage } from '../utils/productPresentation'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { resolveServiceSlug } from '../content/serviceCatalog'
-import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
+import { buildCanonicalUrl, buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 const mapsLink = 'https://maps.app.goo.gl/e5Rhfo8YY3i8CatM7?g_st=ic'
 
@@ -61,7 +62,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: 'Brand New Devices in Dubai | PZM',
-    url: buildSiteUrl('/services/brand-new'),
+    url: buildCanonicalUrl('/services/brand-new'),
     description: 'Browse brand-new devices in Dubai from PZM, including phones, laptops, consoles, and more.',
     mainEntity: {
       '@type': 'ItemList',
@@ -95,7 +96,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
       />
 
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <Link to="/services" className="text-primary font-semibold hover:underline">
+        <Link to="/services/" className="text-primary font-semibold hover:underline">
           ← Back to services
         </Link>
         <div className="flex gap-3 flex-wrap">
@@ -139,7 +140,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
             Browse Devices
           </a>
           <Link
-            to="/services/buy-iphone"
+            to="/services/buy-iphone/"
             className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold transition-colors hover:border-primary hover:text-primary"
           >
             View iPhone Collection
@@ -194,7 +195,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                     {group.products.length > 0 ? 'Browse devices' : 'Ask about this category'}
                   </a>
                   {group.category.key === 'phones-tablets' && (
-                    <Link to="/services/buy-iphone" className="text-sm font-semibold text-primary hover:underline">
+                    <Link to="/services/buy-iphone/" className="text-sm font-semibold text-primary hover:underline">
                       Open iPhone page
                     </Link>
                   )}
@@ -214,7 +215,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
               Browse the devices listed now and message us for model details.
             </p>
           </div>
-          <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
+          <Link to="/services/" className="text-sm font-semibold text-primary hover:underline">
             View all service pages
           </Link>
         </div>
@@ -251,7 +252,12 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                     {group.products.map((product) => (
                       <article key={product.id} className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm">
                         <div className="retail-card-media retail-card-media--contain border-b border-brandBorder bg-white">
-                          <RetailMediaPlaceholder name={group.category.title} variant="card" />
+                          <RetailImage
+                            src={getPrimaryProductImage(product)}
+                            alt={`${product.model} ${product.storage} ${product.color}`.trim()}
+                            name={product.model}
+                            variant="card"
+                          />
                         </div>
 
                         <div className="p-5">
@@ -286,7 +292,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                         Open the dedicated iPhone page for a family-by-family layout across Pro Max, Pro, Air, and standard iPhone models.
                       </p>
                       <Link
-                        to="/services/buy-iphone"
+                        to="/services/buy-iphone/"
                         className="mt-4 inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
                       >
                         Go to Buy iPhone

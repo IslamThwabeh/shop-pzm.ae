@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom'
 import { BatteryCharging, Gamepad2, Laptop, MessageCircle, RefreshCcw, ShieldCheck, Smartphone, Tablet } from 'lucide-react'
 import type { Product } from '@shared/types'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
-import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
+import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { getSecondhandCategoryGroups, getSecondhandProducts, secondhandCategories, secondhandHero } from '../content/secondhandCatalog'
+import { getPrimaryProductImage } from '../utils/productPresentation'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { resolveServiceSlug } from '../content/serviceCatalog'
-import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
+import { buildCanonicalUrl, buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 const mapsLink = 'https://maps.app.goo.gl/e5Rhfo8YY3i8CatM7?g_st=ic'
 
@@ -61,7 +62,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: 'Used Devices in Dubai | PZM',
-    url: buildSiteUrl('/services/secondhand'),
+    url: buildCanonicalUrl('/services/secondhand'),
     description: 'Browse certified pre-owned devices in Dubai from PZM, including phones, laptops, tablets, and gaming hardware.',
     mainEntity: {
       '@type': 'ItemList',
@@ -95,7 +96,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
       />
 
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <Link to="/services" className="text-primary font-semibold hover:underline">
+        <Link to="/services/" className="text-primary font-semibold hover:underline">
           ← Back to services
         </Link>
         <div className="flex gap-3 flex-wrap">
@@ -139,13 +140,13 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
             {primaryCtaLabel}
           </a>
           <Link
-            to="/services/sell-gadgets"
+            to="/services/sell-gadgets/"
             className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold transition-colors hover:border-primary hover:text-primary"
           >
             Trade In Your Device
           </Link>
           <Link
-            to="/services"
+            to="/services/"
             className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold transition-colors hover:border-primary hover:text-primary"
           >
             View All Service Pages
@@ -207,7 +208,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
               Browse the used devices listed now and message us for the one you want.
             </p>
           </div>
-          <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
+          <Link to="/services/" className="text-sm font-semibold text-primary hover:underline">
             View all service pages
           </Link>
         </div>
@@ -244,7 +245,12 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
                     {group.products.map((product) => (
                       <article key={product.id} className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm">
                         <div className="retail-card-media retail-card-media--contain border-b border-brandBorder bg-white">
-                          <RetailMediaPlaceholder name={group.category.title} variant="card" />
+                          <RetailImage
+                            src={getPrimaryProductImage(product)}
+                            alt={`${product.model} ${product.storage} ${product.color}`.trim()}
+                            name={product.model}
+                            variant="card"
+                          />
                         </div>
 
                         <div className="p-5">

@@ -48,6 +48,22 @@ export function sanitizeProductDescription(description?: string) {
   return sanitizedDescription || undefined
 }
 
+export function getPrimaryProductImage(product?: Pick<Product, 'image_url' | 'images'> | null) {
+  if (!product) {
+    return undefined
+  }
+
+  const candidates = [...(product.images || []), product.image_url]
+
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return candidate.trim()
+    }
+  }
+
+  return undefined
+}
+
 export function sanitizeProductForDisplay<T extends Product>(product: T): T {
   return {
     ...product,
