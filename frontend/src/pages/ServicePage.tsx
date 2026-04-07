@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import Seo from '../components/Seo'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
-import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
+import RetailImage from '../components/RetailImage'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 
@@ -89,7 +89,13 @@ export default function ServicePage() {
 
           {(service.cardImageUrl || service.imageUrl) && (
             <div className="retail-panel-media min-h-0 bg-slate-100">
-              <RetailMediaPlaceholder name={service.title} variant="panel" />
+              <RetailImage
+                src={service.imageUrl || service.cardImageUrl}
+                alt={service.imageAlt || service.title}
+                name={service.title}
+                variant="panel"
+                className="h-full w-full object-cover"
+              />
             </div>
           )}
         </div>

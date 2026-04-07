@@ -42,7 +42,7 @@ export interface HomeFaqItem {
   answer: string
 }
 
-const legacyMedia = (path: string) => buildApiUrl(`/media/legacy/${path}`)
+const generatedServiceMedia = (path: string) => buildApiUrl(`/media/generated/services/${path}`)
 const blogMedia = (filename: string) => buildApiUrl(`/media/blog/${filename}`)
 
 export const homeServiceCards: HomeServiceCard[] = [
@@ -53,7 +53,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/repair',
     cta: 'Learn more',
     accentClassName: 'from-amber-100 to-orange-50',
-    imageUrl: legacyMedia('Services/repairing_services.jpg'),
+    imageUrl: generatedServiceMedia('repair/repair-services.jpg'),
     imageAlt: 'PZM repair services workspace',
     cardImageUrl: '/images/Catigories/mini_laptop_maintenance.webp',
   },
@@ -64,7 +64,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/brand-new',
     cta: 'Browse new devices',
     accentClassName: 'from-sky-100 to-cyan-50',
-    imageUrl: legacyMedia('Catigories/brand_new.jpg'),
+    imageUrl: generatedServiceMedia('brand-new/brand-new-service.jpg'),
     imageAlt: 'Brand new devices at PZM',
     cardImageUrl: '/images/Catigories/mini_brand_new.webp',
   },
@@ -75,7 +75,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/secondhand',
     cta: 'Browse used devices',
     accentClassName: 'from-emerald-100 to-green-50',
-    imageUrl: legacyMedia('buy_used/used_iphone_16_pro_max_main.webp'),
+    imageUrl: generatedServiceMedia('secondhand/secondhand-service.jpg'),
     imageAlt: 'Certified pre-owned devices at PZM',
     cardImageUrl: '/images/Catigories/mini_Used_Phones.webp',
   },
@@ -86,7 +86,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/gaming-pc',
     cta: 'Start building',
     accentClassName: 'from-violet-100 to-purple-50',
-    imageUrl: legacyMedia('Catigories/GamingPC.JPG'),
+    imageUrl: generatedServiceMedia('gaming-pc/gaming-pc-builds-service.jpg'),
     imageAlt: 'Custom gaming PC category at PZM',
     cardImageUrl: '/images/Catigories/mini_GamingPC.webp',
   },
@@ -97,7 +97,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/buy-iphone',
     cta: 'View iPhones',
     accentClassName: 'from-pink-100 to-rose-50',
-    imageUrl: legacyMedia('buy_iphone/iPhone_17_Pro_Max_all_colors.jpg'),
+    imageUrl: generatedServiceMedia('buy-iphone/buy-iphone-service.jpg'),
     imageAlt: 'iPhone 17 Pro Max colors at PZM',
     cardImageUrl: '/images/Catigories/mini_buy_iphone.webp',
   },
@@ -108,7 +108,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/sell-gadgets',
     cta: 'Get a quote',
     accentClassName: 'from-yellow-100 to-lime-50',
-    imageUrl: legacyMedia('Services/Sell_Your_Old_iPhones.jpg'),
+    imageUrl: generatedServiceMedia('sell-gadgets/sell-devices-service.jpg'),
     imageAlt: 'Sell your old iPhone at PZM',
     cardImageUrl: '/images/Catigories/mini_sell-gadgets.webp',
   },
@@ -119,7 +119,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/accessories',
     cta: 'Shop accessories',
     accentClassName: 'from-indigo-100 to-blue-50',
-    imageUrl: legacyMedia('Catigories/mobile_accessories.jpg'),
+    imageUrl: generatedServiceMedia('accessories/accessories-service.jpg'),
     imageAlt: 'Phone and laptop accessories at PZM',
     cardImageUrl: '/images/Catigories/mini_mobile_accessories.webp',
   },
@@ -130,6 +130,8 @@ export const homeServiceCards: HomeServiceCard[] = [
     to: '/services/web-design',
     cta: 'See what is included',
     accentClassName: 'from-lime-100 to-emerald-50',
+    imageUrl: generatedServiceMedia('web-design/website-design-service.jpg'),
+    imageAlt: 'Website design service at PZM',
   },
 ]
 
@@ -139,7 +141,7 @@ export const homeFeaturedCategories: HomeFeaturedCategory[] = [
     title: 'Latest Devices',
     description: 'iPhones, Samsung, MacBooks, and gaming consoles with official warranty and fast support from the Hessa Street branch.',
     to: '/services/brand-new',
-    imageUrl: '/images/Catigories/mini_brand_new.webp',
+    imageUrl: generatedServiceMedia('brand-new/brand-new-service.jpg'),
     badgeClassName: 'bg-emerald-100 text-emerald-700',
   },
   {
@@ -147,7 +149,7 @@ export const homeFeaturedCategories: HomeFeaturedCategory[] = [
     title: 'Pre-Owned Devices',
     description: 'Certified used phones, laptops, tablets, and gaming PCs with clear grading, testing, and warranty support.',
     to: '/services/secondhand',
-    imageUrl: '/images/Catigories/mini_Used_Phones.webp',
+    imageUrl: generatedServiceMedia('secondhand/secondhand-service.jpg'),
     badgeClassName: 'bg-amber-100 text-amber-700',
   },
 ]

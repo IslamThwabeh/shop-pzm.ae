@@ -1,7 +1,7 @@
 import type { Product } from '@shared/types'
 import { buildApiUrl } from '../utils/siteConfig'
 
-const legacyBrandNewMedia = (path: string) => buildApiUrl(`/media/legacy/${path}`)
+const generatedServiceMedia = (path: string) => buildApiUrl(`/media/generated/services/${path}`)
 
 export interface BrandNewCategory {
   key: 'phones-tablets' | 'laptops-computers' | 'gaming-systems' | 'professional-equipment'
@@ -14,7 +14,7 @@ export interface BrandNewCategory {
 }
 
 export const brandNewHero = {
-  imageUrl: legacyBrandNewMedia('Catigories/brand_new.jpg'),
+  imageUrl: generatedServiceMedia('brand-new/brand-new-service.jpg'),
   imageAlt: 'Brand new devices at PZM',
 }
 

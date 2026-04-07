@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
+import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
 import { serviceCatalogList } from '../content/serviceCatalog'
 
@@ -28,10 +28,12 @@ export default function ServicesPage() {
             className="group flex flex-col items-center rounded-[24px] border border-brandBorder bg-white p-5 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
           >
             <div className="retail-card-media mb-4 w-full overflow-hidden rounded-[16px]">
-              <RetailMediaPlaceholder
+              <RetailImage
+                src={service.imageUrl || service.cardImageUrl}
+                alt={service.imageAlt || service.title}
                 name={service.title}
                 variant="card"
-                className="transition-transform group-hover:scale-[1.02]"
+                className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
               />
             </div>
             <h2 className="text-base font-semibold text-gray-900 mb-1 group-hover:text-primary transition-colors">

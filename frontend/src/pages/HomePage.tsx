@@ -5,7 +5,7 @@ import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
 import FaqAccordion from '../components/FaqAccordion'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
-import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
+import RetailImage from '../components/RetailImage'
 import TestimonialCards from '../components/TestimonialCards'
 import { areaCatalogList } from '../content/areaCatalog'
 import {
@@ -194,7 +194,13 @@ export default function HomePage({ onShopClick }: HomePageProps) {
               >
                 <div className="grid grid-cols-1 md:grid-cols-[minmax(0,190px),1fr]">
                   <div className="h-44 overflow-hidden bg-slate-100 sm:h-48 md:min-h-[13rem] md:h-full lg:min-h-[14rem]">
-                    <RetailMediaPlaceholder name={category.title} variant="panel" />
+                    <RetailImage
+                      src={category.imageUrl}
+                      alt={category.title}
+                      name={category.title}
+                      variant="panel"
+                      className="h-full w-full object-cover"
+                    />
                   </div>
                   <div className="flex flex-col justify-center p-5 md:p-7">
                     <span className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] ${category.badgeClassName}`}>
@@ -244,10 +250,12 @@ export default function HomePage({ onShopClick }: HomePageProps) {
               style={{ animationDelay: `${index * 70}ms` }}
             >
               <div className="retail-card-media mb-4 w-full overflow-hidden rounded-[16px]">
-                <RetailMediaPlaceholder
+                <RetailImage
+                  src={card.imageUrl || card.cardImageUrl}
+                  alt={card.imageAlt || card.title}
                   name={card.title}
                   variant="card"
-                  className="transition-transform group-hover:scale-[1.02]"
+                  className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
                 />
               </div>
               <h3 className="text-base font-semibold text-slate-900 group-hover:text-primary transition-colors">{card.title}</h3>
@@ -310,7 +318,13 @@ export default function HomePage({ onShopClick }: HomePageProps) {
                 style={{ animationDelay: `${index * 80}ms` }}
               >
                 <div className="relative h-36 overflow-hidden sm:h-40">
-                  <RetailMediaPlaceholder name={post.tag} variant="article" />
+                  <RetailImage
+                    src={post.imageUrl}
+                    alt={post.title}
+                    name={post.tag}
+                    variant="article"
+                    className="h-full w-full object-cover"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/15 to-transparent" />
                   <div className={`absolute inset-0 bg-gradient-to-br ${post.themeClassName} opacity-20`} />
                   <div className="absolute inset-0 p-6">

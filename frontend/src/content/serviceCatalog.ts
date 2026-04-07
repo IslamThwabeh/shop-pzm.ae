@@ -27,7 +27,7 @@ export interface ServiceCatalogEntry {
   detailSections?: ServiceDetailSection[]
 }
 
-const legacyMedia = (path: string) => buildApiUrl(`/media/legacy/${path}`)
+const generatedServiceMedia = (path: string) => buildApiUrl(`/media/generated/services/${path}`)
 
 const quoteAndCallback: ServiceRequestOption[] = [
   { value: 'quote', label: 'Request a quote', description: 'Get pricing from the team.' },
@@ -46,7 +46,7 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Phones, laptops, MacBooks, and consoles',
       'Walk-in, drop-off, and callback support',
     ],
-    imageUrl: legacyMedia('Services/repairing_services.jpg'),
+    imageUrl: generatedServiceMedia('repair/repair-services.jpg'),
     imageAlt: 'Repair services at PZM',
     cardImageUrl: '/images/Catigories/mini_laptop_maintenance.webp',
     cardDescription: 'Expert device repair and maintenance',
@@ -114,7 +114,7 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Trade-in quotes before you visit',
       'Fast follow-up from the store team',
     ],
-    imageUrl: legacyMedia('Services/Sell_Your_Old_iPhones.jpg'),
+    imageUrl: generatedServiceMedia('sell-gadgets/sell-devices-service.jpg'),
     imageAlt: 'Sell your old iPhone at PZM',
     cardImageUrl: '/images/Catigories/mini_sell-gadgets.webp',
     cardDescription: 'Get the best price for your devices',
@@ -178,7 +178,7 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Part selection, assembly, and setup help',
       'From budget builds to high-end systems',
     ],
-    imageUrl: legacyMedia('Catigories/GamingPC.JPG'),
+    imageUrl: generatedServiceMedia('gaming-pc/gaming-pc-builds-service.jpg'),
     imageAlt: 'Gaming PC builds at PZM',
     cardImageUrl: '/images/Catigories/mini_GamingPC.webp',
     cardDescription: 'Custom gaming PC builds',
@@ -249,7 +249,7 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Bundle pricing and compatibility help',
       'Fast guidance from the store team',
     ],
-    imageUrl: legacyMedia('Catigories/mobile_accessories.jpg'),
+    imageUrl: generatedServiceMedia('accessories/accessories-service.jpg'),
     imageAlt: 'Accessories and peripherals at PZM',
     cardImageUrl: '/images/Catigories/mini_mobile_accessories.webp',
     cardDescription: 'Wide range of genuine accessories',
@@ -332,7 +332,7 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Official warranty and local store support',
       'Fast help with model selection and ordering',
     ],
-    imageUrl: legacyMedia('Catigories/brand_new.jpg'),
+    imageUrl: generatedServiceMedia('brand-new/brand-new-service.jpg'),
     imageAlt: 'Brand new device range at PZM',
     cardImageUrl: '/images/Catigories/mini_brand_new.webp',
     cardDescription: 'Latest smartphones, laptops, and accessories',
@@ -353,7 +353,7 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Storage, color, and pricing guidance',
       'Pickup, delivery, and WhatsApp ordering',
     ],
-    imageUrl: legacyMedia('buy_iphone/iPhone_17_Pro_Max_all_colors.jpg'),
+    imageUrl: generatedServiceMedia('buy-iphone/buy-iphone-service.jpg'),
     imageAlt: 'iPhone 17 Pro Max color lineup at PZM',
     cardImageUrl: '/images/Catigories/mini_buy_iphone.webp',
     cardDescription: 'iPhone 17 series in all colors — Cash on Delivery',
@@ -374,7 +374,7 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Battery, condition, and value guidance',
       'Direct WhatsApp follow-up from the store team',
     ],
-    imageUrl: legacyMedia('buy_used/used_iphone_16_pro_max_main.webp'),
+    imageUrl: generatedServiceMedia('secondhand/secondhand-service.jpg'),
     imageAlt: 'Used devices at PZM',
     cardImageUrl: '/images/Catigories/mini_Used_Phones.webp',
     cardDescription: 'Quality checked pre-owned devices',
@@ -395,6 +395,8 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Useful for redesigns, new launches, and marketing campaigns',
       'Start with a quote request or ask for a callback',
     ],
+    imageUrl: generatedServiceMedia('web-design/website-design-service.jpg'),
+    imageAlt: 'Website design service at PZM',
     requestKinds: quoteAndCallback,
   },
 }
