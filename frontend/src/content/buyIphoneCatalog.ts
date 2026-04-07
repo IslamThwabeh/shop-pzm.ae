@@ -18,7 +18,7 @@ export const buyIphoneFamilies: BuyIphoneFamily[] = [
     key: 'iphone-17-pro-max',
     title: 'iPhone 17 Pro Max',
     shortTitle: 'Pro Max',
-    description: 'Flagship storage, premium colors, and the highest-intent purchase traffic on the site.',
+    description: 'Flagship size, colors, and top-tier iPhone options.',
     imageUrl: legacyBuyIphoneMedia('iPhone_17_Pro_Max_all_colors.jpg'),
     imageAlt: 'iPhone 17 Pro Max color lineup',
     matcher: /\biphone\s*17\s*pro\s*max\b/i,
@@ -27,7 +27,7 @@ export const buyIphoneFamilies: BuyIphoneFamily[] = [
     key: 'iphone-17-pro',
     title: 'iPhone 17 Pro',
     shortTitle: 'Pro',
-    description: 'Professional iPhone configurations for buyers who want flagship power without the Pro Max size.',
+    description: 'Flagship performance in the smaller Pro size.',
     imageUrl: legacyBuyIphoneMedia('iPhone_17_Pro_all_colors.jpg'),
     imageAlt: 'iPhone 17 Pro color lineup',
     matcher: /\biphone\s*17\s*pro\b(?!\s*max)/i,
@@ -36,7 +36,7 @@ export const buyIphoneFamilies: BuyIphoneFamily[] = [
     key: 'iphone-17-air',
     title: 'iPhone 17 Air',
     shortTitle: 'Air',
-    description: 'Thin-and-light iPhone demand with the same on-site checkout and availability flow.',
+    description: 'Thin-and-light iPhone options in the Air line.',
     imageUrl: legacyBuyIphoneMedia('iPhone_17_Air_all_colors.jpg'),
     imageAlt: 'iPhone 17 Air color lineup',
     matcher: /\biphone\s*17\s*air\b/i,
@@ -45,7 +45,7 @@ export const buyIphoneFamilies: BuyIphoneFamily[] = [
     key: 'iphone-17',
     title: 'iPhone 17',
     shortTitle: 'Standard',
-    description: 'Entry flagship configurations for buyers who want the current generation without the Pro tier.',
+    description: 'Current-generation iPhone options outside the Pro tier.',
     imageUrl: legacyBuyIphoneMedia('iPhone_17_all_colors.jpg'),
     imageAlt: 'iPhone 17 color lineup',
     matcher: /\biphone\s*17\b(?!\s*pro\b)(?!\s*air\b)/i,
@@ -88,9 +88,7 @@ function dedupeProducts(products: Product[]) {
 
     const existingTimestamp = getProductTimestamp(existing)
     const nextTimestamp = getProductTimestamp(product)
-    const keepNext =
-      (product.quantity ?? 0) > (existing.quantity ?? 0) ||
-      ((product.quantity ?? 0) === (existing.quantity ?? 0) && nextTimestamp >= existingTimestamp)
+    const keepNext = nextTimestamp >= existingTimestamp
 
     if (keepNext) {
       uniqueProducts.set(key, product)
@@ -108,7 +106,7 @@ export function getBuyIphoneProducts(products: Product[]) {
 }
 
 export function getBuyIphoneFamilyGroups(products: Product[]) {
-  const liveIphoneProducts = getBuyIphoneProducts(products).filter((product) => (product.quantity ?? 0) > 0)
+  const liveIphoneProducts = getBuyIphoneProducts(products)
 
   return buyIphoneFamilies.map((family) => ({
     family,

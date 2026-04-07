@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import Seo from '../components/Seo'
 import { areaCatalogList } from '../content/areaCatalog'
+import { siteContact } from '../content/siteData'
 
 export default function AreasPage() {
   return (
@@ -13,10 +14,9 @@ export default function AreasPage() {
 
       <section className="bg-white rounded-3xl border border-brandBorder shadow-md p-8 md:p-12 text-left">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary mb-4">Local coverage</p>
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Areas we serve from Al Barsha across Dubai</h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Areas We Serve in Dubai</h1>
         <p className="text-lg text-brandTextMedium max-w-3xl">
-          PZM operates from Hessa Street in Al Barsha and serves nearby residential, office, and waterfront communities across Dubai.
-          Use the area pages to understand travel time, nearby communities, and the quickest route into products and services from your part of Dubai.
+          We&apos;re based in Al Barsha on Hessa Street and serve customers across Dubai. Open your area for local links, directions, and the fastest route to the right service.
         </p>
       </section>
 
@@ -46,15 +46,31 @@ export default function AreasPage() {
               >
                 Open area page
               </Link>
-              <Link
-                to="/services"
-                className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
-              >
-                View services
-              </Link>
             </div>
           </article>
         ))}
+      </section>
+
+      <section className="rounded-3xl border border-brandBorder bg-white p-6 text-center shadow-sm md:p-8">
+        <p className="text-brandTextDark">
+          <span className="font-semibold">Don&apos;t see your area?</span> We still serve you.
+        </p>
+        <div className="mt-4 flex flex-wrap justify-center gap-3">
+          <a
+            href={siteContact.whatsappSupportHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center rounded-xl bg-primary px-5 py-3 font-semibold text-white transition-colors hover:bg-brandGreenDark"
+          >
+            WhatsApp Us
+          </a>
+          <a
+            href={siteContact.phoneHref}
+            className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
+          >
+            {siteContact.phoneDisplay}
+          </a>
+        </div>
       </section>
     </div>
   )

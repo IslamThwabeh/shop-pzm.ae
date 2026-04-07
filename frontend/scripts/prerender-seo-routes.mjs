@@ -9,7 +9,8 @@ const templatePath = path.join(distRoot, 'index.html')
 const contentRoot = path.join(frontendRoot, 'src', 'content')
 const SITE_URL = (process.env.VITE_SITE_URL || 'https://shop.pzm.ae').replace(/\/+$/, '')
 const DEFAULT_IMAGE = `${SITE_URL}/images/mini_logo.png`
-const LASTMOD = '2026-04-05'
+const PRODUCT_FEED_URL = `${SITE_URL}/api/products`
+const LASTMOD = '2026-04-07'
 
 function escapeHtml(value) {
   return value
@@ -43,6 +44,279 @@ function toAbsoluteUrl(pathOrUrl) {
   return `${SITE_URL}${normalizedPath}`
 }
 
+function escapeJsonForHtml(value) {
+  return JSON.stringify(value).replace(/</g, '\\u003c')
+}
+
+function formatPrice(value) {
+  return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value)
+}
+
+function normalizeProductValue(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+}
+
+function getProductDeduplicationKey(product) {
+  return [product.model, product.storage, product.color, product.condition]
+    .map((value) => normalizeProductValue(value))
+    .join('|')
+}
+
+function getProductTimestamp(product) {
+  return Date.parse(product.updated_at || product.updatedAt || product.created_at || product.createdAt || '') || 0
+}
+
+function sortProducts(left, right) {
+  if (left.price !== right.price) {
+    return left.price - right.price
+  }
+
+  return String(left.model || '').localeCompare(String(right.model || ''))
+}
+
+function dedupeProducts(products) {
+  const uniqueProducts = new Map()
+
+  for (const product of products) {
+    const key = getProductDeduplicationKey(product)
+    const existing = uniqueProducts.get(key)
+
+    if (!existing) {
+      uniqueProducts.set(key, product)
+      continue
+    }
+
+    const existingTimestamp = getProductTimestamp(existing)
+    const nextTimestamp = getProductTimestamp(product)
+    const keepNext = nextTimestamp >= existingTimestamp
+
+    if (keepNext) {
+      uniqueProducts.set(key, product)
+    }
+  }
+
+  return Array.from(uniqueProducts.values())
+}
+
+const colorReplacements = new Map([
+  ['latest stock', 'Contact us'],
+  ['mixed stock', 'Various options'],
+  ['contact for color', 'Color options'],
+])
+
+const descriptionReplacements = [
+  [/contact us for the exact edition in stock\.?/gi, 'Contact us for the exact edition.'],
+  [/contact us for the latest stock details\.?/gi, 'Contact us for the latest details.'],
+  [/contact us for the latest color availability\.?/gi, 'Contact us for color options.'],
+  [/\s+and multiple units available\.?/gi, '.'],
+  [/\s+with multiple units available\.?/gi, '.'],
+]
+
+function cleanProductText(value) {
+  return String(value || '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s+\./g, '.')
+    .replace(/\s+,/g, ',')
+    .replace(/\.\s*\./g, '.')
+    .trim()
+}
+
+function sanitizeProductForDisplay(product) {
+  const colorKey = String(product.color || '').trim().toLowerCase()
+  let description = String(product.description || '').trim()
+
+  for (const [pattern, replacement] of descriptionReplacements) {
+    description = description.replace(pattern, replacement)
+  }
+
+  return {
+    ...product,
+    color: colorReplacements.get(colorKey) || product.color,
+    description: cleanProductText(description) || undefined,
+  }
+}
+
+function getProductImageUrl(product) {
+  return toAbsoluteUrl(product.image_url || product.images?.[0] || DEFAULT_IMAGE)
+}
+
+function buildProductWhatsAppHref(product, kind) {
+  const message = kind === 'new'
+    ? `Hi, I'm interested in the brand-new ${product.model} ${product.storage} ${product.color} for ${formatPrice(product.price)} AED (via shop.pzm.ae)`
+    : `Hi, I'm interested in the used ${product.model} ${product.storage} ${product.color} for ${formatPrice(product.price)} AED (via shop.pzm.ae)`
+
+  return `https://wa.me/971528026677?text=${encodeURIComponent(message)}`
+}
+
+const brandNewSnapshotCategories = [
+  {
+    title: 'Phones, Tablets, and Wearables',
+    description: 'iPhones, Samsung devices, tablets, and wearables listed on the site.',
+    matcher: /(iphone|ipad|tablet|galaxy|samsung|pixel|watch|wearable|phone|mobile)/i,
+  },
+  {
+    title: 'Laptops and Computers',
+    description: 'MacBooks and other computers listed on the site.',
+    matcher: /(macbook|laptop|notebook|dell|hp|lenovo|asus|acer|xps|inspiron|spectre|envy|thinkpad|thinkbook|yoga|vivobook|zenbook)/i,
+  },
+  {
+    title: 'Gaming Systems',
+    description: 'Consoles and gaming hardware listed on the site.',
+    matcher: /(playstation|ps5|ps4|xbox|nintendo|switch|gaming|rog|alienware|vr|console)/i,
+  },
+  {
+    title: 'Professional Equipment',
+    description: 'Business and workstation hardware listed on the site.',
+    matcher: /(workstation|desktop|monitor|business|network|router|server|surface|precision|elitebook|probook)/i,
+  },
+]
+
+const secondhandSnapshotCategories = [
+  {
+    title: 'Used Phones and iPhones',
+    description: 'Used phones with clear battery or condition details.',
+    matcher: /(iphone|galaxy|samsung|pixel|android|phone|mobile|honor|redmi|tecno|nokia)/i,
+  },
+  {
+    title: 'Used Laptops and MacBooks',
+    description: 'Used MacBooks and Windows laptops listed on the site.',
+    matcher: /(macbook|laptop|notebook|dell|hp|lenovo|asus|acer|latitude|elitebook|thinkpad|thinkbook|xps|inspiron|spectre|envy|probook|vivobook|zenbook|ultra)/i,
+  },
+  {
+    title: 'Used Tablets and iPads',
+    description: 'Used iPads and tablets listed on the site.',
+    matcher: /(ipad|tablet|galaxy tab|surface|matepad|\btab\b)/i,
+  },
+  {
+    title: 'Used Gaming Devices',
+    description: 'Used gaming laptops, PCs, and monitors listed on the site.',
+    matcher: /(playstation|ps5|ps4|xbox|nintendo|switch|gaming|rog|alienware|console|desktop|monitor|ultragear|swift|viewfinity|rtx|gtx|aorus)/i,
+  },
+]
+
+function groupCatalogProducts(products, condition, categories) {
+  const grouped = categories.map((category) => ({
+    category,
+    products: [],
+  }))
+
+  const visibleProducts = dedupeProducts(
+    products.filter((product) => product.condition === condition)
+  ).sort(sortProducts)
+
+  for (const product of visibleProducts) {
+    const normalizedModel = normalizeProductValue(product.model)
+    const targetGroup = grouped.find((group) => group.category.matcher.test(normalizedModel))
+
+    if (targetGroup) {
+      targetGroup.products.push(product)
+    }
+  }
+
+  return grouped.filter((group) => group.products.length > 0)
+}
+
+function buildSnapshotCard(product, kind) {
+  const badge = kind === 'new' ? 'Brand new' : 'Used'
+
+  return `
+    <article style="overflow:hidden;border:1px solid #e2e8f0;border-radius:24px;background:#ffffff;box-shadow:0 1px 3px rgba(15,23,42,0.06);">
+      <div style="display:flex;align-items:center;justify-content:center;min-height:172px;padding:16px;border-bottom:1px solid #e2e8f0;background:#ffffff;">
+        <img src="${escapeHtml(getProductImageUrl(product))}" alt="${escapeHtml(product.model)}" loading="lazy" style="max-width:100%;max-height:136px;object-fit:contain;" />
+      </div>
+      <div style="padding:18px;">
+        <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#64748b;">${escapeHtml(`${badge} • ${product.storage} • ${product.color}`)}</p>
+        <h2 style="margin:10px 0 0;font-size:18px;line-height:1.35;font-weight:700;color:#0f172a;">${escapeHtml(product.model)}</h2>
+        <p style="margin:10px 0 0;font-size:14px;line-height:1.7;color:#64748b;">${escapeHtml(product.description || `${product.color} ${product.model}`)}</p>
+        <div style="margin-top:16px;">
+          <strong style="font-size:24px;line-height:1;color:#0f172a;">AED ${formatPrice(product.price)}</strong>
+        </div>
+        <a href="${escapeHtml(buildProductWhatsAppHref(product, kind))}" style="display:inline-block;margin-top:16px;padding:12px 16px;border-radius:12px;border:1px solid #e2e8f0;color:#0f172a;font-weight:700;text-decoration:none;">Contact us</a>
+      </div>
+    </article>`
+}
+
+function buildCatalogSnapshot({ eyebrow, title, intro, groups, emptyTitle, emptyDescription, kind }) {
+  const content = groups.length > 0
+    ? groups
+        .map(
+          (group) => `
+      <section style="margin-top:28px;">
+        <div style="display:flex;align-items:start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+          <div style="max-width:820px;">
+            <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#00A76F;">${escapeHtml(group.category.title)}</p>
+            <p style="margin:8px 0 0;font-size:14px;line-height:1.7;color:#64748b;">${escapeHtml(group.category.description)}</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+          ${group.products.map((product) => buildSnapshotCard(product, kind)).join('')}
+        </div>
+      </section>`
+        )
+        .join('')
+    : `
+      <section style="margin-top:28px;border:1px solid #e2e8f0;border-radius:28px;background:#ffffff;padding:24px;box-shadow:0 1px 3px rgba(15,23,42,0.06);">
+        <h2 style="margin:0;font-size:28px;line-height:1.2;color:#0f172a;">${escapeHtml(emptyTitle)}</h2>
+        <p style="margin:14px 0 0;font-size:15px;line-height:1.8;color:#64748b;">${escapeHtml(emptyDescription)}</p>
+      </section>`
+
+  return `
+    <div data-pzm-prerender-catalog="true" style="max-width:1280px;margin:0 auto;padding:48px 16px 64px;font-family:'Open Sans',system-ui,sans-serif;background:#f8fafc;color:#0f172a;">
+      <div style="max-width:960px;">
+        <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#00A76F;">${escapeHtml(eyebrow)}</p>
+        <h1 style="margin:14px 0 0;font-size:42px;line-height:1.08;color:#0f172a;">${escapeHtml(title)}</h1>
+        <p style="margin:18px 0 0;font-size:16px;line-height:1.8;color:#64748b;">${escapeHtml(intro)}</p>
+      </div>
+      ${content}
+    </div>`
+}
+
+function buildBrandNewSnapshot(products) {
+  const groups = groupCatalogProducts(products, 'new', brandNewSnapshotCategories)
+
+  return buildCatalogSnapshot({
+    eyebrow: 'Brand-new retail',
+    title: 'Brand New Devices in Dubai',
+    intro: 'Browse brand-new devices listed on the site, including phones, laptops, and gaming hardware.',
+    groups,
+    emptyTitle: 'No brand-new products are currently listed on the site.',
+    emptyDescription: 'Use the contact options on the site to ask about models and pricing.',
+    kind: 'new',
+  })
+}
+
+function buildSecondhandSnapshot(products) {
+  const groups = groupCatalogProducts(products, 'used', secondhandSnapshotCategories)
+
+  return buildCatalogSnapshot({
+    eyebrow: 'Certified pre-owned',
+    title: 'Pre-Owned Devices',
+    intro: 'Browse used devices listed on the site, including phones, laptops, tablets, gaming PCs, and monitors.',
+    groups,
+    emptyTitle: 'No used products are currently listed on the site.',
+    emptyDescription: 'Use the contact options on the site to ask about used-device details.',
+    kind: 'used',
+  })
+}
+
+async function fetchLiveProducts() {
+  try {
+    const response = await fetch(PRODUCT_FEED_URL)
+    if (!response.ok) {
+      throw new Error(`Product feed request failed with ${response.status}`)
+    }
+
+    const payload = await response.json()
+    return Array.isArray(payload.data) ? payload.data.map((product) => sanitizeProductForDisplay(product)) : []
+  } catch (error) {
+    console.warn(`Could not fetch live product feed for prerender snapshots: ${error instanceof Error ? error.message : error}`)
+    return []
+  }
+}
+
 function outputPathForRoute(routePath) {
   const normalized = routePath.replace(/^\/+/, '')
 
@@ -63,7 +337,7 @@ function buildStoreJsonLd() {
     '@type': 'ComputerStore',
     name: 'PZM Computers & Phones Store',
     description:
-      'PZM Computers and Phones Store in Al Barsha, Dubai for new and used devices, expert repairs, custom PC builds, accessories, and local service support.',
+      'PZM Computers & Phones Store in Al Barsha, Dubai for new and used devices, expert repairs, custom PC builds, accessories, and same-day local support.',
     url: `${SITE_URL}/`,
     telephone: '+971528026677',
     address: {
@@ -170,6 +444,9 @@ function buildHtml(template, route) {
   const imageUrl = toAbsoluteUrl(route.imageUrl)
   const ogType = route.ogType || 'website'
   const jsonLd = route.jsonLd ? `<script type="application/ld+json">${JSON.stringify(route.jsonLd)}</script>` : ''
+  const preloadedProductsScript = Array.isArray(route.preloadedProducts) && route.preloadedProducts.length > 0
+    ? `<script id="pzm-preloaded-products" type="application/json">${escapeJsonForHtml(route.preloadedProducts)}</script>`
+    : ''
 
   let html = template
     .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(route.title)}</title>`)
@@ -197,6 +474,21 @@ function buildHtml(template, route) {
     .join('\n    ')
 
   html = html.replace('</head>', `    ${headBlock}\n  </head>`)
+
+  if (route.rootHtml) {
+    html = html.replace(/<div id="root"><\/div>/i, `<div id="root">${route.rootHtml}</div>`)
+  }
+
+  if (preloadedProductsScript) {
+    const moduleScriptPattern = /<script type="module"[^>]*src="[^"]+"[^>]*><\/script>/i
+
+    if (moduleScriptPattern.test(html)) {
+      html = html.replace(moduleScriptPattern, `${preloadedProductsScript}\n    $&`)
+    } else {
+      html = html.replace('</body>', `    ${preloadedProductsScript}\n  </body>`)
+    }
+  }
+
   return html
 }
 
@@ -232,9 +524,9 @@ function buildSitemap(routes) {
 const baseRoutes = [
   {
     path: '/',
-    title: 'Buy iPhones, Laptops and Repair Dubai | PZM Store',
+    title: 'Buy iPhones, Laptops & Repair Dubai | PZM Store',
     description:
-      'PZM Computers and Phones Store in Al Barsha, Dubai for new and used devices, expert repairs, custom PC builds, accessories, and local service support.',
+      'PZM Computers & Phones Store in Al Barsha, Dubai for new and used devices, expert repairs, custom PC builds, accessories, and same-day local support.',
     canonicalPath: '/',
     priority: '1.0',
     changefreq: 'daily',
@@ -242,7 +534,7 @@ const baseRoutes = [
   },
   {
     path: '/services',
-    title: 'Services in Dubai | PZM Computers & Phones',
+    title: 'Our Services | PZM Computers & Phones Store',
     description:
       'Explore repair, trade-in, gaming PC, accessories, iPhone, and device support pages from PZM Computers & Phones in Dubai.',
     canonicalPath: '/services',
@@ -259,7 +551,7 @@ const baseRoutes = [
   },
   {
     path: '/blog',
-    title: 'Tech Blog | PZM Dubai',
+    title: 'Tech Blog - iPhone, PC & Repair Tips | PZM Dubai',
     description: 'Latest market updates, repair advice, iPhone tips, used-device buying guides, and PC articles from PZM in Dubai.',
     canonicalPath: '/blog/',
     priority: '0.75',
@@ -267,17 +559,17 @@ const baseRoutes = [
   },
   {
     path: '/terms',
-    title: 'Terms & Conditions | PZM Computers & Phones',
-    description: 'Read PZM Computers & Phones Store terms, refunds, and warranty policies.',
+    title: 'Terms & Conditions | PZM Dubai',
+    description: 'Read the terms and conditions for PZM Computers & Phones Store in Dubai, including ordering, payment, delivery, warranty, and returns.',
     canonicalPath: '/terms',
     priority: '0.6',
     changefreq: 'monthly',
   },
   {
     path: '/return-policy',
-    title: 'Return and Refund Policy | PZM Dubai',
+    title: 'Return & Refund Policy | PZM Dubai',
     description:
-      'Read the return and refund policy for PZM Computers & Phones Store in Dubai, including the 7-day return window and used-device conditions.',
+      'Read the return and refund policy for PZM Computers & Phones Store in Dubai, including eligibility, defective items, exchanges, and used-device conditions.',
     canonicalPath: '/return-policy',
     priority: '0.6',
     changefreq: 'monthly',
@@ -331,17 +623,17 @@ const canonicalRoutes = [
     const dedicatedOverrides = {
       'buy-iphone': {
         title: 'Buy iPhone 17 Pro Max, Pro, Air & iPhone 17 in Dubai | PZM',
-        description: 'Buy iPhone in Dubai with live stock, direct checkout, and availability support for missing models from the PZM team.',
+        description: 'Buy iPhone in Dubai from PZM with direct WhatsApp ordering and local support.',
         imageUrl: '/api/media/legacy/buy_iphone/iPhone_17_Pro_Max_all_colors.jpg',
       },
       'brand-new': {
-        title: 'Brand New Devices in Dubai | PZM',
-        description: 'Browse brand-new devices in Dubai with live iPhone stock, direct checkout, and availability requests for laptops, gaming hardware, and other new arrivals.',
+        title: 'Brand New Devices in Dubai | PZM Dubai',
+        description: 'Browse brand-new devices in Dubai from PZM, including phones, laptops, consoles, and more.',
         imageUrl: '/api/media/legacy/Catigories/brand_new.jpg',
       },
       secondhand: {
-        title: 'Used Devices in Dubai | PZM',
-        description: 'Browse used devices in Dubai with live stock when available and request support for certified pre-owned phones, laptops, tablets, and gaming hardware from PZM.',
+        title: 'Buy Used iPhones, Laptops & Gaming PCs | PZM Dubai',
+        description: 'Browse certified pre-owned devices in Dubai from PZM, including phones, laptops, tablets, and gaming hardware.',
         imageUrl: '/images/Catigories/Used_Phones.jpg',
       },
     }[entry.slug]
@@ -404,7 +696,7 @@ const aliasRoutes = [
   {
     ...blogRoute,
     path: '/blog-post.html',
-    title: 'Tech Blog | PZM Dubai',
+    title: 'Tech Blog - iPhone, PC & Repair Tips | PZM Dubai',
     canonicalPath: '/blog/',
     robots: 'noindex, follow',
   },
@@ -421,6 +713,27 @@ const aliasRoutes = [
     robots: 'noindex, follow',
   },
 ]
+
+const liveProducts = await fetchLiveProducts()
+
+if (liveProducts.length > 0) {
+  const brandNewSnapshotHtml = buildBrandNewSnapshot(liveProducts)
+  const secondhandSnapshotHtml = buildSecondhandSnapshot(liveProducts)
+
+  for (const route of [...canonicalRoutes, ...aliasRoutes]) {
+    const normalizedCanonicalPath = normalizeCanonicalPath(route.canonicalPath || route.path)
+
+    if (normalizedCanonicalPath === '/services/brand-new') {
+      route.rootHtml = brandNewSnapshotHtml
+      route.preloadedProducts = liveProducts
+    }
+
+    if (normalizedCanonicalPath === '/services/secondhand') {
+      route.rootHtml = secondhandSnapshotHtml
+      route.preloadedProducts = liveProducts
+    }
+  }
+}
 
 const template = await fs.readFile(templatePath, 'utf8')
 

@@ -81,7 +81,6 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
 
       if (!response.ok) {
         const errorData = await response.json()
-        // Surface stock errors clearly to the shopper
         const message = typeof errorData.error === 'string' ? errorData.error : 'Failed to create order'
         throw new Error(message)
       }
@@ -102,9 +101,8 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
       onSuccess(orderId)
     } catch (err) {
       const friendly = err instanceof Error ? err.message : 'Failed to create order'
-      // Map stock errors to a user-friendly prompt
       if (/insufficient stock/i.test(friendly)) {
-        setError('Sorry, this item just sold out. Please select another product.')
+        setError('This item is not available for checkout right now. Message us and we will help you place the order.')
       } else {
         setError(friendly)
       }

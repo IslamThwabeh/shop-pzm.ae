@@ -50,7 +50,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
     }`
 
   return (
-    <header className={`sticky top-0 z-50 border-b border-slate-200/80 bg-white/96 backdrop-blur transition-all duration-200 ${isShrunk ? 'py-2' : 'py-3'}`}>
+    <header className={`sticky top-0 z-50 border-b border-slate-200 bg-white transition-all duration-200 ${isShrunk ? 'py-2' : 'py-3'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4">
           <Link to="/" className="flex min-w-0 flex-1 items-center gap-3" aria-label="Go to home">
@@ -70,7 +70,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
             </div>
           </Link>
 
-          <nav className="hidden xl:flex items-center gap-6">
+          <nav className="hidden lg:flex items-center gap-6">
             <Link to="/" className={desktopLinkClass(isHomePage)}>
               Home
             </Link>
@@ -148,7 +148,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
 
             <button
               onClick={() => setIsMobileMenuOpen((value) => !value)}
-              className="xl:hidden p-3 md:p-2 min-h-[44px] min-w-[44px] text-brandTextMedium hover:text-primary transition-colors"
+              className="lg:hidden p-3 md:p-2 min-h-[44px] min-w-[44px] text-brandTextMedium hover:text-primary transition-colors"
               aria-label="Toggle navigation"
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -169,7 +169,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
           </div>
         </div>
 
-        <div className={`xl:hidden overflow-hidden transition-all duration-200 ${isMobileMenuOpen ? 'max-h-[80vh] pt-4 pb-2 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+        <div className={`lg:hidden overflow-hidden transition-all duration-200 ${isMobileMenuOpen ? 'max-h-[80vh] pt-4 pb-2 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
           <div className="space-y-3 border-t border-brandBorder pt-4">
             <Link to="/" className="block rounded-2xl px-4 py-3 text-sm font-semibold text-brandTextDark hover:bg-green-50 hover:text-primary">
               Home

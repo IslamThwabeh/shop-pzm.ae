@@ -1,0 +1,244 @@
+{
+  "products": [
+    {
+      "model": "Samsung A56 5G",
+      "storage": "128GB / 8GB RAM",
+      "condition": "new",
+      "color": "Official Warranty",
+      "price": 1350,
+      "quantity": 1,
+      "description": "Brand new Samsung A56 5G from the legacy Eid 2026 storefront listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/brand_new/samsung_a56_5g.webp"
+      ]
+    },
+    {
+      "model": "Samsung A36 5G",
+      "storage": "128GB / 6GB RAM",
+      "condition": "new",
+      "color": "Official Warranty",
+      "price": 985,
+      "quantity": 1,
+      "description": "Brand new Samsung A36 5G from the legacy Eid 2026 storefront listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/brand_new/samsung_a36_5g.webp"
+      ]
+    },
+    {
+      "model": "Samsung A17 4G",
+      "storage": "128GB / 4GB RAM",
+      "condition": "new",
+      "color": "Official Warranty",
+      "price": 650,
+      "quantity": 1,
+      "description": "Brand new Samsung A17 4G from the legacy Eid 2026 storefront listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_brand_new.webp"
+      ]
+    },
+    {
+      "model": "Samsung A06 4G",
+      "storage": "64GB / 4GB RAM",
+      "condition": "new",
+      "color": "Official Warranty",
+      "price": 450,
+      "quantity": 3,
+      "description": "Brand new Samsung A06 4G from the legacy Eid 2026 storefront listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_brand_new.webp"
+      ]
+    },
+    {
+      "model": "MacBook Air 13\" M4",
+      "storage": "256GB / 16GB RAM",
+      "condition": "new",
+      "color": "Silver",
+      "price": 3500,
+      "quantity": 2,
+      "description": "Brand new MacBook Air 13-inch M4 from the legacy Eid 2026 storefront listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/macbook/macbook_air_13_M4.png"
+      ]
+    },
+    {
+      "model": "Nintendo Switch",
+      "storage": "Brand New Console",
+      "condition": "new",
+      "color": "Retail Stock",
+      "price": 1100,
+      "quantity": 1,
+      "description": "Brand new Nintendo Switch from the legacy Eid 2026 storefront listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/brand_new/nintendo_switch.webp"
+      ]
+    },
+    {
+      "model": "PS5 Digital Edition",
+      "storage": "1TB",
+      "condition": "new",
+      "color": "White",
+      "price": 1850,
+      "quantity": 1,
+      "description": "Brand new PS5 Digital Edition from the legacy Eid 2026 storefront listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/PS5/WhitePS5.jpg"
+      ]
+    },
+    {
+      "model": "PS4 with Controller",
+      "storage": "Gaming Console",
+      "condition": "new",
+      "color": "Retail Stock",
+      "price": 700,
+      "quantity": 1,
+      "description": "Brand new PS4 bundle from the legacy Eid 2026 storefront listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_brand_new.webp"
+      ]
+    },
+    {
+      "model": "Xbox One",
+      "storage": "Gaming Console",
+      "condition": "new",
+      "color": "Retail Stock",
+      "price": 550,
+      "quantity": 2,
+      "description": "Brand new Xbox One from the legacy Eid 2026 storefront listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_brand_new.webp"
+      ]
+    },
+    {
+      "model": "iPhone 16 Pro Max",
+      "storage": "256GB",
+      "condition": "used",
+      "color": "Desert Titanium",
+      "price": 3650,
+      "quantity": 1,
+      "description": "Battery 98% · Never Fixed",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_iphone_16_pro_max_main.webp"
+      ]
+    },
+    {
+      "model": "iPhone 16 Pro",
+      "storage": "128GB",
+      "condition": "used",
+      "color": "White",
+      "price": 3000,
+      "quantity": 1,
+      "description": "Battery 91% · Never Fixed",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_iphone_16_pro_max_main.webp"
+      ]
+    },
+    {
+      "model": "iPhone 15 Pro Max",
+      "storage": "256GB",
+      "condition": "used",
+      "color": "Black",
+      "price": 2850,
+      "quantity": 1,
+      "description": "Battery 88%",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_iphone_15_pro_max_main.webp"
+      ]
+    },
+    {
+      "model": "iPhone 15 Plus",
+      "storage": "256GB",
+      "condition": "used",
+      "color": "Pink",
+      "price": 2100,
+      "quantity": 1,
+      "description": "Battery 88% · Never Fixed",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_iphone_15_pro_max_main.webp"
+      ]
+    },
+    {
+      "model": "MacBook Air M2 2022",
+      "storage": "8GB / 256GB",
+      "condition": "used",
+      "color": "Used Laptop",
+      "price": 2350,
+      "quantity": 1,
+      "description": "Certified pre-owned MacBook Air M2 2022 from the legacy used-device listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    },
+    {
+      "model": "Lenovo ThinkBook",
+      "storage": "i5 13th / 8GB / 256GB",
+      "condition": "used",
+      "color": "4+ pcs available",
+      "price": 1350,
+      "quantity": 4,
+      "description": "Certified pre-owned Lenovo ThinkBook from the legacy used-device listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    },
+    {
+      "model": "Microsoft Surface Pro",
+      "storage": "Snapdragon X Plus / 16GB / 512GB",
+      "condition": "used",
+      "color": "With Keyboard",
+      "price": 4500,
+      "quantity": 1,
+      "description": "Certified pre-owned Surface Pro from the legacy used-device listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    },
+    {
+      "model": "iPad Pro 11\"",
+      "storage": "64GB",
+      "condition": "used",
+      "color": "Never Fixed",
+      "price": 1200,
+      "quantity": 1,
+      "description": "Pre-owned iPad Pro 11-inch from the legacy used-device listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "iPad 9th Gen",
+      "storage": "64GB",
+      "condition": "used",
+      "color": "Grey / Wi-Fi",
+      "price": 950,
+      "quantity": 1,
+      "description": "Pre-owned iPad 9th Gen from the legacy used-device listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "Gaming PC White",
+      "storage": "i7 12th / DDR5 32GB / SSD 1TB",
+      "condition": "used",
+      "color": "MSI RTX 4060",
+      "price": 4500,
+      "quantity": 1,
+      "description": "Pre-owned gaming PC from the legacy used-device listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_GamingPC.webp"
+      ]
+    },
+    {
+      "model": "Gaming PC Black",
+      "storage": "AMD Ryzen 9 5900H / 48GB / NVME 512GB",
+      "condition": "used",
+      "color": "750W DeepCool",
+      "price": 3850,
+      "quantity": 1,
+      "description": "Pre-owned gaming PC from the legacy used-device listing.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_GamingPC.webp"
+      ]
+    }
+  ]
+}

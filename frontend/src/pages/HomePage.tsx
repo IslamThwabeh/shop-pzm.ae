@@ -31,7 +31,7 @@ function SectionHeader({ badge, title, description, align = 'center' }: SectionH
 
   return (
     <div className={alignmentClass}>
-      <span className="inline-flex rounded-full bg-gradient-to-r from-sky-100 to-emerald-100 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-sky-700">
+      <span className="inline-flex rounded-full border border-sky-200 bg-white px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-sky-700 shadow-sm">
         {badge}
       </span>
       <h2 className="mt-5 text-[1.9rem] font-bold tracking-tight text-slate-950 sm:text-[2.1rem] lg:text-[2.35rem]">{title}</h2>
@@ -134,10 +134,10 @@ export default function HomePage({ onShopClick }: HomePageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f0f7ff] text-slate-900">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       <Seo
-        title="Buy iPhones, Laptops and Repair Dubai | PZM Store"
-        description="PZM Computers and Phones Store in Al Barsha, Dubai for new and used devices, expert repairs, custom PC builds, accessories, and local service support."
+        title="Buy iPhones, Laptops & Repair Dubai | PZM Store"
+        description="PZM Computers & Phones Store in Al Barsha, Dubai for new and used devices, expert repairs, custom PC builds, accessories, and same-day local support."
         canonicalPath="/"
         jsonLd={[storeJsonLd, faqJsonLd]}
       />
@@ -149,8 +149,8 @@ export default function HomePage({ onShopClick }: HomePageProps) {
             <br />
             &amp; Phones Store
             <br />
-            <span className="block bg-gradient-to-r from-sky-500 to-primary bg-clip-text text-transparent leading-[1.15]">
-              New • Used • Repair • PC Build
+            <span className="block leading-[1.15] text-primary">
+              New•Used•Repair•PC•Build
             </span>
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-[0.98rem] leading-7 text-brandTextMedium md:text-base">
@@ -181,7 +181,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
           <SectionHeader
             badge="Featured"
             title="Shop by Category"
-            description="Brand new devices with official warranty and certified pre-owned stock at prices that make sense in Dubai."
+            description="Brand new devices with official warranty and certified pre-owned options at prices that make sense in Dubai."
           />
 
           <div className="mt-12 grid grid-cols-1 gap-5 lg:grid-cols-2">
@@ -214,8 +214,8 @@ export default function HomePage({ onShopClick }: HomePageProps) {
 
           <div className="mt-7 rounded-[28px] border border-brandBorder bg-white px-5 py-4 shadow-sm md:flex md:items-center md:justify-between md:gap-6 md:px-6 md:py-5">
             <div>
-              <p className="text-lg font-semibold text-slate-900">Browse live stock behind each category</p>
-              <p className="mt-1 text-sm text-brandTextMedium">Tap into brand new or certified used listings, check availability, and message the team directly via WhatsApp.</p>
+              <p className="text-lg font-semibold text-slate-900">Browse devices behind each category</p>
+              <p className="mt-1 text-sm text-brandTextMedium">Open the brand-new or used pages, compare models, and message the team directly.</p>
             </div>
             <button
               onClick={onShopClick}

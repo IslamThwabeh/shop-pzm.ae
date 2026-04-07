@@ -64,26 +64,10 @@ export default function AreaPage() {
         }}
       />
 
-      <div className="flex items-center justify-between gap-4 flex-wrap">
+      <div>
         <Link to="/areas" className="text-primary font-semibold hover:underline">
-          Back to areas
+          ← Back to areas
         </Link>
-        <div className="flex gap-3 flex-wrap">
-          <a
-            href={siteContact.phoneHref}
-            className="inline-flex items-center rounded-xl border border-brandBorder px-4 py-2 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
-          >
-            Call Us
-          </a>
-          <a
-            href={siteContact.mapsHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center rounded-xl border border-brandBorder px-4 py-2 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
-          >
-            Get Directions
-          </a>
-        </div>
       </div>
 
       <section className="bg-white rounded-3xl border border-brandBorder shadow-md p-8 md:p-12 text-left">
@@ -93,7 +77,7 @@ export default function AreaPage() {
           </span>
           <span className="text-sm font-semibold text-brandTextMedium">{area.travelNote}</span>
         </div>
-        <h1 className="mt-5 text-4xl md:text-5xl font-bold text-gray-900">{area.heroTitle}</h1>
+        <h1 className="mt-5 text-4xl md:text-5xl font-bold text-gray-900">{area.title}</h1>
         <p className="mt-4 max-w-3xl text-lg text-brandTextMedium">{area.heroDescription}</p>
 
         <div className="mt-6 flex flex-wrap gap-3">
@@ -101,46 +85,22 @@ export default function AreaPage() {
             to="/services"
             className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
           >
-            Explore device pages
+            Browse services
           </Link>
-          <Link
-            to="/services"
+          <a
+            href={siteContact.mapsHref}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
           >
-            View services
-          </Link>
+            Get directions
+          </a>
         </div>
       </section>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[1.1fr,0.9fr] gap-8 items-start">
-        <div className="space-y-8">
-          <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Why customers from {area.name} use this page</h2>
-            <p className="text-brandTextMedium mb-5">{area.localSummary}</p>
-            <div className="space-y-3 text-brandTextDark">
-              {area.advantages.map((item) => (
-                <p key={item}>- {item}</p>
-              ))}
-            </div>
-          </section>
-
-          <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Nearby communities covered</h2>
-            <div className="flex flex-wrap gap-3">
-              {area.nearbyCommunities.map((community) => (
-                <span
-                  key={community}
-                  className="rounded-full border border-brandBorder px-4 py-2 text-sm font-semibold text-brandTextDark"
-                >
-                  {community}
-                </span>
-              ))}
-            </div>
-          </section>
-        </div>
-
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1.1fr,0.9fr] items-start">
         <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-          <h2 className="text-2xl font-bold text-gray-900 mb-5">Popular next steps for {area.name}</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-5">Popular services for {area.name}</h2>
           <div className="space-y-4">
             {area.featuredServices.map((service) => (
               <Link
@@ -152,6 +112,37 @@ export default function AreaPage() {
                 <span className="mt-2 block text-sm text-brandTextMedium">{service.description}</span>
               </Link>
             ))}
+          </div>
+        </section>
+
+        <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Nearby communities</h2>
+          <p className="text-brandTextMedium mb-5">{area.travelNote}</p>
+          <div className="flex flex-wrap gap-3">
+            {area.nearbyCommunities.map((community) => (
+              <span
+                key={community}
+                className="rounded-full border border-brandBorder px-4 py-2 text-sm font-semibold text-brandTextDark"
+              >
+                {community}
+              </span>
+            ))}
+          </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href={siteContact.phoneHref}
+              className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
+            >
+              Call Us
+            </a>
+            <a
+              href={siteContact.whatsappSupportHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
+            >
+              WhatsApp Us
+            </a>
           </div>
         </section>
       </div>

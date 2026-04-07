@@ -40,7 +40,6 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
   }
 
   const handleWhatsApp = (product: Product) => {
-    if ((product.quantity ?? 0) <= 0) return
     openWhatsAppLead({
       leadType: 'product',
       referenceId: product.id,
@@ -50,24 +49,20 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
     })
   }
 
-  const liveSecondhandProducts = useMemo(
-    () => getSecondhandProducts(products).filter((product) => (product.quantity ?? 0) > 0),
-    [products]
-  )
+  const liveSecondhandProducts = useMemo(() => getSecondhandProducts(products), [products])
   const categoryGroups = useMemo(() => getSecondhandCategoryGroups(products), [products])
   const liveCategoryGroups = categoryGroups.filter((group) => group.products.length > 0)
   const lowestPrice = liveSecondhandProducts.length > 0 ? Math.min(...liveSecondhandProducts.map((product) => product.price)) : null
   const heroImageUrl = toAbsoluteSiteUrl(secondhandHero.imageUrl)
-  const primaryCtaHref = liveSecondhandProducts.length > 0 ? '#secondhand-live-stock' : '#secondhand-contact'
-  const primaryCtaLabel = liveSecondhandProducts.length > 0 ? 'Browse Used Stock' : 'Request Used Stock'
+  const primaryCtaHref = liveSecondhandProducts.length > 0 ? '#secondhand-devices' : '#secondhand-contact'
+  const primaryCtaLabel = liveSecondhandProducts.length > 0 ? 'Browse Used Devices' : 'Ask About a Device'
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: 'Used Devices in Dubai | PZM',
     url: buildSiteUrl('/services/secondhand'),
-    description:
-      'Shop certified pre-owned devices in Dubai with live stock when available and request support for used phones, laptops, tablets, and gaming hardware from PZM.',
+    description: 'Browse certified pre-owned devices in Dubai from PZM, including phones, laptops, tablets, and gaming hardware.',
     mainEntity: {
       '@type': 'ItemList',
       itemListElement: liveSecondhandProducts.slice(0, 16).map((product, index) => ({
@@ -82,7 +77,6 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
             '@type': 'Offer',
             priceCurrency: 'AED',
             price: product.price,
-            availability: product.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             itemCondition: 'https://schema.org/UsedCondition',
           },
         },
@@ -93,8 +87,8 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
   return (
     <div className="space-y-10">
       <Seo
-        title="Used Devices in Dubai | PZM"
-        description="Browse used devices in Dubai with live stock when available and request support for certified pre-owned phones, laptops, tablets, and gaming hardware from PZM."
+        title="Buy Used iPhones, Laptops & Gaming PCs | PZM Dubai"
+        description="Browse certified pre-owned devices in Dubai from PZM, including phones, laptops, tablets, and gaming hardware."
         canonicalPath="/services/secondhand"
         imageUrl={heroImageUrl}
         jsonLd={jsonLd}
@@ -125,14 +119,14 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
       <section className="rounded-[32px] border border-brandBorder bg-white px-5 py-8 shadow-sm md:px-8 md:py-10">
         <div className="mx-auto max-w-4xl text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Certified pre-owned</p>
-          <h1 className="mt-4 text-[1.9rem] font-bold text-slate-950 md:text-[2.25rem]">Used devices in a calmer, easier-to-scan layout</h1>
+          <h1 className="mt-4 text-[1.9rem] font-bold text-slate-950 md:text-[2.25rem]">Pre-Owned Devices</h1>
           <p className="mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.98rem]">
-            Browse certified pre-owned devices with clearer category entry points, cleaner product tiles, and straightforward next steps when live used stock is low.
+            Certified used phones, laptops, tablets, gaming devices, and more at strong Dubai prices.
           </p>
         </div>
 
         <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm font-semibold text-brandTextMedium">
-          <span>{liveSecondhandProducts.length} live used products</span>
+          <span>{liveSecondhandProducts.length} devices listed</span>
           <span>{liveCategoryGroups.length}/{secondhandCategories.length} categories listed</span>
           <span>{lowestPrice ? `From AED ${lowestPrice.toFixed(0)}` : 'Ask us for pricing'}</span>
         </div>
@@ -175,7 +169,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
                   <Icon size={24} />
                 </span>
                 <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-brandTextMedium">
-                  {group.products.length > 0 ? `${group.products.length} live products` : 'Request availability'}
+                  {group.products.length > 0 ? 'Listed now' : 'Message us'}
                 </p>
                 <h2 className="mt-2 text-xl font-bold text-slate-950">{group.category.title}</h2>
                 <p className="mt-3 text-sm leading-7 text-brandTextMedium">{group.category.description}</p>
@@ -189,14 +183,14 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
                 </div>
 
                 <a
-                  href={group.products.length > 0 ? '#secondhand-live-stock' : '#secondhand-contact'}
+                  href={group.products.length > 0 ? '#secondhand-devices' : '#secondhand-contact'}
                   className={`mt-6 inline-flex items-center self-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
                     group.products.length > 0
                       ? 'bg-primary text-white hover:bg-brandGreenDark'
                       : 'border border-brandBorder text-brandTextDark hover:border-primary hover:text-primary'
                   }`}
                 >
-                  {group.products.length > 0 ? 'See live stock' : 'Request availability'}
+                  {group.products.length > 0 ? 'Browse devices' : 'Ask about this category'}
                 </a>
               </article>
             )
@@ -204,13 +198,13 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
         </div>
       </section>
 
-      <section id="secondhand-live-stock" className="space-y-8">
+      <section id="secondhand-devices" className="space-y-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Live stock</p>
-            <h2 className="mt-2 text-2xl font-bold text-slate-950">Current used inventory on the site</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Current used devices</p>
+            <h2 className="mt-2 text-2xl font-bold text-slate-950">Used devices listed on the site</h2>
             <p className="mt-3 max-w-3xl text-brandTextMedium">
-              This section follows the live storefront catalog, so used listings only appear here when they are actually available on the site.
+              Browse the used devices listed now and message us for the one you want.
             </p>
           </div>
           <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
@@ -242,7 +236,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
                     </div>
 
                     <span className="self-start rounded-full border border-brandBorder bg-slate-50 px-4 py-2 text-sm font-semibold text-brandTextDark">
-                      {group.products.length} live products
+                      Current selection
                     </span>
                   </div>
 
@@ -261,13 +255,8 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
                           <h4 className="mt-3 text-base font-bold text-slate-950">{product.model}</h4>
                           <p className="mt-2 text-sm leading-7 text-brandTextMedium">{product.description || `${product.color} ${product.model}`}</p>
 
-                          <div className="mt-4 flex items-end justify-between gap-4">
-                            <div>
-                              <p className="text-xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
-                            </div>
-                            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
-                              {(product.quantity ?? 0) > 0 ? `${product.quantity} in stock` : 'Out of stock'}
-                            </span>
+                          <div className="mt-4">
+                            <p className="text-xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
                           </div>
 
                           <button
@@ -290,14 +279,14 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
           <div className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm">
             <h3 className="text-2xl font-bold text-slate-950">No used devices are currently listed on the storefront.</h3>
             <p className="mt-3 max-w-3xl text-brandTextMedium">
-              If you want a used iPhone, laptop, tablet, or gaming device, send the model, budget, or preferred specs through the form below and the team can reply with current options.
+              If you want a used iPhone, laptop, tablet, or gaming device, send the model, budget, or preferred specs and the team can reply with options.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <a
                 href="#secondhand-contact"
                 className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
               >
-                Request Used Stock
+                Ask About a Device
               </a>
               <a
                 href="tel:+971528026677"
@@ -311,28 +300,28 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
       </section>
 
       <section className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm md:p-8">
-        <h2 className="text-xl font-bold text-slate-950 mb-2">Device Grading System</h2>
-        <p className="text-brandTextMedium mb-6">Every used device at PZM is inspected and graded so you know exactly what you're getting.</p>
+        <h2 className="text-xl font-bold text-slate-950 mb-2">Used device grades</h2>
+        <p className="text-brandTextMedium mb-6">Every used device at PZM is checked before sale.</p>
         <div className="grid gap-5 md:grid-cols-3">
           <div className="rounded-2xl border border-brandBorder bg-white p-6 shadow-sm">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white font-bold text-lg">A</span>
             <h3 className="mt-4 text-lg font-bold text-slate-950">Grade A — Like New</h3>
             <p className="mt-2 text-sm leading-7 text-brandTextDark">
-              Minimal signs of use. Screen is flawless, body has no visible scratches or dents. Battery health 85%+. Looks and feels like a new device.
+              Very light use with clean screen, body, and strong battery health.
             </p>
           </div>
           <div className="rounded-2xl border border-brandBorder bg-white p-6 shadow-sm">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-yellow-500 text-white font-bold text-lg">B</span>
             <h3 className="mt-4 text-lg font-bold text-slate-950">Grade B — Good Condition</h3>
             <p className="mt-2 text-sm leading-7 text-brandTextDark">
-              Minor cosmetic wear — light scratches on screen or body. All functions work perfectly. Battery health 75%+. Great value for everyday use.
+              Light cosmetic wear with all key functions working properly.
             </p>
           </div>
           <div className="rounded-2xl border border-brandBorder bg-white p-6 shadow-sm">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-white font-bold text-lg">C</span>
             <h3 className="mt-4 text-lg font-bold text-slate-950">Grade C — Fair Condition</h3>
             <p className="mt-2 text-sm leading-7 text-brandTextDark">
-              Noticeable wear — visible scratches, scuffs, or minor dents. Fully functional with all features working. Battery health 65%+. Best price point.
+              Visible wear, fully functional, and priced for value.
             </p>
           </div>
         </div>
@@ -343,21 +332,21 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
           <ShieldCheck className="text-primary" size={22} />
           <h2 className="mt-5 text-xl font-bold text-slate-950">30-day warranty included</h2>
           <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-            All certified pre-owned devices come with a 30-day warranty covering hardware defects. Battery health, screen, and all components are tested before sale.
+            All certified pre-owned devices come with a 30-day hardware warranty.
           </p>
         </article>
         <article className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm">
           <BatteryCharging className="text-primary" size={22} />
           <h2 className="mt-5 text-xl font-bold text-slate-950">Full testing & certification</h2>
           <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-            Every device passes a multi-point inspection: battery health, screen quality, cameras, speakers, charging, Face ID / Touch ID, and connectivity.
+            Battery, screen, cameras, charging, and core features are checked before sale.
           </p>
         </article>
         <article className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm">
           <RefreshCcw className="text-primary" size={22} />
           <h2 className="mt-5 text-xl font-bold text-slate-950">Trade-in and upgrade path</h2>
           <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-            Trade in your old device and get credit toward a certified used or brand-new upgrade. Visit us or use the sell-device page for an instant quote.
+            Trade in your old device and put the value toward your next upgrade.
           </p>
         </article>
       </section>
@@ -368,11 +357,11 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Book Appointment</p>
             <h2 className="mt-3 text-2xl font-bold text-slate-950">Need help finding the right used device?</h2>
             <p className="mt-4 text-brandTextMedium leading-7">
-              Book a quick consultation for used phones, laptops, tablets, or gaming devices and get matched options by budget and condition.
+              Book a quick consultation for used phones, laptops, tablets, or gaming devices.
             </p>
             <div className="mt-5 space-y-2 text-sm text-brandTextDark">
               <p><span className="font-semibold text-primary">1.</span> Share model, budget, and condition preference.</p>
-              <p><span className="font-semibold text-primary">2.</span> We check tested inventory and best-fit options.</p>
+              <p><span className="font-semibold text-primary">2.</span> We suggest the best-fit options.</p>
               <p><span className="font-semibold text-primary">3.</span> Confirm store visit, pickup, or next step.</p>
             </div>
           </div>
@@ -383,10 +372,10 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
 
       <div className="grid grid-cols-1 gap-8 items-start xl:grid-cols-[1.1fr,0.9fr]">
         <section className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Buying Flow</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">How to buy</h2>
           <div className="space-y-4 text-brandTextDark">
             <p><span className="font-semibold text-primary">1.</span> Browse current used listings and condition details above.</p>
-            <p><span className="font-semibold text-primary">2.</span> Tap <strong>Contact us</strong> on any matching device for availability confirmation.</p>
+            <p><span className="font-semibold text-primary">2.</span> Tap <strong>Contact us</strong> on any matching device.</p>
             <p><span className="font-semibold text-primary">3.</span> Use appointment booking if you want guided matching by budget and condition.</p>
           </div>
         </section>
@@ -395,7 +384,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
           <WhatsAppCTA
             title="Looking for a specific used device?"
             description="Tell us the model, budget, and condition preference and the team will check current options."
-            prefilledMessage="Hi, I'm looking for a specific used device. Can you check what's available? (via pzm.ae/services/secondhand)"
+            prefilledMessage="Hi, I'm looking for a specific used device. Can you help me find one? (via pzm.ae/services/secondhand)"
           />
         </div>
       </div>

@@ -23,7 +23,7 @@ export const brandNewCategories: BrandNewCategory[] = [
     key: 'phones-tablets',
     title: 'Phones, Tablets, and Wearables',
     shortTitle: 'Phones & Tablets',
-    description: 'The live brand-new catalog is strongest here today, led by the current iPhone lineup with room for tablets, Galaxy devices, Pixels, and wearables as the catalog expands.',
+    description: 'iPhones, Samsung devices, iPads, Pixels, and wearables.',
     examples: ['iPhone models', 'Samsung Galaxy', 'Google Pixel', 'iPads and tablets', 'Smartwatches'],
     accentClassName: 'from-sky-100 via-cyan-50 to-white',
     matcher: /(iphone|ipad|tablet|galaxy|samsung|pixel|watch|wearable|phone|mobile)/i,
@@ -32,7 +32,7 @@ export const brandNewCategories: BrandNewCategory[] = [
     key: 'laptops-computers',
     title: 'Laptops and Computers',
     shortTitle: 'Laptops',
-    description: 'A retail lane for MacBooks, Windows laptops, and fresh everyday computing hardware when customers want stock confirmation before they buy.',
+    description: 'MacBooks, Windows laptops, and everyday computers.',
     examples: ['MacBook Air and Pro', 'Dell XPS and Inspiron', 'HP Spectre and Envy', 'Lenovo ThinkPad and Yoga', 'Gaming laptops'],
     accentClassName: 'from-emerald-100 via-green-50 to-white',
     matcher: /(macbook|laptop|notebook|dell|hp|lenovo|asus|acer|xps|inspiron|spectre|envy|thinkpad|yoga|vivobook|zenbook)/i,
@@ -41,7 +41,7 @@ export const brandNewCategories: BrandNewCategory[] = [
     key: 'gaming-systems',
     title: 'Gaming Systems',
     shortTitle: 'Gaming',
-    description: 'For customers comparing new gaming hardware, consoles, or performance-first laptops before checkout or store pickup.',
+    description: 'Consoles, gaming laptops, VR, and gaming hardware.',
     examples: ['Custom gaming PCs', 'Gaming laptops', 'Latest consoles', 'VR headsets', 'Gaming accessories'],
     accentClassName: 'from-violet-100 via-purple-50 to-white',
     matcher: /(playstation|ps5|ps4|xbox|nintendo|switch|gaming|rog|alienware|vr|console)/i,
@@ -50,7 +50,7 @@ export const brandNewCategories: BrandNewCategory[] = [
     key: 'professional-equipment',
     title: 'Professional Equipment',
     shortTitle: 'Workstations',
-    description: 'A request-first lane for office, creator, and business hardware when a customer needs a clean stock or pricing confirmation before visiting.',
+    description: 'Workstations, monitors, business devices, and office hardware.',
     examples: ['Workstation laptops', 'Professional desktops', 'Business tablets', 'Network equipment', 'Office setups'],
     accentClassName: 'from-amber-100 via-yellow-50 to-white',
     matcher: /(workstation|desktop|monitor|business|network|router|server|surface|precision|elitebook|probook)/i,
@@ -93,9 +93,7 @@ function dedupeProducts(products: Product[]) {
 
     const existingTimestamp = getProductTimestamp(existing)
     const nextTimestamp = getProductTimestamp(product)
-    const keepNext =
-      (product.quantity ?? 0) > (existing.quantity ?? 0) ||
-      ((product.quantity ?? 0) === (existing.quantity ?? 0) && nextTimestamp >= existingTimestamp)
+    const keepNext = nextTimestamp >= existingTimestamp
 
     if (keepNext) {
       uniqueProducts.set(key, product)
@@ -112,7 +110,7 @@ export function getBrandNewProducts(products: Product[]) {
 }
 
 export function getBrandNewCategoryGroups(products: Product[]) {
-  const liveBrandNewProducts = getBrandNewProducts(products).filter((product) => (product.quantity ?? 0) > 0)
+  const liveBrandNewProducts = getBrandNewProducts(products)
   const groupedProducts = brandNewCategories.map((category) => ({
     category,
     products: [] as Product[],

@@ -23,12 +23,33 @@ import BlogPostPage from './pages/BlogPostPage'
 import BuyIphonePage from './pages/BuyIphonePage'
 import BrandNewPage from './pages/BrandNewPage'
 import SecondhandPage from './pages/SecondhandPage'
+import { sanitizeProductsForDisplay } from './utils/productPresentation'
+
+function readPreloadedProducts() {
+  if (typeof document === 'undefined') {
+    return [] as Product[]
+  }
+
+  const payloadElement = document.getElementById('pzm-preloaded-products')
+  if (!payloadElement?.textContent) {
+    return [] as Product[]
+  }
+
+  try {
+    const parsed = JSON.parse(payloadElement.textContent)
+    return Array.isArray(parsed) ? sanitizeProductsForDisplay(parsed as Product[]) : []
+  } catch (error) {
+    console.error('Failed to parse preloaded products', error)
+    return [] as Product[]
+  }
+}
 
 function AppContent() {
   const navigate = useNavigate()
   const location = useLocation()
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
+  const [initialProducts] = useState<Product[]>(() => readPreloadedProducts())
+  const [products, setProducts] = useState<Product[]>(initialProducts)
+  const [loading, setLoading] = useState(initialProducts.length === 0)
   const [error, setError] = useState<string | null>(null)
   const currentPageRaw = location.pathname === '/'
     ? 'home'
@@ -37,13 +58,22 @@ function AppContent() {
 
   useEffect(() => {
     const loadProducts = async () => {
+      const shouldShowLoader = initialProducts.length === 0
+
       try {
-        setLoading(true)
-        const data = await apiService.getProducts()
-        setProducts(data)
+        if (shouldShowLoader) {
+          setLoading(true)
+        }
+
+        const data = sanitizeProductsForDisplay(await apiService.getProducts())
+        if (data.length > 0 || initialProducts.length === 0) {
+          setProducts(data)
+        }
         setError(null)
       } catch (err) {
-        setError('Failed to load products')
+        if (initialProducts.length === 0) {
+          setError('Failed to load products')
+        }
         console.error(err)
       } finally {
         setLoading(false)
@@ -51,7 +81,7 @@ function AppContent() {
     }
 
     loadProducts()
-  }, [])
+  }, [initialProducts.length])
 
   useEffect(() => {
     if (!('scrollRestoration' in window.history)) {

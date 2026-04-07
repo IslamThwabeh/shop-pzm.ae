@@ -5,7 +5,7 @@ export interface NavigationLink {
 
 export const siteIdentity = {
   name: 'PZM Computers & Phones Store',
-  tagline: 'Buy Sell Fix Used PC Build',
+  tagline: 'New•Used•Repair•PC•Build',
   summary:
     'Dubai tech storefront for new and used phones, laptops, repairs, accessories, and custom PC builds.',
 }
@@ -14,7 +14,7 @@ export const siteContact = {
   phoneDisplay: '+971 52 802 6677',
   phoneHref: 'tel:+971528026677',
   whatsappSupportHref:
-    'https://wa.me/971528026677?text=Hi%2C%20I%20need%20help%20with%20PZM%20services.%20(via%20the%20PZM%20website)',
+    'https://wa.me/971528026677?text=Hi%2C%20I%27m%20interested%20in%20the%20services%20listed%20on%20your%20website.%20Can%20you%20tell%20me%20more%3F%20(via%20pzm.ae)',
   noReplyEmail: 'no-reply@pzm.ae',
   mapsHref: 'https://maps.app.goo.gl/e5Rhfo8YY3i8CatM7?g_st=ic',
   mapEmbedUrl:
@@ -48,6 +48,16 @@ export const areaNavigationLinks: NavigationLink[] = [
 ]
 
 export const policyNavigationLinks: NavigationLink[] = [
+  { label: 'Return Policy', to: '/return-policy' },
+  { label: 'Terms', to: '/terms' },
+]
+
+export const footerQuickLinks: NavigationLink[] = [
+  { label: 'Home', to: '/' },
+  { label: 'Repair', to: '/services/repair' },
+  { label: 'Shop', to: '/services/brand-new' },
+  { label: 'PC Build', to: '/services/gaming-pc' },
+  { label: 'Blog', to: '/blog/' },
   { label: 'Return Policy', to: '/return-policy' },
   { label: 'Terms', to: '/terms' },
 ]

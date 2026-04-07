@@ -60,7 +60,7 @@ export const blogPosts: BlogPostEntry[] = [
       </ul>
 
       <h3>6. Our outlook</h3>
-      <p>Gold prices are expected to remain elevated through much of 2026. For tech buyers in Dubai, that means being more deliberate: buy what you need, compare value across new and used inventory, and maintain current devices well. The best deals go to informed buyers who act when stock and pricing align.</p>`,
+      <p>Gold prices are expected to remain elevated through much of 2026. For tech buyers in Dubai, that means being more deliberate: buy what you need, compare value across new and used inventory, and maintain current devices well. The best deals go to informed buyers who act when the value is right.</p>`,
   },
   {
     title: 'How US Tariffs in 2026 Are Changing Electronics Prices in Dubai',
@@ -98,11 +98,11 @@ export const blogPosts: BlogPostEntry[] = [
 
       <h3>4. Smart buying strategies during tariff uncertainty</h3>
       <ul>
-        <li>Buy on confirmed stock rather than waiting for hypothetical price drops.</li>
+        <li>Buy when the value makes sense rather than waiting for hypothetical price drops.</li>
         <li>Compare storage tiers carefully because premium configs often move the most.</li>
         <li>Consider <a href="/services/secondhand">certified used devices</a> for better value.</li>
         <li>If you have something to <a href="/services/sell-gadgets">sell or trade in</a>, market volatility can improve your return there too.</li>
-        <li>For <a href="/services/gaming-pc">gaming PC builds</a>, lock parts pricing when availability is confirmed.</li>
+        <li>For <a href="/services/gaming-pc">gaming PC builds</a>, lock parts pricing once the build plan is confirmed.</li>
       </ul>
 
       <h3>5. What we expect for the rest of 2026</h3>
@@ -291,7 +291,7 @@ export const blogPosts: BlogPostEntry[] = [
         <li>Portable SSDs are still one of the smartest upgrades for backup and transfer workflows.</li>
       </ul>
 
-      <p>Use the <a href="/services/accessories">accessories page</a> to start with current availability and keep the buying journey on-site.</p>`,
+      <p>Use the <a href="/services/accessories">accessories page</a> to start with current options and keep the buying journey on-site.</p>`,
   },
   {
     title: 'Why Your Phone Battery Dies So Fast and How to Fix It (2026)',
@@ -329,7 +329,7 @@ export const blogPosts: BlogPostEntry[] = [
     excerpt:
       'A practical UAE market guide on how Iran-US geopolitical tensions can influence smartphone, laptop, and PC pricing, plus better buying strategies.',
     seoDescription:
-      'Learn how regional Iran-US tensions can affect shipping, pricing, and availability for phones, laptops, PCs, and accessories in the UAE.',
+      'Learn how regional Iran-US tensions can affect shipping and pricing for phones, laptops, PCs, and accessories in the UAE.',
     category: 'Market',
     imageUrl: blogMedia('pexels-photo-325229.jpeg'),
     publishedAt: '2026-03-14',
@@ -358,7 +358,7 @@ export const blogPosts: BlogPostEntry[] = [
         <li>Compare value by specification, not just model name.</li>
         <li>Stay flexible on color, storage, and generation.</li>
         <li>Look harder at <a href="/services/secondhand">certified used options</a>.</li>
-        <li>Move quickly when real stock and price line up.</li>
+        <li>Move quickly when the right option and price line up.</li>
         <li>Prioritize warranty and support rather than chasing only the lowest quote.</li>
       </ul>
 

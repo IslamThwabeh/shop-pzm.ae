@@ -212,7 +212,7 @@ export const homeFaqItems: HomeFaqItem[] = [
   },
   {
     question: 'How long does a phone or laptop repair take?',
-    answer: 'Most phone repairs are completed within 30 to 60 minutes. Laptop and motherboard-level jobs may take 1 to 3 business days depending on complexity and parts availability.',
+    answer: 'Most phone repairs are completed within 30 to 60 minutes. Laptop and motherboard-level jobs may take 1 to 3 business days depending on complexity and the parts required.',
   },
   {
     question: 'Can I sell my old phone or laptop to you?',

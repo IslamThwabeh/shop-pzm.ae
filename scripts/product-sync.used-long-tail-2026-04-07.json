@@ -1,0 +1,340 @@
+{
+  "products": [
+    {
+      "model": "iPhone 14 Pro",
+      "storage": "512GB",
+      "condition": "used",
+      "color": "Black",
+      "price": 2150,
+      "quantity": 1,
+      "description": "Battery 94%",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "iPhone 14 Pro",
+      "storage": "256GB",
+      "condition": "used",
+      "color": "Purple",
+      "price": 1850,
+      "quantity": 1,
+      "description": "Battery 100%",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "iPhone 14 Pro",
+      "storage": "128GB",
+      "condition": "used",
+      "color": "White",
+      "price": 1850,
+      "quantity": 1,
+      "description": "Battery 96%",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "iPhone 13 Pro Max",
+      "storage": "256GB",
+      "condition": "used",
+      "color": "Blue",
+      "price": 1850,
+      "quantity": 1,
+      "description": "Battery 97%",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "iPhone 13 Pro",
+      "storage": "1TB",
+      "condition": "used",
+      "color": "Blue",
+      "price": 2499,
+      "quantity": 1,
+      "description": "Battery 97%",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "iPhone 12 Mini",
+      "storage": "64GB",
+      "condition": "used",
+      "color": "Rose White",
+      "price": 1100,
+      "quantity": 1,
+      "description": "Battery 90%",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "Honor X8",
+      "storage": "6+2GB / 128GB",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 750,
+      "quantity": 1,
+      "description": "Used Honor X8 with 128GB storage.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "Honor X9C",
+      "storage": "12GB / 256GB",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 800,
+      "quantity": 1,
+      "description": "Used Honor X9C with 256GB storage.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "Samsung Galaxy A73 5G",
+      "storage": "128GB / 8GB RAM",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 750,
+      "quantity": 1,
+      "description": "Used Samsung Galaxy A73 5G with 128GB storage.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "Redmi Note 8",
+      "storage": "6GB / 128GB",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 300,
+      "quantity": 1,
+      "description": "Used Redmi Note 8 with 128GB storage.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "Tecno Spark Go 1",
+      "storage": "64GB / 3GB RAM",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 210,
+      "quantity": 1,
+      "description": "Used Tecno Spark Go 1 with 64GB storage.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "Nokia C20",
+      "storage": "32GB",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 150,
+      "quantity": 1,
+      "description": "Used Nokia C20 with 32GB storage.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "ASUS ROG Strix Gaming",
+      "storage": "32GB / 1TB / RTX 4070",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 4200,
+      "quantity": 1,
+      "description": "Used ASUS ROG Strix gaming laptop with RTX 4070 graphics.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    },
+    {
+      "model": "AORUS Gaming",
+      "storage": "i7 11th / 32GB / 1TB / RTX 3080",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 2850,
+      "quantity": 1,
+      "description": "Used AORUS gaming laptop with RTX 3080 graphics.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    },
+    {
+      "model": "Alienware 19 Gaming",
+      "storage": "i7 12th / 32GB / 1TB / RTX 3080 / 240Hz 16\"",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 4500,
+      "quantity": 1,
+      "description": "Used Alienware gaming laptop with 240Hz display.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    },
+    {
+      "model": "Dell Inspiron 15 7000 Gaming",
+      "storage": "i7 7th / 8GB / 512GB / GTX 1050 Ti",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 1050,
+      "quantity": 1,
+      "description": "Used Dell Inspiron gaming laptop with GTX 1050 Ti graphics.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    },
+    {
+      "model": "MacBook Pro 16\"",
+      "storage": "36GB / 512GB / GPU 18-Core",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 7000,
+      "quantity": 1,
+      "description": "Used MacBook Pro 16-inch with 36GB RAM and 18-core GPU.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    },
+    {
+      "model": "MacBook Pro 2019 15\"",
+      "storage": "32GB / 512GB / Touch Bar",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 2500,
+      "quantity": 1,
+      "description": "Used MacBook Pro 2019 15-inch with Touch Bar.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    },
+    {
+      "model": "MacBook Air M1 2020",
+      "storage": "8GB / 256GB",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 2200,
+      "quantity": 1,
+      "description": "Used MacBook Air M1 2020 with 256GB SSD.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    },
+    {
+      "model": "HP Laptop",
+      "storage": "i7 12th / 16GB / 1TB",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 1750,
+      "quantity": 1,
+      "description": "Used HP laptop with i7 12th Gen, 16GB RAM, and 1TB storage.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    },
+    {
+      "model": "iPad 5th Gen",
+      "storage": "64GB Wi-Fi + Cellular",
+      "condition": "used",
+      "color": "With Keyboard",
+      "price": 1700,
+      "quantity": 1,
+      "description": "Used iPad 5th Gen bundle with keyboard.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "iPad 8th Gen",
+      "storage": "32GB",
+      "condition": "used",
+      "color": "Rose Gold",
+      "price": 750,
+      "quantity": 1,
+      "description": "Used iPad 8th Gen in Rose Gold.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "Huawei MatePad",
+      "storage": "128GB",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 600,
+      "quantity": 1,
+      "description": "Used Huawei MatePad with 128GB storage.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "Samsung Tab A6",
+      "storage": "32GB",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 250,
+      "quantity": 2,
+      "description": "Used Samsung Tab A6 with multiple units available.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_Used_Phones.webp"
+      ]
+    },
+    {
+      "model": "Gaming PC",
+      "storage": "i7 14th / Corsair 64GB / SSD 480GB + HDD 1TB",
+      "condition": "used",
+      "color": "White",
+      "price": 2850,
+      "quantity": 1,
+      "description": "Pre-owned gaming PC without GPU.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/Catigories/mini_GamingPC.webp"
+      ]
+    },
+    {
+      "model": "LG UltraGear 45\"",
+      "storage": "WQHD OLED Curved / 240Hz / 0.03ms / HDR 10",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 4100,
+      "quantity": 1,
+      "description": "Used LG UltraGear gaming monitor with OLED panel and 240Hz refresh rate.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    },
+    {
+      "model": "ASUS ROG Swift 27\"",
+      "storage": "QHD / 360Hz / G-SYNC / 1ms / DisplayHDR 600",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 2850,
+      "quantity": 1,
+      "description": "Used ASUS ROG Swift gaming monitor with 360Hz refresh rate.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    },
+    {
+      "model": "Samsung ViewFinity S7 32\"",
+      "storage": "4K Flat",
+      "condition": "used",
+      "color": "Open Box",
+      "price": 950,
+      "quantity": 1,
+      "description": "Open-box Samsung ViewFinity S7 32-inch 4K monitor.",
+      "imagePaths": [
+        "C:/Users/islamt/pzm.ae/images/buy_used/used_laptops_collection_main.webp"
+      ]
+    }
+  ]
+}

@@ -20,37 +20,37 @@ export const secondhandCategories: SecondhandCategory[] = [
     key: 'used-phones',
     title: 'Used Phones and iPhones',
     shortTitle: 'Used Phones',
-    description: 'The most common used-device requests start here: iPhones, Galaxy models, Pixel phones, and other premium smartphones with clear condition details before purchase.',
-    examples: ['Used iPhones', 'Samsung Galaxy', 'Google Pixel', 'Premium Android phones'],
+    description: 'Used iPhones, Samsung devices, Pixels, Honors, and other phones.',
+    examples: ['Used iPhones', 'Samsung Galaxy', 'Google Pixel', 'Honor phones', 'Premium Android phones'],
     accentClassName: 'from-emerald-100 via-green-50 to-white',
-    matcher: /(iphone|galaxy|samsung|pixel|android|phone|mobile)/i,
+    matcher: /(iphone|galaxy|samsung|pixel|android|phone|mobile|honor|redmi|tecno|nokia)/i,
   },
   {
     key: 'used-laptops',
     title: 'Used Laptops and MacBooks',
     shortTitle: 'Used Laptops',
-    description: 'A request-first lane for MacBooks, Windows laptops, and refurbished computing hardware when buyers want battery, condition, and specification checks first.',
-    examples: ['MacBook Air and Pro', 'Dell Latitude', 'HP EliteBook', 'Lenovo ThinkPad'],
+    description: 'Used MacBooks, Windows laptops, and refurbished computers.',
+    examples: ['MacBook Air and Pro', 'Dell Latitude', 'HP EliteBook', 'Lenovo ThinkPad', 'Lenovo ThinkBook'],
     accentClassName: 'from-sky-100 via-cyan-50 to-white',
-    matcher: /(macbook|laptop|notebook|dell|hp|lenovo|asus|acer|latitude|elitebook|thinkpad|xps|inspiron|spectre|envy|probook)/i,
+    matcher: /(macbook|laptop|notebook|dell|hp|lenovo|asus|acer|latitude|elitebook|thinkpad|thinkbook|xps|inspiron|spectre|envy|probook|vivobook|zenbook|ultra)/i,
   },
   {
     key: 'used-tablets',
     title: 'Used Tablets and iPads',
     shortTitle: 'Used Tablets',
-    description: 'For buyers comparing iPads, Galaxy Tab models, and other tablets with storage, battery, and cosmetic guidance before they commit.',
-    examples: ['iPad models', 'Galaxy Tab', 'Surface tablets', 'Android tablets'],
+    description: 'Used iPads, Galaxy Tabs, MatePads, and other tablets.',
+    examples: ['iPad models', 'Galaxy Tab', 'Surface tablets', 'Huawei MatePad', 'Android tablets'],
     accentClassName: 'from-amber-100 via-yellow-50 to-white',
-    matcher: /(ipad|tablet|galaxy tab|surface)/i,
+    matcher: /(ipad|tablet|galaxy tab|surface|matepad|\btab\b)/i,
   },
   {
     key: 'used-gaming',
     title: 'Used Gaming Devices',
     shortTitle: 'Used Gaming',
-    description: 'A used-device route for consoles, gaming laptops, and gaming gear when shoppers want quick confirmation before they visit the store.',
-    examples: ['PlayStation', 'Xbox', 'Nintendo Switch', 'Gaming laptops'],
+    description: 'Used consoles, gaming PCs, monitors, and gaming hardware.',
+    examples: ['PlayStation', 'Xbox', 'Nintendo Switch', 'Gaming laptops', 'Gaming monitors'],
     accentClassName: 'from-violet-100 via-purple-50 to-white',
-    matcher: /(playstation|ps5|ps4|xbox|nintendo|switch|gaming|rog|alienware|console)/i,
+    matcher: /(playstation|ps5|ps4|xbox|nintendo|switch|gaming|rog|alienware|console|desktop|monitor|ultragear|swift|viewfinity|rtx|gtx|aorus)/i,
   },
 ]
 
@@ -90,9 +90,7 @@ function dedupeProducts(products: Product[]) {
 
     const existingTimestamp = getProductTimestamp(existing)
     const nextTimestamp = getProductTimestamp(product)
-    const keepNext =
-      (product.quantity ?? 0) > (existing.quantity ?? 0) ||
-      ((product.quantity ?? 0) === (existing.quantity ?? 0) && nextTimestamp >= existingTimestamp)
+    const keepNext = nextTimestamp >= existingTimestamp
 
     if (keepNext) {
       uniqueProducts.set(key, product)
@@ -109,7 +107,7 @@ export function getSecondhandProducts(products: Product[]) {
 }
 
 export function getSecondhandCategoryGroups(products: Product[]) {
-  const liveSecondhandProducts = getSecondhandProducts(products).filter((product) => (product.quantity ?? 0) > 0)
+  const liveSecondhandProducts = getSecondhandProducts(products)
 
   return secondhandCategories.map((category) => ({
     category,

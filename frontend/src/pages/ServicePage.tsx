@@ -73,7 +73,7 @@ export default function ServicePage() {
       <section className="overflow-hidden rounded-3xl border border-brandBorder bg-white text-left shadow-md">
         <div className={`grid grid-cols-1 ${service.imageUrl || service.cardImageUrl ? 'lg:grid-cols-[1.05fr,0.95fr] lg:items-stretch' : ''}`}>
           <div className="p-6 md:p-10">
-            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-primary">PZM Dubai service</p>
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-primary">PZM service</p>
             <h1 className="mb-4 text-[2rem] font-bold text-gray-900 md:text-[2.5rem]">{service.heroTitle}</h1>
             <p className="mb-6 max-w-3xl text-[0.98rem] text-brandTextMedium md:text-base">{service.heroDescription}</p>
 
@@ -82,7 +82,7 @@ export default function ServicePage() {
                 href={hasAppointment ? '#appointment' : '#service-contact'}
                 className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
               >
-                {hasAppointment ? 'Book Appointment' : 'Get in Touch'}
+                {hasAppointment ? 'Book Appointment' : 'Contact Us'}
               </a>
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function ServicePage() {
       </section>
 
       <section className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">What we can help with</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">What we do</h2>
         <ul className="space-y-2 text-brandTextDark">
           {service.highlights.map((highlight) => (
             <li key={highlight} className="flex items-start gap-2">
@@ -105,15 +105,6 @@ export default function ServicePage() {
             </li>
           ))}
         </ul>
-
-        <div className="mt-8 border-t border-brandBorder pt-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">How it works</h3>
-          <div className="grid gap-3 md:grid-cols-3 text-sm text-brandTextDark">
-            <p><span className="font-semibold text-primary">1.</span> Share what you need and your preferred timing.</p>
-            <p><span className="font-semibold text-primary">2.</span> We review options, pricing, and availability.</p>
-            <p><span className="font-semibold text-primary">3.</span> Confirm the next step: visit, booking, or follow-up.</p>
-          </div>
-        </div>
       </section>
 
       {service.detailSections && service.detailSections.length > 0 && (
@@ -130,15 +121,15 @@ export default function ServicePage() {
                   {section.title}
                 </summary>
                 <ul className="mt-3 space-y-1.5 text-brandTextDark text-sm">
-                  {section.items.slice(0, 6).map((item) => (
+                  {section.items.slice(0, 4).map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <span className="text-primary mt-1 shrink-0">✓</span>
                       <span>{item}</span>
                     </li>
                   ))}
-                  {section.items.length > 6 && (
+                  {section.items.length > 4 && (
                     <li className="pl-5 text-xs font-medium text-brandTextMedium">
-                      +{section.items.length - 6} more points
+                      +{section.items.length - 4} more points
                     </li>
                   )}
                 </ul>
@@ -153,7 +144,7 @@ export default function ServicePage() {
           <div className="mb-6 text-left">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Appointment</p>
             <h2 className="mt-2 text-2xl font-bold text-slate-900">Book a Service Appointment</h2>
-            <p className="mt-3 text-brandTextMedium">Choose a preferred time in Dubai and submit a tracked request for this service.</p>
+            <p className="mt-3 text-brandTextMedium">Choose a preferred time and send your request to the store team.</p>
           </div>
           <HomeAppointmentPanel
             sourcePage={`/services/${service.slug}#appointment`}
@@ -165,7 +156,7 @@ export default function ServicePage() {
       <div id="service-contact">
         <WhatsAppCTA
           title={`Need help with ${service.title.toLowerCase()}?`}
-          description="Send us a message and the PZM team will follow up with pricing, availability, or next steps."
+          description="Send us a message and the PZM team will follow up with pricing and next steps."
           prefilledMessage={`Hi, I'm interested in ${service.title} from your website. Can you help? (via pzm.ae/services/${service.slug})`}
         />
       </div>

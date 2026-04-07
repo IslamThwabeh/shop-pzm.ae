@@ -47,14 +47,6 @@ export default function ProductCard({ product }: Props) {
           </span>
         </div>
 
-        <p className="text-sm text-brandTextMedium mt-2 leading-relaxed">
-          Stock: {product.quantity > 0 ? (
-            <span className="text-brandGreenDark font-semibold">{product.quantity} available</span>
-          ) : (
-            <span className="text-brandRed font-semibold">Out of stock</span>
-          )}
-        </p>
-
         {product.description && (
           <p className="text-sm text-brandTextMedium mt-3 line-clamp-2 leading-relaxed">{product.description}</p>
         )}
@@ -69,7 +61,7 @@ export default function ProductCard({ product }: Props) {
         </button>
 
         <p className="mt-3 text-xs font-medium uppercase tracking-[0.14em] text-brandTextMedium">
-          Contact the team directly for availability, pricing, and device details.
+          Message the team for price, color, and device details.
         </p>
       </div>
     </article>

@@ -18,7 +18,7 @@ export default function BlogPage() {
   return (
     <div className="space-y-10">
       <Seo
-        title="Tech Blog | PZM Dubai"
+        title="Tech Blog - iPhone, PC & Repair Tips | PZM Dubai"
         description="Latest market updates, repair advice, iPhone tips, used-device buying guides, and PC articles from PZM in Dubai."
         canonicalPath="/blog/"
       />
@@ -28,10 +28,10 @@ export default function BlogPage() {
           PZM Blog
         </span>
         <h1 className="mt-5 max-w-3xl text-[2.35rem] font-extrabold tracking-tight text-slate-950 md:text-[3.2rem]">
-          Market updates, buying guides, repair advice, and device knowledge from Dubai
+          Latest Tech Updates
         </h1>
         <p className="mt-5 max-w-3xl text-base leading-7 text-brandTextMedium md:text-lg">
-          Read practical articles from the PZM team on local device pricing, repair decisions, used-tech buying, and the products people actually shop in Dubai.
+          Stay informed with the latest tech news, buying guides, repair advice, and local market insights from Dubai.
         </p>
       </section>
 

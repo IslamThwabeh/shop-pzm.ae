@@ -40,10 +40,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
     })
   }
 
-  const liveIphoneProducts = useMemo(
-    () => getBuyIphoneProducts(products).filter((product) => (product.quantity ?? 0) > 0),
-    [products]
-  )
+  const liveIphoneProducts = useMemo(() => getBuyIphoneProducts(products), [products])
   const familyGroups = useMemo(() => getBuyIphoneFamilyGroups(products), [products])
   const availableFamilyCount = familyGroups.filter((group) => group.products.length > 0).length
   const missingFamilies = familyGroups.filter((group) => group.products.length === 0)
@@ -55,8 +52,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
     '@type': 'CollectionPage',
     name: 'Buy iPhone in Dubai | PZM',
     url: buildSiteUrl('/services/buy-iphone'),
-    description:
-      'Buy iPhone in Dubai with live stock, direct checkout, and fast availability support for missing configurations from PZM.',
+    description: 'Buy iPhone in Dubai from PZM with direct WhatsApp ordering and local support.',
     mainEntity: {
       '@type': 'ItemList',
       itemListElement: liveIphoneProducts.slice(0, 16).map((product, index) => ({
@@ -71,7 +67,6 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
             '@type': 'Offer',
             priceCurrency: 'AED',
             price: product.price,
-            availability: product.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             itemCondition: 'https://schema.org/NewCondition',
           },
         },
@@ -83,7 +78,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
     <div className="space-y-10">
       <Seo
         title="Buy iPhone 17 Pro Max, Pro, Air & iPhone 17 in Dubai | PZM"
-        description="Buy iPhone in Dubai with live stock, direct checkout, and availability support for missing models from the PZM team."
+        description="Buy iPhone in Dubai from PZM with direct WhatsApp ordering and local support."
         canonicalPath="/services/buy-iphone"
         imageUrl={heroImageUrl}
         jsonLd={jsonLd}
@@ -114,24 +109,24 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
       <section className="rounded-[32px] border border-brandBorder bg-white px-5 py-8 shadow-sm md:px-8 md:py-10">
         <div className="mx-auto max-w-4xl text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Apple retail</p>
-          <h1 className="mt-4 text-[2rem] font-bold text-slate-950 md:text-[2.45rem]">All iPhone models in one clean view</h1>
+          <h1 className="mt-4 text-[2rem] font-bold text-slate-950 md:text-[2.45rem]">Buy iPhone 17 Pro Max, Pro, Air &amp; iPhone 17 in Dubai</h1>
           <p className="mt-4 text-[0.98rem] leading-7 text-brandTextMedium md:text-base">
-            Browse the current iPhone families first, then open the exact storage and color you want. If a configuration is missing, request it directly from the same page.
+            Latest iPhone 17 Pro Max, iPhone 17 Pro, iPhone 17 Air, and iPhone 17 in Dubai. Browse the lineup, then message us for the exact storage and color you want.
           </p>
         </div>
 
         <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm font-semibold text-brandTextMedium">
-          <span>{liveIphoneProducts.length} live variants</span>
-          <span>{availableFamilyCount}/{buyIphoneFamilies.length} families live</span>
+          <span>{liveIphoneProducts.length} models listed</span>
+          <span>{availableFamilyCount}/{buyIphoneFamilies.length} families listed</span>
           <span>{lowestPrice ? `From AED ${lowestPrice.toFixed(0)}` : 'Request pricing'}</span>
         </div>
 
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <a
-            href="#iphone-live-stock"
+            href="#iphone-models"
             className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold transition-colors hover:bg-brandGreenDark"
           >
-            Browse Live iPhone Stock
+            Browse iPhone Models
           </a>
           <a
             href="#buy-iphone-contact"
@@ -145,7 +140,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
       <section className="space-y-4">
         <div className="text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Shop by family</p>
-          <h2 className="mt-2 text-3xl font-bold text-slate-950">Start with the iPhone line</h2>
+          <h2 className="mt-2 text-3xl font-bold text-slate-950">Start with the iPhone family</h2>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -171,7 +166,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                       : 'border-brandBorder bg-slate-50 text-brandTextMedium'
                   }`}
                 >
-                  {liveCount > 0 ? `${liveCount} live variants` : 'Request availability'}
+                  {liveCount > 0 ? 'Listed now' : 'Message us'}
                 </span>
               </a>
             )
@@ -179,13 +174,13 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
         </div>
       </section>
 
-      <section id="iphone-live-stock" className="space-y-8">
+      <section id="iphone-models" className="space-y-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Live stock</p>
-            <h2 className="mt-2 text-[2rem] font-bold text-slate-950 md:text-[2.25rem]">Current iPhone inventory on the site</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Current lineup</p>
+            <h2 className="mt-2 text-[2rem] font-bold text-slate-950 md:text-[2.25rem]">Current iPhone models on the site</h2>
             <p className="mt-3 max-w-3xl text-brandTextMedium">
-              This section is driven by the live product catalog so pricing, stock, and product actions stay aligned with the storefront.
+              Browse the iPhone models listed now and message us for the one you want.
             </p>
           </div>
           <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
@@ -195,7 +190,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
 
         {loading ? (
           <div className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm text-brandTextMedium">
-            Loading live iPhone inventory...
+            Loading iPhone models...
           </div>
         ) : (
           <div className="space-y-8">
@@ -214,7 +209,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                   </div>
 
                   <span className="self-start rounded-full border border-brandBorder bg-slate-50 px-4 py-2 text-sm font-semibold text-brandTextDark">
-                    {group.products.length > 0 ? `${group.products.length} live variants` : 'Not yet in live catalog'}
+                    {group.products.length > 0 ? 'Listed now' : 'Ask us'}
                   </span>
                 </div>
 
@@ -233,9 +228,6 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                         <div className="flex flex-col gap-4 md:min-w-[220px] md:items-end">
                           <div className="text-left md:text-right">
                             <p className="text-2xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
-                            <p className={`mt-1 text-sm font-semibold ${(product.quantity ?? 0) > 0 ? 'text-emerald-700' : 'text-brandTextMedium'}`}>
-                              {(product.quantity ?? 0) > 0 ? `${product.quantity} in stock` : 'Currently unavailable'}
-                            </p>
                           </div>
                           <button
                             type="button"
@@ -251,15 +243,15 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                   </div>
                 ) : (
                   <div className="mt-6 rounded-[24px] border border-dashed border-brandBorder bg-slate-50 p-6">
-                    <p className="text-lg font-semibold text-slate-950">This family is not listed in the live catalog right now.</p>
+                    <p className="text-lg font-semibold text-slate-950">This family is not listed right now.</p>
                     <p className="mt-2 text-brandTextMedium">
-                      Ask the team about availability and the closest configuration while this family is still being added to the storefront.
+                      Ask the team about the closest configuration while this family is still being added to the storefront.
                     </p>
                     <a
                       href="#buy-iphone-contact"
                       className="mt-4 inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
                     >
-                      Request {group.family.title}
+                      Ask about {group.family.title}
                     </a>
                   </div>
                 )}
@@ -271,9 +263,9 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
 
       {missingFamilies.length > 0 && (
         <section className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm md:p-8">
-          <h2 className="text-2xl font-bold text-slate-950">More iPhone families you can ask about</h2>
+          <h2 className="text-2xl font-bold text-slate-950">More iPhone families at PZM</h2>
           <p className="mt-3 max-w-3xl text-brandTextMedium">
-            If a family is not listed yet, use the request form and the team can confirm availability or suggest the closest current option.
+            If a family is not listed yet, message the team and they can suggest the closest current option.
           </p>
 
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -288,7 +280,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                   href="#buy-iphone-contact"
                   className="mt-5 inline-flex items-center rounded-xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
                 >
-                  Request availability
+                  Ask about this family
                 </a>
               </article>
             ))}
@@ -298,9 +290,9 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
 
       <div className="grid grid-cols-1 xl:grid-cols-[1.1fr,0.9fr] gap-8 items-start">
         <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">What happens next</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">How to order</h2>
           <div className="space-y-4 text-brandTextDark">
-            <p><span className="font-semibold text-primary">1.</span> Browse the live iPhone variants directly on this page.</p>
+            <p><span className="font-semibold text-primary">1.</span> Browse the iPhone models directly on this page.</p>
             <p><span className="font-semibold text-primary">2.</span> Tap <strong>Contact us</strong> on any product to start a WhatsApp conversation.</p>
             <p><span className="font-semibold text-primary">3.</span> If the model you want is missing, message us and the team will follow up.</p>
           </div>
@@ -309,8 +301,8 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
         <div id="buy-iphone-contact">
           <WhatsAppCTA
             title="Can't find your iPhone model?"
-            description="Tell us the model, storage, and color you want and the team will check availability."
-            prefilledMessage="Hi, I'm looking for a specific iPhone model. Can you check availability? (via pzm.ae/services/buy-iphone)"
+            description="Tell us the model, storage, and color you want and the team will reply directly."
+            prefilledMessage="Hi, I'm looking for a specific iPhone model. Can you help me find it? (via pzm.ae/services/buy-iphone)"
           />
         </div>
       </div>

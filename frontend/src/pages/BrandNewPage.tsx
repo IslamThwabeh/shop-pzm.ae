@@ -50,14 +50,10 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
     })
   }
 
-  const liveBrandNewProducts = useMemo(
-    () => getBrandNewProducts(products).filter((product) => (product.quantity ?? 0) > 0),
-    [products]
-  )
+  const liveBrandNewProducts = useMemo(() => getBrandNewProducts(products), [products])
   const categoryGroups = useMemo(() => getBrandNewCategoryGroups(products), [products])
   const liveCategoryGroups = categoryGroups.filter((group) => group.products.length > 0)
   const requestCategoryGroups = categoryGroups.filter((group) => group.products.length === 0)
-  const totalUnits = liveBrandNewProducts.reduce((sum, product) => sum + (product.quantity ?? 0), 0)
   const lowestPrice = liveBrandNewProducts.length > 0 ? Math.min(...liveBrandNewProducts.map((product) => product.price)) : null
   const heroImageUrl = toAbsoluteSiteUrl(brandNewHero.imageUrl)
 
@@ -66,8 +62,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
     '@type': 'CollectionPage',
     name: 'Brand New Devices in Dubai | PZM',
     url: buildSiteUrl('/services/brand-new'),
-    description:
-      'Browse brand-new devices in Dubai with live iPhone stock, direct checkout, and availability requests for categories that are not yet listed in the storefront.',
+    description: 'Browse brand-new devices in Dubai from PZM, including phones, laptops, consoles, and more.',
     mainEntity: {
       '@type': 'ItemList',
       itemListElement: liveBrandNewProducts.slice(0, 16).map((product, index) => ({
@@ -82,7 +77,6 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
             '@type': 'Offer',
             priceCurrency: 'AED',
             price: product.price,
-            availability: product.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             itemCondition: 'https://schema.org/NewCondition',
           },
         },
@@ -93,8 +87,8 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
   return (
     <div className="space-y-10">
       <Seo
-        title="Brand New Devices in Dubai | PZM"
-        description="Browse brand-new devices in Dubai with live iPhone stock, direct checkout, and availability requests for laptops, gaming hardware, and other new arrivals."
+        title="Brand New Devices in Dubai | PZM Dubai"
+        description="Browse brand-new devices in Dubai from PZM, including phones, laptops, consoles, and more."
         canonicalPath="/services/brand-new"
         imageUrl={heroImageUrl}
         jsonLd={jsonLd}
@@ -125,25 +119,24 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
       <section className="rounded-[32px] border border-brandBorder bg-white px-5 py-8 shadow-sm md:px-8 md:py-10">
         <div className="mx-auto max-w-4xl text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Brand-new retail</p>
-          <h1 className="mt-4 text-[1.9rem] font-bold text-slate-950 md:text-[2.25rem]">Brand-new devices in a cleaner catalog view</h1>
+          <h1 className="mt-4 text-[1.9rem] font-bold text-slate-950 md:text-[2.25rem]">Brand New Devices in Dubai</h1>
           <p className="mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.98rem]">
-            Shop current phones, tablets, laptops, gaming hardware, and work devices without the extra visual noise. Live stock stays visible, while missing categories stay request-friendly.
+            Latest iPhones, Samsung phones, MacBooks, gaming consoles, and more with official warranty.
           </p>
         </div>
 
         <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm font-semibold text-brandTextMedium">
-          <span>{liveBrandNewProducts.length} live products</span>
-          <span>{totalUnits} units in stock</span>
-          <span>{liveCategoryGroups.length}/{brandNewCategories.length} categories live</span>
+          <span>{liveBrandNewProducts.length} devices listed</span>
+          <span>{liveCategoryGroups.length} categories</span>
           <span>{lowestPrice ? `From AED ${lowestPrice.toFixed(0)}` : 'Request pricing'}</span>
         </div>
 
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <a
-            href="#brand-new-live-stock"
+            href="#brand-new-devices"
             className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold transition-colors hover:bg-brandGreenDark"
           >
-            Browse Brand-New Stock
+            Browse Devices
           </a>
           <Link
             to="/services/buy-iphone"
@@ -163,7 +156,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
       <section className="space-y-4">
         <div className="text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Browse by category</p>
-          <h2 className="mt-2 text-2xl font-bold text-slate-950">Choose the device type first</h2>
+          <h2 className="mt-2 text-2xl font-bold text-slate-950">Choose the device type</h2>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -176,7 +169,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                   <Icon size={24} />
                 </span>
                 <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-brandTextMedium">
-                  {group.products.length > 0 ? `${group.products.length} live products` : 'Request availability'}
+                  {group.products.length > 0 ? 'Listed now' : 'Message us'}
                 </p>
                 <h2 className="mt-2 text-xl font-bold text-slate-950">{group.category.title}</h2>
                 <p className="mt-3 text-sm leading-7 text-brandTextMedium">{group.category.description}</p>
@@ -198,7 +191,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                         : 'border border-brandBorder text-brandTextDark hover:border-primary hover:text-primary'
                     }`}
                   >
-                    {group.products.length > 0 ? 'See live stock' : 'Request availability'}
+                    {group.products.length > 0 ? 'Browse devices' : 'Ask about this category'}
                   </a>
                   {group.category.key === 'phones-tablets' && (
                     <Link to="/services/buy-iphone" className="text-sm font-semibold text-primary hover:underline">
@@ -212,13 +205,13 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         </div>
       </section>
 
-      <section id="brand-new-live-stock" className="space-y-8">
+      <section id="brand-new-devices" className="space-y-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Live stock</p>
-            <h2 className="mt-2 text-2xl font-bold text-slate-950">Current brand-new devices on the site</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Current devices</p>
+            <h2 className="mt-2 text-2xl font-bold text-slate-950">Brand-new devices listed on the site</h2>
             <p className="mt-3 max-w-3xl text-brandTextMedium">
-              Browse brand-new devices currently available with real-time pricing and stock levels.
+              Browse the devices listed now and message us for model details.
             </p>
           </div>
           <Link to="/services" className="text-sm font-semibold text-primary hover:underline">
@@ -250,7 +243,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                     </div>
 
                     <span className="self-start rounded-full border border-brandBorder bg-slate-50 px-4 py-2 text-sm font-semibold text-brandTextDark">
-                      {group.products.length} live products
+                      Current selection
                     </span>
                   </div>
 
@@ -269,13 +262,8 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                           <h4 className="mt-3 text-base font-bold text-slate-950">{product.model}</h4>
                           <p className="mt-2 text-sm leading-7 text-brandTextMedium">{product.description || `${product.color} ${product.model}`}</p>
 
-                          <div className="mt-4 flex items-end justify-between gap-4">
-                            <div>
-                              <p className="text-xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
-                            </div>
-                            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
-                              {(product.quantity ?? 0) > 0 ? `${product.quantity} in stock` : 'Out of stock'}
-                            </span>
+                          <div className="mt-4">
+                            <p className="text-xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
                           </div>
 
                           <button
@@ -311,15 +299,15 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
           </div>
         ) : (
           <div className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm">
-            <h3 className="text-2xl font-bold text-slate-950">The live brand-new catalog is empty right now.</h3>
+            <h3 className="text-2xl font-bold text-slate-950">The brand-new catalog is empty right now.</h3>
             <p className="mt-3 max-w-3xl text-brandTextMedium">
-              Use the request form below and the team can confirm stock, pricing, or the closest available alternative for the model you want.
+              Use the contact form below and the team can help you with the model you want.
             </p>
             <a
               href="#brand-new-contact"
               className="mt-5 inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
             >
-              Request a brand-new device
+              Request a device
             </a>
           </div>
         )}
@@ -327,9 +315,9 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
 
       {requestCategoryGroups.length > 0 && (
         <section className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm md:p-8">
-          <h2 className="text-2xl font-bold text-slate-950">More brand-new categories you can request now</h2>
+          <h2 className="text-2xl font-bold text-slate-950">More categories at PZM</h2>
           <p className="mt-3 max-w-3xl text-brandTextMedium">
-            The broader brand-new route covers more than the current live listings. If the category you want is not on the storefront yet, send an availability request and the team can confirm stock, pricing, or the closest option.
+            If the category you want is not listed yet, message the team and they can help you source the right device.
           </p>
 
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -356,7 +344,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                     href="#brand-new-contact"
                     className="mt-6 inline-flex items-center rounded-xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
                   >
-                    Request {group.category.shortTitle}
+                    Ask about {group.category.shortTitle}
                   </a>
                 </article>
               )
@@ -370,21 +358,21 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
           <ShieldCheck className="text-primary" size={22} />
           <h2 className="mt-5 text-xl font-bold text-slate-950">Official warranty coverage</h2>
           <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-            Every brand-new device sold by PZM includes official manufacturer warranty. We handle warranty claims and after-sales support directly.
+            Every brand-new device sold by PZM includes official manufacturer warranty.
           </p>
         </article>
         <article className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm">
           <Truck className="text-primary" size={22} />
           <h2 className="mt-5 text-xl font-bold text-slate-950">Same-day pickup or delivery</h2>
           <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-            Pick up your device from our Hessa Street store in Al Barsha, or get same-day delivery across Dubai with cash on delivery available.
+            Pick up from our Hessa Street store in Al Barsha, or get same-day delivery across Dubai.
           </p>
         </article>
         <article className="rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm">
           <CreditCard className="text-primary" size={22} />
           <h2 className="mt-5 text-xl font-bold text-slate-950">Setup assistance included</h2>
           <p className="mt-3 text-sm leading-7 text-brandTextMedium">
-            We offer free device setup, data transfer from your old device, screen protector installation, and accessory recommendations at no extra charge.
+            We offer device setup, data transfer, and accessory guidance.
           </p>
         </article>
       </section>
@@ -395,11 +383,11 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Book Appointment</p>
             <h2 className="mt-3 text-2xl font-bold text-slate-950">Need help choosing a brand-new device?</h2>
             <p className="mt-4 text-brandTextMedium leading-7">
-              Book a quick in-store or pickup consultation and let the team help you confirm model, storage, color, pricing, and availability.
+              Book a quick store or pickup consultation and tell us the model you want.
             </p>
             <div className="mt-5 space-y-2 text-sm text-brandTextDark">
               <p><span className="font-semibold text-primary">1.</span> Tell us the model or budget you need.</p>
-              <p><span className="font-semibold text-primary">2.</span> We check current stock and suitable alternatives.</p>
+              <p><span className="font-semibold text-primary">2.</span> We suggest the right options and pricing.</p>
               <p><span className="font-semibold text-primary">3.</span> Confirm drop-off, pickup, or store visit.</p>
             </div>
           </div>
@@ -410,9 +398,9 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
 
       <div className="grid grid-cols-1 xl:grid-cols-[1.1fr,0.9fr] gap-8 items-start">
         <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Buying Flow</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">How to order</h2>
           <div className="space-y-4 text-brandTextDark">
-            <p><span className="font-semibold text-primary">1.</span> Browse live brand-new products listed above.</p>
+            <p><span className="font-semibold text-primary">1.</span> Browse the brand-new devices listed above.</p>
             <p><span className="font-semibold text-primary">2.</span> Tap <strong>Contact us</strong> on any product to lock model, color, and price.</p>
             <p><span className="font-semibold text-primary">3.</span> Use appointment booking for guided selection, delivery, or pickup planning.</p>
           </div>
@@ -421,8 +409,8 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         <div id="brand-new-contact">
           <WhatsAppCTA
             title="Looking for a specific device?"
-            description="Tell us the model, storage, and color and the team will check availability and pricing."
-            prefilledMessage="Hi, I'm looking for a specific brand-new device. Can you check availability? (via pzm.ae/services/brand-new)"
+            description="Tell us the model, storage, and color and the team will reply with pricing."
+            prefilledMessage="Hi, I'm looking for a specific brand-new device. Can you help me find it? (via pzm.ae/services/brand-new)"
           />
         </div>
       </div>

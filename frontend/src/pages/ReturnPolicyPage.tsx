@@ -3,27 +3,39 @@ import { siteContact } from '../content/siteData'
 
 export default function ReturnPolicyPage() {
   return (
-    <div className="bg-white rounded-lg shadow p-8 border border-brandBorder">
+    <div className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm md:p-10">
       <Seo
-        title="Return and Refund Policy | PZM Dubai"
-        description="Read the return and refund policy for PZM Computers & Phones Store in Dubai, including the 7-day return window and used-device conditions."
+        title="Return & Refund Policy | PZM Dubai"
+        description="Read the return and refund policy for PZM Computers & Phones Store in Dubai, including eligibility, defective items, exchanges, and used-device conditions."
         canonicalPath="/return-policy"
       />
 
-      <h1 className="text-3xl font-bold text-primary mb-4">Return and Refund Policy</h1>
-      <p className="text-brandTextDark mb-8">Last updated: March 24, 2026</p>
+      <h1 className="mb-4 text-3xl font-bold text-primary">Return &amp; Refund Policy</h1>
+      <p className="mb-8 text-brandTextDark">Last updated: March 24, 2026</p>
 
-      <section className="space-y-3 mb-10">
-        <h2 className="text-xl font-bold text-brandTextDark">1. Return eligibility</h2>
+      <section className="mb-10 space-y-3">
         <p className="text-brandTextMedium">
-          You may request a return within 7 days of delivery or purchase, provided the item is still sealed, unused,
-          undamaged, and accompanied by the original accessories, manuals, warranty cards, and proof of purchase.
+          At PZM Computers &amp; Phones Store -New•Used•Repair•PC•Build, we are committed to ensuring your satisfaction with every purchase. This policy outlines the terms and conditions for returns and refunds on products purchased from our store in Al Barsha, Dubai, or via our delivery service across the UAE.
         </p>
       </section>
 
-      <section className="space-y-3 mb-10">
-        <h2 className="text-xl font-bold text-brandTextDark">2. Non-returnable items</h2>
-        <ul className="list-disc pl-5 text-brandTextMedium space-y-2">
+      <section className="mb-10 space-y-3">
+        <h2 className="text-xl font-bold text-brandTextDark">1. Return Eligibility</h2>
+        <p className="text-brandTextMedium">
+          You may return a product within 7 days of the delivery or purchase date, provided the following conditions are met:
+        </p>
+        <ul className="list-disc space-y-2 pl-5 text-brandTextMedium">
+          <li>The product is in its original, unopened packaging (sealed condition).</li>
+          <li>The product has not been activated, used, or damaged by the customer.</li>
+          <li>All original accessories, manuals, and warranty cards are included.</li>
+          <li>A valid proof of purchase, receipt, or order confirmation is provided.</li>
+        </ul>
+      </section>
+
+      <section className="mb-10 space-y-3">
+        <h2 className="text-xl font-bold text-brandTextDark">2. Non-Returnable Items</h2>
+        <p className="text-brandTextMedium">The following items are not eligible for return or refund:</p>
+        <ul className="list-disc space-y-2 pl-5 text-brandTextMedium">
           <li>Products that have been opened, activated, or used.</li>
           <li>Cases, screen protectors, and accessories that have already been applied or used.</li>
           <li>Products damaged after delivery by the customer.</li>
@@ -32,61 +44,68 @@ export default function ReturnPolicyPage() {
         </ul>
       </section>
 
-      <section className="space-y-3 mb-10">
-        <h2 className="text-xl font-bold text-brandTextDark">3. Defective or damaged products</h2>
-        <ul className="list-disc pl-5 text-brandTextMedium space-y-2">
-          <li>Contact the store within 48 hours of delivery if the item arrives defective or damaged.</li>
-          <li>Eligible cases can receive a replacement or refund after review.</li>
-          <li>Manufacturer-warranty cases may still be handled through the official warranty process.</li>
+      <section className="mb-10 space-y-3">
+        <h2 className="text-xl font-bold text-brandTextDark">3. Defective or Damaged Products</h2>
+        <p className="text-brandTextMedium">If you receive a defective or damaged product:</p>
+        <ul className="list-disc space-y-2 pl-5 text-brandTextMedium">
+          <li>Contact us within 48 hours of delivery.</li>
+          <li>We will arrange a free replacement or full refund for eligible cases.</li>
+          <li>Defective items under manufacturer warranty will be handled through the official warranty process.</li>
         </ul>
       </section>
 
-      <section className="space-y-3 mb-10">
-        <h2 className="text-xl font-bold text-brandTextDark">4. How to start a return</h2>
-        <div className="rounded-2xl border-l-4 border-primary bg-brandLight p-5 space-y-3 text-brandTextDark">
+      <section className="mb-10 space-y-3">
+        <h2 className="text-xl font-bold text-brandTextDark">4. How to Initiate a Return</h2>
+        <p className="text-brandTextMedium">To start a return, please contact us through one of the following:</p>
+        <div className="space-y-3 rounded-2xl border-l-4 border-primary bg-brandLight p-5 text-brandTextDark">
           <p>
-            <strong>Phone:</strong>{' '}
-            <a href={siteContact.phoneHref} className="text-primary font-semibold hover:underline">
+            <strong>WhatsApp:</strong>{' '}
+            <a href="https://wa.me/971528026677?text=Hi%2C%20I%20would%20like%20to%20initiate%20a%20return.%20(via%20pzm.ae)" target="_blank" rel="noopener noreferrer" className="font-semibold text-primary hover:underline">
               {siteContact.phoneDisplay}
             </a>
           </p>
           <p>
-            <strong>WhatsApp:</strong>{' '}
-            <a href={siteContact.whatsappSupportHref} target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
-              Chat with PZM on WhatsApp
+            <strong>Phone:</strong>{' '}
+            <a href={siteContact.phoneHref} className="font-semibold text-primary hover:underline">
+              {siteContact.phoneDisplay}
             </a>
           </p>
           <p>
-            <strong>Visit:</strong> {siteContact.addressLine1}, {siteContact.addressLine2}, {siteContact.cityLine}
+            <strong>Visit us:</strong> PZM Store, Hessa Street, Al Barsha, Dubai (Inside Hessa Union Coop Hypermarket, Ground Floor)
           </p>
         </div>
         <p className="text-brandTextMedium">
-          The team reviews return requests and provides next-step instructions after checking product condition and eligibility.
+          Our team will review your request and provide return instructions within 24 hours.
         </p>
       </section>
 
-      <section className="space-y-3 mb-10">
-        <h2 className="text-xl font-bold text-brandTextDark">5. Refund process</h2>
-        <ul className="list-disc pl-5 text-brandTextMedium space-y-2">
-          <li>Cash on Delivery orders are refunded by cash at the store or bank transfer within 5 to 7 business days.</li>
-          <li>Shipping fees are non-refundable unless the return is caused by an incorrect or defective item.</li>
-          <li>Approved refunds are processed after the returned item is inspected.</li>
+      <section className="mb-10 space-y-3">
+        <h2 className="text-xl font-bold text-brandTextDark">5. Refund Process</h2>
+        <ul className="list-disc space-y-2 pl-5 text-brandTextMedium">
+          <li>Cash on Delivery orders: Refund via cash at our store or bank transfer within 5 to 7 business days.</li>
+          <li>Pay-by-link orders: Refund to the original payment method within 5 to 7 business days.</li>
+          <li>Shipping fees are non-refundable unless the return is due to a defective or incorrect product.</li>
         </ul>
       </section>
 
-      <section className="space-y-3 mb-10">
-        <h2 className="text-xl font-bold text-brandTextDark">6. Exchanges</h2>
+      <section className="mb-10 space-y-3">
+        <h2 className="text-xl font-bold text-brandTextDark">6. Exchange Policy</h2>
         <p className="text-brandTextMedium">
-          Product exchanges are available within the same 7-day return window, subject to stock availability and the same return conditions.
-          Exchanges for a higher-value product require payment of the price difference.
+          We offer product exchanges within the 7-day return window, subject to the same return conditions above. Exchanges for a higher-value product require payment of the price difference.
+        </p>
+      </section>
+
+      <section className="mb-10 space-y-3">
+        <h2 className="text-xl font-bold text-brandTextDark">7. Used &amp; Pre-owned Devices</h2>
+        <p className="text-brandTextMedium">
+          Used and pre-owned devices are sold as-is. Returns on used devices are accepted only if a hardware defect is discovered within 3 days of purchase that was not disclosed at the time of sale.
         </p>
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-xl font-bold text-brandTextDark">7. Used and pre-owned devices</h2>
+        <h2 className="text-xl font-bold text-brandTextDark">8. Contact Us</h2>
         <p className="text-brandTextMedium">
-          Used and pre-owned devices are sold as-is. Returns on used devices are accepted only if an undisclosed hardware defect
-          is discovered within 3 days of purchase.
+          If you have any questions about this policy, please reach out via WhatsApp at <a href="https://wa.me/971528026677?text=Hi%2C%20I%20have%20a%20question%20about%20your%20return%20policy.%20(via%20pzm.ae)" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">+971 52 802 6677</a>, by phone at <a href={siteContact.phoneHref} className="text-primary hover:underline">{siteContact.phoneDisplay}</a>, or at our Al Barsha, Hessa Street, Dubai location.
         </p>
       </section>
     </div>

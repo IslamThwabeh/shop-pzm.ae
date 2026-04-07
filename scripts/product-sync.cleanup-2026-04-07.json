@@ -1,0 +1,164 @@
+{
+  "products": [
+    {
+      "id": "prod-mnnylbbb-y7nfct",
+      "model": "Samsung A56 5G",
+      "storage": "128GB / 8GB RAM",
+      "condition": "new",
+      "color": "Contact for color",
+      "price": 1350,
+      "quantity": 1,
+      "description": "Brand new Samsung A56 5G with official warranty. Contact us for the latest color availability."
+    },
+    {
+      "id": "prod-mnnylbrz-gnvfvh",
+      "model": "Samsung A36 5G",
+      "storage": "128GB / 6GB RAM",
+      "condition": "new",
+      "color": "Contact for color",
+      "price": 985,
+      "quantity": 1,
+      "description": "Brand new Samsung A36 5G with official warranty. Contact us for the latest color availability."
+    },
+    {
+      "id": "prod-mnnylcht-o6llx3",
+      "model": "Samsung A17 4G",
+      "storage": "128GB / 4GB RAM",
+      "condition": "new",
+      "color": "Contact for color",
+      "price": 650,
+      "quantity": 1,
+      "description": "Brand new Samsung A17 4G with official warranty. Contact us for the latest color availability."
+    },
+    {
+      "id": "prod-mnnyld0a-ejxqds",
+      "model": "Samsung A06 4G",
+      "storage": "64GB / 4GB RAM",
+      "condition": "new",
+      "color": "Contact for color",
+      "price": 450,
+      "quantity": 3,
+      "description": "Brand new Samsung A06 4G with official warranty. Contact us for the latest color availability."
+    },
+    {
+      "id": "prod-mnnyldsg-91l1yj",
+      "model": "MacBook Air 13\" M4",
+      "storage": "256GB / 16GB RAM",
+      "condition": "new",
+      "color": "Silver",
+      "price": 3500,
+      "quantity": 2,
+      "description": "Brand new MacBook Air 13-inch M4 in Silver with 256GB storage and 16GB RAM."
+    },
+    {
+      "id": "prod-mnnyleed-ndwdbb",
+      "model": "Nintendo Switch",
+      "storage": "Console",
+      "condition": "new",
+      "color": "Latest stock",
+      "price": 1100,
+      "quantity": 1,
+      "description": "Brand new Nintendo Switch console. Contact us for the exact edition in stock."
+    },
+    {
+      "id": "prod-mnnyleu0-e6x4n1",
+      "model": "PS5 Digital Edition",
+      "storage": "1TB",
+      "condition": "new",
+      "color": "White",
+      "price": 1850,
+      "quantity": 1,
+      "description": "Brand new PlayStation 5 Digital Edition 1TB."
+    },
+    {
+      "id": "prod-mnnylfgi-563z4b",
+      "model": "PS4 with Controller",
+      "storage": "Console Bundle",
+      "condition": "new",
+      "color": "Latest stock",
+      "price": 700,
+      "quantity": 1,
+      "description": "PS4 console bundle with controller. Contact us for the latest stock details."
+    },
+    {
+      "id": "prod-mnnylg1u-8oymq7",
+      "model": "Xbox One",
+      "storage": "Console",
+      "condition": "new",
+      "color": "Latest stock",
+      "price": 550,
+      "quantity": 2,
+      "description": "Xbox One console. Contact us for the latest stock details."
+    },
+    {
+      "id": "prod-mnnylj55-ahu1yf",
+      "model": "MacBook Air M2 2022",
+      "storage": "8GB / 256GB",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 2350,
+      "quantity": 1,
+      "description": "Certified pre-owned MacBook Air M2 2022 with 8GB RAM and 256GB SSD."
+    },
+    {
+      "id": "prod-mnnyljke-go92k4",
+      "model": "Lenovo ThinkBook",
+      "storage": "i5 13th / 8GB / 256GB",
+      "condition": "used",
+      "color": "Mixed Stock",
+      "price": 1350,
+      "quantity": 4,
+      "description": "Certified pre-owned Lenovo ThinkBook with i5 13th Gen, 8GB RAM, 256GB SSD, and multiple units available."
+    },
+    {
+      "id": "prod-mnnyljzi-16mj7n",
+      "model": "Microsoft Surface Pro",
+      "storage": "Snapdragon X Plus / 16GB / 512GB",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 4500,
+      "quantity": 1,
+      "description": "Certified pre-owned Microsoft Surface Pro with Snapdragon X Plus, 16GB RAM, 512GB storage, and keyboard included."
+    },
+    {
+      "id": "prod-mnnylkm1-3qon8s",
+      "model": "iPad Pro 11\"",
+      "storage": "64GB",
+      "condition": "used",
+      "color": "Good Condition",
+      "price": 1200,
+      "quantity": 1,
+      "description": "Pre-owned iPad Pro 11-inch 64GB. Never fixed."
+    },
+    {
+      "id": "prod-mnnyll1d-42xb7j",
+      "model": "iPad 9th Gen",
+      "storage": "64GB",
+      "condition": "used",
+      "color": "Grey / Wi-Fi",
+      "price": 950,
+      "quantity": 1,
+      "description": "Pre-owned iPad 9th Gen 64GB Wi-Fi in Grey."
+    },
+    {
+      "id": "prod-mnnyllrg-78sb84",
+      "model": "Gaming PC",
+      "storage": "i7 12th / DDR5 32GB / SSD 1TB",
+      "condition": "used",
+      "color": "White",
+      "price": 4500,
+      "quantity": 1,
+      "description": "Pre-owned gaming PC with MSI RTX 4060 graphics."
+    },
+    {
+      "id": "prod-mnnylm7o-c5k8ap",
+      "model": "Gaming PC",
+      "storage": "AMD Ryzen 9 5900H / 48GB / NVME 512GB",
+      "condition": "used",
+      "color": "Black",
+      "price": 3850,
+      "quantity": 1,
+      "description": "Pre-owned gaming PC with 750W DeepCool power supply."
+    }
+  ]
+}
