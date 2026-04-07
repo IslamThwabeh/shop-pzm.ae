@@ -75,3 +75,45 @@ export function sanitizeProductForDisplay<T extends Product>(product: T): T {
 export function sanitizeProductsForDisplay<T extends Product>(products: T[]) {
   return products.map((product) => sanitizeProductForDisplay(product))
 }
+
+/* ------------------------------------------------------------------ */
+/*  Variant grouping – collapse color × storage combos into one card  */
+/* ------------------------------------------------------------------ */
+
+export interface VariantGroup {
+  colors: string[]
+  storages: string[]
+  lowestPrice: number
+  /** Return the cheapest product for a given (color, storage) pair, or undefined if that combo doesn't exist. */
+  getProduct: (color: string, storage: string) => Product | undefined
+  /** All products in this group, sorted by price ascending. */
+  products: Product[]
+}
+
+export function groupVariantsByColorAndStorage(products: Product[]): VariantGroup {
+  const colorSet = new Set<string>()
+  const storageSet = new Set<string>()
+  const map = new Map<string, Product>()
+
+  const sorted = [...products].sort((a, b) => a.price - b.price)
+
+  for (const p of sorted) {
+    const c = (p.color || '').trim()
+    const s = (p.storage || '').trim()
+    if (c) colorSet.add(c)
+    if (s) storageSet.add(s)
+
+    const key = `${c}|||${s}`
+    if (!map.has(key)) {
+      map.set(key, p)
+    }
+  }
+
+  return {
+    colors: Array.from(colorSet),
+    storages: Array.from(storageSet),
+    lowestPrice: sorted.length > 0 ? sorted[0].price : 0,
+    getProduct: (color, storage) => map.get(`${color}|||${storage}`),
+    products: sorted,
+  }
+}

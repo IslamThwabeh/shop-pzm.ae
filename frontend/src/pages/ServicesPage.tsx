@@ -5,7 +5,7 @@ import { serviceCatalogList } from '../content/serviceCatalog'
 
 export default function ServicesPage() {
   return (
-    <div className="space-y-10">
+    <div className="mx-auto max-w-7xl px-4 py-8 space-y-10">
       <Seo
         title="Our Services | PZM Computers & Phones Store"
         description="Explore repair, trade-in, gaming PC, accessories, iPhone, and device support pages from PZM Computers & Phones in Dubai."

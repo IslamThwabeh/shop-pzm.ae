@@ -23,7 +23,7 @@ export default function ProductCard({ product, onViewDetails }: Props) {
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#eee] bg-white transition-shadow hover:shadow-md">
       {/* Image frame */}
-      <div className="product-image-frame relative h-[180px] sm:h-[200px] lg:h-[220px] border-b border-[#eee]">
+      <div className="product-image-frame relative h-[140px] sm:h-[150px] lg:h-[160px] border-b border-[#eee]">
         <RetailImage
           src={getPrimaryProductImage(product)}
           alt={`${product.model} ${product.storage} ${product.color}`.trim()}
@@ -54,7 +54,7 @@ export default function ProductCard({ product, onViewDetails }: Props) {
       </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col p-3">
         <h3 className="text-sm font-semibold leading-snug text-slate-900 line-clamp-2">
           {product.model}
         </h3>

@@ -5,8 +5,6 @@ import RetailImage from '../components/RetailImage'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 
-const mapsLink = 'https://maps.app.goo.gl/e5Rhfo8YY3i8CatM7?g_st=ic'
-
 const appointmentServiceTypes: Partial<Record<string, string>> = {
   repair: 'repair-mobile',
   'gaming-pc': 'gaming-pc',
@@ -41,34 +39,12 @@ export default function ServicePage() {
   const hasAppointment = Boolean(appointmentServiceTypes[service.slug])
 
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 space-y-8">
       <Seo
         title={`${service.title} in Dubai | PZM Computers & Phones`}
         description={service.description}
         canonicalPath={`/services/${service.slug}`}
       />
-
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <Link to="/services/" className="text-primary font-semibold hover:underline">
-          ← Back to services
-        </Link>
-        <div className="flex gap-3 flex-wrap">
-          <a
-            href="tel:+971528026677"
-            className="inline-flex items-center rounded-xl border border-brandBorder px-4 py-2 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
-          >
-            Call Us
-          </a>
-          <a
-            href={mapsLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center rounded-xl border border-brandBorder px-4 py-2 text-brandTextDark font-semibold hover:border-primary hover:text-primary transition-colors"
-          >
-            Visit Store
-          </a>
-        </div>
-      </div>
 
       <section className="overflow-hidden rounded-3xl border border-brandBorder bg-white text-left shadow-md">
         <div className={`grid grid-cols-1 ${service.imageUrl || service.cardImageUrl ? 'lg:grid-cols-[1.05fr,0.95fr] lg:items-stretch' : ''}`}>

@@ -92,7 +92,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
       <section className="px-4 pt-16 pb-12 text-center sm:px-6 sm:pt-20 sm:pb-16 lg:px-8 lg:pt-24 lg:pb-20">
         <div className="mx-auto max-w-2xl">
           <h1 className="text-[2rem] font-extrabold leading-[1.1] tracking-tight text-slate-950 sm:text-[2.6rem] lg:text-[3.2rem]">
-            PZM Electronics
+            {siteIdentity.name}
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-slate-500">
             New &amp; used devices, expert repairs, and custom builds — Al Barsha, Dubai.

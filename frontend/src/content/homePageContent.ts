@@ -1,4 +1,4 @@
-import { normalizeSitePath } from '../utils/siteConfig'
+import { buildApiUrl, normalizeSitePath } from '../utils/siteConfig'
 
 export interface HomeTrustCard {
   emoji: string
@@ -12,6 +12,7 @@ export interface HomeFaqItem {
 }
 
 const page = normalizeSitePath
+const svcMedia = (path: string) => buildApiUrl(`/media/${path}`)
 
 export interface HomeCategoryCard {
   title: string
@@ -25,48 +26,49 @@ export const homeCategoryCards: HomeCategoryCard[] = [
     title: 'Buy iPhone',
     subtitle: 'iPhone 17 series & more',
     to: page('/services/buy-iphone'),
-    imageUrl: '/images/Catigories/mini_buy_iphone.webp',
+    imageUrl: svcMedia('generated/services/buy-iphone/buy-iphone-service.webp'),
   },
   {
     title: 'New Devices',
     subtitle: 'Official warranty',
     to: page('/services/brand-new'),
-    imageUrl: '/images/Catigories/mini_brand_new.webp',
+    imageUrl: svcMedia('generated/services/brand-new/brand-new-service.webp'),
   },
   {
     title: 'Used Devices',
     subtitle: 'Certified pre-owned',
     to: page('/services/secondhand'),
-    imageUrl: '/images/Catigories/mini_Used_Phones.webp',
+    imageUrl: svcMedia('generated/services/secondhand/secondhand-service.webp'),
   },
   {
     title: 'Gaming PCs',
     subtitle: 'Custom builds',
     to: page('/services/gaming-pc'),
-    imageUrl: '/images/Catigories/mini_GamingPC.webp',
+    imageUrl: svcMedia('generated/services/gaming-pc/gaming-pc-builds-service.webp'),
   },
   {
     title: 'Sell Your Device',
     subtitle: 'Get a fair quote',
     to: page('/services/sell-gadgets'),
-    imageUrl: '/images/Catigories/mini_sell-gadgets.webp',
+    imageUrl: svcMedia('generated/services/sell-gadgets/sell-devices-service.webp'),
   },
   {
     title: 'Accessories',
     subtitle: 'Cases, chargers & more',
     to: page('/services/accessories'),
-    imageUrl: '/images/Catigories/mini_mobile_accessories.webp',
+    imageUrl: svcMedia('generated/services/accessories/accessories-service.webp'),
   },
   {
     title: 'Repair Services',
     subtitle: 'Same-day fixes',
     to: page('/services/repair'),
-    imageUrl: '/images/Catigories/mini_laptop_maintenance.webp',
+    imageUrl: svcMedia('generated/services/repair/repair-services.webp'),
   },
   {
     title: 'Website Design',
     subtitle: 'Professional sites',
     to: page('/services/web-design'),
+    imageUrl: svcMedia('generated/services/web-design/website-design-service.webp'),
   },
 ]
 

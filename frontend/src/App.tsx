@@ -109,6 +109,8 @@ function AppContent() {
   const isInvoiceRoute = location.pathname.startsWith('/admin/orders/') && location.pathname.endsWith('/invoice')
   const isAdminRoute = location.pathname.startsWith('/admin')
   const isHomeRoute = location.pathname === '/'
+  const isServiceRoute = location.pathname.startsWith('/services')
+  const isFullWidthRoute = isHomeRoute || isServiceRoute
   const showStoreContactSection =
     !isInvoiceRoute &&
     !isAdminRoute &&
@@ -141,7 +143,7 @@ function AppContent() {
         />
       )}
 
-      <main className={isAdminRoute || isHomeRoute ? 'w-full' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'}>
+      <main className={isAdminRoute || isFullWidthRoute ? 'w-full' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'}>
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
             {error}

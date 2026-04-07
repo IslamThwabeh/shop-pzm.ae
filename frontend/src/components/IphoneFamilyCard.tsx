@@ -1,0 +1,130 @@
+import { useState } from 'react'
+import { MessageCircle } from 'lucide-react'
+import type { Product } from '@shared/types'
+import type { BuyIphoneFamily } from '../content/buyIphoneCatalog'
+import { groupVariantsByColorAndStorage, getPrimaryProductImage } from '../utils/productPresentation'
+import RetailImage from './RetailImage'
+import { openWhatsAppLead } from '../utils/whatsappLead'
+
+interface Props {
+  family: BuyIphoneFamily
+  products: Product[]
+}
+
+export default function IphoneFamilyCard({ family, products }: Props) {
+  const group = groupVariantsByColorAndStorage(products)
+  const [selectedColor, setSelectedColor] = useState(group.colors[0] ?? '')
+  const [selectedStorage, setSelectedStorage] = useState(group.storages[0] ?? '')
+
+  const activeProduct = group.getProduct(selectedColor, selectedStorage)
+  const displayImage = getPrimaryProductImage(activeProduct) || family.imageUrl
+
+  const handleWhatsApp = () => {
+    const label = `${family.title} ${selectedStorage} ${selectedColor}`.trim()
+    openWhatsAppLead({
+      leadType: 'product',
+      referenceId: activeProduct?.id,
+      referenceLabel: label,
+      referencePrice: activeProduct?.price,
+      sourcePage: window.location.pathname,
+    })
+  }
+
+  if (products.length === 0) {
+    return (
+      <article className="rounded-2xl border border-[#eee] bg-white p-5">
+        <div className="h-[140px] overflow-hidden rounded-xl bg-slate-50">
+          <RetailImage src={family.imageUrl} alt={family.imageAlt} name={family.title} variant="card" />
+        </div>
+        <h3 className="mt-3 text-base font-bold text-slate-900">{family.title}</h3>
+        <p className="mt-1 text-xs text-slate-400">{family.description}</p>
+        <span className="mt-3 inline-block rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-500">
+          Ask us for availability
+        </span>
+      </article>
+    )
+  }
+
+  return (
+    <article className="rounded-2xl border border-[#eee] bg-white">
+      {/* Image */}
+      <div className="relative h-[160px] overflow-hidden rounded-t-2xl border-b border-[#eee] bg-slate-50">
+        <RetailImage src={displayImage} alt={family.imageAlt} name={family.title} variant="card" />
+        <span className="absolute left-2.5 top-2.5 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+          New
+        </span>
+      </div>
+
+      <div className="space-y-3 p-4">
+        {/* Title + price */}
+        <div>
+          <h3 className="text-sm font-bold text-slate-900">{family.title}</h3>
+          <p className="mt-0.5 text-lg font-bold text-slate-900">
+            {activeProduct ? `AED ${activeProduct.price.toFixed(0)}` : `From AED ${group.lowestPrice.toFixed(0)}`}
+          </p>
+        </div>
+
+        {/* Color swatches */}
+        {group.colors.length > 1 && (
+          <div>
+            <p className="mb-1.5 text-[11px] font-medium text-slate-400">Color</p>
+            <div className="flex flex-wrap gap-1.5">
+              {group.colors.map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => setSelectedColor(color)}
+                  className={`rounded-md border px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                    color === selectedColor
+                      ? 'border-slate-900 bg-slate-900 text-white'
+                      : 'border-[#eee] text-slate-600 hover:border-slate-300'
+                  }`}
+                >
+                  {color}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Storage pills */}
+        {group.storages.length > 1 && (
+          <div>
+            <p className="mb-1.5 text-[11px] font-medium text-slate-400">Storage</p>
+            <div className="flex flex-wrap gap-1.5">
+              {group.storages.map((storage) => (
+                <button
+                  key={storage}
+                  type="button"
+                  onClick={() => setSelectedStorage(storage)}
+                  className={`rounded-md border px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                    storage === selectedStorage
+                      ? 'border-slate-900 bg-slate-900 text-white'
+                      : 'border-[#eee] text-slate-600 hover:border-slate-300'
+                  }`}
+                >
+                  {storage}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Availability hint */}
+        {!activeProduct && selectedColor && selectedStorage && (
+          <p className="text-[11px] text-amber-600">This combo isn't listed — ask us</p>
+        )}
+
+        {/* CTA */}
+        <button
+          type="button"
+          onClick={handleWhatsApp}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#eee] py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-[#25D366] hover:text-[#25D366]"
+        >
+          <MessageCircle size={15} className="text-[#25D366]" />
+          Inquire
+        </button>
+      </div>
+    </article>
+  )
+}

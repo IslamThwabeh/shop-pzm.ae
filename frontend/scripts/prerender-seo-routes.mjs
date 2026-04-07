@@ -1471,7 +1471,7 @@ const baseRoutes = [
     path: '/return-policy',
     title: 'Return & Refund Policy | PZM Dubai',
     description:
-      'Read the return and refund policy for PZM Computers & Phones Store in Dubai, including eligibility, defective items, exchanges, and used-device conditions.',
+      'Return and refund policy for PZM Computers & Phones Store in Dubai — eligibility, defective items, exchanges, and used devices.',
     canonicalPath: '/return-policy',
     priority: '0.6',
     changefreq: 'monthly',
@@ -1564,9 +1564,13 @@ const canonicalRoutes = [
     priority: areaPriorityMap[entry.slug] || '0.6',
     changefreq: 'monthly',
   })),
-  ...blogEntries.map((entry) => ({
+  ...blogEntries.map((entry) => {
+    const suffix = ' | PZM Blog'
+    const maxTitleLen = 60 - suffix.length
+    const trimmedTitle = entry.title.length > maxTitleLen ? entry.title.slice(0, maxTitleLen - 1) + '…' : entry.title
+    return {
     path: `/blog/${entry.slug}`,
-    title: `${entry.title} | PZM Blog`,
+    title: `${trimmedTitle}${suffix}`,
     description: entry.description,
     canonicalPath: `/blog/${entry.slug}`,
     imageUrl: `/api/media/blog/${entry.imageFile}`,
@@ -1584,7 +1588,7 @@ const canonicalRoutes = [
       imageUrl: `/api/media/blog/${entry.imageFile}`,
       publishedAt: entry.publishedAt,
     }),
-  })),
+  }}),
 ]
 
 const serviceEntryMap = new Map(serviceEntries.map((entry) => [entry.slug, entry]))

@@ -6,7 +6,7 @@ export default function ReturnPolicyPage() {
     <div className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm md:p-10">
       <Seo
         title="Return & Refund Policy | PZM Dubai"
-        description="Read the return and refund policy for PZM Computers & Phones Store in Dubai, including eligibility, defective items, exchanges, and used-device conditions."
+        description="Return and refund policy for PZM Computers & Phones Store in Dubai — eligibility, defective items, exchanges, and used devices."
         canonicalPath="/return-policy"
       />
 
