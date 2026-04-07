@@ -1,4 +1,7 @@
 import type { Product } from '@shared/types'
+import { buildApiUrl } from '../utils/siteConfig'
+
+const generatedServiceMedia = (path: string) => buildApiUrl(`/media/generated/services/${path}`)
 
 export interface SecondhandCategory {
   key: 'used-phones' | 'used-laptops' | 'used-tablets' | 'used-gaming'
@@ -11,7 +14,7 @@ export interface SecondhandCategory {
 }
 
 export const secondhandHero = {
-  imageUrl: '/images/Catigories/Used_Phones.jpg',
+  imageUrl: generatedServiceMedia('secondhand/secondhand-service.webp'),
   imageAlt: 'Certified pre-owned devices at PZM',
 }
 

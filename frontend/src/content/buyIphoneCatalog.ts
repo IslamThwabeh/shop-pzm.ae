@@ -1,7 +1,7 @@
 import type { Product } from '@shared/types'
 import { buildApiUrl } from '../utils/siteConfig'
 
-const legacyBuyIphoneMedia = (filename: string) => buildApiUrl(`/media/legacy/buy_iphone/${filename}`)
+const generatedBuyIphoneFamilyMedia = (filename: string) => buildApiUrl(`/media/generated/buy-iphone/${filename}`)
 
 export interface BuyIphoneFamily {
   key: 'iphone-17-pro-max' | 'iphone-17-pro' | 'iphone-17-air' | 'iphone-17'
@@ -19,7 +19,7 @@ export const buyIphoneFamilies: BuyIphoneFamily[] = [
     title: 'iPhone 17 Pro Max',
     shortTitle: 'Pro Max',
     description: 'Flagship size, colors, and top-tier iPhone options.',
-    imageUrl: legacyBuyIphoneMedia('iPhone_17_Pro_Max_all_colors.jpg'),
+    imageUrl: generatedBuyIphoneFamilyMedia('iphone-17-pro-max-family.webp'),
     imageAlt: 'iPhone 17 Pro Max color lineup',
     matcher: /\biphone\s*17\s*pro\s*max\b/i,
   },
@@ -28,7 +28,7 @@ export const buyIphoneFamilies: BuyIphoneFamily[] = [
     title: 'iPhone 17 Pro',
     shortTitle: 'Pro',
     description: 'Flagship performance in the smaller Pro size.',
-    imageUrl: legacyBuyIphoneMedia('iPhone_17_Pro_all_colors.jpg'),
+    imageUrl: generatedBuyIphoneFamilyMedia('iphone-17-pro-family.webp'),
     imageAlt: 'iPhone 17 Pro color lineup',
     matcher: /\biphone\s*17\s*pro\b(?!\s*max)/i,
   },
@@ -37,7 +37,7 @@ export const buyIphoneFamilies: BuyIphoneFamily[] = [
     title: 'iPhone 17 Air',
     shortTitle: 'Air',
     description: 'Thin-and-light iPhone options in the Air line.',
-    imageUrl: legacyBuyIphoneMedia('iPhone_17_Air_all_colors.jpg'),
+    imageUrl: generatedBuyIphoneFamilyMedia('iphone-17-air-family.webp'),
     imageAlt: 'iPhone 17 Air color lineup',
     matcher: /\biphone\s*17\s*air\b/i,
   },
@@ -46,7 +46,7 @@ export const buyIphoneFamilies: BuyIphoneFamily[] = [
     title: 'iPhone 17',
     shortTitle: 'Standard',
     description: 'Current-generation iPhone options outside the Pro tier.',
-    imageUrl: legacyBuyIphoneMedia('iPhone_17_all_colors.jpg'),
+    imageUrl: generatedBuyIphoneFamilyMedia('iphone-17-family.webp'),
     imageAlt: 'iPhone 17 color lineup',
     matcher: /\biphone\s*17\b(?!\s*pro\b)(?!\s*air\b)/i,
   },

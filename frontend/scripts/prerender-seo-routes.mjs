@@ -624,7 +624,7 @@ const canonicalRoutes = [
       'buy-iphone': {
         title: 'Buy iPhone 17 Pro Max, Pro, Air & iPhone 17 in Dubai | PZM',
         description: 'Buy iPhone in Dubai from PZM with direct WhatsApp ordering and local support.',
-        imageUrl: '/api/media/legacy/buy_iphone/iPhone_17_Pro_Max_all_colors.jpg',
+        imageUrl: '/api/media/generated/buy-iphone/iphone-17-pro-max-family.webp',
       },
       'brand-new': {
         title: 'Brand New Devices in Dubai | PZM Dubai',
@@ -634,7 +634,7 @@ const canonicalRoutes = [
       secondhand: {
         title: 'Buy Used iPhones, Laptops & Gaming PCs | PZM Dubai',
         description: 'Browse certified pre-owned devices in Dubai from PZM, including phones, laptops, tablets, and gaming hardware.',
-        imageUrl: '/images/Catigories/Used_Phones.jpg',
+        imageUrl: '/api/media/generated/services/secondhand/secondhand-service.webp',
       },
     }[entry.slug]
 
