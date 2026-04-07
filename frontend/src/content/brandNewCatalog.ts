@@ -14,7 +14,7 @@ export interface BrandNewCategory {
 }
 
 export const brandNewHero = {
-  imageUrl: generatedServiceMedia('brand-new/brand-new-service.jpg'),
+  imageUrl: generatedServiceMedia('brand-new/brand-new-service.webp'),
   imageAlt: 'Brand new devices at PZM',
 }
 
