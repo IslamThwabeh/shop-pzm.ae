@@ -9,7 +9,7 @@ import { buyIphoneFamilies, getBuyIphoneFamilyGroups, getBuyIphoneProducts } fro
 import { getPrimaryProductImage } from '../utils/productPresentation'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { resolveServiceSlug } from '../content/serviceCatalog'
-import { buildCanonicalUrl, buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
+import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 const mapsLink = 'https://maps.app.goo.gl/e5Rhfo8YY3i8CatM7?g_st=ic'
 
@@ -56,7 +56,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: 'Buy iPhone in Dubai | PZM',
-    url: buildCanonicalUrl('/services/buy-iphone'),
+    url: buildSiteUrl('/services/buy-iphone'),
     description: 'Buy iPhone in Dubai from PZM with direct WhatsApp ordering and local support.',
     mainEntity: {
       '@type': 'ItemList',

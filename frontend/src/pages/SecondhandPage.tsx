@@ -10,7 +10,7 @@ import { getSecondhandCategoryGroups, getSecondhandProducts, secondhandCategorie
 import { getPrimaryProductImage } from '../utils/productPresentation'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { resolveServiceSlug } from '../content/serviceCatalog'
-import { buildCanonicalUrl, buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
+import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 const mapsLink = 'https://maps.app.goo.gl/e5Rhfo8YY3i8CatM7?g_st=ic'
 
@@ -62,7 +62,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: 'Used Devices in Dubai | PZM',
-    url: buildCanonicalUrl('/services/secondhand'),
+    url: buildSiteUrl('/services/secondhand'),
     description: 'Browse certified pre-owned devices in Dubai from PZM, including phones, laptops, tablets, and gaming hardware.',
     mainEntity: {
       '@type': 'ItemList',
