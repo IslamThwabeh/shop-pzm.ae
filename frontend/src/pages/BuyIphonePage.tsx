@@ -1,13 +1,14 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MessageCircle } from 'lucide-react'
 import type { Product } from '@shared/types'
+import ProductCard from '../components/ProductCard'
+import ProductDetailDrawer from '../components/ProductDetailDrawer'
+import ProductGrid from '../components/ProductGrid'
 import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { buyIphoneFamilies, getBuyIphoneFamilyGroups, getBuyIphoneProducts } from '../content/buyIphoneCatalog'
 import { getPrimaryProductImage } from '../utils/productPresentation'
-import { openWhatsAppLead } from '../utils/whatsappLead'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
@@ -18,31 +19,16 @@ interface BuyIphonePageProps {
   loading: boolean
 }
 
-function getVariantDescriptor(product: Product, familyTitle: string) {
-  const familyPattern = new RegExp(familyTitle.replace(/\s+/g, '\\s+'), 'i')
-  const descriptor = product.model.replace(familyPattern, '').replace(/\s+/g, ' ').trim()
-  return descriptor || product.model
-}
-
 function getFamilyDisplayImage(family: typeof buyIphoneFamilies[number], products: Product[]) {
   return getPrimaryProductImage(products[0]) || family.imageUrl
 }
 
 export default function BuyIphonePage({ products, loading }: BuyIphonePageProps) {
   const service = resolveServiceSlug('buy-iphone')
+  const [drawerProduct, setDrawerProduct] = useState<Product | null>(null)
 
   if (!service) {
     return null
-  }
-
-  const handleWhatsApp = (product: Product) => {
-    openWhatsAppLead({
-      leadType: 'product',
-      referenceId: product.id,
-      referenceLabel: `${product.model} ${product.storage} ${product.color}`,
-      referencePrice: product.price,
-      sourcePage: '/services/buy-iphone',
-    })
   }
 
   const liveIphoneProducts = useMemo(() => getBuyIphoneProducts(products), [products])
@@ -239,43 +225,11 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
                 })()}
 
                 {group.products.length > 0 ? (
-                  <div className="mt-6 overflow-hidden rounded-[24px] border border-brandBorder">
+                  <ProductGrid className="mt-6">
                     {group.products.map((product) => (
-                      <article key={product.id} className="flex flex-col gap-4 border-t border-brandBorder/70 p-5 first:border-t-0 md:flex-row md:items-center md:justify-between">
-                        <div className="flex min-w-0 flex-1 items-start gap-4">
-                          <div className="h-24 w-24 shrink-0 overflow-hidden rounded-[20px] border border-brandBorder bg-white">
-                            <RetailImage
-                              src={getPrimaryProductImage(product) || group.family.imageUrl}
-                              alt={`${product.model} ${product.storage} ${product.color}`.trim()}
-                              name={product.model}
-                              variant="thumb"
-                            />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brandTextMedium">
-                              {product.storage} • {product.color}
-                            </p>
-                            <h4 className="mt-3 text-lg font-bold text-slate-950">{getVariantDescriptor(product, group.family.title)}</h4>
-                            <p className="mt-2 text-sm leading-7 text-brandTextMedium">{product.description || product.model}</p>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col gap-4 md:min-w-[220px] md:items-end">
-                          <div className="text-left md:text-right">
-                            <p className="text-2xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleWhatsApp(product)}
-                            className="inline-flex items-center justify-center gap-2 rounded-xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary md:w-full"
-                          >
-                            <MessageCircle size={16} className="text-[#25D366]" />
-                            Contact us
-                          </button>
-                        </div>
-                      </article>
+                      <ProductCard key={product.id} product={product} onViewDetails={setDrawerProduct} />
                     ))}
-                  </div>
+                  </ProductGrid>
                 ) : (
                   <div className="mt-6 rounded-[24px] border border-dashed border-brandBorder bg-slate-50 p-6">
                     <p className="text-lg font-semibold text-slate-950">This family is not listed right now.</p>
@@ -346,6 +300,8 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
           />
         </div>
       </div>
+
+      <ProductDetailDrawer product={drawerProduct} onClose={() => setDrawerProduct(null)} />
     </div>
   )
 }

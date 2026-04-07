@@ -1,14 +1,14 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BatteryCharging, Gamepad2, Laptop, MessageCircle, RefreshCcw, ShieldCheck, Smartphone, Tablet } from 'lucide-react'
+import { BatteryCharging, Gamepad2, Laptop, RefreshCcw, ShieldCheck, Smartphone, Tablet } from 'lucide-react'
 import type { Product } from '@shared/types'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
-import RetailImage from '../components/RetailImage'
+import ProductCard from '../components/ProductCard'
+import ProductDetailDrawer from '../components/ProductDetailDrawer'
+import ProductGrid from '../components/ProductGrid'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { getSecondhandCategoryGroups, getSecondhandProducts, secondhandCategories, secondhandHero } from '../content/secondhandCatalog'
-import { getPrimaryProductImage } from '../utils/productPresentation'
-import { openWhatsAppLead } from '../utils/whatsappLead'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
@@ -36,18 +36,10 @@ function getCategoryIcon(categoryKey: typeof secondhandCategories[number]['key']
 
 export default function SecondhandPage({ products, loading }: SecondhandPageProps) {
   const service = resolveServiceSlug('secondhand')
+  const [drawerProduct, setDrawerProduct] = useState<Product | null>(null)
+
   if (!service) {
     return null
-  }
-
-  const handleWhatsApp = (product: Product) => {
-    openWhatsAppLead({
-      leadType: 'product',
-      referenceId: product.id,
-      referenceLabel: product.model,
-      referencePrice: product.price,
-      sourcePage: '/services/secondhand',
-    })
   }
 
   const liveSecondhandProducts = useMemo(() => getSecondhandProducts(products), [products])
@@ -117,40 +109,19 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
         </div>
       </div>
 
-      <section className="rounded-[32px] border border-brandBorder bg-white px-5 py-8 shadow-sm md:px-8 md:py-10">
-        <div className="mx-auto max-w-4xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Certified pre-owned</p>
-          <h1 className="mt-4 text-[1.9rem] font-bold text-slate-950 md:text-[2.25rem]">Pre-Owned Devices</h1>
-          <p className="mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.98rem]">
-            Certified used phones, laptops, tablets, gaming devices, and more at strong Dubai prices.
-          </p>
+      <section className="text-center">
+        <h1 className="text-[1.8rem] font-bold text-slate-950 sm:text-[2.1rem]">Pre-Owned Devices</h1>
+        <p className="mx-auto mt-3 max-w-lg text-sm text-slate-500">
+          Certified used phones, laptops, tablets & gaming hardware at Dubai prices.
+        </p>
+        <div className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs font-medium text-slate-400">
+          <span>{liveSecondhandProducts.length} devices</span>
+          <span>{liveCategoryGroups.length} categories</span>
+          <span>{lowestPrice ? `From AED ${lowestPrice.toFixed(0)}` : 'Ask for pricing'}</span>
         </div>
-
-        <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm font-semibold text-brandTextMedium">
-          <span>{liveSecondhandProducts.length} devices listed</span>
-          <span>{liveCategoryGroups.length}/{secondhandCategories.length} categories listed</span>
-          <span>{lowestPrice ? `From AED ${lowestPrice.toFixed(0)}` : 'Ask us for pricing'}</span>
-        </div>
-
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <a
-            href={primaryCtaHref}
-            className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold transition-colors hover:bg-brandGreenDark"
-          >
-            {primaryCtaLabel}
-          </a>
-          <Link
-            to="/services/sell-gadgets/"
-            className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold transition-colors hover:border-primary hover:text-primary"
-          >
-            Trade In Your Device
-          </Link>
-          <Link
-            to="/services/"
-            className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold transition-colors hover:border-primary hover:text-primary"
-          >
-            View All Service Pages
-          </Link>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <a href={primaryCtaHref} className="inline-flex items-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-800">{primaryCtaLabel}</a>
+          <Link to="/services/sell-gadgets/" className="inline-flex items-center rounded-xl border border-[#eee] px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300">Trade In</Link>
         </div>
       </section>
 
@@ -241,42 +212,11 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
                     </span>
                   </div>
 
-                  <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                  <ProductGrid className="mt-6">
                     {group.products.map((product) => (
-                      <article key={product.id} className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm">
-                        <div className="retail-card-media retail-card-media--contain border-b border-brandBorder bg-white">
-                          <RetailImage
-                            src={getPrimaryProductImage(product)}
-                            alt={`${product.model} ${product.storage} ${product.color}`.trim()}
-                            name={product.model}
-                            variant="card"
-                          />
-                        </div>
-
-                        <div className="p-5">
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brandTextMedium">
-                            Used • {product.storage} • {product.color}
-                          </p>
-
-                          <h4 className="mt-3 text-base font-bold text-slate-950">{product.model}</h4>
-                          <p className="mt-2 text-sm leading-7 text-brandTextMedium">{product.description || `${product.color} ${product.model}`}</p>
-
-                          <div className="mt-4">
-                            <p className="text-xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => handleWhatsApp(product)}
-                            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
-                          >
-                            <MessageCircle size={16} className="text-[#25D366]" />
-                            Contact us
-                          </button>
-                        </div>
-                      </article>
+                      <ProductCard key={product.id} product={product} onViewDetails={setDrawerProduct} />
                     ))}
-                  </div>
+                  </ProductGrid>
                 </section>
               )
             })}
@@ -376,24 +316,15 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
         </div>
       </section>
 
-      <div className="grid grid-cols-1 gap-8 items-start xl:grid-cols-[1.1fr,0.9fr]">
-        <section className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">How to buy</h2>
-          <div className="space-y-4 text-brandTextDark">
-            <p><span className="font-semibold text-primary">1.</span> Browse current used listings and condition details above.</p>
-            <p><span className="font-semibold text-primary">2.</span> Tap <strong>Contact us</strong> on any matching device.</p>
-            <p><span className="font-semibold text-primary">3.</span> Use appointment booking if you want guided matching by budget and condition.</p>
-          </div>
-        </section>
-
-        <div id="secondhand-contact">
-          <WhatsAppCTA
-            title="Looking for a specific used device?"
-            description="Tell us the model, budget, and condition preference and the team will check current options."
-            prefilledMessage="Hi, I'm looking for a specific used device. Can you help me find one? (via pzm.ae/services/secondhand)"
-          />
-        </div>
+      <div id="secondhand-contact">
+        <WhatsAppCTA
+          title="Looking for a specific used device?"
+          description="Tell us the model, budget, and condition preference and the team will check current options."
+          prefilledMessage="Hi, I'm looking for a specific used device. Can you help me find one? (via pzm.ae/services/secondhand)"
+        />
       </div>
+
+      <ProductDetailDrawer product={drawerProduct} onClose={() => setDrawerProduct(null)} />
     </div>
   )
 }

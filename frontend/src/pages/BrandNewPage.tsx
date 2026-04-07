@@ -1,14 +1,14 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Briefcase, CreditCard, Gamepad2, Laptop, MessageCircle, ShieldCheck, Smartphone, Truck } from 'lucide-react'
+import { Briefcase, CreditCard, Gamepad2, Laptop, ShieldCheck, Smartphone, Truck } from 'lucide-react'
 import type { Product } from '@shared/types'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
-import RetailImage from '../components/RetailImage'
+import ProductCard from '../components/ProductCard'
+import ProductDetailDrawer from '../components/ProductDetailDrawer'
+import ProductGrid from '../components/ProductGrid'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { brandNewCategories, brandNewHero, getBrandNewCategoryGroups, getBrandNewProducts } from '../content/brandNewCatalog'
-import { getPrimaryProductImage } from '../utils/productPresentation'
-import { openWhatsAppLead } from '../utils/whatsappLead'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
@@ -36,19 +36,10 @@ function getCategoryIcon(categoryKey: typeof brandNewCategories[number]['key']) 
 
 export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
   const service = resolveServiceSlug('brand-new')
+  const [drawerProduct, setDrawerProduct] = useState<Product | null>(null)
 
   if (!service) {
     return null
-  }
-
-  const handleWhatsApp = (product: Product) => {
-    openWhatsAppLead({
-      leadType: 'product',
-      referenceId: product.id,
-      referenceLabel: `${product.model} ${product.storage} ${product.color}`,
-      referencePrice: product.price,
-      sourcePage: '/services/brand-new',
-    })
   }
 
   const liveBrandNewProducts = useMemo(() => getBrandNewProducts(products), [products])
@@ -117,40 +108,19 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         </div>
       </div>
 
-      <section className="rounded-[32px] border border-brandBorder bg-white px-5 py-8 shadow-sm md:px-8 md:py-10">
-        <div className="mx-auto max-w-4xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">Brand-new retail</p>
-          <h1 className="mt-4 text-[1.9rem] font-bold text-slate-950 md:text-[2.25rem]">Brand New Devices in Dubai</h1>
-          <p className="mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.98rem]">
-            Latest iPhones, Samsung phones, MacBooks, gaming consoles, and more with official warranty.
-          </p>
-        </div>
-
-        <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm font-semibold text-brandTextMedium">
-          <span>{liveBrandNewProducts.length} devices listed</span>
+      <section className="text-center">
+        <h1 className="text-[1.8rem] font-bold text-slate-950 sm:text-[2.1rem]">Brand New Devices</h1>
+        <p className="mx-auto mt-3 max-w-lg text-sm text-slate-500">
+          iPhones, Samsung, MacBooks, consoles & more — official warranty included.
+        </p>
+        <div className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs font-medium text-slate-400">
+          <span>{liveBrandNewProducts.length} devices</span>
           <span>{liveCategoryGroups.length} categories</span>
           <span>{lowestPrice ? `From AED ${lowestPrice.toFixed(0)}` : 'Request pricing'}</span>
         </div>
-
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <a
-            href="#brand-new-devices"
-            className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold transition-colors hover:bg-brandGreenDark"
-          >
-            Browse Devices
-          </a>
-          <Link
-            to="/services/buy-iphone/"
-            className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold transition-colors hover:border-primary hover:text-primary"
-          >
-            View iPhone Collection
-          </Link>
-          <a
-            href="#brand-new-contact"
-            className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-brandTextDark font-semibold transition-colors hover:border-primary hover:text-primary"
-          >
-            Ask About a Model
-          </a>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <a href="#brand-new-devices" className="inline-flex items-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-800">Browse Devices</a>
+          <Link to="/services/buy-iphone/" className="inline-flex items-center rounded-xl border border-[#eee] px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300">iPhone Collection</Link>
         </div>
       </section>
 
@@ -248,42 +218,11 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                     </span>
                   </div>
 
-                  <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                  <ProductGrid className="mt-6">
                     {group.products.map((product) => (
-                      <article key={product.id} className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm">
-                        <div className="retail-card-media retail-card-media--contain border-b border-brandBorder bg-white">
-                          <RetailImage
-                            src={getPrimaryProductImage(product)}
-                            alt={`${product.model} ${product.storage} ${product.color}`.trim()}
-                            name={product.model}
-                            variant="card"
-                          />
-                        </div>
-
-                        <div className="p-5">
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brandTextMedium">
-                            Brand new • {product.storage} • {product.color}
-                          </p>
-
-                          <h4 className="mt-3 text-base font-bold text-slate-950">{product.model}</h4>
-                          <p className="mt-2 text-sm leading-7 text-brandTextMedium">{product.description || `${product.color} ${product.model}`}</p>
-
-                          <div className="mt-4">
-                            <p className="text-xl font-bold text-slate-950">AED {product.price.toFixed(0)}</p>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => handleWhatsApp(product)}
-                            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
-                          >
-                            <MessageCircle size={16} className="text-[#25D366]" />
-                            Contact us
-                          </button>
-                        </div>
-                      </article>
+                      <ProductCard key={product.id} product={product} onViewDetails={setDrawerProduct} />
                     ))}
-                  </div>
+                  </ProductGrid>
 
                   {group.category.key === 'phones-tablets' && (
                     <div className="mt-6 rounded-[24px] border border-brandBorder bg-slate-50 p-5 text-left">
@@ -402,24 +341,15 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         </div>
       </section>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[1.1fr,0.9fr] gap-8 items-start">
-        <section className="bg-white rounded-2xl border border-brandBorder shadow-sm p-8 text-left">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">How to order</h2>
-          <div className="space-y-4 text-brandTextDark">
-            <p><span className="font-semibold text-primary">1.</span> Browse the brand-new devices listed above.</p>
-            <p><span className="font-semibold text-primary">2.</span> Tap <strong>Contact us</strong> on any product to lock model, color, and price.</p>
-            <p><span className="font-semibold text-primary">3.</span> Use appointment booking for guided selection, delivery, or pickup planning.</p>
-          </div>
-        </section>
-
-        <div id="brand-new-contact">
-          <WhatsAppCTA
-            title="Looking for a specific device?"
-            description="Tell us the model, storage, and color and the team will reply with pricing."
-            prefilledMessage="Hi, I'm looking for a specific brand-new device. Can you help me find it? (via pzm.ae/services/brand-new)"
-          />
-        </div>
+      <div id="brand-new-contact">
+        <WhatsAppCTA
+          title="Looking for a specific device?"
+          description="Tell us the model, storage, and color and the team will reply with pricing."
+          prefilledMessage="Hi, I'm looking for a specific brand-new device. Can you help me find it? (via pzm.ae/services/brand-new)"
+        />
       </div>
+
+      <ProductDetailDrawer product={drawerProduct} onClose={() => setDrawerProduct(null)} />
     </div>
   )
 }

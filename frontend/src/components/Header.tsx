@@ -1,245 +1,296 @@
-import { LogOut, ChevronDown, Menu, MessageCircle, Phone, X } from 'lucide-react'
+import { LogOut, ChevronDown, Menu, MessageCircle, Phone, X, Wrench } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { areaNavigationLinks, serviceNavigationLinks, siteContact, siteIdentity } from '../content/siteData'
+import {
+  megaMenuCategories,
+  megaMenuShopSections,
+  siteContact,
+} from '../content/siteData'
 
 interface HeaderProps {
   onNavigate: (page: any) => void
   currentPage?: string
 }
 
-export default function Header({ onNavigate, currentPage }: HeaderProps) {
+export default function Header({ onNavigate }: HeaderProps) {
   const { isAuthenticated, logout } = useAuth()
   const location = useLocation()
-  const [isShrunk, setIsShrunk] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const isHomePage = currentPage === 'home'
-  const isServicesPage = location.pathname === '/services' || location.pathname === '/services/'
-  const isAreasPage = location.pathname === '/areas' || location.pathname === '/areas/'
-  const isBlogPage = currentPage === 'blog'
+  const [isMegaOpen, setIsMegaOpen] = useState(false)
+  const megaRef = useRef<HTMLDivElement>(null)
+  const megaTimerRef = useRef<ReturnType<typeof setTimeout>>()
 
-  useEffect(() => {
-    // Only enable shrink behavior on small screens
-    function onScrollOrResize() {
-      if (typeof window === 'undefined') return
-      const small = window.matchMedia('(max-width: 768px)').matches
-      if (!small) {
-        setIsShrunk(false)
-        return
-      }
-      setIsShrunk(window.scrollY > 40)
-    }
+  const isRepairPage = location.pathname.startsWith('/services/repair')
 
-    onScrollOrResize()
-    window.addEventListener('scroll', onScrollOrResize, { passive: true })
-    window.addEventListener('resize', onScrollOrResize)
-    return () => {
-      window.removeEventListener('scroll', onScrollOrResize)
-      window.removeEventListener('resize', onScrollOrResize)
-    }
-  }, [])
-
+  // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false)
+    setIsMegaOpen(false)
   }, [location.pathname])
 
-  const desktopLinkClass = (active: boolean) =>
-    `border-b-2 px-1 py-2 text-sm font-semibold transition-colors ${
-      active ? 'border-primary text-slate-950' : 'border-transparent text-brandTextMedium hover:border-primary/40 hover:text-slate-950'
-    }`
+  // Close mega-menu on outside click
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (megaRef.current && !megaRef.current.contains(e.target as Node)) {
+        setIsMegaOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', onClickOutside)
+    return () => document.removeEventListener('mousedown', onClickOutside)
+  }, [])
+
+  // Close mega-menu on Escape
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setIsMegaOpen(false)
+        setIsMobileMenuOpen(false)
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [])
+
+  const openMega = useCallback(() => {
+    clearTimeout(megaTimerRef.current)
+    setIsMegaOpen(true)
+  }, [])
+
+  const closeMegaDelayed = useCallback(() => {
+    megaTimerRef.current = setTimeout(() => setIsMegaOpen(false), 180)
+  }, [])
 
   return (
-    <header className={`sticky top-0 z-50 border-b border-slate-200 bg-white transition-all duration-200 ${isShrunk ? 'py-2' : 'py-3'}`}>
+    <header className="sticky top-0 z-50 border-b border-[#eee] bg-white/80 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-4">
-          <Link to="/" className="flex min-w-0 flex-1 items-center gap-3" aria-label="Go to home">
+        <div className="flex h-16 items-center justify-between gap-4">
+
+          {/* ── Logo ─────────────────────────────────── */}
+          <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label="Home">
             <img
               src="/images/mini_logo.png"
               alt="PZM logo"
-              className={`h-[46px] md:h-[52px] lg:h-[56px] w-auto object-contain transition-all duration-200 ${isShrunk ? 'scale-95' : 'scale-100'}`}
+              className="h-10 w-auto object-contain"
             />
-
-            <div className="min-w-0">
-              <p className="text-base font-bold leading-tight text-slate-900 md:text-[1.05rem] lg:text-[1.15rem]">
-                {siteIdentity.name}
-              </p>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-sky-600 md:text-xs">
-                {siteIdentity.tagline}
-              </p>
-            </div>
+            <span className="text-lg font-bold tracking-tight text-slate-900 hidden sm:inline">
+              PZM
+            </span>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-6">
-            <Link to="/" className={desktopLinkClass(isHomePage)}>
-              Home
-            </Link>
-
-            <div className="relative group">
-              <button type="button" className={desktopLinkClass(isServicesPage)}>
-                <span className="inline-flex items-center gap-2">
-                  Services
-                  <ChevronDown size={16} />
-                </span>
+          {/* ── Desktop Nav (center) ──────────────────── */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {/* Products mega-menu trigger */}
+            <div ref={megaRef} className="relative" onMouseEnter={openMega} onMouseLeave={closeMegaDelayed}>
+              <button
+                type="button"
+                onClick={() => setIsMegaOpen((v) => !v)}
+                className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-900"
+                aria-expanded={isMegaOpen}
+              >
+                Products
+                <ChevronDown size={15} className={`transition-transform duration-200 ${isMegaOpen ? 'rotate-180' : ''}`} />
               </button>
-              <div className="invisible absolute left-0 top-full mt-3 w-64 rounded-2xl border border-brandBorder bg-white p-3 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100">
-                {serviceNavigationLinks.map((link) => (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    className="block rounded-xl px-3 py-2 text-sm font-medium text-brandTextDark hover:bg-green-50 hover:text-primary"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+
+              {/* Mega-menu panel */}
+              <div
+                className={`absolute left-1/2 top-full mt-3 -translate-x-1/2 w-[540px] rounded-2xl border border-[#eee] bg-white p-5 shadow-xl transition-all duration-200 ${
+                  isMegaOpen
+                    ? 'pointer-events-auto translate-y-0 opacity-100'
+                    : 'pointer-events-none -translate-y-2 opacity-0'
+                }`}
+              >
+                <div className="grid grid-cols-2 gap-6">
+                  {/* Left column — Device Categories */}
+                  <div>
+                    <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400">
+                      Categories
+                    </p>
+                    <div className="space-y-1">
+                      {megaMenuCategories.map((item) => {
+                        const Icon = item.icon
+                        return (
+                          <Link
+                            key={item.label}
+                            to={item.to}
+                            className="flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-slate-50"
+                          >
+                            <Icon size={18} className="mt-0.5 shrink-0 text-slate-400" />
+                            <div>
+                              <p className="text-sm font-medium text-slate-800">{item.label}</p>
+                              <p className="text-xs text-slate-400">{item.subtitle}</p>
+                            </div>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Right column — Shop Sections */}
+                  <div>
+                    <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400">
+                      Shop
+                    </p>
+                    <div className="space-y-1">
+                      {megaMenuShopSections.map((item) => {
+                        const Icon = item.icon
+                        return (
+                          <Link
+                            key={item.label}
+                            to={item.to}
+                            className="flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-slate-50"
+                          >
+                            <Icon size={18} className="mt-0.5 shrink-0 text-slate-400" />
+                            <div>
+                              <p className="text-sm font-medium text-slate-800">{item.label}</p>
+                              <p className="text-xs text-slate-400">{item.subtitle}</p>
+                            </div>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="relative group">
-              <button type="button" className={desktopLinkClass(isAreasPage)}>
-                <span className="inline-flex items-center gap-2">
-                  Areas
-                  <ChevronDown size={16} />
-                </span>
-              </button>
-              <div className="invisible absolute left-0 top-full mt-3 w-64 rounded-2xl border border-brandBorder bg-white p-3 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100">
-                <Link to="/areas/" className="block rounded-xl px-3 py-2 text-sm font-medium text-brandTextDark hover:bg-green-50 hover:text-primary">
-                  All Areas
-                </Link>
-                {areaNavigationLinks.map((link) => (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    className="block rounded-xl px-3 py-2 text-sm font-medium text-brandTextDark hover:bg-green-50 hover:text-primary"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            <Link to={siteContact.blogHref} className={desktopLinkClass(isBlogPage)}>
-              Blog
+            {/* Repair — top-level link */}
+            <Link
+              to="/services/repair"
+              className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+                isRepairPage
+                  ? 'bg-slate-100 text-slate-900'
+                  : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+              }`}
+            >
+              <Wrench size={15} />
+              Repair
             </Link>
-            <a href="/#contact" className={desktopLinkClass(false)}>
-              Contact
-            </a>
           </nav>
 
-          <div className="flex items-center gap-2 lg:gap-3">
+          {/* ── Right actions ─────────────────────────── */}
+          <div className="flex items-center gap-2">
+            {/* Desktop CTA icons */}
             <div className="hidden lg:flex items-center gap-2">
               <a
                 href={siteContact.phoneHref}
-                className="inline-flex items-center gap-2 rounded-full border border-brandBorder px-4 py-2 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#eee] text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
+                aria-label="Call us"
               >
                 <Phone size={16} />
-                Call Us
               </a>
               <a
                 href={siteContact.whatsappSupportHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#25D366] text-white transition-opacity hover:opacity-90"
+                aria-label="WhatsApp"
               >
                 <MessageCircle size={16} />
-                WhatsApp
               </a>
             </div>
 
+            {/* Mobile hamburger */}
             <button
-              onClick={() => setIsMobileMenuOpen((value) => !value)}
-              className="lg:hidden p-3 md:p-2 min-h-[44px] min-w-[44px] text-brandTextMedium hover:text-primary transition-colors"
+              onClick={() => setIsMobileMenuOpen((v) => !v)}
+              className="lg:hidden flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
               aria-label="Toggle navigation"
             >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
 
+            {/* Admin logout */}
             {isAuthenticated && (
               <button
                 onClick={() => {
                   logout()
                   onNavigate({ type: 'home' })
                 }}
-                className="p-3 md:p-2 min-h-[44px] min-w-[44px] text-brandTextMedium hover:text-primary transition-colors"
+                className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 transition-colors hover:text-red-500"
                 aria-label="Logout"
               >
-                <LogOut size={24} />
+                <LogOut size={20} />
               </button>
             )}
           </div>
         </div>
+      </div>
 
-        <div className={`lg:hidden overflow-hidden transition-all duration-200 ${isMobileMenuOpen ? 'max-h-[80vh] pt-4 pb-2 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
-          <div className="space-y-3 border-t border-brandBorder pt-4">
-            <Link to="/" className="block rounded-2xl px-4 py-3 text-sm font-semibold text-brandTextDark hover:bg-green-50 hover:text-primary">
-              Home
-            </Link>
-
-            <details className="rounded-2xl border border-brandBorder px-4 py-3">
-              <summary className="list-none flex cursor-pointer items-center justify-between text-sm font-semibold text-brandTextDark">
-                Services
-                <ChevronDown size={16} />
-              </summary>
-              <div className="mt-3 grid gap-2">
-                {serviceNavigationLinks.map((link) => (
+      {/* ── Mobile menu ────────────────────────────── */}
+      <div
+        className={`lg:hidden overflow-hidden border-t border-[#eee] bg-white transition-all duration-250 ${
+          isMobileMenuOpen
+            ? 'max-h-[85vh] opacity-100'
+            : 'max-h-0 opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 py-4 space-y-2">
+          {/* Products accordion */}
+          <details className="group rounded-xl border border-[#eee]">
+            <summary className="flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-semibold text-slate-800 [&::-webkit-details-marker]:hidden">
+              Products
+              <ChevronDown size={16} className="text-slate-400 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="px-2 pb-3">
+              <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-slate-400">Categories</p>
+              {megaMenuCategories.map((item) => {
+                const Icon = item.icon
+                return (
                   <Link
-                    key={link.to}
-                    to={link.to}
-                    className="rounded-xl px-3 py-2 text-sm text-brandTextMedium hover:bg-green-50 hover:text-primary"
+                    key={item.label}
+                    to={item.to}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-50"
                   >
-                    {link.label}
+                    <Icon size={16} className="text-slate-400" />
+                    {item.label}
                   </Link>
-                ))}
-              </div>
-            </details>
+                )
+              })}
 
-            <details className="rounded-2xl border border-brandBorder px-4 py-3">
-              <summary className="list-none flex cursor-pointer items-center justify-between text-sm font-semibold text-brandTextDark">
-                Areas
-                <ChevronDown size={16} />
-              </summary>
-              <div className="mt-3 grid gap-2">
-                <Link to="/areas/" className="rounded-xl px-3 py-2 text-sm text-brandTextMedium hover:bg-green-50 hover:text-primary">
-                  All Areas
-                </Link>
-                {areaNavigationLinks.map((link) => (
+              <p className="mt-2 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-slate-400">Shop</p>
+              {megaMenuShopSections.map((item) => {
+                const Icon = item.icon
+                return (
                   <Link
-                    key={link.to}
-                    to={link.to}
-                    className="rounded-xl px-3 py-2 text-sm text-brandTextMedium hover:bg-green-50 hover:text-primary"
+                    key={item.label}
+                    to={item.to}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-50"
                   >
-                    {link.label}
+                    <Icon size={16} className="text-slate-400" />
+                    {item.label}
                   </Link>
-                ))}
-              </div>
-            </details>
-
-            <Link to={siteContact.blogHref} className={`block rounded-2xl px-4 py-3 text-sm font-semibold transition-colors ${isBlogPage ? 'bg-primary text-white' : 'text-brandTextDark hover:bg-green-50 hover:text-primary'}`}>
-              Blog
-            </Link>
-            <a href="/#contact" className="block rounded-2xl px-4 py-3 text-sm font-semibold text-brandTextDark hover:bg-green-50 hover:text-primary">
-              Contact
-            </a>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <a
-                href={siteContact.phoneHref}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-brandBorder px-4 py-3 text-sm font-semibold text-brandTextDark hover:border-primary hover:text-primary transition-colors"
-              >
-                <Phone size={16} />
-                Call Us
-              </a>
-              <a
-                href={siteContact.whatsappSupportHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
-              >
-                <MessageCircle size={16} />
-                WhatsApp
-              </a>
+                )
+              })}
             </div>
+          </details>
 
+          {/* Repair direct link */}
+          <Link
+            to="/services/repair"
+            className="flex items-center gap-2.5 rounded-xl border border-[#eee] px-4 py-3 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50"
+          >
+            <Wrench size={16} className="text-slate-400" />
+            Repair
+          </Link>
+
+          {/* Contact row */}
+          <div className="grid grid-cols-2 gap-2 pt-2">
+            <a
+              href={siteContact.phoneHref}
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#eee] py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300"
+            >
+              <Phone size={16} />
+              Call
+            </a>
+            <a
+              href={siteContact.whatsappSupportHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#25D366] py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              <MessageCircle size={16} />
+              WhatsApp
+            </a>
           </div>
         </div>
       </div>

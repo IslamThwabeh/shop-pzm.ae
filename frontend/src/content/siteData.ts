@@ -1,9 +1,89 @@
 import { normalizeSitePath } from '../utils/siteConfig'
+import type { LucideIcon } from 'lucide-react'
+import {
+  Smartphone,
+  Laptop,
+  Gamepad2,
+  Monitor,
+  ShieldCheck,
+  Award,
+  ShoppingBag,
+  Headphones,
+} from 'lucide-react'
 
 export interface NavigationLink {
   label: string
   to: string
 }
+
+export interface MegaMenuItem {
+  label: string
+  subtitle: string
+  to: string
+  icon: LucideIcon
+}
+
+/* ── Mega-menu: Device Categories (left column) ─────────── */
+export const megaMenuCategories: MegaMenuItem[] = [
+  {
+    label: 'Phones & Tablets',
+    subtitle: 'iPhone, Samsung & more',
+    to: normalizeSitePath('/services/buy-iphone'),
+    icon: Smartphone,
+  },
+  {
+    label: 'Laptops & Computers',
+    subtitle: 'MacBook, Dell, HP & more',
+    to: normalizeSitePath('/services/brand-new'),
+    icon: Laptop,
+  },
+  {
+    label: 'Gaming Systems',
+    subtitle: 'Custom PCs, consoles & gear',
+    to: normalizeSitePath('/services/gaming-pc'),
+    icon: Gamepad2,
+  },
+  {
+    label: 'Professional Equipment',
+    subtitle: 'Workstations & displays',
+    to: normalizeSitePath('/services/brand-new'),
+    icon: Monitor,
+  },
+]
+
+/* ── Mega-menu: Shop Sections (right column) ─────────────── */
+export const megaMenuShopSections: MegaMenuItem[] = [
+  {
+    label: 'Brand New Devices',
+    subtitle: 'Latest models with warranty',
+    to: normalizeSitePath('/services/brand-new'),
+    icon: Award,
+  },
+  {
+    label: 'Certified Used',
+    subtitle: 'Inspected & guaranteed devices',
+    to: normalizeSitePath('/services/secondhand'),
+    icon: ShieldCheck,
+  },
+  {
+    label: 'Buy iPhone',
+    subtitle: 'All iPhone families & variants',
+    to: normalizeSitePath('/services/buy-iphone'),
+    icon: Smartphone,
+  },
+  {
+    label: 'Sell Your Device',
+    subtitle: 'Get the best value instantly',
+    to: normalizeSitePath('/services/sell-gadgets'),
+    icon: ShoppingBag,
+  },
+  {
+    label: 'Accessories',
+    subtitle: 'Cases, chargers & more',
+    to: normalizeSitePath('/services/accessories'),
+    icon: Headphones,
+  },
+]
 
 const page = normalizeSitePath
 
@@ -28,33 +108,6 @@ export const siteContact = {
   cityLine: 'Al Barsha, Dubai, UAE',
   blogHref: page('/blog'),
 }
-
-export const serviceNavigationLinks: NavigationLink[] = [
-  { label: 'Buy iPhone', to: page('/services/buy-iphone') },
-  { label: 'New Devices', to: page('/services/brand-new') },
-  { label: 'Used Devices', to: page('/services/secondhand') },
-  { label: 'Repair Services', to: page('/services/repair') },
-  { label: 'Gaming PC', to: page('/services/gaming-pc') },
-  { label: 'Sell Devices', to: page('/services/sell-gadgets') },
-  { label: 'Accessories', to: page('/services/accessories') },
-  { label: 'Website Design', to: page('/services/web-design') },
-]
-
-export const areaNavigationLinks: NavigationLink[] = [
-  { label: 'Al Barsha', to: page('/areas/al-barsha') },
-  { label: 'Al Quoz', to: page('/areas/al-quoz') },
-  { label: 'Dubai Marina', to: page('/areas/dubai-marina') },
-  { label: 'Emirates Hills', to: page('/areas/emirates-hills') },
-  { label: 'JBR', to: page('/areas/jbr') },
-  { label: 'Jumeirah', to: page('/areas/jumeirah') },
-  { label: 'Jumeirah Village', to: page('/areas/jumeirah-village') },
-  { label: 'Tecom', to: page('/areas/tecom') },
-]
-
-export const policyNavigationLinks: NavigationLink[] = [
-  { label: 'Return Policy', to: page('/return-policy') },
-  { label: 'Terms', to: page('/terms') },
-]
 
 export const footerQuickLinks: NavigationLink[] = [
   { label: 'Home', to: '/' },

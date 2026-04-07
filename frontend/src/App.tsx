@@ -1,29 +1,30 @@
-import { useState, useEffect, useLayoutEffect } from 'react'
+import { useState, useEffect, useLayoutEffect, lazy, Suspense } from 'react'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import './App.css'
 import type { Product } from '@shared/types'
 import { apiService } from './services/api'
-import ProductDetails from './pages/ProductDetails'
-import OrderConfirmation from './pages/OrderConfirmation'
-import AdminPage from './pages/AdminPage'
 import HomePage from './pages/HomePage'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import StoreContactSection from './components/StoreContactSection'
-import Terms from './pages/Terms'
-import AdminInvoice from './pages/AdminInvoice'
-import ServicesPage from './pages/ServicesPage'
-import ServicePage from './pages/ServicePage'
-import AreasPage from './pages/AreasPage'
-import AreaPage from './pages/AreaPage'
-import ReturnPolicyPage from './pages/ReturnPolicyPage'
-import BlogPage from './pages/BlogPage'
-import BlogPostPage from './pages/BlogPostPage'
-import BuyIphonePage from './pages/BuyIphonePage'
-import BrandNewPage from './pages/BrandNewPage'
-import SecondhandPage from './pages/SecondhandPage'
 import { sanitizeProductsForDisplay } from './utils/productPresentation'
+
+const ProductDetails = lazy(() => import('./pages/ProductDetails'))
+const OrderConfirmation = lazy(() => import('./pages/OrderConfirmation'))
+const AdminPage = lazy(() => import('./pages/AdminPage'))
+const Terms = lazy(() => import('./pages/Terms'))
+const AdminInvoice = lazy(() => import('./pages/AdminInvoice'))
+const ServicesPage = lazy(() => import('./pages/ServicesPage'))
+const ServicePage = lazy(() => import('./pages/ServicePage'))
+const AreasPage = lazy(() => import('./pages/AreasPage'))
+const AreaPage = lazy(() => import('./pages/AreaPage'))
+const ReturnPolicyPage = lazy(() => import('./pages/ReturnPolicyPage'))
+const BlogPage = lazy(() => import('./pages/BlogPage'))
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage'))
+const BuyIphonePage = lazy(() => import('./pages/BuyIphonePage'))
+const BrandNewPage = lazy(() => import('./pages/BrandNewPage'))
+const SecondhandPage = lazy(() => import('./pages/SecondhandPage'))
 
 function readPreloadedProducts() {
   if (typeof document === 'undefined') {
@@ -115,14 +116,16 @@ function AppContent() {
 
   if (isInvoiceRoute) {
     return (
-      <Routes>
-        <Route path="/admin/orders/:id/invoice" element={<AdminInvoice />} />
-      </Routes>
+      <Suspense fallback={null}>
+        <Routes>
+          <Route path="/admin/orders/:id/invoice" element={<AdminInvoice />} />
+        </Routes>
+      </Suspense>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {!isAdminRoute && (
         <Header
           currentPage={currentPage}
@@ -145,6 +148,7 @@ function AppContent() {
           </div>
         )}
 
+        <Suspense fallback={<div className="flex items-center justify-center py-24 text-sm text-slate-400">Loading…</div>}>
         <Routes>
           <Route path="/admin/orders/:id/invoice" element={<AdminInvoice />} />
           <Route
@@ -257,6 +261,7 @@ function AppContent() {
             element={<AdminPage onLogout={() => navigateTo('/')} />}
           />
         </Routes>
+        </Suspense>
       </main>
 
       {showStoreContactSection && <StoreContactSection />}

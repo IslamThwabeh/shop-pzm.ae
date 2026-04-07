@@ -9,6 +9,7 @@ type RetailImageProps = {
   variant?: 'card' | 'panel' | 'thumb' | 'article'
   className?: string
   loading?: 'lazy' | 'eager'
+  fetchPriority?: 'high' | 'low' | 'auto'
 }
 
 export default function RetailImage({
@@ -18,6 +19,7 @@ export default function RetailImage({
   variant = 'card',
   className = '',
   loading = 'lazy',
+  fetchPriority = 'auto',
 }: RetailImageProps) {
   const [hasError, setHasError] = useState(false)
   const normalizedSrc = typeof src === 'string' && src.trim() ? toAbsoluteSiteUrl(src.trim()) : ''
@@ -32,6 +34,7 @@ export default function RetailImage({
       alt={alt}
       loading={loading}
       decoding="async"
+      fetchPriority={fetchPriority}
       className={className}
       onError={() => setHasError(true)}
     />

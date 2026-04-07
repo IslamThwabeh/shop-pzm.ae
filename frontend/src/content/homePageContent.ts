@@ -1,25 +1,4 @@
-import { buildApiUrl, normalizeSitePath } from '../utils/siteConfig'
-
-export interface HomeServiceCard {
-  emoji: string
-  title: string
-  description: string
-  to: string
-  cta: string
-  accentClassName: string
-  imageUrl?: string
-  imageAlt?: string
-  cardImageUrl?: string
-}
-
-export interface HomeFeaturedCategory {
-  tag: string
-  title: string
-  description: string
-  to: string
-  imageUrl: string
-  badgeClassName: string
-}
+import { normalizeSitePath } from '../utils/siteConfig'
 
 export interface HomeTrustCard {
   emoji: string
@@ -27,131 +6,67 @@ export interface HomeTrustCard {
   description: string
 }
 
-export interface HomeBlogTeaser {
-  tag: string
-  title: string
-  description: string
-  href: string
-  date: string
-  themeClassName: string
-  imageUrl: string
-}
-
 export interface HomeFaqItem {
   question: string
   answer: string
 }
 
-const generatedServiceMedia = (path: string) => buildApiUrl(`/media/generated/services/${path}`)
-const blogMedia = (filename: string) => buildApiUrl(`/media/blog/${filename}`)
 const page = normalizeSitePath
 
-export const homeServiceCards: HomeServiceCard[] = [
-  {
-    emoji: '🔧',
-    title: 'Repair Services',
-    description: 'Expert device repair and maintenance',
-    to: page('/services/repair'),
-    cta: 'Learn more',
-    accentClassName: 'from-amber-100 to-orange-50',
-    imageUrl: generatedServiceMedia('repair/repair-services.webp'),
-    imageAlt: 'PZM repair services workspace',
-    cardImageUrl: '/images/Catigories/mini_laptop_maintenance.webp',
-  },
-  {
-    emoji: '🛍️',
-    title: 'New Devices',
-    description: 'Latest smartphones, laptops, and accessories',
-    to: page('/services/brand-new'),
-    cta: 'Browse new devices',
-    accentClassName: 'from-sky-100 to-cyan-50',
-    imageUrl: generatedServiceMedia('brand-new/brand-new-service.webp'),
-    imageAlt: 'Brand new devices at PZM',
-    cardImageUrl: '/images/Catigories/mini_brand_new.webp',
-  },
-  {
-    emoji: '✅',
-    title: 'Used Devices',
-    description: 'Quality checked pre-owned devices',
-    to: page('/services/secondhand'),
-    cta: 'Browse used devices',
-    accentClassName: 'from-emerald-100 to-green-50',
-    imageUrl: generatedServiceMedia('secondhand/secondhand-service.webp'),
-    imageAlt: 'Certified pre-owned devices at PZM',
-    cardImageUrl: '/images/Catigories/mini_Used_Phones.webp',
-  },
-  {
-    emoji: '🖥️',
-    title: 'Gaming PC',
-    description: 'Custom gaming PC builds',
-    to: page('/services/gaming-pc'),
-    cta: 'Start building',
-    accentClassName: 'from-violet-100 to-purple-50',
-    imageUrl: generatedServiceMedia('gaming-pc/gaming-pc-builds-service.webp'),
-    imageAlt: 'Custom gaming PC category at PZM',
-    cardImageUrl: '/images/Catigories/mini_GamingPC.webp',
-  },
-  {
-    emoji: '📱',
-    title: 'Buy iPhone',
-    description: 'iPhone 17 series in all colors — Cash on Delivery',
-    to: page('/services/buy-iphone'),
-    cta: 'View iPhones',
-    accentClassName: 'from-pink-100 to-rose-50',
-    imageUrl: generatedServiceMedia('buy-iphone/buy-iphone-service.webp'),
-    imageAlt: 'iPhone 17 Pro Max colors at PZM',
-    cardImageUrl: '/images/Catigories/mini_buy_iphone.webp',
-  },
-  {
-    emoji: '💰',
-    title: 'Sell Devices',
-    description: 'Get the best price for your devices',
-    to: page('/services/sell-gadgets'),
-    cta: 'Get a quote',
-    accentClassName: 'from-yellow-100 to-lime-50',
-    imageUrl: generatedServiceMedia('sell-gadgets/sell-devices-service.webp'),
-    imageAlt: 'Sell your old iPhone at PZM',
-    cardImageUrl: '/images/Catigories/mini_sell-gadgets.webp',
-  },
-  {
-    emoji: '🎧',
-    title: 'Accessories',
-    description: 'Wide range of genuine accessories',
-    to: page('/services/accessories'),
-    cta: 'Shop accessories',
-    accentClassName: 'from-indigo-100 to-blue-50',
-    imageUrl: generatedServiceMedia('accessories/accessories-service.webp'),
-    imageAlt: 'Phone and laptop accessories at PZM',
-    cardImageUrl: '/images/Catigories/mini_mobile_accessories.webp',
-  },
-  {
-    emoji: '🌐',
-    title: 'Website Design',
-    description: 'Professional, mobile-friendly websites',
-    to: page('/services/web-design'),
-    cta: 'See what is included',
-    accentClassName: 'from-lime-100 to-emerald-50',
-    imageUrl: generatedServiceMedia('web-design/website-design-service.webp'),
-    imageAlt: 'Website design service at PZM',
-  },
-]
+export interface HomeCategoryCard {
+  title: string
+  subtitle?: string
+  to: string
+  imageUrl?: string
+}
 
-export const homeFeaturedCategories: HomeFeaturedCategory[] = [
+export const homeCategoryCards: HomeCategoryCard[] = [
   {
-    tag: 'Brand New',
-    title: 'Latest Devices',
-    description: 'iPhones, Samsung, MacBooks, and gaming consoles with official warranty and fast support from the Hessa Street branch.',
-    to: page('/services/brand-new'),
-    imageUrl: generatedServiceMedia('brand-new/brand-new-service.webp'),
-    badgeClassName: 'bg-emerald-100 text-emerald-700',
+    title: 'Buy iPhone',
+    subtitle: 'iPhone 17 series & more',
+    to: page('/services/buy-iphone'),
+    imageUrl: '/images/Catigories/mini_buy_iphone.webp',
   },
   {
-    tag: 'Certified Used',
-    title: 'Pre-Owned Devices',
-    description: 'Certified used phones, laptops, tablets, and gaming PCs with clear grading, testing, and warranty support.',
+    title: 'New Devices',
+    subtitle: 'Official warranty',
+    to: page('/services/brand-new'),
+    imageUrl: '/images/Catigories/mini_brand_new.webp',
+  },
+  {
+    title: 'Used Devices',
+    subtitle: 'Certified pre-owned',
     to: page('/services/secondhand'),
-    imageUrl: generatedServiceMedia('secondhand/secondhand-service.webp'),
-    badgeClassName: 'bg-amber-100 text-amber-700',
+    imageUrl: '/images/Catigories/mini_Used_Phones.webp',
+  },
+  {
+    title: 'Gaming PCs',
+    subtitle: 'Custom builds',
+    to: page('/services/gaming-pc'),
+    imageUrl: '/images/Catigories/mini_GamingPC.webp',
+  },
+  {
+    title: 'Sell Your Device',
+    subtitle: 'Get a fair quote',
+    to: page('/services/sell-gadgets'),
+    imageUrl: '/images/Catigories/mini_sell-gadgets.webp',
+  },
+  {
+    title: 'Accessories',
+    subtitle: 'Cases, chargers & more',
+    to: page('/services/accessories'),
+    imageUrl: '/images/Catigories/mini_mobile_accessories.webp',
+  },
+  {
+    title: 'Repair Services',
+    subtitle: 'Same-day fixes',
+    to: page('/services/repair'),
+    imageUrl: '/images/Catigories/mini_laptop_maintenance.webp',
+  },
+  {
+    title: 'Website Design',
+    subtitle: 'Professional sites',
+    to: page('/services/web-design'),
   },
 ]
 
@@ -175,36 +90,6 @@ export const homeTrustCards: HomeTrustCard[] = [
     emoji: '🚗',
     title: 'Pickup and Delivery',
     description: 'Can\'t visit? We\'ll pick up your device and deliver it back after repair or service.',
-  },
-]
-
-export const homeBlogTeasers: HomeBlogTeaser[] = [
-  {
-    tag: 'Market',
-    title: 'Gold Prices Hit Record Highs — What It Means for Tech Buyers in Dubai',
-    description: 'How rising gold prices affect smartphone, laptop, and PC buying decisions in Dubai during 2026.',
-    href: page('/blog/gold-record-highs-tech-buyers-dubai-2026'),
-    date: 'March 28, 2026',
-    themeClassName: 'from-amber-200 via-orange-100 to-white',
-    imageUrl: blogMedia('pexels-photo-610525.jpeg'),
-  },
-  {
-    tag: 'Market',
-    title: 'How US Tariffs in 2026 Are Changing Electronics Prices in Dubai',
-    description: 'A practical explanation of how global pricing pressure affects local iPhone, laptop, and gaming PC offers.',
-    href: page('/blog/us-tariffs-2026-electronics-prices-dubai'),
-    date: 'March 28, 2026',
-    themeClassName: 'from-sky-200 via-cyan-100 to-white',
-    imageUrl: blogMedia('pexels-photo-3943716.jpeg'),
-  },
-  {
-    tag: 'Guide',
-    title: 'The Smart Buyer\'s Guide to Used Laptops in Dubai (2026)',
-    description: 'What to check, which models to target, and how to buy used laptops with more confidence in Dubai.',
-    href: page('/blog/ultimate-guide-buying-used-laptops'),
-    date: 'March 28, 2026',
-    themeClassName: 'from-emerald-200 via-green-100 to-white',
-    imageUrl: blogMedia('pexels-photo.jpg'),
   },
 ]
 
@@ -241,15 +126,4 @@ export const homeFaqItems: HomeFaqItem[] = [
     question: 'What are your working hours?',
     answer: 'Please check the Contact Us section on this page for our latest and most accurate working hours, or message us on WhatsApp for instant confirmation.',
   },
-]
-
-export const homeAreaOrder = [
-  'al-barsha',
-  'jumeirah-village',
-  'tecom',
-  'jbr',
-  'emirates-hills',
-  'jumeirah',
-  'dubai-marina',
-  'al-quoz',
 ]
