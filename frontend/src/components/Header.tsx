@@ -103,7 +103,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                 </span>
               </button>
               <div className="invisible absolute left-0 top-full mt-3 w-64 rounded-2xl border border-brandBorder bg-white p-3 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100">
-                <Link to="/areas" className="block rounded-xl px-3 py-2 text-sm font-medium text-brandTextDark hover:bg-green-50 hover:text-primary">
+                <Link to="/areas/" className="block rounded-xl px-3 py-2 text-sm font-medium text-brandTextDark hover:bg-green-50 hover:text-primary">
                   All Areas
                 </Link>
                 {areaNavigationLinks.map((link) => (
@@ -199,7 +199,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                 <ChevronDown size={16} />
               </summary>
               <div className="mt-3 grid gap-2">
-                <Link to="/areas" className="rounded-xl px-3 py-2 text-sm text-brandTextMedium hover:bg-green-50 hover:text-primary">
+                <Link to="/areas/" className="rounded-xl px-3 py-2 text-sm text-brandTextMedium hover:bg-green-50 hover:text-primary">
                   All Areas
                 </Link>
                 {areaNavigationLinks.map((link) => (

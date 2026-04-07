@@ -41,7 +41,7 @@ export default function AreasPage() {
 
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
-                to={`/areas/${area.slug}`}
+                to={`/areas/${area.slug}/`}
                 className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
               >
                 Open area page

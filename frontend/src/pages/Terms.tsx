@@ -83,7 +83,7 @@ export default function Terms() {
       <section className="mb-10 space-y-3">
         <h2 className="text-xl font-bold text-brandTextDark">7. Returns &amp; Refunds</h2>
         <p className="text-brandTextMedium">
-          Please refer to our <a href="/return-policy" className="text-primary hover:underline">Return &amp; Refund Policy</a> for complete details on returns, exchanges, and refunds.
+          Please refer to our <a href="/return-policy/" className="text-primary hover:underline">Return &amp; Refund Policy</a> for complete details on returns, exchanges, and refunds.
         </p>
       </section>
 

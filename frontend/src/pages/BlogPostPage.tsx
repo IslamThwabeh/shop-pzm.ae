@@ -3,7 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
 import Seo from '../components/Seo'
 import { getRelatedBlogPosts, resolveBlogPost } from '../content/blogCatalog'
-import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
+import { buildCanonicalUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 function formatPublishedDate(publishedAt: string) {
   return new Date(`${publishedAt}T00:00:00`).toLocaleDateString('en-US', {
@@ -38,7 +38,7 @@ export default function BlogPostPage() {
         <h1 className="text-3xl font-bold text-slate-950">Article not found</h1>
         <p className="mt-4 text-brandTextMedium">The article you requested is not available right now. You can browse the latest posts from the blog index.</p>
         <Link
-          to="/blog"
+          to="/blog/"
           className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
         >
           Back to Blog
@@ -78,7 +78,7 @@ export default function BlogPostPage() {
               url: toAbsoluteSiteUrl('/images/mini_logo.png'),
             },
           },
-          mainEntityOfPage: buildSiteUrl(`/blog/${post.slug}`),
+          mainEntityOfPage: buildCanonicalUrl(`/blog/${post.slug}`),
         }}
       />
 
@@ -150,7 +150,7 @@ export default function BlogPostPage() {
           {relatedPosts.map((relatedPost) => (
             <Link
               key={relatedPost.slug}
-              to={`/blog/${relatedPost.slug}`}
+              to={`/blog/${relatedPost.slug}/`}
               className="rounded-[24px] border border-brandBorder bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
             >
               <span className="inline-flex rounded-full bg-brandLight px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-primary">

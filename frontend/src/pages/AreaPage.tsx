@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import Seo from '../components/Seo'
 import { resolveAreaSlug } from '../content/areaCatalog'
 import { siteContact, siteIdentity } from '../content/siteData'
-import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
+import { buildCanonicalUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 const geoCoordinates = {
   latitude: 25.0848627,
@@ -25,7 +25,7 @@ export default function AreaPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Area page not found</h1>
         <p className="text-brandTextMedium mb-6">The area page you requested is not available right now. You can browse the current Dubai service areas below.</p>
         <Link
-          to="/areas"
+          to="/areas/"
           className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
         >
           Back to areas
@@ -45,7 +45,7 @@ export default function AreaPage() {
           '@type': 'ComputerStore',
           name: `${siteIdentity.name} - ${area.name}, Dubai`,
           description: area.description,
-          url: buildSiteUrl(`/areas/${area.slug}`),
+          url: buildCanonicalUrl(`/areas/${area.slug}`),
           telephone: '+971528026677',
           address: {
             '@type': 'PostalAddress',
@@ -65,7 +65,7 @@ export default function AreaPage() {
       />
 
       <div>
-        <Link to="/areas" className="text-primary font-semibold hover:underline">
+        <Link to="/areas/" className="text-primary font-semibold hover:underline">
           ← Back to areas
         </Link>
       </div>
@@ -82,7 +82,7 @@ export default function AreaPage() {
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
-            to="/services"
+            to="/services/"
             className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
           >
             Browse services

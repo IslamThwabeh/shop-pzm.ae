@@ -24,12 +24,58 @@ function decodeSingleQuotedString(value) {
   return value.replace(/\\'/g, "'")
 }
 
+function splitPathSuffix(pathValue) {
+  const match = pathValue.match(/^([^?#]*)([?#].*)?$/)
+
+  return {
+    basePath: match?.[1] || pathValue,
+    suffix: match?.[2] || '',
+  }
+}
+
 function normalizeCanonicalPath(routePath) {
-  if (routePath === '/blog') {
-    return '/blog/'
+  if (!routePath) {
+    return '/'
   }
 
-  return routePath
+  const normalizedPath = routePath.startsWith('/') ? routePath : `/${routePath}`
+  const { basePath, suffix } = splitPathSuffix(normalizedPath)
+
+  if (basePath === '/' || /\.[a-z\d]+$/i.test(basePath) || /^\/api(?:\/|$)/i.test(basePath)) {
+    return `${basePath}${suffix}`
+  }
+
+  return `${basePath.replace(/\/+$/, '')}/${suffix}`
+}
+
+function normalizePublicHref(href) {
+  if (!href || href.startsWith('#') || /^(?:mailto:|tel:|sms:|javascript:)/i.test(href)) {
+    return href
+  }
+
+  if (/^https?:\/\//i.test(href)) {
+    try {
+      const url = new URL(href)
+
+      if (url.origin !== SITE_URL) {
+        return href
+      }
+
+      return `${SITE_URL}${normalizeCanonicalPath(`${url.pathname}${url.search}${url.hash}`)}`
+    } catch {
+      return href
+    }
+  }
+
+  if (!href.startsWith('/')) {
+    return href
+  }
+
+  return normalizeCanonicalPath(href)
+}
+
+function normalizeEmbeddedInternalLinks(html) {
+  return html.replace(/href="(\/[^\"]*)"/g, (_, href) => `href="${normalizePublicHref(href)}"`)
 }
 
 function toAbsoluteUrl(pathOrUrl) {
@@ -197,6 +243,203 @@ const secondhandSnapshotCategories = [
   },
 ]
 
+const buyIphoneSnapshotFamilies = [
+  {
+    key: 'iphone-17-pro-max',
+    title: 'iPhone 17 Pro Max',
+    shortTitle: 'Pro Max',
+    description: 'Flagship size, colors, and top-tier iPhone options.',
+    matcher: /\biphone\s*17\s*pro\s*max\b/i,
+  },
+  {
+    key: 'iphone-17-pro',
+    title: 'iPhone 17 Pro',
+    shortTitle: 'Pro',
+    description: 'Flagship performance in the smaller Pro size.',
+    matcher: /\biphone\s*17\s*pro\b(?!\s*max)/i,
+  },
+  {
+    key: 'iphone-17-air',
+    title: 'iPhone 17 Air',
+    shortTitle: 'Air',
+    description: 'Thin-and-light iPhone options in the Air line.',
+    matcher: /\biphone\s*17\s*air\b/i,
+  },
+  {
+    key: 'iphone-17',
+    title: 'iPhone 17',
+    shortTitle: 'Standard',
+    description: 'Current-generation iPhone options outside the Pro tier.',
+    matcher: /\biphone\s*17\b(?!\s*pro\b)(?!\s*air\b)/i,
+  },
+]
+
+const defaultSnapshotLinks = [
+  { title: 'Home', description: 'Go back to the main storefront overview.', href: '/', cta: 'Open home' },
+  { title: 'Services', description: 'Browse all service and retail category pages.', href: '/services', cta: 'Open services' },
+  { title: 'Areas', description: 'See the Dubai communities served by the store.', href: '/areas', cta: 'Open areas' },
+  { title: 'Blog', description: 'Read buying guides, repair advice, and market updates.', href: '/blog/', cta: 'Open blog' },
+]
+
+const termsSnapshotSections = [
+  {
+    title: '1. Business Information',
+    paragraphs: [
+      'PZM Computers & Phones Store - New•Used•Repair•PC•Build operates from Al Barsha on Hessa Street inside Hessa Union Coop Hypermarket, Ground Floor, Dubai, United Arab Emirates.',
+      'Phone and WhatsApp support is available on +971 52 802 6677 for questions about ordering, pricing, delivery, and store visits.',
+    ],
+  },
+  {
+    title: '2. Products & Pricing',
+    items: [
+      'All prices displayed on the site are in AED and can change without prior notice.',
+      'Product details, colors, and configurations can vary based on stock and supplier availability.',
+      'Images are illustrative and the final color or finish can look slightly different in person.',
+      'Products marked as contact-required need direct confirmation for the latest pricing and availability.',
+    ],
+  },
+  {
+    title: '3. How to Order',
+    items: [
+      'Message the store on WhatsApp with the product or service you want.',
+      'Call the team directly for immediate assistance or confirmation.',
+      'Visit the Al Barsha branch in person if you prefer a walk-in purchase or consultation.',
+    ],
+  },
+  {
+    title: '4. Payment Methods',
+    items: [
+      'Cash on Delivery is available where applicable.',
+      'Pay-by-link can be sent after order confirmation.',
+      'In-store payment can be completed by cash or card.',
+    ],
+  },
+  {
+    title: '5. Delivery',
+    items: [
+      'Same-day delivery is offered within Dubai subject to timing and driver scheduling.',
+      'Delivery across the UAE usually takes 1 to 3 business days.',
+      'Free delivery may apply to eligible Dubai orders.',
+      'Any delivery charges are confirmed before the order is finalized.',
+      'Customers should be available to receive and inspect the product on delivery.',
+    ],
+  },
+  {
+    title: '6. Warranty',
+    items: [
+      'New devices come with official manufacturer warranty coverage.',
+      'Used and pre-owned devices carry the store warranty disclosed at the time of sale.',
+      'Warranty does not cover misuse, accidents, or unauthorized modifications.',
+      'Custom PC builds are covered at the component level according to each manufacturer.',
+    ],
+  },
+  {
+    title: '7. Returns & Refunds',
+    paragraphs: [
+      'Return and refund handling follows the dedicated return policy. Customers should review the full return rules before ordering a sealed device, a configured build, or a pre-owned item.',
+      'Read the dedicated <a href="/return-policy" style="color:#00A76F;text-decoration:none;font-weight:700;">Return &amp; Refund Policy</a> for the exact terms.',
+    ],
+  },
+  {
+    title: '8. Intellectual Property',
+    paragraphs: [
+      'Text, images, branding, design, and storefront content on the site remain the property of PZM Computers & Phones Store and may not be reproduced, distributed, or modified without written permission.',
+    ],
+  },
+  {
+    title: '9. Limitation of Liability',
+    items: [
+      'PZM is not liable for indirect, incidental, or consequential damages arising from product use.',
+      'Total liability is limited to the purchase price of the product in question.',
+      'Courier delays and force majeure events are outside the store’s direct responsibility.',
+    ],
+  },
+  {
+    title: '10. Privacy',
+    paragraphs: [
+      'Personal information collected during ordering is used only to process the order, arrange delivery, and support after-sales service. It is not shared with third parties for marketing purposes.',
+    ],
+  },
+  {
+    title: '11. Governing Law',
+    paragraphs: [
+      'These terms are governed by the laws of the United Arab Emirates and any disputes fall under the jurisdiction of the courts of Dubai.',
+    ],
+  },
+  {
+    title: '12. Changes to Terms',
+    paragraphs: [
+      'The store may update these terms over time. Continued use of the website or the purchase flow means the updated terms are accepted once posted.',
+    ],
+  },
+  {
+    title: '13. Contact Us',
+    paragraphs: [
+      'For questions about the terms, contact the store on <a href="https://wa.me/971528026677?text=Hi%2C%20I%20have%20a%20question%20about%20your%20terms.%20(via%20pzm.ae)" style="color:#00A76F;text-decoration:none;font-weight:700;">WhatsApp</a>, call <a href="tel:+971528026677" style="color:#00A76F;text-decoration:none;font-weight:700;">+971 52 802 6677</a>, or visit the Al Barsha branch.',
+    ],
+  },
+]
+
+const returnPolicySnapshotSections = [
+  {
+    title: '1. Return Eligibility',
+    paragraphs: [
+      'Products can be returned within 7 days of delivery or purchase when they remain sealed, unused, undamaged, and complete with original accessories, manuals, warranty cards, and proof of purchase.',
+    ],
+  },
+  {
+    title: '2. Non-Returnable Items',
+    items: [
+      'Opened, activated, or used products.',
+      'Applied or used cases, screen protectors, and similar accessories.',
+      'Products damaged after delivery by the customer.',
+      'Custom-built PCs and configured-to-order items.',
+      'Software, digital products, and gift cards.',
+    ],
+  },
+  {
+    title: '3. Defective or Damaged Products',
+    items: [
+      'Report defects or shipping damage within 48 hours of delivery.',
+      'Eligible cases may qualify for a replacement or full refund.',
+      'Manufacturer-warranty items may be processed through the official warranty channel.',
+    ],
+  },
+  {
+    title: '4. How to Initiate a Return',
+    paragraphs: [
+      'Start the process by messaging the store on <a href="https://wa.me/971528026677?text=Hi%2C%20I%20would%20like%20to%20initiate%20a%20return.%20(via%20pzm.ae)" style="color:#00A76F;text-decoration:none;font-weight:700;">WhatsApp</a>, calling <a href="tel:+971528026677" style="color:#00A76F;text-decoration:none;font-weight:700;">+971 52 802 6677</a>, or visiting the Al Barsha store.',
+      'The team reviews the case and responds with the next steps, usually within 24 hours.',
+    ],
+  },
+  {
+    title: '5. Refund Process',
+    items: [
+      'Cash on Delivery orders are refunded through cash at the store or bank transfer within 5 to 7 business days.',
+      'Pay-by-link orders are refunded to the original payment method within 5 to 7 business days.',
+      'Shipping fees are only refunded when the return is caused by a defective or incorrect item.',
+    ],
+  },
+  {
+    title: '6. Exchange Policy',
+    paragraphs: [
+      'Exchanges are possible during the 7-day return window if the same return conditions are met. Higher-value exchanges require payment of the price difference.',
+    ],
+  },
+  {
+    title: '7. Used & Pre-owned Devices',
+    paragraphs: [
+      'Used and pre-owned devices are sold as-is. Returns are only accepted if an undisclosed hardware defect is discovered within 3 days of purchase.',
+    ],
+  },
+  {
+    title: '8. Contact Us',
+    paragraphs: [
+      'If you need help with a return or refund question, contact the team on <a href="https://wa.me/971528026677?text=Hi%2C%20I%20have%20a%20question%20about%20your%20return%20policy.%20(via%20pzm.ae)" style="color:#00A76F;text-decoration:none;font-weight:700;">WhatsApp</a>, call <a href="tel:+971528026677" style="color:#00A76F;text-decoration:none;font-weight:700;">+971 52 802 6677</a>, or visit the store in Al Barsha.',
+    ],
+  },
+]
+
 function groupCatalogProducts(products, condition, categories) {
   const grouped = categories.map((category) => ({
     category,
@@ -274,6 +517,77 @@ function buildCatalogSnapshot({ eyebrow, title, intro, groups, emptyTitle, empty
     </div>`
 }
 
+function formatPublishedDate(publishedAt) {
+  return new Date(`${publishedAt}T00:00:00`).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
+
+function buildBlogIndexSnapshot(entries) {
+  const articleCards = entries
+    .map(
+      (entry) => `
+        <article style="border:1px solid #e2e8f0;border-radius:24px;background:#ffffff;padding:24px;box-shadow:0 1px 3px rgba(15,23,42,0.06);">
+          <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#00A76F;">${escapeHtml(entry.category)}</p>
+          <p style="margin:12px 0 0;font-size:13px;color:#64748b;">${escapeHtml(formatPublishedDate(entry.publishedAt))}</p>
+          <h2 style="margin:14px 0 0;font-size:24px;line-height:1.3;color:#0f172a;">
+            <a href="${escapeHtml(normalizePublicHref(`/blog/${entry.slug}`))}" style="color:inherit;text-decoration:none;">${escapeHtml(entry.title)}</a>
+          </h2>
+          <p style="margin:14px 0 0;font-size:15px;line-height:1.8;color:#475569;">${escapeHtml(entry.excerpt)}</p>
+          <a href="${escapeHtml(normalizePublicHref(`/blog/${entry.slug}`))}" style="display:inline-block;margin-top:18px;font-size:14px;font-weight:700;color:#00A76F;text-decoration:none;">Read article</a>
+        </article>`
+    )
+    .join('')
+
+  return `
+    <div data-pzm-prerender-blog="true" style="max-width:1280px;margin:0 auto;padding:48px 16px 64px;font-family:'Open Sans',system-ui,sans-serif;background:#f8fafc;color:#0f172a;">
+      <div style="max-width:960px;">
+        <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#00A76F;">PZM Blog</p>
+        <h1 style="margin:14px 0 0;font-size:42px;line-height:1.08;color:#0f172a;">Latest Tech Updates</h1>
+        <p style="margin:18px 0 0;font-size:16px;line-height:1.8;color:#64748b;">Stay informed with the latest tech news, buying guides, repair advice, and local market insights from Dubai.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:28px;">
+        ${articleCards}
+      </div>
+    </div>`
+}
+
+function buildBlogArticleSnapshot(entry) {
+  return `
+    <div data-pzm-prerender-blog-article="true" style="max-width:1100px;margin:0 auto;padding:48px 16px 64px;font-family:'Open Sans',system-ui,sans-serif;background:#f8fafc;color:#0f172a;">
+      <a href="${escapeHtml(normalizePublicHref('/blog/'))}" style="display:inline-block;font-size:14px;font-weight:700;color:#00A76F;text-decoration:none;">&larr; Back to blog</a>
+      <div style="margin-top:18px;max-width:860px;">
+        <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#00A76F;">${escapeHtml(entry.category)}</p>
+        <p style="margin:12px 0 0;font-size:14px;color:#64748b;">${escapeHtml(formatPublishedDate(entry.publishedAt))}</p>
+        <h1 style="margin:14px 0 0;font-size:42px;line-height:1.12;color:#0f172a;">${escapeHtml(entry.title)}</h1>
+        <p style="margin:18px 0 0;font-size:16px;line-height:1.8;color:#475569;">${escapeHtml(entry.excerpt)}</p>
+      </div>
+      <article style="margin-top:28px;border:1px solid #e2e8f0;border-radius:28px;background:#ffffff;padding:32px;box-shadow:0 1px 3px rgba(15,23,42,0.06);font-size:16px;line-height:1.9;color:#334155;">
+        ${normalizeEmbeddedInternalLinks(entry.bodyHtml)}
+      </article>
+      <section style="margin-top:24px;border:1px solid #e2e8f0;border-radius:28px;background:#ffffff;padding:24px;box-shadow:0 1px 3px rgba(15,23,42,0.06);">
+        <h2 style="margin:0;font-size:28px;line-height:1.2;color:#0f172a;">Related store pages</h2>
+        <p style="margin:14px 0 0;font-size:15px;line-height:1.8;color:#64748b;max-width:820px;">Continue from the article into the product, repair, and contact pages that connect with the same buying or support journey.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px;">
+          <a href="${escapeHtml(normalizePublicHref('/services/buy-iphone'))}" style="display:block;border:1px solid #e2e8f0;border-radius:24px;background:#ffffff;padding:18px;color:#0f172a;text-decoration:none;">
+            <strong style="display:block;font-size:18px;line-height:1.35;">Buy iPhone</strong>
+            <span style="display:block;margin-top:10px;font-size:14px;line-height:1.75;color:#475569;">Open the iPhone buying page for the latest listed models and direct contact options.</span>
+          </a>
+          <a href="${escapeHtml(normalizePublicHref('/services/secondhand'))}" style="display:block;border:1px solid #e2e8f0;border-radius:24px;background:#ffffff;padding:18px;color:#0f172a;text-decoration:none;">
+            <strong style="display:block;font-size:18px;line-height:1.35;">Certified Pre-Owned</strong>
+            <span style="display:block;margin-top:10px;font-size:14px;line-height:1.75;color:#475569;">Browse used devices, grading details, and current stock listed on the storefront.</span>
+          </a>
+          <a href="${escapeHtml(normalizePublicHref('/services/repair'))}" style="display:block;border:1px solid #e2e8f0;border-radius:24px;background:#ffffff;padding:18px;color:#0f172a;text-decoration:none;">
+            <strong style="display:block;font-size:18px;line-height:1.35;">Repair Services</strong>
+            <span style="display:block;margin-top:10px;font-size:14px;line-height:1.75;color:#475569;">Move from the article into repair intake, quote requests, and same-day support options.</span>
+          </a>
+        </div>
+      </section>
+    </div>`
+}
+
 function buildBrandNewSnapshot(products) {
   const groups = groupCatalogProducts(products, 'new', brandNewSnapshotCategories)
 
@@ -300,6 +614,569 @@ function buildSecondhandSnapshot(products) {
     emptyDescription: 'Use the contact options on the site to ask about used-device details.',
     kind: 'used',
   })
+}
+
+function buildPageShell({ eyebrow, title, intro, stats = [], sections = [] }) {
+  const statsHtml = stats.length > 0
+    ? `
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;">
+        ${stats
+          .map(
+            (stat) => `<span style="display:inline-flex;align-items:center;border:1px solid #dbe4ee;border-radius:999px;background:#ffffff;padding:10px 14px;font-size:13px;font-weight:700;color:#334155;">${escapeHtml(stat)}</span>`
+          )
+          .join('')}
+      </div>`
+    : ''
+
+  return `
+    <div data-pzm-prerender-page="true" style="max-width:1280px;margin:0 auto;padding:48px 16px 64px;font-family:'Open Sans',system-ui,sans-serif;background:#f8fafc;color:#0f172a;">
+      <div style="max-width:960px;">
+        <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#00A76F;">${escapeHtml(eyebrow)}</p>
+        <h1 style="margin:14px 0 0;font-size:42px;line-height:1.08;color:#0f172a;">${escapeHtml(title)}</h1>
+        <p style="margin:18px 0 0;font-size:16px;line-height:1.8;color:#475569;">${escapeHtml(intro)}</p>
+        ${statsHtml}
+      </div>
+      ${sections.join('')}
+      ${buildSnapshotSection(
+        'Explore more pages',
+        'Use the links below to continue through the storefront, local area coverage, and blog content.',
+        buildLinkGrid(defaultSnapshotLinks)
+      )}
+    </div>`
+}
+
+function buildSnapshotSection(title, description, contentHtml) {
+  return `
+    <section style="margin-top:28px;border:1px solid #e2e8f0;border-radius:28px;background:#ffffff;padding:24px;box-shadow:0 1px 3px rgba(15,23,42,0.06);">
+      <h2 style="margin:0;font-size:28px;line-height:1.2;color:#0f172a;">${escapeHtml(title)}</h2>
+      ${description ? `<p style="margin:14px 0 0;font-size:15px;line-height:1.8;color:#64748b;max-width:920px;">${escapeHtml(description)}</p>` : ''}
+      <div style="margin-top:18px;">${contentHtml}</div>
+    </section>`
+}
+
+function buildLinkGrid(items) {
+  return `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
+      ${items
+        .map(
+          (item) => `
+            <article style="border:1px solid #e2e8f0;border-radius:24px;background:#ffffff;padding:20px;box-shadow:0 1px 3px rgba(15,23,42,0.06);">
+              ${item.eyebrow ? `<p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#00A76F;">${escapeHtml(item.eyebrow)}</p>` : ''}
+              <h3 style="margin:12px 0 0;font-size:20px;line-height:1.35;color:#0f172a;">${escapeHtml(item.title)}</h3>
+              <p style="margin:12px 0 0;font-size:14px;line-height:1.75;color:#475569;">${escapeHtml(item.description)}</p>
+                <a href="${escapeHtml(normalizePublicHref(item.href))}" style="display:inline-block;margin-top:16px;font-size:14px;font-weight:700;color:#00A76F;text-decoration:none;">${escapeHtml(item.cta || 'Open page')}</a>
+            </article>`
+        )
+        .join('')}
+    </div>`
+}
+
+function buildBulletList(items) {
+  return `
+    <ul style="margin:0;padding-left:20px;display:grid;gap:10px;font-size:15px;line-height:1.75;color:#334155;">
+      ${items.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
+    </ul>`
+}
+
+function buildParagraphs(paragraphs) {
+  return paragraphs
+    .map(
+      (paragraph) => `<p style="margin:0 0 14px;font-size:15px;line-height:1.85;color:#334155;">${normalizeEmbeddedInternalLinks(paragraph)}</p>`
+    )
+    .join('')
+}
+
+function buildChipList(items) {
+  return `
+    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+      ${items
+        .map(
+          (item) => `<span style="display:inline-flex;align-items:center;border:1px solid #dbe4ee;border-radius:999px;background:#f8fafc;padding:10px 14px;font-size:13px;font-weight:700;color:#334155;">${escapeHtml(item)}</span>`
+        )
+        .join('')}
+    </div>`
+}
+
+function buildStepsList(steps) {
+  return `
+    <ol style="margin:0;padding-left:20px;display:grid;gap:12px;font-size:15px;line-height:1.8;color:#334155;">
+      ${steps.map((step) => `<li>${escapeHtml(step)}</li>`).join('')}
+    </ol>`
+}
+
+function buildActionLinks(actions) {
+  return `
+    <div style="display:flex;flex-wrap:wrap;gap:12px;">
+      ${actions
+        .map(
+          (action) => `<a href="${escapeHtml(normalizePublicHref(action.href))}" style="display:inline-block;border:1px solid #dbe4ee;border-radius:999px;background:#ffffff;padding:12px 16px;font-size:14px;font-weight:700;color:#0f172a;text-decoration:none;">${escapeHtml(action.label)}</a>`
+        )
+        .join('')}
+    </div>`
+}
+
+function buildLegalSnapshot({ eyebrow, title, intro, lastUpdated, sections }) {
+  return buildPageShell({
+    eyebrow,
+    title,
+    intro: `${intro} Last updated: ${lastUpdated}.`,
+    sections: sections.map((section) => {
+      const contentParts = []
+
+      if (section.paragraphs?.length) {
+        contentParts.push(buildParagraphs(section.paragraphs))
+      }
+
+      if (section.items?.length) {
+        contentParts.push(buildBulletList(section.items))
+      }
+
+      return buildSnapshotSection(section.title, section.description || '', contentParts.join(''))
+    }),
+  })
+}
+
+function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries) {
+  return buildPageShell({
+    eyebrow: 'PZM Storefront',
+    title: 'PZM Computers & Phones Store',
+    intro:
+      'Your integrated device solutions hub in Al Barsha, Dubai. Browse brand-new devices, certified pre-owned stock, repair support, custom gaming PCs, accessories, and buying guides from one storefront.',
+    stats: [
+      `${serviceEntries.length} service pages`,
+      `${areaEntries.length} Dubai area pages`,
+      `${blogEntries.length} blog articles`,
+    ],
+    sections: [
+      buildSnapshotSection(
+        'Our Services',
+        'Everything you need for phones, laptops, and PCs from the Al Barsha branch on Hessa Street.',
+        buildLinkGrid(
+          serviceEntries.map((entry) => ({
+            eyebrow: 'Service',
+            title: entry.title,
+            description: entry.heroDescription || entry.description,
+            href: `/services/${entry.slug}`,
+            cta: 'Open service',
+          }))
+        )
+      ),
+      buildSnapshotSection(
+        'Latest Tech Updates',
+        'Stay informed with current buying guides, repair advice, and market updates that connect directly to the retail and service pages.',
+        buildLinkGrid(
+          blogEntries.slice(0, 3).map((entry) => ({
+            eyebrow: `${entry.category} • ${formatPublishedDate(entry.publishedAt)}`,
+            title: entry.title,
+            description: entry.excerpt,
+            href: `/blog/${entry.slug}`,
+            cta: 'Read article',
+          }))
+        )
+      ),
+      buildSnapshotSection(
+        'Areas We Serve in Dubai',
+        'Open your local page for nearby communities, travel notes, and direct links into the right service flow.',
+        buildLinkGrid(
+          areaEntries.map((entry) => ({
+            eyebrow: entry.badge,
+            title: entry.title,
+            description: `${entry.heroDescription} ${entry.travelNote}`,
+            href: `/areas/${entry.slug}`,
+            cta: 'Open area page',
+          }))
+        )
+      ),
+      buildSnapshotSection(
+        'Need help with our services or products?',
+        'Visit the store inside Hessa Union Coop Hypermarket or contact the team directly for pricing, repairs, model selection, and pickup support.',
+        buildActionLinks([
+          { href: 'tel:+971528026677', label: 'Call Us' },
+          { href: 'https://wa.me/971528026677?text=Hi%2C%20I%27m%20interested%20in%20the%20services%20listed%20on%20your%20website.%20Can%20you%20tell%20me%20more%3F%20(via%20pzm.ae)', label: 'WhatsApp Us' },
+          { href: '/services/brand-new', label: 'Browse Brand-New Devices' },
+          { href: '/services/secondhand', label: 'Browse Used Devices' },
+        ])
+      ),
+    ],
+  })
+}
+
+function buildServicesIndexSnapshot(serviceEntries) {
+  return buildPageShell({
+    eyebrow: 'PZM Service Hub',
+    title: 'Our Services',
+    intro: 'Everything you need for phones, laptops, and PCs from the Al Barsha store on Hessa Street.',
+    stats: [`${serviceEntries.length} public service pages`],
+    sections: [
+      buildSnapshotSection(
+        'Available services',
+        'Open the service page that matches the device, category, or request type you need right now.',
+        buildLinkGrid(
+          serviceEntries.map((entry) => ({
+            eyebrow: 'Service',
+            title: entry.title,
+            description: entry.cardDescription || entry.heroDescription || entry.description,
+            href: `/services/${entry.slug}`,
+            cta: 'Open service',
+          }))
+        )
+      ),
+      buildSnapshotSection(
+        'How to get started',
+        'The storefront is designed to keep the path simple whether you want to buy, repair, sell, or compare before visiting the store.',
+        buildStepsList([
+          'Open the service page that matches the product or outcome you want.',
+          'Review the overview, highlights, and contact options for that category.',
+          'Use WhatsApp, phone, or the store visit route to continue with the team.',
+        ])
+      ),
+    ],
+  })
+}
+
+function buildServiceSnapshot(entry) {
+  const overviewParagraphs = [
+    `${entry.title} at PZM is designed to help customers move from browsing to a clear next step without unnecessary back-and-forth.`,
+    `${entry.heroDescription || entry.description} The page explains what the service covers, what kinds of requests fit best, and how to contact the team in Dubai before you visit or confirm an order.`,
+  ]
+
+  const sections = [
+    buildSnapshotSection(
+      'What this service covers',
+      entry.description,
+      `${buildParagraphs(overviewParagraphs)}${entry.highlights?.length ? buildBulletList(entry.highlights) : ''}`
+    ),
+  ]
+
+  if (entry.detailSections?.length) {
+    for (const section of entry.detailSections) {
+      sections.push(buildSnapshotSection(section.title, '', buildBulletList(section.items)))
+    }
+  } else {
+    sections.push(
+      buildSnapshotSection(
+        'How to start',
+        'Use the service page to send the model, issue, budget, or goal before the follow-up starts.',
+        buildStepsList([
+          `Review the ${entry.title.toLowerCase()} overview and compare it with other service pages if needed.`,
+          'Message or call the store with the exact model, problem, or configuration you want.',
+          'Confirm the next step, whether that is a quote, callback, store visit, or guided recommendation.',
+        ])
+      )
+    )
+  }
+
+  sections.push(
+    buildSnapshotSection(
+      'Need help now?',
+      'Use the links below to continue with the store team or compare nearby public pages.',
+      buildActionLinks([
+        { href: '/services', label: 'Back to services' },
+        { href: 'tel:+971528026677', label: 'Call Us' },
+        { href: 'https://wa.me/971528026677?text=Hi%2C%20I%27m%20interested%20in%20the%20services%20listed%20on%20your%20website.%20Can%20you%20tell%20me%20more%3F%20(via%20pzm.ae)', label: 'WhatsApp Us' },
+      ])
+    )
+  )
+
+  return buildPageShell({
+    eyebrow: 'Service page',
+    title: entry.heroTitle || entry.title,
+    intro: entry.heroDescription || entry.description,
+    stats: entry.highlights?.length ? [`${entry.highlights.length} service highlights`] : [],
+    sections,
+  })
+}
+
+function buildAreasIndexSnapshot(areaEntries) {
+  return buildPageShell({
+    eyebrow: 'Local coverage',
+    title: 'Areas We Serve in Dubai',
+    intro:
+      'We are based in Al Barsha on Hessa Street and serve customers across Dubai. Open your area for local links, directions, and the fastest route to the right service.',
+    stats: [`${areaEntries.length} area pages live`],
+    sections: [
+      buildSnapshotSection(
+        'Browse Dubai areas',
+        'Each area page connects nearby communities with service links, travel notes, and a cleaner route into the storefront.',
+        buildLinkGrid(
+          areaEntries.map((entry) => ({
+            eyebrow: entry.badge,
+            title: entry.title,
+            description: `${entry.heroDescription} ${entry.travelNote}`,
+            href: `/areas/${entry.slug}`,
+            cta: 'Open area page',
+          }))
+        )
+      ),
+      buildSnapshotSection(
+        'Need another area?',
+        'If your neighborhood is not listed yet, the team still serves you from the Al Barsha branch.',
+        buildActionLinks([
+          { href: 'https://wa.me/971528026677?text=Hi%2C%20I%27m%20interested%20in%20the%20services%20listed%20on%20your%20website.%20Can%20you%20tell%20me%20more%3F%20(via%20pzm.ae)', label: 'WhatsApp Us' },
+          { href: 'tel:+971528026677', label: 'Call +971 52 802 6677' },
+          { href: '/services', label: 'Browse services' },
+        ])
+      ),
+    ],
+  })
+}
+
+function buildAreaSnapshot(entry) {
+  return buildPageShell({
+    eyebrow: entry.badge,
+    title: entry.title,
+    intro: `${entry.heroDescription} ${entry.travelNote} ${entry.localSummary}`,
+    stats: [
+      `${entry.nearbyCommunities.length} nearby communities`,
+      `${entry.featuredServices.length} featured service links`,
+    ],
+    sections: [
+      buildSnapshotSection(
+        `Why customers from ${entry.name} use PZM`,
+        entry.localSummary,
+        buildBulletList(entry.advantages)
+      ),
+      buildSnapshotSection(
+        'Nearby communities',
+        entry.travelNote,
+        buildChipList(entry.nearbyCommunities)
+      ),
+      buildSnapshotSection(
+        `Popular services for ${entry.name}`,
+        'Open the service page that best matches the next step you want to take.',
+        buildLinkGrid(
+          entry.featuredServices.map((service) => ({
+            eyebrow: entry.name,
+            title: service.label,
+            description: service.description,
+            href: service.to,
+            cta: 'Open service',
+          }))
+        )
+      ),
+      buildSnapshotSection(
+        'Need directions or quick help?',
+        'Use the store, phone, or service links below before you travel.',
+        buildActionLinks([
+          { href: '/areas', label: 'Back to areas' },
+          { href: '/services', label: 'Browse services' },
+          { href: 'https://maps.app.goo.gl/e5Rhfo8YY3i8CatM7?g_st=ic', label: 'Get directions' },
+          { href: 'https://wa.me/971528026677?text=Hi%2C%20I%27m%20interested%20in%20the%20services%20listed%20on%20your%20website.%20Can%20you%20tell%20me%20more%3F%20(via%20pzm.ae)', label: 'WhatsApp Us' },
+        ])
+      ),
+    ],
+  })
+}
+
+function getBuyIphoneSnapshotProducts(products) {
+  return dedupeProducts(
+    products.filter((product) => normalizeProductValue(product.model).includes('iphone'))
+  ).sort(sortProducts)
+}
+
+function groupBuyIphoneSnapshotProducts(products) {
+  const liveProducts = getBuyIphoneSnapshotProducts(products)
+
+  return buyIphoneSnapshotFamilies.map((family) => ({
+    family,
+    products: liveProducts.filter((product) => family.matcher.test(normalizeProductValue(product.model))),
+  }))
+}
+
+function buildBuyIphoneSnapshot(products) {
+  const groups = groupBuyIphoneSnapshotProducts(products)
+  const liveProducts = getBuyIphoneSnapshotProducts(products)
+  const listedFamilies = groups.filter((group) => group.products.length > 0).length
+  const lowestPrice = liveProducts.length > 0 ? Math.min(...liveProducts.map((product) => product.price)) : null
+
+  return buildPageShell({
+    eyebrow: 'Apple retail',
+    title: 'Buy iPhone 17 Pro Max, Pro, Air & iPhone 17 in Dubai',
+    intro:
+      'Browse the current iPhone lineup listed on the site, compare families, and message the store for the exact storage and color you want.',
+    stats: [
+      `${liveProducts.length} iPhone models listed`,
+      `${listedFamilies}/${buyIphoneSnapshotFamilies.length} families listed`,
+      lowestPrice ? `From AED ${formatPrice(lowestPrice)}` : 'Request pricing',
+    ],
+    sections: [
+      buildSnapshotSection(
+        'Start with the iPhone family',
+        'Use the family view first, then move into the currently listed models or contact the team for a missing configuration.',
+        buildLinkGrid(
+          groups.map((group) => ({
+            eyebrow: group.products.length > 0 ? `${group.products.length} listed now` : 'Message us',
+            title: group.family.title,
+            description: group.family.description,
+            href: group.products.length > 0 ? `/services/buy-iphone` : '/services/buy-iphone#buy-iphone-contact',
+            cta: group.products.length > 0 ? 'Browse models' : 'Ask about this family',
+          }))
+        )
+      ),
+      buildSnapshotSection(
+        'Current iPhone models on the site',
+        'The latest listed iPhone models are grouped below so shoppers can compare variants before starting a WhatsApp order or store visit.',
+        groups
+          .map((group) => {
+            if (group.products.length === 0) {
+              return `
+                <article style="margin-top:18px;border:1px solid #e2e8f0;border-radius:24px;background:#f8fafc;padding:20px;">
+                  <h3 style="margin:0;font-size:22px;line-height:1.3;color:#0f172a;">${escapeHtml(group.family.title)}</h3>
+                  <p style="margin:10px 0 0;font-size:14px;line-height:1.75;color:#475569;">${escapeHtml(group.family.description)} This family is not listed right now, but the team can still confirm the closest available option.</p>
+                </article>`
+            }
+
+            return `
+              <article style="margin-top:18px;border:1px solid #e2e8f0;border-radius:24px;background:#ffffff;padding:20px;">
+                <h3 style="margin:0;font-size:22px;line-height:1.3;color:#0f172a;">${escapeHtml(group.family.title)}</h3>
+                <p style="margin:10px 0 0;font-size:14px;line-height:1.75;color:#475569;">${escapeHtml(group.family.description)}</p>
+                <ul style="margin:16px 0 0;padding-left:20px;display:grid;gap:10px;font-size:15px;line-height:1.75;color:#334155;">
+                  ${group.products
+                    .slice(0, 6)
+                    .map(
+                      (product) => `<li><strong>${escapeHtml(product.model)}</strong> - ${escapeHtml(product.storage)} - ${escapeHtml(product.color)} - AED ${formatPrice(product.price)}</li>`
+                    )
+                    .join('')}
+                </ul>
+              </article>`
+          })
+          .join('')
+      ),
+      buildSnapshotSection(
+        'How to order',
+        'The iPhone route is designed to keep the buying flow simple even when inventory changes quickly.',
+        buildStepsList([
+          'Browse the current iPhone models listed on the site.',
+          'Message the store for the exact model, storage, and color you want.',
+          'Use the service hub or store visit links if you want to compare broader device categories first.',
+        ])
+      ),
+    ],
+  })
+}
+
+function extractCatalogSlice(source, startMarker, endMarker) {
+  const startIndex = source.indexOf(startMarker)
+  if (startIndex === -1) {
+    return source
+  }
+
+  const endIndex = endMarker ? source.indexOf(endMarker, startIndex) : -1
+  return source.slice(startIndex, endIndex === -1 ? source.length : endIndex)
+}
+
+function findBalancedEnd(source, startIndex, openChar, closeChar) {
+  let depth = 0
+  let quote = null
+
+  for (let index = startIndex; index < source.length; index += 1) {
+    const char = source[index]
+    const previousChar = source[index - 1]
+
+    if (quote) {
+      if (char === quote && previousChar !== '\\') {
+        quote = null
+      }
+      continue
+    }
+
+    if (char === '\'' || char === '"' || char === '`') {
+      quote = char
+      continue
+    }
+
+    if (char === openChar) {
+      depth += 1
+      continue
+    }
+
+    if (char === closeChar) {
+      depth -= 1
+      if (depth === 0) {
+        return index
+      }
+    }
+  }
+
+  return -1
+}
+
+function extractFieldBlock(source, fieldName, openChar, closeChar) {
+  const pattern = new RegExp(`${fieldName}:\\s*\\${openChar}`)
+  const match = pattern.exec(source)
+
+  if (!match) {
+    return ''
+  }
+
+  const startIndex = source.indexOf(openChar, match.index)
+  const endIndex = findBalancedEnd(source, startIndex, openChar, closeChar)
+
+  if (startIndex === -1 || endIndex === -1) {
+    return ''
+  }
+
+  return source.slice(startIndex + 1, endIndex)
+}
+
+function extractStringField(source, fieldName) {
+  const pattern = new RegExp(`${fieldName}:\\s*'((?:\\\\'|[^'])+)'`)
+  const match = pattern.exec(source)
+  return match ? decodeSingleQuotedString(match[1]) : ''
+}
+
+function extractStringArrayField(source, fieldName) {
+  const arrayContent = extractFieldBlock(source, fieldName, '[', ']')
+  return Array.from(arrayContent.matchAll(/'((?:\\'|[^'])+)'/g), (match) => decodeSingleQuotedString(match[1]))
+}
+
+function extractObjectBlocks(arrayContent) {
+  const blocks = []
+
+  for (let index = 0; index < arrayContent.length; index += 1) {
+    if (arrayContent[index] !== '{') {
+      continue
+    }
+
+    const endIndex = findBalancedEnd(arrayContent, index, '{', '}')
+    if (endIndex === -1) {
+      break
+    }
+
+    blocks.push(arrayContent.slice(index + 1, endIndex))
+    index = endIndex
+  }
+
+  return blocks
+}
+
+function extractDetailSections(source) {
+  const arrayContent = extractFieldBlock(source, 'detailSections', '[', ']')
+  if (!arrayContent) {
+    return []
+  }
+
+  return extractObjectBlocks(arrayContent)
+    .map((block) => ({
+      title: extractStringField(block, 'title'),
+      items: extractStringArrayField(block, 'items'),
+    }))
+    .filter((section) => section.title && section.items.length > 0)
+}
+
+function extractFeaturedServices(source) {
+  const arrayContent = extractFieldBlock(source, 'featuredServices', '[', ']')
+  if (!arrayContent) {
+    return []
+  }
+
+  return extractObjectBlocks(arrayContent)
+    .map((block) => ({
+      label: extractStringField(block, 'label'),
+      to: extractStringField(block, 'to'),
+      description: extractStringField(block, 'description'),
+    }))
+    .filter((service) => service.label && service.to)
 }
 
 async function fetchLiveProducts() {
@@ -354,7 +1231,7 @@ function buildCollectionJsonLd(route) {
   return {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    url: toAbsoluteUrl(route.canonicalPath),
+    url: toAbsoluteUrl(normalizeCanonicalPath(route.canonicalPath)),
     name: route.title,
     description: route.description,
   }
@@ -382,7 +1259,7 @@ function buildArticleJsonLd(route) {
         url: DEFAULT_IMAGE,
       },
     },
-    mainEntityOfPage: toAbsoluteUrl(route.canonicalPath),
+    mainEntityOfPage: toAbsoluteUrl(normalizeCanonicalPath(route.canonicalPath)),
   }
 }
 
@@ -391,29 +1268,51 @@ async function readSourceFile(fileName) {
 }
 
 function extractServiceRoutes(serviceCatalogSource) {
-  const pattern = /^\s{2}(?:'([^']+)'|([a-z-]+)):\s*\{\s*[\r\n\s]*slug:\s*'((?:\\'|[^'])+)'[\s\S]*?title:\s*'((?:\\'|[^'])+)'[\s\S]*?description:\s*'((?:\\'|[^'])+)'/gm
+  const scopedSource = extractCatalogSlice(serviceCatalogSource, 'export const serviceCatalog', 'const serviceAliases')
+  const pattern = /^\s{2}(?:'([^']+)'|([a-z-]+)):\s*\{([\s\S]*?)^\s{2}\},?/gm
   const routes = []
 
-  for (const match of serviceCatalogSource.matchAll(pattern)) {
-    const slug = decodeSingleQuotedString(match[3])
-    const title = decodeSingleQuotedString(match[4])
-    const description = decodeSingleQuotedString(match[5])
+  for (const match of scopedSource.matchAll(pattern)) {
+    const block = match[3]
+    const slug = extractStringField(block, 'slug')
+    const title = extractStringField(block, 'title')
+    const description = extractStringField(block, 'description')
 
-    routes.push({ slug, title, description })
+    routes.push({
+      slug,
+      title,
+      description,
+      heroTitle: extractStringField(block, 'heroTitle'),
+      heroDescription: extractStringField(block, 'heroDescription'),
+      highlights: extractStringArrayField(block, 'highlights'),
+      detailSections: extractDetailSections(block),
+      cardDescription: extractStringField(block, 'cardDescription'),
+    })
   }
 
   return routes
 }
 
 function extractAreaRoutes(areaCatalogSource) {
-  const pattern = /^\s{2}(?:'([^']+)'|([a-z-]+)):\s*\{\s*[\r\n\s]*slug:\s*'((?:\\'|[^'])+)'[\s\S]*?metaTitle:\s*'((?:\\'|[^'])+)'[\s\S]*?description:\s*'((?:\\'|[^'])+)'/gm
+  const scopedSource = extractCatalogSlice(areaCatalogSource, 'export const areaCatalog', 'export const areaCatalogList')
+  const pattern = /^\s{2}(?:'([^']+)'|([a-z-]+)):\s*\{([\s\S]*?)^\s{2}\},?/gm
   const routes = []
 
-  for (const match of areaCatalogSource.matchAll(pattern)) {
+  for (const match of scopedSource.matchAll(pattern)) {
+    const block = match[3]
     routes.push({
-      slug: decodeSingleQuotedString(match[3]),
-      metaTitle: decodeSingleQuotedString(match[4]),
-      description: decodeSingleQuotedString(match[5]),
+      slug: extractStringField(block, 'slug'),
+      name: extractStringField(block, 'name'),
+      badge: extractStringField(block, 'badge'),
+      title: extractStringField(block, 'title'),
+      metaTitle: extractStringField(block, 'metaTitle'),
+      description: extractStringField(block, 'description'),
+      heroDescription: extractStringField(block, 'heroDescription'),
+      travelNote: extractStringField(block, 'travelNote'),
+      localSummary: extractStringField(block, 'localSummary'),
+      nearbyCommunities: extractStringArrayField(block, 'nearbyCommunities'),
+      advantages: extractStringArrayField(block, 'advantages'),
+      featuredServices: extractFeaturedServices(block),
     })
   }
 
@@ -421,16 +1320,19 @@ function extractAreaRoutes(areaCatalogSource) {
 }
 
 function extractBlogRoutes(blogCatalogSource) {
-  const pattern = /^\s{2}\{\s*[\r\n\s]*title:\s*'((?:\\'|[^'])+)'[\s\S]*?slug:\s*'((?:\\'|[^'])+)'[\s\S]*?seoDescription:\s*'((?:\\'|[^'])+)'[\s\S]*?imageUrl:\s*blogMedia\('((?:\\'|[^'])+)'\)[\s\S]*?publishedAt:\s*'((?:\\'|[^'])+)'/gm
+  const pattern = /^\s{2}\{\s*[\r\n\s]*title:\s*'((?:\\'|[^'])+)'[\s\S]*?slug:\s*'((?:\\'|[^'])+)'[\s\S]*?excerpt:\s*'((?:\\'|[^'])+)'[\s\S]*?seoDescription:\s*'((?:\\'|[^'])+)'[\s\S]*?category:\s*'((?:\\'|[^'])+)'[\s\S]*?imageUrl:\s*blogMedia\('((?:\\'|[^'])+)'\)[\s\S]*?publishedAt:\s*'((?:\\'|[^'])+)'[\s\S]*?bodyHtml:\s*`([\s\S]*?)`\s*,?\s*\}/gm
   const routes = []
 
   for (const match of blogCatalogSource.matchAll(pattern)) {
     routes.push({
       title: decodeSingleQuotedString(match[1]),
       slug: decodeSingleQuotedString(match[2]),
-      description: decodeSingleQuotedString(match[3]),
-      imageFile: decodeSingleQuotedString(match[4]),
-      publishedAt: decodeSingleQuotedString(match[5]),
+      excerpt: decodeSingleQuotedString(match[3]),
+      description: decodeSingleQuotedString(match[4]),
+      category: decodeSingleQuotedString(match[5]),
+      imageFile: decodeSingleQuotedString(match[6]),
+      publishedAt: decodeSingleQuotedString(match[7]),
+      bodyHtml: match[8].trim(),
     })
   }
 
@@ -673,6 +1575,7 @@ const canonicalRoutes = [
     ogType: 'article',
     articleTitle: entry.title,
     publishedAt: entry.publishedAt,
+    rootHtml: buildBlogArticleSnapshot(entry),
     jsonLd: buildArticleJsonLd({
       title: `${entry.title} | PZM Blog`,
       articleTitle: entry.title,
@@ -684,9 +1587,84 @@ const canonicalRoutes = [
   })),
 ]
 
+const serviceEntryMap = new Map(serviceEntries.map((entry) => [entry.slug, entry]))
+const areaEntryMap = new Map(areaEntries.map((entry) => [entry.slug, entry]))
+
+for (const route of canonicalRoutes) {
+  const normalizedCanonicalPath = normalizeCanonicalPath(route.canonicalPath || route.path)
+
+  if (normalizedCanonicalPath === '/') {
+    route.rootHtml = buildHomeSnapshot(serviceEntries, areaEntries, blogEntries)
+    continue
+  }
+
+  if (normalizedCanonicalPath === '/services/') {
+    route.rootHtml = buildServicesIndexSnapshot(serviceEntries)
+    continue
+  }
+
+  if (normalizedCanonicalPath === '/areas/') {
+    route.rootHtml = buildAreasIndexSnapshot(areaEntries)
+    continue
+  }
+
+  if (normalizedCanonicalPath === '/terms/') {
+    route.rootHtml = buildLegalSnapshot({
+      eyebrow: 'Store policy',
+      title: 'Terms & Conditions',
+      intro: 'Read the terms and conditions for ordering, payment, delivery, warranty, and returns at PZM Computers & Phones Store in Dubai.',
+      lastUpdated: 'March 24, 2026',
+      sections: termsSnapshotSections,
+    })
+    continue
+  }
+
+  if (normalizedCanonicalPath === '/return-policy/') {
+    route.rootHtml = buildLegalSnapshot({
+      eyebrow: 'Store policy',
+      title: 'Return & Refund Policy',
+      intro: 'Read the return and refund policy for products purchased from the store in Al Barsha or delivered across the UAE.',
+      lastUpdated: 'March 24, 2026',
+      sections: returnPolicySnapshotSections,
+    })
+    continue
+  }
+
+  if (normalizedCanonicalPath.startsWith('/areas/')) {
+    const areaSlug = normalizedCanonicalPath.replace('/areas/', '').replace(/\/$/, '')
+    const areaEntry = areaEntryMap.get(areaSlug)
+
+    if (areaEntry) {
+      route.rootHtml = buildAreaSnapshot(areaEntry)
+    }
+
+    continue
+  }
+
+  if (normalizedCanonicalPath.startsWith('/services/')) {
+    const serviceSlug = normalizedCanonicalPath.replace('/services/', '').replace(/\/$/, '')
+
+    if (!['brand-new', 'secondhand', 'buy-iphone'].includes(serviceSlug)) {
+      const serviceEntry = serviceEntryMap.get(serviceSlug)
+
+      if (serviceEntry) {
+        route.rootHtml = buildServiceSnapshot(serviceEntry)
+      }
+    }
+  }
+}
+
+const blogIndexRootHtml = buildBlogIndexSnapshot(blogEntries)
+
+for (const route of canonicalRoutes) {
+  if (route.path === '/blog') {
+    route.rootHtml = blogIndexRootHtml
+  }
+}
+
 const canonicalRouteMap = new Map(canonicalRoutes.map((route) => [normalizeCanonicalPath(route.canonicalPath || route.path), route]))
 const blogRoute = canonicalRouteMap.get('/blog/')
-const secondhandRoute = canonicalRouteMap.get('/services/secondhand')
+const secondhandRoute = canonicalRouteMap.get('/services/secondhand/')
 
 // NOTE: .html aliases removed for routes that have canonical clean-URL prerendered
 // pages. Cloudflare Pages Pretty URLs resolves /path to path.html, which would
@@ -703,18 +1681,20 @@ const aliasRoutes = [
   {
     ...secondhandRoute,
     path: '/services/buy-used',
-    canonicalPath: '/services/secondhand',
+    canonicalPath: '/services/secondhand/',
     robots: 'noindex, follow',
   },
   {
     ...secondhandRoute,
     path: '/services/buy-used.html',
-    canonicalPath: '/services/secondhand',
+    canonicalPath: '/services/secondhand/',
     robots: 'noindex, follow',
   },
 ]
 
 const liveProducts = await fetchLiveProducts()
+
+const buyIphoneSnapshotHtml = buildBuyIphoneSnapshot(liveProducts)
 
 if (liveProducts.length > 0) {
   const brandNewSnapshotHtml = buildBrandNewSnapshot(liveProducts)
@@ -723,14 +1703,27 @@ if (liveProducts.length > 0) {
   for (const route of [...canonicalRoutes, ...aliasRoutes]) {
     const normalizedCanonicalPath = normalizeCanonicalPath(route.canonicalPath || route.path)
 
-    if (normalizedCanonicalPath === '/services/brand-new') {
+    if (normalizedCanonicalPath === '/services/buy-iphone/') {
+      route.rootHtml = buyIphoneSnapshotHtml
+      route.preloadedProducts = liveProducts
+    }
+
+    if (normalizedCanonicalPath === '/services/brand-new/') {
       route.rootHtml = brandNewSnapshotHtml
       route.preloadedProducts = liveProducts
     }
 
-    if (normalizedCanonicalPath === '/services/secondhand') {
+    if (normalizedCanonicalPath === '/services/secondhand/') {
       route.rootHtml = secondhandSnapshotHtml
       route.preloadedProducts = liveProducts
+    }
+  }
+} else {
+  for (const route of [...canonicalRoutes, ...aliasRoutes]) {
+    const normalizedCanonicalPath = normalizeCanonicalPath(route.canonicalPath || route.path)
+
+    if (normalizedCanonicalPath === '/services/buy-iphone/') {
+      route.rootHtml = buyIphoneSnapshotHtml
     }
   }
 }

@@ -262,7 +262,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
                 />
                 <label className="text-sm text-brandTextDark">
                   I have read and accept the{' '}
-                  <a href="/terms" target="_blank" className="text-primary hover:underline font-semibold">
+                  <a href="/terms/" target="_blank" className="text-primary hover:underline font-semibold">
                     Terms & Conditions
                   </a>{' '}* (includes our refund policy)
                 </label>

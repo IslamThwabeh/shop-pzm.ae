@@ -1,7 +1,11 @@
+import { normalizeSitePath } from '../utils/siteConfig'
+
 export interface NavigationLink {
   label: string
   to: string
 }
+
+const page = normalizeSitePath
 
 export const siteIdentity = {
   name: 'PZM Computers & Phones Store',
@@ -22,42 +26,42 @@ export const siteContact = {
   addressLine1: 'Hessa Street Branch',
   addressLine2: 'Inside Hessa Union Coop Hypermarket, Ground Floor',
   cityLine: 'Al Barsha, Dubai, UAE',
-  blogHref: '/blog/',
+  blogHref: page('/blog'),
 }
 
 export const serviceNavigationLinks: NavigationLink[] = [
-  { label: 'Buy iPhone', to: '/services/buy-iphone' },
-  { label: 'New Devices', to: '/services/brand-new' },
-  { label: 'Used Devices', to: '/services/secondhand' },
-  { label: 'Repair Services', to: '/services/repair' },
-  { label: 'Gaming PC', to: '/services/gaming-pc' },
-  { label: 'Sell Devices', to: '/services/sell-gadgets' },
-  { label: 'Accessories', to: '/services/accessories' },
-  { label: 'Website Design', to: '/services/web-design' },
+  { label: 'Buy iPhone', to: page('/services/buy-iphone') },
+  { label: 'New Devices', to: page('/services/brand-new') },
+  { label: 'Used Devices', to: page('/services/secondhand') },
+  { label: 'Repair Services', to: page('/services/repair') },
+  { label: 'Gaming PC', to: page('/services/gaming-pc') },
+  { label: 'Sell Devices', to: page('/services/sell-gadgets') },
+  { label: 'Accessories', to: page('/services/accessories') },
+  { label: 'Website Design', to: page('/services/web-design') },
 ]
 
 export const areaNavigationLinks: NavigationLink[] = [
-  { label: 'Al Barsha', to: '/areas/al-barsha' },
-  { label: 'Al Quoz', to: '/areas/al-quoz' },
-  { label: 'Dubai Marina', to: '/areas/dubai-marina' },
-  { label: 'Emirates Hills', to: '/areas/emirates-hills' },
-  { label: 'JBR', to: '/areas/jbr' },
-  { label: 'Jumeirah', to: '/areas/jumeirah' },
-  { label: 'Jumeirah Village', to: '/areas/jumeirah-village' },
-  { label: 'Tecom', to: '/areas/tecom' },
+  { label: 'Al Barsha', to: page('/areas/al-barsha') },
+  { label: 'Al Quoz', to: page('/areas/al-quoz') },
+  { label: 'Dubai Marina', to: page('/areas/dubai-marina') },
+  { label: 'Emirates Hills', to: page('/areas/emirates-hills') },
+  { label: 'JBR', to: page('/areas/jbr') },
+  { label: 'Jumeirah', to: page('/areas/jumeirah') },
+  { label: 'Jumeirah Village', to: page('/areas/jumeirah-village') },
+  { label: 'Tecom', to: page('/areas/tecom') },
 ]
 
 export const policyNavigationLinks: NavigationLink[] = [
-  { label: 'Return Policy', to: '/return-policy' },
-  { label: 'Terms', to: '/terms' },
+  { label: 'Return Policy', to: page('/return-policy') },
+  { label: 'Terms', to: page('/terms') },
 ]
 
 export const footerQuickLinks: NavigationLink[] = [
   { label: 'Home', to: '/' },
-  { label: 'Repair', to: '/services/repair' },
-  { label: 'Shop', to: '/services/brand-new' },
-  { label: 'PC Build', to: '/services/gaming-pc' },
-  { label: 'Blog', to: '/blog/' },
-  { label: 'Return Policy', to: '/return-policy' },
-  { label: 'Terms', to: '/terms' },
+  { label: 'Repair', to: page('/services/repair') },
+  { label: 'Shop', to: page('/services/brand-new') },
+  { label: 'PC Build', to: page('/services/gaming-pc') },
+  { label: 'Blog', to: page('/blog') },
+  { label: 'Return Policy', to: page('/return-policy') },
+  { label: 'Terms', to: page('/terms') },
 ]

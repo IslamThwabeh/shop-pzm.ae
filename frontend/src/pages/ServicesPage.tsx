@@ -24,7 +24,7 @@ export default function ServicesPage() {
         {serviceCatalogList.map((service) => (
           <Link
             key={service.slug}
-            to={`/services/${service.slug}`}
+            to={`/services/${service.slug}/`}
             className="group flex flex-col items-center rounded-[24px] border border-brandBorder bg-white p-5 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
           >
             <div className="retail-card-media mb-4 w-full overflow-hidden rounded-[16px]">

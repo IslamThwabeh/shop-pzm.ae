@@ -1,8 +1,12 @@
+import { normalizeSitePath } from '../utils/siteConfig'
+
 export interface AreaServiceLink {
   label: string
   to: string
   description: string
 }
+
+const page = normalizeSitePath
 
 export interface AreaCatalogEntry {
   slug: string
@@ -24,22 +28,22 @@ export interface AreaCatalogEntry {
 const standardFeaturedServices: AreaServiceLink[] = [
   {
     label: 'Buy iPhone',
-    to: '/services/buy-iphone',
+    to: page('/services/buy-iphone'),
     description: 'iPhone models and ordering.',
   },
   {
     label: 'Repair Services',
-    to: '/services/repair',
+    to: page('/services/repair'),
     description: 'Repairs, drop-off, and pickup.',
   },
   {
     label: 'Sell Your Device',
-    to: '/services/sell-gadgets',
+    to: page('/services/sell-gadgets'),
     description: 'Trade-in and sell-device quotes.',
   },
   {
     label: 'Gaming PC Builds',
-    to: '/services/gaming-pc',
+    to: page('/services/gaming-pc'),
     description: 'Custom gaming and workstation builds.',
   },
 ]

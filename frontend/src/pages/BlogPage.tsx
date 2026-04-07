@@ -38,7 +38,7 @@ export default function BlogPage() {
       {featuredPost && (
         <section className="grid gap-6 lg:grid-cols-[1.1fr,0.9fr] lg:items-stretch">
           <Link
-            to={`/blog/${featuredPost.slug}`}
+            to={`/blog/${featuredPost.slug}/`}
             className="overflow-hidden rounded-[30px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
           >
             <div className="relative h-44 overflow-hidden sm:h-52 md:h-60">
@@ -66,7 +66,7 @@ export default function BlogPage() {
             {otherPosts.slice(0, 3).map((post) => (
               <Link
                 key={post.slug}
-                to={`/blog/${post.slug}`}
+                to={`/blog/${post.slug}/`}
                 className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
               >
                 <div className="relative h-32 overflow-hidden sm:h-36">
@@ -99,7 +99,7 @@ export default function BlogPage() {
         {blogPostsNewestFirst.map((post) => (
           <Link
             key={post.slug}
-            to={`/blog/${post.slug}`}
+            to={`/blog/${post.slug}/`}
             className="overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
           >
             <div className="relative h-36 overflow-hidden sm:h-40 md:h-44">

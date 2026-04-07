@@ -1,4 +1,4 @@
-import { buildApiUrl } from '../utils/siteConfig'
+import { buildApiUrl, normalizeSitePath } from '../utils/siteConfig'
 
 export interface HomeServiceCard {
   emoji: string
@@ -44,13 +44,14 @@ export interface HomeFaqItem {
 
 const generatedServiceMedia = (path: string) => buildApiUrl(`/media/generated/services/${path}`)
 const blogMedia = (filename: string) => buildApiUrl(`/media/blog/${filename}`)
+const page = normalizeSitePath
 
 export const homeServiceCards: HomeServiceCard[] = [
   {
     emoji: '🔧',
     title: 'Repair Services',
     description: 'Expert device repair and maintenance',
-    to: '/services/repair',
+    to: page('/services/repair'),
     cta: 'Learn more',
     accentClassName: 'from-amber-100 to-orange-50',
     imageUrl: generatedServiceMedia('repair/repair-services.webp'),
@@ -61,7 +62,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     emoji: '🛍️',
     title: 'New Devices',
     description: 'Latest smartphones, laptops, and accessories',
-    to: '/services/brand-new',
+    to: page('/services/brand-new'),
     cta: 'Browse new devices',
     accentClassName: 'from-sky-100 to-cyan-50',
     imageUrl: generatedServiceMedia('brand-new/brand-new-service.webp'),
@@ -72,7 +73,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     emoji: '✅',
     title: 'Used Devices',
     description: 'Quality checked pre-owned devices',
-    to: '/services/secondhand',
+    to: page('/services/secondhand'),
     cta: 'Browse used devices',
     accentClassName: 'from-emerald-100 to-green-50',
     imageUrl: generatedServiceMedia('secondhand/secondhand-service.webp'),
@@ -83,7 +84,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     emoji: '🖥️',
     title: 'Gaming PC',
     description: 'Custom gaming PC builds',
-    to: '/services/gaming-pc',
+    to: page('/services/gaming-pc'),
     cta: 'Start building',
     accentClassName: 'from-violet-100 to-purple-50',
     imageUrl: generatedServiceMedia('gaming-pc/gaming-pc-builds-service.webp'),
@@ -94,7 +95,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     emoji: '📱',
     title: 'Buy iPhone',
     description: 'iPhone 17 series in all colors — Cash on Delivery',
-    to: '/services/buy-iphone',
+    to: page('/services/buy-iphone'),
     cta: 'View iPhones',
     accentClassName: 'from-pink-100 to-rose-50',
     imageUrl: generatedServiceMedia('buy-iphone/buy-iphone-service.webp'),
@@ -105,7 +106,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     emoji: '💰',
     title: 'Sell Devices',
     description: 'Get the best price for your devices',
-    to: '/services/sell-gadgets',
+    to: page('/services/sell-gadgets'),
     cta: 'Get a quote',
     accentClassName: 'from-yellow-100 to-lime-50',
     imageUrl: generatedServiceMedia('sell-gadgets/sell-devices-service.webp'),
@@ -116,7 +117,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     emoji: '🎧',
     title: 'Accessories',
     description: 'Wide range of genuine accessories',
-    to: '/services/accessories',
+    to: page('/services/accessories'),
     cta: 'Shop accessories',
     accentClassName: 'from-indigo-100 to-blue-50',
     imageUrl: generatedServiceMedia('accessories/accessories-service.webp'),
@@ -127,7 +128,7 @@ export const homeServiceCards: HomeServiceCard[] = [
     emoji: '🌐',
     title: 'Website Design',
     description: 'Professional, mobile-friendly websites',
-    to: '/services/web-design',
+    to: page('/services/web-design'),
     cta: 'See what is included',
     accentClassName: 'from-lime-100 to-emerald-50',
     imageUrl: generatedServiceMedia('web-design/website-design-service.webp'),
@@ -140,7 +141,7 @@ export const homeFeaturedCategories: HomeFeaturedCategory[] = [
     tag: 'Brand New',
     title: 'Latest Devices',
     description: 'iPhones, Samsung, MacBooks, and gaming consoles with official warranty and fast support from the Hessa Street branch.',
-    to: '/services/brand-new',
+    to: page('/services/brand-new'),
     imageUrl: generatedServiceMedia('brand-new/brand-new-service.webp'),
     badgeClassName: 'bg-emerald-100 text-emerald-700',
   },
@@ -148,7 +149,7 @@ export const homeFeaturedCategories: HomeFeaturedCategory[] = [
     tag: 'Certified Used',
     title: 'Pre-Owned Devices',
     description: 'Certified used phones, laptops, tablets, and gaming PCs with clear grading, testing, and warranty support.',
-    to: '/services/secondhand',
+    to: page('/services/secondhand'),
     imageUrl: generatedServiceMedia('secondhand/secondhand-service.webp'),
     badgeClassName: 'bg-amber-100 text-amber-700',
   },
@@ -182,7 +183,7 @@ export const homeBlogTeasers: HomeBlogTeaser[] = [
     tag: 'Market',
     title: 'Gold Prices Hit Record Highs — What It Means for Tech Buyers in Dubai',
     description: 'How rising gold prices affect smartphone, laptop, and PC buying decisions in Dubai during 2026.',
-    href: '/blog/gold-record-highs-tech-buyers-dubai-2026',
+    href: page('/blog/gold-record-highs-tech-buyers-dubai-2026'),
     date: 'March 28, 2026',
     themeClassName: 'from-amber-200 via-orange-100 to-white',
     imageUrl: blogMedia('pexels-photo-610525.jpeg'),
@@ -191,7 +192,7 @@ export const homeBlogTeasers: HomeBlogTeaser[] = [
     tag: 'Market',
     title: 'How US Tariffs in 2026 Are Changing Electronics Prices in Dubai',
     description: 'A practical explanation of how global pricing pressure affects local iPhone, laptop, and gaming PC offers.',
-    href: '/blog/us-tariffs-2026-electronics-prices-dubai',
+    href: page('/blog/us-tariffs-2026-electronics-prices-dubai'),
     date: 'March 28, 2026',
     themeClassName: 'from-sky-200 via-cyan-100 to-white',
     imageUrl: blogMedia('pexels-photo-3943716.jpeg'),
@@ -200,7 +201,7 @@ export const homeBlogTeasers: HomeBlogTeaser[] = [
     tag: 'Guide',
     title: 'The Smart Buyer\'s Guide to Used Laptops in Dubai (2026)',
     description: 'What to check, which models to target, and how to buy used laptops with more confidence in Dubai.',
-    href: '/blog/ultimate-guide-buying-used-laptops',
+    href: page('/blog/ultimate-guide-buying-used-laptops'),
     date: 'March 28, 2026',
     themeClassName: 'from-emerald-200 via-green-100 to-white',
     imageUrl: blogMedia('pexels-photo.jpg'),

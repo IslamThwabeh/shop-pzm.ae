@@ -29,7 +29,7 @@ export default function ServicePage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Service page not found</h1>
         <p className="text-brandTextMedium mb-6">The service page you requested is not available right now. You can browse the current services below.</p>
         <Link
-          to="/services"
+          to="/services/"
           className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
         >
           Back to Services
@@ -49,7 +49,7 @@ export default function ServicePage() {
       />
 
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        <Link to="/services" className="text-primary font-semibold hover:underline">
+        <Link to="/services/" className="text-primary font-semibold hover:underline">
           ← Back to services
         </Link>
         <div className="flex gap-3 flex-wrap">

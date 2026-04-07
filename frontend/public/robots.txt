@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Allow: /api/media/
 
 # Do not index sensitive or transactional routes
 Disallow: /cart

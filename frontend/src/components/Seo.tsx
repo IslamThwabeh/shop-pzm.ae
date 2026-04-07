@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async'
-import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
+import { buildCanonicalUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 interface SeoProps {
   title: string
@@ -21,7 +21,7 @@ export default function Seo({
   noindex = false,
   jsonLd,
 }: SeoProps) {
-  const canonicalUrl = buildSiteUrl(canonicalPath)
+  const canonicalUrl = buildCanonicalUrl(canonicalPath)
   const robots = noindex ? 'noindex, nofollow' : 'index, follow'
   const ogImage = imageUrl ? toAbsoluteSiteUrl(imageUrl) : DEFAULT_IMAGE
 

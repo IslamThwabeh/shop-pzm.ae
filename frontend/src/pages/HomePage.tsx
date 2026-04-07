@@ -17,7 +17,7 @@ import {
   homeTrustCards,
 } from '../content/homePageContent'
 import { siteContact, siteIdentity } from '../content/siteData'
-import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
+import { buildCanonicalUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 type SectionHeaderProps = {
   badge: string
@@ -111,7 +111,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
     name: siteIdentity.name,
     description:
       'Buy, sell, fix, and build with PZM in Al Barsha, Dubai. New and used iPhones, MacBooks, gaming PCs, repairs, accessories, and local service support.',
-    url: buildSiteUrl('/'),
+    url: buildCanonicalUrl('/'),
     telephone: '+971528026677',
     address: {
       '@type': 'PostalAddress',
@@ -166,7 +166,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
               Shop Now
             </button>
             <Link
-              to="/services/repair"
+              to="/services/repair/"
               className="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-7 py-4 text-base font-semibold text-slate-900 transition-colors hover:border-primary hover:text-primary sm:w-auto sm:max-w-none"
             >
               <Wrench size={18} />

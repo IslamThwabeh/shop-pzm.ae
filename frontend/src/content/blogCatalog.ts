@@ -1,4 +1,4 @@
-import { buildApiUrl } from '../utils/siteConfig'
+import { buildApiUrl, normalizeSitePath } from '../utils/siteConfig'
 
 export interface BlogServiceLink {
   label: string
@@ -19,8 +19,20 @@ export interface BlogPostEntry {
 }
 
 const blogMedia = (filename: string) => buildApiUrl(`/media/blog/${filename}`)
+const page = normalizeSitePath
 
-export const blogPosts: BlogPostEntry[] = [
+function normalizeBlogBodyHtml(bodyHtml: string) {
+  return bodyHtml.replace(/href="(\/[^\"]*)"/g, (_, href: string) => `href="${page(href)}"`)
+}
+
+function normalizeBlogServiceLinks(links: BlogServiceLink[]) {
+  return links.map((link) => ({
+    ...link,
+    to: page(link.to),
+  }))
+}
+
+const rawBlogPosts: BlogPostEntry[] = [
   {
     title: 'Gold Prices Hit Record Highs - What It Means for Tech Buyers in Dubai (2026)',
     slug: 'gold-record-highs-tech-buyers-dubai-2026',
@@ -365,6 +377,12 @@ export const blogPosts: BlogPostEntry[] = [
       <p>Price movement will likely remain model-specific rather than uniform. That makes guided decisions and better route planning even more valuable for buyers in 2026.</p>`,
   },
 ]
+
+export const blogPosts: BlogPostEntry[] = rawBlogPosts.map((post) => ({
+  ...post,
+  bodyHtml: normalizeBlogBodyHtml(post.bodyHtml),
+  relatedServiceLinks: normalizeBlogServiceLinks(post.relatedServiceLinks),
+}))
 
 export const blogPostsNewestFirst = [...blogPosts].sort(
   (left, right) => Date.parse(right.publishedAt) - Date.parse(left.publishedAt)
