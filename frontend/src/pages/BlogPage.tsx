@@ -1,6 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
+import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
 import { blogPostsNewestFirst } from '../content/blogCatalog'
 
@@ -42,7 +42,7 @@ export default function BlogPage() {
             className="overflow-hidden rounded-[30px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
           >
             <div className="relative h-44 overflow-hidden sm:h-52 md:h-60">
-              <RetailMediaPlaceholder name={featuredPost.category} variant="article" />
+              <RetailImage src={featuredPost.imageUrl} alt={featuredPost.title} name={featuredPost.title} variant="article" className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-transparent" />
               <div className={`absolute inset-0 bg-gradient-to-br ${featuredPost.themeClassName} opacity-25`} />
               <div className="absolute inset-x-0 top-0 p-8">
@@ -70,7 +70,7 @@ export default function BlogPage() {
                 className="overflow-hidden rounded-[24px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
               >
                 <div className="relative h-32 overflow-hidden sm:h-36">
-                  <RetailMediaPlaceholder name={post.category} variant="article" />
+                  <RetailImage src={post.imageUrl} alt={post.title} name={post.title} variant="article" className="h-full w-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-slate-950/15 to-transparent" />
                   <div className={`absolute inset-0 bg-gradient-to-br ${post.themeClassName} opacity-20`} />
                   <div className="absolute inset-x-0 top-0 p-5">
@@ -103,7 +103,7 @@ export default function BlogPage() {
             className="overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
           >
             <div className="relative h-36 overflow-hidden sm:h-40 md:h-44">
-              <RetailMediaPlaceholder name={post.category} variant="article" />
+              <RetailImage src={post.imageUrl} alt={post.title} name={post.title} variant="article" className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent" />
               <div className={`absolute inset-0 bg-gradient-to-br ${post.themeClassName} opacity-20`} />
               <div className="absolute inset-x-0 top-0 p-6">

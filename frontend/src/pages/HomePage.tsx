@@ -5,12 +5,14 @@ import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
 import FaqAccordion from '../components/FaqAccordion'
 import CategoryCard from '../components/CategoryCard'
+import RetailImage from '../components/RetailImage'
 import TestimonialCards from '../components/TestimonialCards'
 import {
   homeCategoryCards,
   homeFaqItems,
   homeTrustCards,
 } from '../content/homePageContent'
+import { blogPostsNewestFirst } from '../content/blogCatalog'
 import { siteContact, siteIdentity } from '../content/siteData'
 import { buildCanonicalUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
@@ -159,6 +161,50 @@ export default function HomePage({ onShopClick }: HomePageProps) {
           <h2 className="text-center text-2xl font-bold text-slate-900">Customer Reviews</h2>
           <div className="mt-10">
             <TestimonialCards />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Blog ─────────────────────────────────────── */}
+      <section className="reveal-on-scroll border-t border-[#eee] px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="text-center text-2xl font-bold text-slate-900">Latest from the Blog</h2>
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            {blogPostsNewestFirst.slice(0, 2).map((post) => (
+              <Link
+                key={post.slug}
+                to={`/blog/${post.slug}/`}
+                className="group overflow-hidden rounded-[28px] border border-brandBorder bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+              >
+                <div className="relative h-36 overflow-hidden sm:h-40">
+                  <RetailImage src={post.imageUrl} alt={post.title} name={post.title} variant="article" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent" />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${post.themeClassName} opacity-20`} />
+                  <div className="absolute inset-x-0 top-0 p-5">
+                    <span className="inline-flex rounded-full bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-700 shadow-sm">
+                      {post.category}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">
+                    {new Date(`${post.publishedAt}T00:00:00`).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </p>
+                  <h3 className="mt-3 text-xl font-bold leading-8 text-slate-950">{post.title}</h3>
+                  <p className="mt-3 line-clamp-2 text-sm leading-7 text-brandTextMedium">{post.excerpt}</p>
+                  <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+                    Read article
+                    <ArrowRight size={16} />
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className="mt-10 text-center">
+            <Link to="/blog/" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+              View all articles
+              <ArrowRight size={16} />
+            </Link>
           </div>
         </div>
       </section>

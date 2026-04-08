@@ -1,6 +1,6 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router-dom'
-import RetailMediaPlaceholder from '../components/RetailMediaPlaceholder'
+import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
 import { getRelatedBlogPosts, resolveBlogPost } from '../content/blogCatalog'
 import { buildCanonicalUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
@@ -96,7 +96,7 @@ export default function BlogPostPage() {
 
       <article className="overflow-hidden rounded-[32px] border border-brandBorder bg-white shadow-sm">
         <div className="relative h-44 overflow-hidden sm:h-52 md:h-64">
-          <RetailMediaPlaceholder name={post.category} variant="article" />
+          <RetailImage src={post.imageUrl} alt={post.title} name={post.title} variant="article" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/25 to-transparent" />
           <div className={`absolute inset-0 bg-gradient-to-br ${post.themeClassName} opacity-25`} />
           <div className="absolute inset-0 flex items-end p-6 md:p-8">
