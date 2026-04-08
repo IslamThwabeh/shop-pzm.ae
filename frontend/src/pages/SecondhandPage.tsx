@@ -2,14 +2,14 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { BatteryCharging, ChevronDown, RefreshCcw, ShieldCheck } from 'lucide-react'
 import type { Product } from '@shared/types'
-import BrandFilterChips from '../components/BrandFilterChips'
+import CatalogFilter from '../components/BrandFilterChips'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
 import ProductCard from '../components/ProductCard'
 import ProductDetailDrawer from '../components/ProductDetailDrawer'
 import ProductGrid from '../components/ProductGrid'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
-import { getSecondhandCategoryGroups, getSecondhandProducts, secondhandHero } from '../content/secondhandCatalog'
+import { getSecondhandCategoryGroups, getSecondhandProducts, secondhandCategories, secondhandHero } from '../content/secondhandCatalog'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 import { extractBrand } from '../utils/productPresentation'
@@ -23,6 +23,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
   const service = resolveServiceSlug('secondhand')
   const [drawerProduct, setDrawerProduct] = useState<Product | null>(null)
   const [appointmentOpen, setAppointmentOpen] = useState(false)
+  const [activeCategories, setActiveCategories] = useState<Set<string>>(new Set())
   const [activeBrands, setActiveBrands] = useState<Set<string>>(new Set())
 
   if (!service) {
@@ -32,13 +33,33 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
   const allSecondhandProducts = useMemo(() => getSecondhandProducts(products), [products])
 
   const filteredProducts = useMemo(() => {
-    if (activeBrands.size === 0) return products
-    return products.filter((p) => activeBrands.has(extractBrand(p.model)))
-  }, [products, activeBrands])
+    let result = products
+    if (activeCategories.size > 0) {
+      const activeCats = secondhandCategories.filter((c) => activeCategories.has(c.key))
+      result = result.filter((p) => {
+        const norm = p.model.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+        return activeCats.some((cat) => cat.matcher.test(norm))
+      })
+    }
+    if (activeBrands.size > 0) {
+      result = result.filter((p) => activeBrands.has(extractBrand(p.model)))
+    }
+    return result
+  }, [products, activeCategories, activeBrands])
 
   const liveSecondhandProducts = useMemo(() => getSecondhandProducts(filteredProducts), [filteredProducts])
   const categoryGroups = useMemo(() => getSecondhandCategoryGroups(filteredProducts), [filteredProducts])
   const liveCategoryGroups = categoryGroups.filter((group) => group.products.length > 0)
+
+  const toggleCategory = (key: string) => {
+    setActiveCategories((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+    setActiveBrands(new Set())
+  }
 
   const toggleBrand = (brand: string) => {
     setActiveBrands((prev) => {
@@ -119,7 +140,14 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
         )}
       </div>
 
-      <BrandFilterChips products={allSecondhandProducts} activeBrands={activeBrands} onToggle={toggleBrand} />
+      <CatalogFilter
+        categories={secondhandCategories}
+        products={allSecondhandProducts}
+        activeCategories={activeCategories}
+        activeBrands={activeBrands}
+        onToggleCategory={toggleCategory}
+        onToggleBrand={toggleBrand}
+      />
 
       <section id="secondhand-devices" className="space-y-8">
         {loading ? (

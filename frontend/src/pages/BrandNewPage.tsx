@@ -2,13 +2,13 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronDown, CreditCard, ShieldCheck, Truck } from 'lucide-react'
 import type { Product } from '@shared/types'
-import BrandFilterChips from '../components/BrandFilterChips'
+import CatalogFilter from '../components/BrandFilterChips'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
 import ProductGrid from '../components/ProductGrid'
 import VariantCard from '../components/VariantCard'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
-import { brandNewHero, getBrandNewCategoryGroups, getBrandNewProducts } from '../content/brandNewCatalog'
+import { brandNewCategories, brandNewHero, getBrandNewCategoryGroups, getBrandNewProducts } from '../content/brandNewCatalog'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 import { extractBrand, groupProductsByModelFamily } from '../utils/productPresentation'
@@ -21,6 +21,7 @@ interface BrandNewPageProps {
 export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
   const service = resolveServiceSlug('brand-new')
   const [appointmentOpen, setAppointmentOpen] = useState(false)
+  const [activeCategories, setActiveCategories] = useState<Set<string>>(new Set())
   const [activeBrands, setActiveBrands] = useState<Set<string>>(new Set())
 
   if (!service) {
@@ -30,14 +31,34 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
   const allBrandNewProducts = useMemo(() => getBrandNewProducts(products), [products])
 
   const filteredProducts = useMemo(() => {
-    if (activeBrands.size === 0) return products
-    return products.filter((p) => activeBrands.has(extractBrand(p.model)))
-  }, [products, activeBrands])
+    let result = products
+    if (activeCategories.size > 0) {
+      const activeCats = brandNewCategories.filter((c) => activeCategories.has(c.key))
+      result = result.filter((p) => {
+        const norm = p.model.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+        return activeCats.some((cat) => cat.matcher.test(norm))
+      })
+    }
+    if (activeBrands.size > 0) {
+      result = result.filter((p) => activeBrands.has(extractBrand(p.model)))
+    }
+    return result
+  }, [products, activeCategories, activeBrands])
 
   const liveBrandNewProducts = useMemo(() => getBrandNewProducts(filteredProducts), [filteredProducts])
   const categoryGroups = useMemo(() => getBrandNewCategoryGroups(filteredProducts), [filteredProducts])
   const liveCategoryGroups = categoryGroups.filter((group) => group.products.length > 0)
   const requestCategoryGroups = categoryGroups.filter((group) => group.products.length === 0)
+
+  const toggleCategory = (key: string) => {
+    setActiveCategories((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+    setActiveBrands(new Set())
+  }
 
   const toggleBrand = (brand: string) => {
     setActiveBrands((prev) => {
@@ -118,7 +139,14 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         )}
       </div>
 
-      <BrandFilterChips products={allBrandNewProducts} activeBrands={activeBrands} onToggle={toggleBrand} />
+      <CatalogFilter
+        categories={brandNewCategories}
+        products={allBrandNewProducts}
+        activeCategories={activeCategories}
+        activeBrands={activeBrands}
+        onToggleCategory={toggleCategory}
+        onToggleBrand={toggleBrand}
+      />
 
       <section id="brand-new-devices" className="space-y-8">
         {loading ? (
