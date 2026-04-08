@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { MessageCircle, ShoppingCart } from 'lucide-react'
 import type { Product } from '@shared/types'
-import { groupVariantsByColorAndStorage, getPrimaryProductImage } from '../utils/productPresentation'
+import { groupVariantsByColorAndStorage, getPrimaryProductImage, isPlaceholderColor } from '../utils/productPresentation'
 import RetailImage from './RetailImage'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { useCart } from '../context/CartContext'
@@ -18,7 +18,8 @@ interface Props {
 export default function VariantCard({ title, products, condition }: Props) {
   const group = groupVariantsByColorAndStorage(products)
   const { addItem } = useCart()
-  const [selectedColor, setSelectedColor] = useState(group.colors[0] ?? '')
+  const realColors = group.colors.filter((c) => !isPlaceholderColor(c))
+  const [selectedColor, setSelectedColor] = useState(realColors[0] ?? group.colors[0] ?? '')
   const [selectedStorage, setSelectedStorage] = useState(group.storages[0] ?? '')
 
   const activeProduct = group.getProduct(selectedColor, selectedStorage)
@@ -60,11 +61,11 @@ export default function VariantCard({ title, products, condition }: Props) {
         </div>
 
         {/* Color swatches */}
-        {group.colors.length > 0 && (
+        {group.colors.filter((c) => !isPlaceholderColor(c)).length > 0 && (
           <div>
             <p className="mb-1.5 text-[11px] font-medium text-slate-400">Color</p>
             <div className="flex flex-wrap gap-1.5">
-              {group.colors.map((color) => (
+              {group.colors.filter((c) => !isPlaceholderColor(c)).map((color) => (
                 <button
                   key={color}
                   type="button"

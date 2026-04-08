@@ -1210,6 +1210,7 @@ export default {
 
         const sinceIso = yesterday.toISOString();
         const counts = await db.getCountsSince(sinceIso);
+        const regionCounts = await db.getLeadCountsByRegion(sinceIso);
         const recentLeads = await db.getRecentWhatsAppLeads(sinceIso);
         const recentSRs = await db.getRecentServiceRequests(sinceIso);
 
@@ -1219,6 +1220,8 @@ export default {
           orders: counts.orders,
           serviceRequests: counts.serviceRequests,
           whatsappLeads: counts.whatsappLeads,
+          uaeLeads: regionCounts.uae,
+          nonUaeLeads: regionCounts.other,
           recentLeads,
           recentServiceRequests: recentSRs,
         });
@@ -1248,12 +1251,16 @@ export default {
           whatsappLeads: allSince.whatsappLeads - sinceThisMonth.whatsappLeads,
         };
 
+        const regionCounts = await db.getLeadCountsByRegion(firstOfLastMonth.toISOString(), firstOfThisMonth.toISOString());
+
         const monthLabel = firstOfLastMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
         await emailService.sendMonthlyReport({
           month: monthLabel,
           orders: counts.orders,
           serviceRequests: counts.serviceRequests,
           whatsappLeads: counts.whatsappLeads,
+          uaeLeads: regionCounts.uae,
+          nonUaeLeads: regionCounts.other,
         });
         console.log(`Monthly report sent for ${monthLabel}`);
       } catch (error) {

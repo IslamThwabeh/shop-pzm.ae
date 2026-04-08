@@ -255,6 +255,7 @@ export default function WhatsAppLeadManagement({ onUnauthorized }: WhatsAppLeadM
                 <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Type</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Item</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Price</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Location</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Status</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Created</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Action</th>
@@ -275,6 +276,18 @@ export default function WhatsAppLeadManagement({ onUnauthorized }: WhatsAppLeadM
                   </td>
                   <td className="px-6 py-4 text-sm text-brandTextDark">
                     {lead.reference_price != null ? `AED ${lead.reference_price.toLocaleString()}` : '—'}
+                  </td>
+                  <td className="px-6 py-4 text-sm">
+                    {lead.country ? (
+                      <span className="flex items-center gap-1.5">
+                        <span className="text-brandTextDark">{[lead.city, lead.country].filter(Boolean).join(', ')}</span>
+                        {lead.country === 'AE' ? (
+                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">UAE</span>
+                        ) : (
+                          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">Outside UAE</span>
+                        )}
+                      </span>
+                    ) : '—'}
                   </td>
                   <td className="px-6 py-4 text-sm">
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusBadgeClass(lead.status)}`}>

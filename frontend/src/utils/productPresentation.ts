@@ -23,6 +23,12 @@ function cleanText(value: string) {
     .trim()
 }
 
+const placeholderColors = new Set(['contact us', 'color options', 'various options'])
+
+export function isPlaceholderColor(color: string) {
+  return placeholderColors.has(color.toLowerCase())
+}
+
 export function sanitizeProductColor(color?: string) {
   const trimmedColor = (color || '').trim()
   if (!trimmedColor) {

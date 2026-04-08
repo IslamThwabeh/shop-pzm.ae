@@ -703,4 +703,23 @@ export class Database {
       return [];
     }
   }
+
+  async getLeadCountsByRegion(sinceIso: string, untilIso?: string): Promise<{ uae: number; other: number }> {
+    try {
+      const untilClause = untilIso ? ' AND created_at < ?' : '';
+      const bindings = untilIso ? [sinceIso, untilIso] : [sinceIso];
+
+      const [uaeRes, totalRes] = await Promise.all([
+        this.db.prepare(`SELECT COUNT(*) as cnt FROM whatsapp_leads WHERE created_at >= ? ${untilClause} AND country = 'AE'`).bind(...bindings).first(),
+        this.db.prepare(`SELECT COUNT(*) as cnt FROM whatsapp_leads WHERE created_at >= ? ${untilClause}`).bind(...bindings).first(),
+      ]);
+
+      const uae = (uaeRes as any)?.cnt ?? 0;
+      const total = (totalRes as any)?.cnt ?? 0;
+      return { uae, other: total - uae };
+    } catch (error) {
+      console.error('Error fetching lead counts by region:', error);
+      return { uae: 0, other: 0 };
+    }
+  }
 }

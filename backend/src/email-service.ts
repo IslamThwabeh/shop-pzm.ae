@@ -1024,6 +1024,15 @@ export class EmailService {
       ? `<div class="info-row"><span class="label">Price:</span><span>AED ${lead.reference_price.toFixed(2)}</span></div>`
       : '';
 
+    const locationParts = [lead.city, lead.country].filter(Boolean).join(', ');
+    const isUae = lead.country === 'AE';
+    const locationHtml = locationParts
+      ? `<div class="info-row"><span class="label">Location:</span><span>${locationParts} ${isUae ? '<strong style="color:#16a34a;">\u{1F4CD} UAE</strong>' : '<strong style="color:#dc2626;">\u26A0 Outside UAE</strong>'}</span></div>`
+      : '';
+    const ipHtml = lead.ip_address
+      ? `<div class="info-row"><span class="label">IP Address:</span><span>${lead.ip_address}</span></div>`
+      : '';
+
     return `
       <!DOCTYPE html>
       <html>
@@ -1058,6 +1067,8 @@ export class EmailService {
               <div class="info-row"><span class="label">Item:</span><span>${lead.reference_label}</span></div>
               ${priceHtml}
               <div class="info-row"><span class="label">Source Page:</span><span>${lead.source_page || 'Unknown'}</span></div>
+              ${locationHtml}
+              ${ipHtml}
               <div class="info-row"><span class="label">Status:</span><span>${this.formatLabel(lead.status)}</span></div>
               <div class="info-row"><span class="label">Time:</span><span>${lead.created_at}</span></div>
             </div>
@@ -1083,6 +1094,8 @@ export class EmailService {
     orders: number;
     serviceRequests: number;
     whatsappLeads: number;
+    uaeLeads: number;
+    nonUaeLeads: number;
     recentLeads: WhatsAppLead[];
     recentServiceRequests: ServiceRequest[];
   }): Promise<boolean> {
@@ -1099,6 +1112,8 @@ export class EmailService {
     orders: number;
     serviceRequests: number;
     whatsappLeads: number;
+    uaeLeads: number;
+    nonUaeLeads: number;
   }): Promise<boolean> {
     const html = this.getMonthlyReportTemplate(data);
     return this.sendEmail({
@@ -1113,17 +1128,28 @@ export class EmailService {
     orders: number;
     serviceRequests: number;
     whatsappLeads: number;
+    uaeLeads: number;
+    nonUaeLeads: number;
     recentLeads: WhatsAppLead[];
     recentServiceRequests: ServiceRequest[];
   }): string {
     const leadsRows = data.recentLeads.length > 0
-      ? data.recentLeads.map(l => `
+      ? data.recentLeads.map(l => {
+        const loc = [l.city, l.country].filter(Boolean).join(', ') || '-';
+        const isUae = l.country === 'AE';
+        const badge = l.country
+          ? (isUae
+            ? '<span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:10px;font-size:10px;font-weight:600;">UAE</span>'
+            : '<span style="background:#fee2e2;color:#dc2626;padding:2px 6px;border-radius:10px;font-size:10px;font-weight:600;">Outside UAE</span>')
+          : '';
+        return `
         <tr>
           <td style="padding:6px 10px;border-bottom:1px solid #eee;">${l.lead_type}</td>
           <td style="padding:6px 10px;border-bottom:1px solid #eee;">${l.reference_label}</td>
-          <td style="padding:6px 10px;border-bottom:1px solid #eee;">${l.source_page || '-'}</td>
+          <td style="padding:6px 10px;border-bottom:1px solid #eee;">${loc} ${badge}</td>
           <td style="padding:6px 10px;border-bottom:1px solid #eee;">${l.status}</td>
-        </tr>`).join('')
+        </tr>`;
+      }).join('')
       : '<tr><td colspan="4" style="padding:10px;text-align:center;color:#999;">No leads yesterday</td></tr>';
 
     const srRows = data.recentServiceRequests.length > 0
@@ -1161,11 +1187,12 @@ export class EmailService {
           </table>
 
           <h3 style="margin:20px 0 8px;font-size:14px;color:#333;">Recent WhatsApp Leads</h3>
+          ${data.whatsappLeads > 0 ? `<p style="margin:0 0 8px;font-size:13px;"><span style="color:#16a34a;font-weight:600;">${data.uaeLeads} of ${data.whatsappLeads} leads from UAE (valid)</span>${data.nonUaeLeads > 0 ? ` &middot; <span style="color:#999;">${data.nonUaeLeads} outside UAE</span>` : ''}</p>` : ''}
           <table style="width:100%;border-collapse:collapse;font-size:13px;">
             <thead><tr style="background:#f9fafb;">
               <th style="padding:6px 10px;text-align:left;">Type</th>
               <th style="padding:6px 10px;text-align:left;">Reference</th>
-              <th style="padding:6px 10px;text-align:left;">Page</th>
+              <th style="padding:6px 10px;text-align:left;">Location</th>
               <th style="padding:6px 10px;text-align:left;">Status</th>
             </tr></thead>
             <tbody>${leadsRows}</tbody>
@@ -1193,6 +1220,8 @@ export class EmailService {
     orders: number;
     serviceRequests: number;
     whatsappLeads: number;
+    uaeLeads: number;
+    nonUaeLeads: number;
   }): string {
     const total = data.whatsappLeads + data.orders + data.serviceRequests;
     return `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#f4f4f7;">
@@ -1224,6 +1253,20 @@ export class EmailService {
             <div style="font-size:14px;color:#666;">Total Interactions</div>
             <div style="font-size:36px;font-weight:bold;color:#1e3a5f;">${total}</div>
           </div>
+          ${data.whatsappLeads > 0 ? `
+          <div style="margin-top:16px;padding:16px;background:#f0fdf4;border-radius:6px;border:1px solid #bbf7d0;">
+            <div style="font-size:13px;font-weight:600;color:#333;margin-bottom:8px;">Lead Quality</div>
+            <table style="width:100%;font-size:13px;">
+              <tr>
+                <td style="padding:4px 0;"><span style="color:#16a34a;font-weight:600;">\u2705 UAE (valid)</span></td>
+                <td style="padding:4px 0;text-align:right;font-weight:bold;color:#16a34a;">${data.uaeLeads}</td>
+              </tr>
+              <tr>
+                <td style="padding:4px 0;"><span style="color:#999;">Outside UAE</span></td>
+                <td style="padding:4px 0;text-align:right;font-weight:bold;color:#999;">${data.nonUaeLeads}</td>
+              </tr>
+            </table>
+          </div>` : ''}
         </div>
         <div style="padding:16px 24px;background:#f9fafb;text-align:center;font-size:12px;color:#999;">
           <p style="margin:0;">© ${new Date().getFullYear()} PZM Shop – Automated Monthly Report</p>
