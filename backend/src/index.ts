@@ -607,9 +607,6 @@ app.post('/api/orders', async (c) => {
     if (!firstProduct) {
       return c.json({ error: `Product ${firstItem.product_id} not found`, status: 400 }, 400);
     }
-    if (firstProduct.condition === 'used' && firstProduct.quantity < firstItem.quantity) {
-      return c.json({ error: `Insufficient stock for product ${firstItem.product_id}`, status: 400 }, 400);
-    }
     
     const order: Order = {
       id: orderId,
@@ -636,9 +633,6 @@ app.post('/api/orders', async (c) => {
       if (!product) {
         return c.json({ error: `Product ${item.product_id} not found`, status: 400 }, 400);
       }
-      if (product.condition === 'used' && product.quantity < item.quantity) {
-        return c.json({ error: `Insufficient stock for product ${item.product_id}`, status: 400 }, 400);
-      }
 
       const orderItem = {
         id: generateId('oi'),
@@ -652,12 +646,6 @@ app.post('/api/orders', async (c) => {
       };
 
       await db.createOrderItem(orderItem);
-      if (product.condition === 'used') {
-        const decremented = await db.decrementProductQuantity(item.product_id, item.quantity);
-        if (!decremented) {
-          return c.json({ error: `Failed to reserve stock for product ${item.product_id}`, status: 400 }, 400);
-        }
-      }
       orderItems.push(orderItem);
     }
 

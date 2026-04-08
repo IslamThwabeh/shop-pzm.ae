@@ -83,6 +83,41 @@ export function sanitizeProductsForDisplay<T extends Product>(products: T[]) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Brand extraction                                                  */
+/* ------------------------------------------------------------------ */
+
+const brandPatterns: [RegExp, string][] = [
+  [/^iphone|^ipad/i, 'Apple'],
+  [/^macbook/i, 'Apple'],
+  [/^samsung|^galaxy/i, 'Samsung'],
+  [/^honor/i, 'Honor'],
+  [/^nokia/i, 'Nokia'],
+  [/^tecno/i, 'Tecno'],
+  [/^playstation|^ps[45]/i, 'PlayStation'],
+  [/^xbox/i, 'Xbox'],
+  [/^nintendo/i, 'Nintendo'],
+  [/^hp\b/i, 'HP'],
+  [/^lenovo/i, 'Lenovo'],
+  [/^dell/i, 'Dell'],
+  [/^alienware/i, 'Alienware'],
+  [/^asus|^rog\b/i, 'ASUS'],
+  [/^aorus/i, 'AORUS'],
+  [/^microsoft|^surface/i, 'Microsoft'],
+  [/^huawei|^matepad/i, 'Huawei'],
+  [/^redmi|^xiaomi/i, 'Xiaomi'],
+  [/^lg\b/i, 'LG'],
+  [/^gaming pc/i, 'Gaming PC'],
+]
+
+export function extractBrand(model: string): string {
+  const trimmed = model.trim()
+  for (const [pattern, brand] of brandPatterns) {
+    if (pattern.test(trimmed)) return brand
+  }
+  return 'Other'
+}
+
+/* ------------------------------------------------------------------ */
 /*  Variant grouping – collapse color × storage combos into one card  */
 /* ------------------------------------------------------------------ */
 
