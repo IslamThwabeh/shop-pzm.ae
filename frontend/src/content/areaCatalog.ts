@@ -13,6 +13,7 @@ export interface AreaCatalogEntry {
   name: string
   badge: string
   title: string
+  serviceTitle: string
   metaTitle: string
   description: string
   heroTitle: string
@@ -54,6 +55,7 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     name: 'Al Barsha',
     badge: 'Home Base',
     title: 'Phone and Laptop Store in Al Barsha and Dubai Science Park',
+    serviceTitle: 'Phone & Laptop Store',
     metaTitle: 'Phone and Laptop Store in Al Barsha & Dubai Science Park | PZM',
     description:
       'PZM serves Al Barsha, Barsha 1-3, and Dubai Science Park with iPhones, laptops, repairs, accessories, and custom PC builds from Hessa Street.',
@@ -77,6 +79,7 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     name: 'Al Quoz',
     badge: 'Quick Access',
     title: 'Phone and Laptop Services Near Al Quoz, Dubai',
+    serviceTitle: 'Phone & Laptop Services',
     metaTitle: 'Phone and Laptop Services Near Al Quoz Dubai | PZM',
     description:
       'PZM supports Al Quoz with device sales, repairs, accessories, and gaming PC builds from nearby Al Barsha.',
@@ -100,6 +103,7 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     name: 'Dubai Marina',
     badge: 'Delivery Friendly',
     title: 'Phone and Laptop Services for Dubai Marina and JLT',
+    serviceTitle: 'Phone & Laptop Services',
     metaTitle: 'Phone and Laptop Services for Dubai Marina & JLT | PZM',
     description:
       'PZM supports Dubai Marina and JLT with device sales, repairs, trade-ins, and upgrades.',
@@ -123,6 +127,7 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     name: 'Emirates Hills',
     badge: 'Premium Communities',
     title: 'Phone and Laptop Services for Emirates Hills, Springs, and Meadows Village',
+    serviceTitle: 'Phone & Laptop Services',
     metaTitle: 'Phone and Laptop Services for Emirates Hills, Springs & Meadows | PZM',
     description:
       'PZM serves Emirates Hills, Springs, and Meadows Village with repairs, device buying, and PC build support.',
@@ -146,6 +151,7 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     name: 'JBR',
     badge: 'Beachside Demand',
     title: 'Phone and Laptop Services for JBR and nearby communities',
+    serviceTitle: 'Phone & Laptop Services',
     metaTitle: 'Phone and Laptop Services for JBR Dubai | PZM',
     description:
       'PZM supports JBR with device buying, repairs, upgrades, and trade-ins.',
@@ -169,6 +175,7 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     name: 'Jumeirah',
     badge: 'West Dubai Coverage',
     title: 'Phone and Laptop Services for Jumeirah and Umm Suqeim',
+    serviceTitle: 'Phone & Laptop Services',
     metaTitle: 'Phone and Laptop Services for Jumeirah Dubai | PZM',
     description:
       'PZM serves Jumeirah and Umm Suqeim with device sales, repairs, accessories, and upgrades.',
@@ -192,6 +199,7 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     name: 'Jumeirah Village',
     badge: 'Near Hessa Street',
     title: 'Phone and Laptop Services for JVC and JVT',
+    serviceTitle: 'Phone & Laptop Services',
     metaTitle: 'Phone and Laptop Services for JVC & JVT | PZM Dubai',
     description:
       'PZM supports JVC and JVT with repairs, trade-ins, iPhones, and device support from nearby Al Barsha.',
@@ -215,6 +223,7 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     name: 'Tecom',
     badge: 'Barsha Heights Coverage',
     title: 'Phone and Laptop Services for Tecom, Barsha Heights, and Al Sufouh',
+    serviceTitle: 'Phone & Laptop Services',
     metaTitle: 'Phone and Laptop Services for Tecom, Barsha Heights & Al Sufouh | PZM',
     description:
       'PZM serves Tecom, Barsha Heights, Al Sufouh, Internet City, and Media City with repairs and device support.',
