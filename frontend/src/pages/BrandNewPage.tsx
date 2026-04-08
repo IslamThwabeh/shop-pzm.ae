@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom'
 import { ChevronDown, CreditCard, ShieldCheck, Truck } from 'lucide-react'
 import type { Product } from '@shared/types'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
-import ProductCard from '../components/ProductCard'
-import ProductDetailDrawer from '../components/ProductDetailDrawer'
 import ProductGrid from '../components/ProductGrid'
+import VariantCard from '../components/VariantCard'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { brandNewHero, getBrandNewCategoryGroups, getBrandNewProducts } from '../content/brandNewCatalog'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
+import { groupProductsByModelFamily } from '../utils/productPresentation'
 
 interface BrandNewPageProps {
   products: Product[]
@@ -19,7 +19,6 @@ interface BrandNewPageProps {
 
 export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
   const service = resolveServiceSlug('brand-new')
-  const [drawerProduct, setDrawerProduct] = useState<Product | null>(null)
   const [appointmentOpen, setAppointmentOpen] = useState(false)
 
   if (!service) {
@@ -118,8 +117,8 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                   </div>
 
                   <ProductGrid className="mt-5">
-                    {group.products.map((product) => (
-                      <ProductCard key={product.id} product={product} onViewDetails={setDrawerProduct} />
+                    {groupProductsByModelFamily(group.products).map((family) => (
+                      <VariantCard key={family.title} title={family.title} products={family.products} condition="new" />
                     ))}
                   </ProductGrid>
 
@@ -202,8 +201,6 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
           prefilledMessage="Hi, I'm looking for a specific brand-new device. Can you help me find it? (via pzm.ae/services/brand-new)"
         />
       </div>
-
-      <ProductDetailDrawer product={drawerProduct} onClose={() => setDrawerProduct(null)} />
     </div>
   )
 }

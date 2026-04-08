@@ -1,26 +1,30 @@
 import { useState } from 'react'
 import { MessageCircle } from 'lucide-react'
 import type { Product } from '@shared/types'
-import type { BuyIphoneFamily } from '../content/buyIphoneCatalog'
 import { groupVariantsByColorAndStorage, getPrimaryProductImage } from '../utils/productPresentation'
 import RetailImage from './RetailImage'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 
 interface Props {
-  family: BuyIphoneFamily
+  /** Display title for this model group (e.g. "MacBook Air M3") */
+  title: string
+  /** All product variants that belong to this model group */
   products: Product[]
+  /** Condition badge label — defaults to first product's condition */
+  condition?: 'new' | 'used'
 }
 
-export default function IphoneFamilyCard({ family, products }: Props) {
+export default function VariantCard({ title, products, condition }: Props) {
   const group = groupVariantsByColorAndStorage(products)
   const [selectedColor, setSelectedColor] = useState(group.colors[0] ?? '')
   const [selectedStorage, setSelectedStorage] = useState(group.storages[0] ?? '')
 
   const activeProduct = group.getProduct(selectedColor, selectedStorage)
-  const displayImage = getPrimaryProductImage(activeProduct) || family.imageUrl
+  const displayImage = getPrimaryProductImage(activeProduct) || getPrimaryProductImage(products[0])
+  const badgeCondition = condition ?? products[0]?.condition ?? 'new'
 
   const handleWhatsApp = () => {
-    const label = `${family.title} ${selectedStorage} ${selectedColor}`.trim()
+    const label = `${title} ${selectedStorage} ${selectedColor}`.trim()
     openWhatsAppLead({
       leadType: 'product',
       referenceId: activeProduct?.id,
@@ -30,35 +34,24 @@ export default function IphoneFamilyCard({ family, products }: Props) {
     })
   }
 
-  if (products.length === 0) {
-    return (
-      <article className="rounded-2xl border border-[#eee] bg-white p-5">
-        <div className="h-[140px] overflow-hidden rounded-xl bg-slate-50">
-          <RetailImage src={family.imageUrl} alt={family.imageAlt} name={family.title} variant="card" />
-        </div>
-        <h3 className="mt-3 text-base font-bold text-slate-900">{family.title}</h3>
-        <p className="mt-1 text-xs text-slate-400">{family.description}</p>
-        <span className="mt-3 inline-block rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-500">
-          Ask us for availability
-        </span>
-      </article>
-    )
-  }
-
   return (
     <article className="flex flex-col rounded-2xl border border-[#eee] bg-white">
       {/* Image */}
-      <div className="product-image-frame relative h-[160px] overflow-hidden rounded-t-2xl border-b border-[#eee] bg-slate-50">
-        <RetailImage src={displayImage} alt={family.imageAlt} name={family.title} variant="card" />
-        <span className="absolute left-2.5 top-2.5 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
-          New
+      <div className="product-image-frame relative h-[140px] sm:h-[150px] lg:h-[160px] overflow-hidden rounded-t-2xl border-b border-[#eee]">
+        <RetailImage src={displayImage} alt={title} name={title} variant="card" />
+        <span className={`absolute left-2.5 top-2.5 rounded-md px-2 py-0.5 text-[11px] font-semibold ${
+          badgeCondition === 'new'
+            ? 'bg-emerald-50 text-emerald-700'
+            : 'bg-amber-50 text-amber-700'
+        }`}>
+          {badgeCondition === 'new' ? 'New' : 'Used'}
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 p-4">
+      <div className="flex flex-1 flex-col gap-3 p-3">
         {/* Title + price */}
         <div>
-          <h3 className="text-sm font-bold text-slate-900">{family.title}</h3>
+          <h3 className="text-sm font-semibold leading-snug text-slate-900 line-clamp-2">{title}</h3>
           <p className="mt-0.5 text-lg font-bold text-slate-900">
             {activeProduct ? `AED ${activeProduct.price.toFixed(0)}` : `From AED ${group.lowestPrice.toFixed(0)}`}
           </p>
@@ -116,7 +109,8 @@ export default function IphoneFamilyCard({ family, products }: Props) {
         )}
 
         {/* CTA */}
-        <button style={{ marginTop: 'auto' }}
+        <button
+          style={{ marginTop: 'auto' }}
           type="button"
           onClick={handleWhatsApp}
           className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#eee] py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-[#25D366] hover:text-[#25D366]"

@@ -117,3 +117,53 @@ export function groupVariantsByColorAndStorage(products: Product[]): VariantGrou
     products: sorted,
   }
 }
+
+/* ------------------------------------------------------------------ */
+/*  Model-family grouping – collapse products sharing a base model    */
+/* ------------------------------------------------------------------ */
+
+/** Common storage tokens to strip when deriving the base model name. */
+const storageSuffixPattern = /\s*\b(\d+\s*(gb|tb))\b\s*/gi
+
+/**
+ * Derive a "base model" key from a product's model string by stripping
+ * known storage suffixes so that e.g. "MacBook Air M3 256GB" and
+ * "MacBook Air M3 512GB" both resolve to "MacBook Air M3".
+ */
+function getBaseModelKey(model: string): string {
+  return model
+    .replace(storageSuffixPattern, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+}
+
+export interface ModelFamily {
+  /** Display title (the cleaned base-model name). */
+  title: string
+  /** All products belonging to this model family. */
+  products: Product[]
+}
+
+/**
+ * Group an array of products by base model name.
+ * Returns one `ModelFamily` per distinct base model, sorted by lowest price.
+ */
+export function groupProductsByModelFamily(products: Product[]): ModelFamily[] {
+  const familyMap = new Map<string, { title: string; products: Product[] }>()
+
+  for (const product of products) {
+    const key = getBaseModelKey(product.model).toLowerCase()
+
+    if (!familyMap.has(key)) {
+      familyMap.set(key, { title: getBaseModelKey(product.model), products: [] })
+    }
+
+    familyMap.get(key)!.products.push(product)
+  }
+
+  return Array.from(familyMap.values()).sort((a, b) => {
+    const aMin = Math.min(...a.products.map((p) => p.price))
+    const bMin = Math.min(...b.products.map((p) => p.price))
+    return aMin - bMin
+  })
+}
