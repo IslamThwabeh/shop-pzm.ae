@@ -8,7 +8,7 @@ export default function AreasPage() {
     <div className="space-y-10">
       <Seo
         title="Areas We Serve in Dubai | PZM Computers & Phones"
-        description="Explore the Dubai communities served by PZM, including Al Barsha, JVC, JBR, Dubai Marina, Tecom, and more."
+        description="Explore the Dubai communities served by PZM, including Barsha 1-3, Dubai Science Park, JVC, JLT, Springs, Meadows Village, Barsha Heights, Tecom, and Al Sufouh."
         canonicalPath="/areas"
       />
 

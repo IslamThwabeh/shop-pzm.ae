@@ -741,7 +741,7 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries) {
     eyebrow: 'PZM Storefront',
     title: 'PZM Computers & Phones Store',
     intro:
-      'Your integrated device solutions hub in Al Barsha, Dubai. Browse brand-new devices, certified pre-owned stock, repair support, custom gaming PCs, accessories, and buying guides from one storefront.',
+      'Your integrated device solutions hub in Al Barsha, Dubai, serving Barsha 1-3, Dubai Science Park, JVC, Meadows Village, JLT, Springs, Barsha Heights, Tecom, and Al Sufouh with devices, repairs, accessories, and buying guides.',
     stats: [
       `${serviceEntries.length} service pages`,
       `${areaEntries.length} Dubai area pages`,
@@ -776,7 +776,7 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries) {
       ),
       buildSnapshotSection(
         'Areas We Serve in Dubai',
-        'Open your local page for nearby communities, travel notes, and direct links into the right service flow.',
+        'Open your local page for Barsha 1-3, Dubai Science Park, JVC, JLT, Springs, Meadows Village, Barsha Heights, Tecom, Al Sufouh, and nearby communities.',
         buildLinkGrid(
           areaEntries.map((entry) => ({
             eyebrow: entry.badge,
@@ -892,7 +892,7 @@ function buildAreasIndexSnapshot(areaEntries) {
     eyebrow: 'Local coverage',
     title: 'Areas We Serve in Dubai',
     intro:
-      'We are based in Al Barsha on Hessa Street and serve customers across Dubai. Open your area for local links, directions, and the fastest route to the right service.',
+      'We are based in Al Barsha on Hessa Street and serve customers across Dubai, including Barsha 1-3, Dubai Science Park, JVC, JLT, Springs, Meadows Village, Barsha Heights, Tecom, and Al Sufouh.',
     stats: [`${areaEntries.length} area pages live`],
     sections: [
       buildSnapshotSection(
@@ -1208,20 +1208,66 @@ function outputPathForRoute(routePath) {
   return path.join(distRoot, normalized.replace(/\/+$/, ''), 'index.html')
 }
 
+const HOME_ROUTE_TITLE = 'Buy iPhones, Laptops & Repair in Al Barsha, JVC & Tecom | PZM'
+const HOME_ROUTE_DESCRIPTION =
+  "PZM's Al Barsha store serves Barsha 1-3, Dubai Science Park, JVC, Meadows Village, JLT, Springs, Barsha Heights, Tecom, and Al Sufouh for phones, laptops, repairs, and device support."
+const HOME_AREA_SERVED = [
+  'Al Barsha, Dubai',
+  'Barsha 1, Dubai',
+  'Barsha 2, Dubai',
+  'Barsha 3, Dubai',
+  'Dubai Science Park, Dubai',
+  'Jumeirah Village Circle (JVC), Dubai',
+  'Meadows Village, Dubai',
+  'Jumeirah Lakes Towers (JLT), Dubai',
+  'Springs, Dubai',
+  'Barsha Heights, Dubai',
+  'Tecom, Dubai',
+  'Al Sufouh, Dubai',
+]
+const AREAS_INDEX_DESCRIPTION =
+  'Explore the Dubai communities served by PZM, including Barsha 1-3, Dubai Science Park, JVC, JLT, Springs, Meadows Village, Barsha Heights, Tecom, and Al Sufouh.'
+
 function buildStoreJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'ComputerStore',
     name: 'PZM Computers & Phones Store',
-    description:
-      'PZM Computers & Phones Store in Al Barsha, Dubai for new and used devices, expert repairs, custom PC builds, accessories, and same-day local support.',
+    description: HOME_ROUTE_DESCRIPTION,
     url: `${SITE_URL}/`,
     telephone: '+971528026677',
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Hessa Street Branch, Inside Hessa Union Coop Hypermarket, Ground Floor',
+      addressLocality: 'Dubai',
       addressCountry: 'AE',
     },
+    areaServed: HOME_AREA_SERVED.map((name) => ({ '@type': 'Place', name })),
+    image: DEFAULT_IMAGE,
+    priceRange: 'AED 150 - AED 7,000',
+  }
+}
+
+function buildAreaJsonLd(route) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ComputerStore',
+    name: `PZM Computers & Phones Store - ${route.name}, Dubai`,
+    description: route.description,
+    url: `${SITE_URL}/areas/${route.slug}/`,
+    telephone: '+971528026677',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: 'Hessa Street Branch, Inside Hessa Union Coop Hypermarket, Ground Floor',
+      addressLocality: 'Dubai',
+      addressCountry: 'AE',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 25.0848627,
+      longitude: 55.1992671,
+    },
+    areaServed: route.areaServed.map((name) => ({ '@type': 'Place', name })),
     image: DEFAULT_IMAGE,
     priceRange: 'AED 150 - AED 7,000',
   }
@@ -1311,6 +1357,7 @@ function extractAreaRoutes(areaCatalogSource) {
       travelNote: extractStringField(block, 'travelNote'),
       localSummary: extractStringField(block, 'localSummary'),
       nearbyCommunities: extractStringArrayField(block, 'nearbyCommunities'),
+      areaServed: extractStringArrayField(block, 'areaServed'),
       advantages: extractStringArrayField(block, 'advantages'),
       featuredServices: extractFeaturedServices(block),
     })
@@ -1426,9 +1473,8 @@ function buildSitemap(routes) {
 const baseRoutes = [
   {
     path: '/',
-    title: 'Buy iPhones, Laptops & Repair Dubai | PZM Store',
-    description:
-      'PZM Computers & Phones Store in Al Barsha, Dubai for new and used devices, expert repairs, custom PC builds, accessories, and same-day local support.',
+    title: HOME_ROUTE_TITLE,
+    description: HOME_ROUTE_DESCRIPTION,
     canonicalPath: '/',
     priority: '1.0',
     changefreq: 'daily',
@@ -1446,7 +1492,7 @@ const baseRoutes = [
   {
     path: '/areas',
     title: 'Areas We Serve in Dubai | PZM Computers & Phones',
-    description: 'Explore the Dubai communities served by PZM, including Al Barsha, JVC, JBR, Dubai Marina, Tecom, and more.',
+    description: AREAS_INDEX_DESCRIPTION,
     canonicalPath: '/areas',
     priority: '0.75',
     changefreq: 'monthly',
@@ -1563,6 +1609,7 @@ const canonicalRoutes = [
     canonicalPath: `/areas/${entry.slug}`,
     priority: areaPriorityMap[entry.slug] || '0.6',
     changefreq: 'monthly',
+    jsonLd: buildAreaJsonLd(entry),
   })),
   ...blogEntries.map((entry) => {
     const suffix = ' | PZM Blog'

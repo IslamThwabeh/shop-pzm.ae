@@ -21,6 +21,12 @@ export interface HomeCategoryCard {
   imageUrl?: string
 }
 
+export interface HomeAreaHighlight {
+  label: string
+  placeName: string
+  to: string
+}
+
 export const homeCategoryCards: HomeCategoryCard[] = [
   {
     title: 'Buy iPhone',
@@ -69,6 +75,64 @@ export const homeCategoryCards: HomeCategoryCard[] = [
     subtitle: 'Professional sites',
     to: page('/services/web-design'),
     imageUrl: svcMedia('generated/services/web-design/website-design-service.webp'),
+  },
+]
+
+export const homeAreaHighlights: HomeAreaHighlight[] = [
+  {
+    label: 'Barsha 1',
+    placeName: 'Barsha 1, Dubai',
+    to: page('/areas/al-barsha'),
+  },
+  {
+    label: 'Barsha 2',
+    placeName: 'Barsha 2, Dubai',
+    to: page('/areas/al-barsha'),
+  },
+  {
+    label: 'Barsha 3',
+    placeName: 'Barsha 3, Dubai',
+    to: page('/areas/al-barsha'),
+  },
+  {
+    label: 'Dubai Science Park',
+    placeName: 'Dubai Science Park, Dubai',
+    to: page('/areas/al-barsha'),
+  },
+  {
+    label: 'JVC',
+    placeName: 'Jumeirah Village Circle (JVC), Dubai',
+    to: page('/areas/jumeirah-village'),
+  },
+  {
+    label: 'Meadows Village',
+    placeName: 'Meadows Village, Dubai',
+    to: page('/areas/emirates-hills'),
+  },
+  {
+    label: 'JLT',
+    placeName: 'Jumeirah Lakes Towers (JLT), Dubai',
+    to: page('/areas/dubai-marina'),
+  },
+  {
+    label: 'Springs',
+    placeName: 'Springs, Dubai',
+    to: page('/areas/emirates-hills'),
+  },
+  {
+    label: 'Barsha Heights',
+    placeName: 'Barsha Heights, Dubai',
+    to: page('/areas/tecom'),
+  },
+  {
+    label: 'Tecom',
+    placeName: 'Tecom, Dubai',
+    to: page('/areas/tecom'),
+  },
+  {
+    label: 'Al Sufouh',
+    placeName: 'Al Sufouh, Dubai',
+    to: page('/areas/tecom'),
   },
 ]
 

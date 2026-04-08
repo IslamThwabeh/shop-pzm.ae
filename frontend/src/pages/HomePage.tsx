@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, ShieldCheck, Zap, CheckCircle, Truck } from 'lucide-react'
+import { ArrowRight, ShieldCheck, Zap, CheckCircle, Truck, MapPin } from 'lucide-react'
 import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
 import FaqAccordion from '../components/FaqAccordion'
@@ -8,6 +8,7 @@ import CategoryCard from '../components/CategoryCard'
 import RetailImage from '../components/RetailImage'
 import TestimonialCards from '../components/TestimonialCards'
 import {
+  homeAreaHighlights,
   homeCategoryCards,
   homeFaqItems,
   homeTrustCards,
@@ -22,6 +23,12 @@ interface HomePageProps {
 }
 
 const trustIcons = [ShieldCheck, Zap, CheckCircle, Truck] as const
+const homeSeoTitle = 'Buy iPhones, Laptops & Repair in Al Barsha, JVC & Tecom | PZM'
+const homeSeoDescription =
+  "PZM's Al Barsha store serves Barsha 1-3, Dubai Science Park, JVC, Meadows Village, JLT, Springs, Barsha Heights, Tecom, and Al Sufouh for phones, laptops, repairs, and device support."
+const homeAreaServed = Array.from(
+  new Set(['Al Barsha, Dubai', ...homeAreaHighlights.map((area) => area.placeName)]),
+)
 
 export default function HomePage({ onShopClick }: HomePageProps) {
   useEffect(() => {
@@ -65,8 +72,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
     '@context': 'https://schema.org',
     '@type': 'ComputerStore',
     name: siteIdentity.name,
-    description:
-      'Buy, sell, fix, and build with PZM in Al Barsha, Dubai. New and used iPhones, MacBooks, gaming PCs, repairs, accessories, and local service support.',
+    description: homeSeoDescription,
     url: buildCanonicalUrl('/'),
     telephone: '+971528026677',
     address: {
@@ -76,6 +82,7 @@ export default function HomePage({ onShopClick }: HomePageProps) {
       addressCountry: 'AE',
     },
     geo: { '@type': 'GeoCoordinates', latitude: 25.0848627, longitude: 55.1992671 },
+    areaServed: homeAreaServed.map((name) => ({ '@type': 'Place', name })),
     hasMap: siteContact.mapsHref,
     image: toAbsoluteSiteUrl('/images/mini_logo.png'),
     priceRange: 'AED 150 - AED 7,000',
@@ -84,8 +91,8 @@ export default function HomePage({ onShopClick }: HomePageProps) {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       <Seo
-        title="Buy iPhones, Laptops & Repair Dubai | PZM Store"
-        description="PZM Computers & Phones Store in Al Barsha, Dubai for new and used devices, expert repairs, custom PC builds, accessories, and same-day local support."
+        title={homeSeoTitle}
+        description={homeSeoDescription}
         canonicalPath="/"
         jsonLd={[storeJsonLd, faqJsonLd]}
       />
@@ -152,6 +159,46 @@ export default function HomePage({ onShopClick }: HomePageProps) {
               </div>
             )
           })}
+        </div>
+      </section>
+
+      <section className="reveal-on-scroll border-t border-[#eee] bg-[#fafafa] px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
+        <div className="mx-auto max-w-7xl rounded-[30px] border border-[#eee] bg-white p-6 shadow-sm sm:p-8">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                Areas We Serve
+              </p>
+              <h2 className="mt-3 text-2xl font-bold text-slate-900 sm:text-[1.75rem]">
+                Helping nearby Dubai communities shop, repair, and collect faster
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-slate-500 sm:text-base">
+                Customers from Barsha 1-3, Dubai Science Park, JVC, Meadows Village,
+                JLT, Springs, Barsha Heights, Tecom, and Al Sufouh can use our Al
+                Barsha store for device buying, repairs, and quick follow-up.
+              </p>
+            </div>
+            <Link
+              to="/areas/"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 transition-colors hover:text-slate-950"
+            >
+              View all area pages
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            {homeAreaHighlights.map((area) => (
+              <Link
+                key={`${area.to}-${area.label}`}
+                to={area.to}
+                className="inline-flex items-center gap-2 rounded-full border border-[#eee] bg-[#fafafa] px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-950"
+              >
+                <MapPin size={14} className="text-slate-400" />
+                {area.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

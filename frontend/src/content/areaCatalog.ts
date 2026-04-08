@@ -53,24 +53,24 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     slug: 'al-barsha',
     name: 'Al Barsha',
     badge: 'Home Base',
-    title: 'Phone and Laptop Store in Al Barsha, Dubai',
-    metaTitle: 'Phone and Laptop Store in Al Barsha Dubai | PZM',
+    title: 'Phone and Laptop Store in Al Barsha and Dubai Science Park',
+    metaTitle: 'Phone and Laptop Store in Al Barsha & Dubai Science Park | PZM',
     description:
-      'PZM serves Al Barsha with iPhones, laptops, repairs, accessories, and custom PC builds from Hessa Street.',
-    heroTitle: 'Phone and Laptop Store in Al Barsha',
+      'PZM serves Al Barsha, Barsha 1-3, and Dubai Science Park with iPhones, laptops, repairs, accessories, and custom PC builds from Hessa Street.',
+    heroTitle: 'Phone and Laptop Store in Al Barsha and Dubai Science Park',
     heroDescription:
-      'Walk in for iPhones, repairs, trade-ins, accessories, and PC builds.',
+      'Walk in for iPhones, repairs, trade-ins, accessories, and PC builds from Al Barsha, Barsha 1-3, and Dubai Science Park.',
     travelNote: 'Inside Hessa Union Coop Hypermarket on Hessa Street.',
     localSummary:
-      'PZM is inside Hessa Union Coop Hypermarket, making Al Barsha the fastest access point for same-day repair intake, product collection, and on-site help.',
-    nearbyCommunities: ['Al Barsha 1', 'Al Barsha 2', 'Al Barsha 3', 'Al Barsha South'],
+      'PZM is inside Hessa Union Coop Hypermarket, making Al Barsha, Barsha 1-3, and Dubai Science Park one of the fastest access points for same-day repair intake, product collection, and on-site help.',
+    nearbyCommunities: ['Barsha 1', 'Barsha 2', 'Barsha 3', 'Dubai Science Park', 'Al Barsha South'],
     advantages: [
       'Fastest walk-in option for same-day repair intake and accessory pickup.',
       'Best route for customers who want to check online and complete the purchase in-store.',
       'Good starting point for repair, trade-in, and build consultations close to the branch.',
     ],
     featuredServices: standardFeaturedServices,
-    areaServed: ['Al Barsha, Dubai', 'Al Barsha 1, Dubai', 'Al Barsha 2, Dubai', 'Al Barsha 3, Dubai', 'Al Barsha South, Dubai'],
+    areaServed: ['Al Barsha, Dubai', 'Barsha 1, Dubai', 'Barsha 2, Dubai', 'Barsha 3, Dubai', 'Al Barsha 1, Dubai', 'Al Barsha 2, Dubai', 'Al Barsha 3, Dubai', 'Dubai Science Park, Dubai', 'Al Barsha South, Dubai'],
   },
   'al-quoz': {
     slug: 'al-quoz',
@@ -100,7 +100,7 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     name: 'Dubai Marina',
     badge: 'Delivery Friendly',
     title: 'Phone and Laptop Services for Dubai Marina and JLT',
-    metaTitle: 'Phone and Laptop Services for Dubai Marina | PZM',
+    metaTitle: 'Phone and Laptop Services for Dubai Marina & JLT | PZM',
     description:
       'PZM supports Dubai Marina and JLT with device sales, repairs, trade-ins, and upgrades.',
     heroTitle: 'Phone and Laptop Services for Dubai Marina',
@@ -116,30 +116,30 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
       'Good fit for premium-device buyers and gaming-build customers who want structured follow-up.',
     ],
     featuredServices: standardFeaturedServices,
-    areaServed: ['Dubai Marina, Dubai', 'JLT, Dubai', 'Marina Gate, Dubai', 'Beachfront, Dubai'],
+    areaServed: ['Dubai Marina, Dubai', 'Jumeirah Lakes Towers (JLT), Dubai', 'JLT, Dubai', 'Marina Gate, Dubai', 'Beachfront, Dubai'],
   },
   'emirates-hills': {
     slug: 'emirates-hills',
     name: 'Emirates Hills',
     badge: 'Premium Communities',
-    title: 'Phone and Laptop Services for Emirates Hills, Springs, and Meadows',
-    metaTitle: 'Phone and Laptop Services for Emirates Hills Dubai | PZM',
+    title: 'Phone and Laptop Services for Emirates Hills, Springs, and Meadows Village',
+    metaTitle: 'Phone and Laptop Services for Emirates Hills, Springs & Meadows | PZM',
     description:
-      'PZM serves Emirates Hills, Springs, and Meadows with repairs, device buying, and PC build support.',
+      'PZM serves Emirates Hills, Springs, and Meadows Village with repairs, device buying, and PC build support.',
     heroTitle: 'Phone and Laptop Services for Emirates Hills',
     heroDescription:
-      'Repairs, device buying, and custom build help for Emirates Hills and nearby communities.',
+      'Repairs, device buying, and custom build help for Emirates Hills, Springs, and Meadows Village.',
     travelNote: 'Usually 5 to 10 minutes from these nearby communities.',
     localSummary:
       'This audience usually expects faster confirmation and a cleaner handoff. Clear online requests work better than long back-and-forth messaging.',
-    nearbyCommunities: ['Emirates Hills', 'The Springs', 'The Meadows', 'The Lakes'],
+    nearbyCommunities: ['Springs', 'Meadows Village', 'Emirates Hills', 'The Meadows', 'The Lakes'],
     advantages: [
       'Works well for callback-first buying journeys and premium repair intake.',
       'Good fit for customers who want clear confirmation before the follow-up starts.',
       'Useful for structured PC-build conversations with budget and requirements captured up front.',
     ],
     featuredServices: standardFeaturedServices,
-    areaServed: ['Emirates Hills, Dubai', 'The Springs, Dubai', 'The Meadows, Dubai', 'The Lakes, Dubai'],
+    areaServed: ['Emirates Hills, Dubai', 'Springs, Dubai', 'The Springs, Dubai', 'Meadows Village, Dubai', 'The Meadows, Dubai', 'The Lakes, Dubai'],
   },
   jbr: {
     slug: 'jbr',
@@ -192,7 +192,7 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     name: 'Jumeirah Village',
     badge: 'Near Hessa Street',
     title: 'Phone and Laptop Services for JVC and JVT',
-    metaTitle: 'Phone and Laptop Services for Jumeirah Village Dubai | PZM',
+    metaTitle: 'Phone and Laptop Services for JVC & JVT | PZM Dubai',
     description:
       'PZM supports JVC and JVT with repairs, trade-ins, iPhones, and device support from nearby Al Barsha.',
     heroTitle: 'Phone and Laptop Services for JVC and JVT',
@@ -201,37 +201,37 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     travelNote: 'Typically a 5 to 10 minute drive via Hessa Street.',
     localSummary:
       'JVC and JVT are close enough that customers can quickly confirm repair timing or callback details before stopping by.',
-    nearbyCommunities: ['JVC', 'JVT', 'District One villas nearby', 'Hessa Street communities'],
+    nearbyCommunities: ['JVC', 'JVT', 'Hessa Street communities', 'District One villas nearby'],
     advantages: [
       'Very practical for repair booking, callback requests, and quick questions.',
       'Short travel time makes same-day follow-up realistic once the team has the details.',
       'Good fit for customers comparing new and used devices before heading in.',
     ],
     featuredServices: standardFeaturedServices,
-    areaServed: ['Jumeirah Village Circle, Dubai', 'Jumeirah Village Triangle, Dubai'],
+    areaServed: ['Jumeirah Village Circle (JVC), Dubai', 'JVC, Dubai', 'Jumeirah Village Triangle (JVT), Dubai', 'JVT, Dubai'],
   },
   tecom: {
     slug: 'tecom',
     name: 'Tecom',
     badge: 'Barsha Heights Coverage',
-    title: 'Phone and Laptop Services for Tecom and Barsha Heights',
-    metaTitle: 'Phone and Laptop Services for Tecom Dubai | PZM',
+    title: 'Phone and Laptop Services for Tecom, Barsha Heights, and Al Sufouh',
+    metaTitle: 'Phone and Laptop Services for Tecom, Barsha Heights & Al Sufouh | PZM',
     description:
-      'PZM serves Tecom, Barsha Heights, Internet City, and Media City with repairs and device support.',
-    heroTitle: 'Phone and Laptop Services for Tecom',
+      'PZM serves Tecom, Barsha Heights, Al Sufouh, Internet City, and Media City with repairs and device support.',
+    heroTitle: 'Phone and Laptop Services for Tecom, Barsha Heights, and Al Sufouh',
     heroDescription:
-      'Quick access from Tecom, Barsha Heights, Internet City, and Media City for repairs and device support.',
-    travelNote: 'Usually around 5 minutes from Tecom and Barsha Heights.',
+      'Quick access from Tecom, Barsha Heights, Al Sufouh, Internet City, and Media City for repairs and device support.',
+    travelNote: 'Usually around 5 to 10 minutes from Tecom, Barsha Heights, and Al Sufouh.',
     localSummary:
       'This area often needs quick turnaround from offices and nearby apartments, so fast responses and easy next steps matter.',
-    nearbyCommunities: ['Tecom', 'Barsha Heights', 'Internet City', 'Media City'],
+    nearbyCommunities: ['Tecom', 'Barsha Heights', 'Al Sufouh', 'Internet City', 'Media City'],
     advantages: [
       'Great for fast repair requests during the workday.',
       'Works well for customers who prefer a call back before leaving the office.',
       'Short travel time supports clean conversion from request form to visit.',
     ],
     featuredServices: standardFeaturedServices,
-    areaServed: ['Tecom, Dubai', 'Barsha Heights, Dubai', 'Internet City, Dubai', 'Media City, Dubai'],
+    areaServed: ['Tecom, Dubai', 'Barsha Heights, Dubai', 'Al Sufouh, Dubai', 'Dubai Internet City, Dubai', 'Internet City, Dubai', 'Dubai Media City, Dubai', 'Media City, Dubai'],
   },
 }
 
