@@ -93,7 +93,7 @@ export default function CatalogFilter({
         </div>
       )}
 
-      {brands.length > 1 && (
+      {activeCategories.size > 0 && brands.length > 1 && (
         <div className="flex flex-wrap gap-2">
           {brands.map(({ name, count }) => {
             const active = activeBrands.has(name)
