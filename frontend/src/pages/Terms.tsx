@@ -103,10 +103,25 @@ export default function Terms() {
         </ul>
       </section>
 
-      <section className="mb-10 space-y-3">
-        <h2 className="text-xl font-bold text-brandTextDark">10. Privacy</h2>
+      <section id="privacy" className="mb-10 space-y-3">
+        <h2 className="text-xl font-bold text-brandTextDark">10. Privacy & Data Collection</h2>
         <p className="text-brandTextMedium">
-          We respect your privacy. Personal information collected during orders, such as your name, phone number, and delivery address, is used solely for order fulfillment and will not be shared with third parties for marketing purposes.
+          In accordance with UAE Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data, we are transparent about what information we collect and how it is used.
+        </p>
+        <h3 className="text-lg font-semibold text-brandTextDark">What We Collect</h3>
+        <ul className="list-disc space-y-2 pl-5 text-brandTextMedium">
+          <li><strong>Order information</strong> — name, phone number, email, and delivery address you provide at checkout.</li>
+          <li><strong>Service & enquiry data</strong> — product references, messages, and form submissions sent via WhatsApp or our contact forms.</li>
+          <li><strong>Technical data</strong> — your approximate city, country, and IP address are recorded automatically when you submit an enquiry. This helps us serve customers in the UAE efficiently and detect misuse.</li>
+          <li><strong>Local storage</strong> — we store your cart contents and a minimal consent flag in your browser's local storage. No tracking cookies are set.</li>
+        </ul>
+        <h3 className="text-lg font-semibold text-brandTextDark">How We Use It</h3>
+        <p className="text-brandTextMedium">
+          Personal data is used solely for order fulfillment, customer support, and improving our services. We do not sell or share your information with third parties for marketing purposes.
+        </p>
+        <h3 className="text-lg font-semibold text-brandTextDark">Data Sharing & Retention</h3>
+        <p className="text-brandTextMedium">
+          We may share data with delivery partners to fulfill orders and with payment processors when online payments are enabled. Data is retained only as long as necessary for business and legal purposes.
         </p>
       </section>
 

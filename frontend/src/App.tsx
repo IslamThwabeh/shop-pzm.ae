@@ -1,6 +1,7 @@
 import { useState, useEffect, useLayoutEffect, lazy, Suspense } from 'react'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { CartProvider } from './context/CartContext'
 import './App.css'
 import type { Product } from '@shared/types'
 import { apiService } from './services/api'
@@ -8,9 +9,12 @@ import HomePage from './pages/HomePage'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import StoreContactSection from './components/StoreContactSection'
+import ConsentBanner from './components/ConsentBanner'
 import { sanitizeProductsForDisplay } from './utils/productPresentation'
 
 const ProductDetails = lazy(() => import('./pages/ProductDetails'))
+const Cart = lazy(() => import('./pages/Cart'))
+const Checkout = lazy(() => import('./pages/Checkout'))
 const OrderConfirmation = lazy(() => import('./pages/OrderConfirmation'))
 const AdminPage = lazy(() => import('./pages/AdminPage'))
 const Terms = lazy(() => import('./pages/Terms'))
@@ -235,7 +239,15 @@ function AppContent() {
           />
           <Route
             path="/product/:id"
-            element={<ProductDetails />}
+            element={<ProductDetails products={products} />}
+          />
+          <Route
+            path="/cart"
+            element={<Cart onContinueShopping={() => navigateTo('/services/brand-new')} onCheckout={() => navigateTo('/checkout')} />}
+          />
+          <Route
+            path="/checkout"
+            element={<Checkout onBack={() => navigateTo('/cart')} onSuccess={(id) => navigateTo(`/order/${id}`)} />}
           />
 
           <Route
@@ -268,6 +280,7 @@ function AppContent() {
 
       {showStoreContactSection && <StoreContactSection />}
       {!isInvoiceRoute && !isAdminRoute && <Footer />}
+      {!isInvoiceRoute && !isAdminRoute && <ConsentBanner />}
     </div>
   )
 }
@@ -275,7 +288,9 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
     </AuthProvider>
   )
 }

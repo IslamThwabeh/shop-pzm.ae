@@ -1,8 +1,9 @@
-import { Eye, MessageCircle } from 'lucide-react'
+import { Eye, MessageCircle, ShoppingCart } from 'lucide-react'
 import type { Product } from '@shared/types'
 import { getPrimaryProductImage } from '../utils/productPresentation'
 import RetailImage from './RetailImage'
 import { openWhatsAppLead } from '../utils/whatsappLead'
+import { useCart } from '../context/CartContext'
 
 interface Props {
   product: Product
@@ -10,6 +11,22 @@ interface Props {
 }
 
 export default function ProductCard({ product, onViewDetails }: Props) {
+  const { addItem } = useCart()
+  const inStock = (product.quantity ?? 0) > 0
+
+  const handleAddToCart = () => {
+    if (!inStock) return
+    addItem({
+      id: product.id,
+      model: product.model,
+      price: product.price,
+      quantity: 1,
+      color: product.color,
+      storage: product.storage,
+      condition: product.condition,
+    })
+  }
+
   const handleWhatsApp = () => {
     openWhatsAppLead({
       leadType: 'product',
@@ -67,14 +84,26 @@ export default function ProductCard({ product, onViewDetails }: Props) {
           AED {product.price.toFixed(0)}
         </p>
 
-        <button
-          type="button"
-          onClick={handleWhatsApp}
-          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#eee] py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-[#25D366] hover:text-[#25D366]"
-        >
-          <MessageCircle size={15} className="text-[#25D366]" />
-          Inquire
-        </button>
+        <div className="mt-3 flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={handleWhatsApp}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#eee] py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-[#25D366] hover:text-[#25D366]"
+          >
+            <MessageCircle size={15} className="text-[#25D366]" />
+            Order via WhatsApp
+          </button>
+          {inStock && (
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
+            >
+              <ShoppingCart size={15} />
+              Add to Cart
+            </button>
+          )}
+        </div>
       </div>
     </article>
   )

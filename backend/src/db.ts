@@ -576,8 +576,8 @@ export class Database {
     try {
       await this.db
         .prepare(
-          `INSERT INTO whatsapp_leads (id, lead_type, reference_id, reference_label, reference_price, source_page, whatsapp_message, status, notes, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          `INSERT INTO whatsapp_leads (id, lead_type, reference_id, reference_label, reference_price, source_page, whatsapp_message, status, notes, ip_address, city, country, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
         .bind(
           lead.id,
@@ -589,6 +589,9 @@ export class Database {
           lead.whatsapp_message,
           lead.status,
           lead.notes || null,
+          lead.ip_address || null,
+          lead.city || null,
+          lead.country || null,
           lead.created_at,
           lead.updated_at
         )

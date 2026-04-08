@@ -381,6 +381,22 @@ export default function WhatsAppLeadManagement({ onUnauthorized }: WhatsAppLeadM
                     <p className="mb-1 text-sm font-medium text-brandTextMedium">Source Page</p>
                     <p className="text-lg text-slate-950">{selectedLead.source_page || '—'}</p>
                   </div>
+                  {(selectedLead.city || selectedLead.country || selectedLead.ip_address) && (
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <p className="mb-1 text-sm font-medium text-brandTextMedium">City</p>
+                        <p className="text-lg text-slate-950">{selectedLead.city || '—'}</p>
+                      </div>
+                      <div>
+                        <p className="mb-1 text-sm font-medium text-brandTextMedium">Country</p>
+                        <p className="text-lg text-slate-950">{selectedLead.country || '—'}</p>
+                      </div>
+                      <div>
+                        <p className="mb-1 text-sm font-medium text-brandTextMedium">IP Address</p>
+                        <p className="text-sm font-mono text-slate-950">{selectedLead.ip_address || '—'}</p>
+                      </div>
+                    </div>
+                  )}
                   <div>
                     <p className="mb-1 text-sm font-medium text-brandTextMedium">Submitted</p>
                     <p className="text-lg text-slate-950">{formatDateTime(selectedLead.created_at)}</p>

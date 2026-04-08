@@ -1,5 +1,6 @@
-import { LogOut, ChevronDown, Menu, MessageCircle, Phone, X, Wrench } from 'lucide-react'
+import { LogOut, ChevronDown, Menu, MessageCircle, Phone, ShoppingCart, X, Wrench } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { useCart } from '../context/CartContext'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {
@@ -15,6 +16,7 @@ interface HeaderProps {
 
 export default function Header({ onNavigate }: HeaderProps) {
   const { isAuthenticated, logout } = useAuth()
+  const { items, lastAddedMessage } = useCart()
   const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMegaOpen, setIsMegaOpen] = useState(false)
@@ -188,16 +190,42 @@ export default function Header({ onNavigate }: HeaderProps) {
               >
                 <MessageCircle size={16} />
               </a>
+              <Link
+                to="/cart"
+                className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#eee] text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
+                aria-label="Shopping cart"
+              >
+                <ShoppingCart size={16} />
+                {items.length > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
+                    {items.length}
+                  </span>
+                )}
+              </Link>
             </div>
 
-            {/* Mobile hamburger */}
-            <button
+            {/* Mobile cart + hamburger */}
+            <div className="flex lg:hidden items-center gap-1">
+              <Link
+                to="/cart"
+                className="relative flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
+                aria-label="Shopping cart"
+              >
+                <ShoppingCart size={20} />
+                {items.length > 0 && (
+                  <span className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
+                    {items.length}
+                  </span>
+                )}
+              </Link>
+              <button
               onClick={() => setIsMobileMenuOpen((v) => !v)}
-              className="lg:hidden flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
+              className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
               aria-label="Toggle navigation"
             >
               {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
+            </div>
 
             {/* Admin logout */}
             {isAuthenticated && (
@@ -293,6 +321,21 @@ export default function Header({ onNavigate }: HeaderProps) {
             </a>
           </div>
         </div>
+      </div>
+
+      {/* Cart toast notification */}
+      <div
+        className={`fixed top-20 right-4 z-[60] flex items-center gap-2 rounded-xl border border-[#eee] bg-white px-4 py-3 shadow-lg transition-all duration-300 ${
+          lastAddedMessage
+            ? 'translate-y-0 opacity-100'
+            : '-translate-y-4 opacity-0 pointer-events-none'
+        }`}
+      >
+        <ShoppingCart size={16} className="text-primary" />
+        <span className="text-sm font-medium text-slate-700">{lastAddedMessage}</span>
+        <Link to="/cart" className="ml-2 text-xs font-semibold text-primary hover:underline">
+          View Cart
+        </Link>
       </div>
     </header>
   )

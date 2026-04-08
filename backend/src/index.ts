@@ -1001,6 +1001,7 @@ app.post('/api/whatsapp-leads', async (c) => {
       return c.json({ error: 'Invalid lead type', status: 400 }, 400);
     }
 
+    const cf = (c.req.raw as any).cf;
     const now = new Date().toISOString();
     const lead: WhatsAppLead = {
       id: generateId('wal'),
@@ -1011,6 +1012,9 @@ app.post('/api/whatsapp-leads', async (c) => {
       source_page: body.source_page || undefined,
       whatsapp_message: body.whatsapp_message,
       status: 'pending',
+      ip_address: c.req.header('CF-Connecting-IP') || undefined,
+      city: cf?.city || undefined,
+      country: cf?.country || undefined,
       created_at: now,
       updated_at: now,
     };

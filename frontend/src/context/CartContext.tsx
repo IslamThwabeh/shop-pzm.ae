@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
 export interface CartItem {
   id: string
@@ -17,12 +17,15 @@ interface CartContextType {
   updateQuantity: (id: string, quantity: number) => void
   clearCart: () => void
   total: number
+  /** Brief message shown after addItem — auto-clears after ~2 s */
+  lastAddedMessage: string | null
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([])
+  const [lastAddedMessage, setLastAddedMessage] = useState<string | null>(null)
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -41,7 +44,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('cart', JSON.stringify(items))
   }, [items])
 
-  const addItem = (item: CartItem) => {
+  const addItem = useCallback((item: CartItem) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.id === item.id)
       if (existing) {
@@ -51,7 +54,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return [...prev, item]
     })
-  }
+    setLastAddedMessage(`${item.model} added to cart`)
+    setTimeout(() => setLastAddedMessage(null), 2500)
+  }, [])
 
   const removeItem = (id: string) => {
     setItems((prev) => prev.filter((i) => i.id !== id))
@@ -74,7 +79,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, total }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, total, lastAddedMessage }}>
       {children}
     </CartContext.Provider>
   )

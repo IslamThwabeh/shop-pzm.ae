@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { MessageCircle } from 'lucide-react'
+import { MessageCircle, ShoppingCart } from 'lucide-react'
 import type { Product } from '@shared/types'
 import { groupVariantsByColorAndStorage, getPrimaryProductImage } from '../utils/productPresentation'
 import RetailImage from './RetailImage'
 import { openWhatsAppLead } from '../utils/whatsappLead'
+import { useCart } from '../context/CartContext'
 
 interface Props {
   /** Display title for this model group (e.g. "MacBook Air M3") */
@@ -16,6 +17,7 @@ interface Props {
 
 export default function VariantCard({ title, products, condition }: Props) {
   const group = groupVariantsByColorAndStorage(products)
+  const { addItem } = useCart()
   const [selectedColor, setSelectedColor] = useState(group.colors[0] ?? '')
   const [selectedStorage, setSelectedStorage] = useState(group.storages[0] ?? '')
 
@@ -109,15 +111,36 @@ export default function VariantCard({ title, products, condition }: Props) {
         )}
 
         {/* CTA */}
-        <button
-          style={{ marginTop: 'auto' }}
-          type="button"
-          onClick={handleWhatsApp}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#eee] py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-[#25D366] hover:text-[#25D366]"
-        >
-          <MessageCircle size={15} className="text-[#25D366]" />
-          Inquire
-        </button>
+        <div style={{ marginTop: 'auto' }} className="flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={handleWhatsApp}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#eee] py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-[#25D366] hover:text-[#25D366]"
+          >
+            <MessageCircle size={15} className="text-[#25D366]" />
+            Order via WhatsApp
+          </button>
+          {activeProduct && (activeProduct.quantity ?? 0) > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                addItem({
+                  id: activeProduct.id,
+                  model: title,
+                  price: activeProduct.price,
+                  quantity: 1,
+                  color: selectedColor,
+                  storage: selectedStorage,
+                  condition: activeProduct.condition,
+                })
+              }}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-2 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
+            >
+              <ShoppingCart size={15} />
+              Add to Cart
+            </button>
+          )}
+        </div>
       </div>
     </article>
   )

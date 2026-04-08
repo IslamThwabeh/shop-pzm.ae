@@ -163,6 +163,9 @@ export interface WhatsAppLead {
   whatsapp_message: string
   status: WhatsAppLeadStatus
   notes?: string
+  ip_address?: string
+  city?: string
+  country?: string
   created_at: string
   updated_at: string
 }
