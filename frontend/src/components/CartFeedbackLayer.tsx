@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { ShoppingCart } from 'lucide-react'
 import { useCart } from '../context/CartContext'
@@ -26,7 +27,11 @@ export default function CartFeedbackLayer() {
     }
   }, [lastAddedTick])
 
-  return (
+  if (typeof document === 'undefined') {
+    return null
+  }
+
+  return createPortal(
     <>
       <div
         aria-live="polite"
@@ -67,5 +72,7 @@ export default function CartFeedbackLayer() {
         </Link>
       </div>
     </>
+    ,
+    document.body,
   )
 }
