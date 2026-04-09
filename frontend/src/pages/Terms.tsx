@@ -1,4 +1,5 @@
 import Seo from '../components/Seo'
+import { siteIdentity } from '../content/siteData'
 
 export default function Terms() {
   return (
@@ -14,14 +15,14 @@ export default function Terms() {
 
       <section className="mb-10 space-y-3">
         <p className="text-brandTextMedium">
-          Welcome to PZM Computers &amp; Phones Store -New•Used•Repair•PC•Build. By accessing our website (<a href="https://pzm.ae" className="text-primary hover:underline">pzm.ae</a>) or purchasing products from our store, you agree to be bound by the following terms and conditions.
+          Welcome to {siteIdentity.name}. By accessing our website (<a href="https://pzm.ae" className="text-primary hover:underline">pzm.ae</a>) or purchasing products from our store, you agree to be bound by the following terms and conditions.
         </p>
       </section>
 
       <section className="mb-10 space-y-3">
         <h2 className="text-xl font-bold text-brandTextDark">1. Business Information</h2>
         <p className="text-brandTextMedium">
-          <strong className="font-bold">PZM Computers &amp; Phones Store -New•Used•Repair•PC•Build</strong><br/>
+          <strong className="font-bold">{siteIdentity.name}</strong><br/>
           Al Barsha, Hessa Street, Inside Hessa Union Coop Hypermarket, Ground Floor<br/>
           Dubai, United Arab Emirates<br/><br/>
           Phone/WhatsApp: <a href="tel:+971528026677" className="font-bold text-primary hover:underline">+971 52 802 6677</a>
@@ -90,7 +91,7 @@ export default function Terms() {
       <section className="mb-10 space-y-3">
         <h2 className="text-xl font-bold text-brandTextDark">8. Intellectual Property</h2>
         <p className="text-brandTextMedium">
-          All content on this website, including text, images, logos, and design, is the property of PZM Computers &amp; Phones Store -New•Used•Repair•PC•Build and is protected by applicable intellectual property laws. You may not reproduce, distribute, or modify any content without our written permission.
+          All content on this website, including text, images, logos, and design, is the property of {siteIdentity.name} and is protected by applicable intellectual property laws. You may not reproduce, distribute, or modify any content without our written permission.
         </p>
       </section>
 

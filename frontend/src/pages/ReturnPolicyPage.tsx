@@ -1,5 +1,5 @@
 import Seo from '../components/Seo'
-import { siteContact } from '../content/siteData'
+import { siteContact, siteIdentity } from '../content/siteData'
 
 export default function ReturnPolicyPage() {
   return (
@@ -15,7 +15,7 @@ export default function ReturnPolicyPage() {
 
       <section className="mb-10 space-y-3">
         <p className="text-brandTextMedium">
-          At PZM Computers &amp; Phones Store -New•Used•Repair•PC•Build, we are committed to ensuring your satisfaction with every purchase. This policy outlines the terms and conditions for returns and refunds on products purchased from our store in Al Barsha, Dubai, or via our delivery service across the UAE.
+          At {siteIdentity.name}, we are committed to ensuring your satisfaction with every purchase. This policy outlines the terms and conditions for returns and refunds on products purchased from our store in Al Barsha, Dubai, or via our delivery service across the UAE.
         </p>
       </section>
 

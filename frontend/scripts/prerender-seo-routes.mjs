@@ -623,7 +623,7 @@ const termsSnapshotSections = [
   {
     title: '1. Business Information',
     paragraphs: [
-      'PZM Computers & Phones Store - New•Used•Repair•PC•Build operates from Al Barsha on Hessa Street inside Hessa Union Coop Hypermarket, Ground Floor, Dubai, United Arab Emirates.',
+      'PZM Computers & Phones Store operates from Al Barsha on Hessa Street inside Hessa Union Coop Hypermarket, Ground Floor, Dubai, United Arab Emirates.',
       'Phone and WhatsApp support is available on +971 52 802 6677 for questions about ordering, pricing, delivery, and store visits.',
     ],
   },
