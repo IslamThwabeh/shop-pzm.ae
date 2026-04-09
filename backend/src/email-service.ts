@@ -16,6 +16,24 @@ const TEAM_NOTIFICATION_EMAIL = 'islam.thwabeh@gmail.com';
 const CONTACT_PHONE_DISPLAY = '+971 52 802 6677';
 const CONTACT_PHONE_E164 = '+971528026677';
 const CONTACT_WHATSAPP_URL = 'https://wa.me/971528026677?text=Hi%2C%20I%20need%20help%20with%20my%20PZM%20order%20or%20service%20request.';
+const FREE_DUBAI_DELIVERY_THRESHOLD = 500;
+
+function isDubaiAddress(address?: string): boolean {
+  return !!address?.trim() && /\bdubai\b/i.test(address);
+}
+
+function getDeliveryPolicy(totalPrice: number, customerAddress?: string) {
+  const qualifiesForFreeDelivery = isDubaiAddress(customerAddress) && totalPrice > FREE_DUBAI_DELIVERY_THRESHOLD;
+
+  return {
+    qualifiesForFreeDelivery,
+    statusLabel: qualifiesForFreeDelivery ? 'Free' : 'Confirmed by location',
+    totalLabel: qualifiesForFreeDelivery ? 'Total Amount' : 'Items Total',
+    detail: qualifiesForFreeDelivery
+      ? `Delivery is free because the address is in Dubai and the items total is over AED ${FREE_DUBAI_DELIVERY_THRESHOLD}.`
+      : `Delivery fee will be confirmed based on location before dispatch.`,
+  };
+}
 
 export class EmailService {
   private apiToken: string;
@@ -299,6 +317,7 @@ export class EmailService {
     notes?: string,
     customerAddress?: string
   ): string {
+    const deliveryPolicy = getDeliveryPolicy(totalPrice, customerAddress);
     // Generate items HTML
     const itemsHtml = orderItems.map((item, index) => `
       <div class="product-item">
@@ -349,6 +368,19 @@ export class EmailService {
         </div>
       </div>
     ` : '';
+
+    const deliveryHtml = `
+      <div class="order-details" style="background: ${deliveryPolicy.qualifiesForFreeDelivery ? '#ecfdf5' : '#fff8e1'}; border-left: 4px solid ${deliveryPolicy.qualifiesForFreeDelivery ? '#16a34a' : '#ff9800'};">
+        <div class="detail-row">
+          <span class="label">🚚 Delivery:</span>
+          <span class="value"><strong>${deliveryPolicy.statusLabel}</strong></span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Policy:</span>
+          <span class="value">${deliveryPolicy.detail}</span>
+        </div>
+      </div>
+    `;
 
     return `
       <!DOCTYPE html>
@@ -406,15 +438,18 @@ export class EmailService {
               
             <div class="total-row">
               <div class="detail-row">
-                <span class="label">Total Amount:</span>
+                <span class="label">${deliveryPolicy.totalLabel}:</span>
                 <span class="value">AED ${totalPrice.toFixed(2)}</span>
               </div>
             </div>
+
+            ${deliveryHtml}
             
             <p><strong>What's Next?</strong></p>
             <ul>
               <li>Your order is being prepared for shipment</li>
               <li>You'll receive a notification when it's ready for delivery</li>
+              <li>${deliveryPolicy.detail}</li>
               <li>We will keep you updated as your order moves through confirmation, preparation, and delivery.</li>
             </ul>
             ${this.getCustomerContactNoteHtml()}
@@ -453,6 +488,7 @@ export class EmailService {
     notes?: string,
     customerAddress?: string
   ): string {
+    const deliveryPolicy = getDeliveryPolicy(totalPrice, customerAddress);
     // Generate items HTML
     const itemsHtml = orderItems.map((item, index) => `
       <div class="product-item">
@@ -503,6 +539,19 @@ export class EmailService {
         </div>
       </div>
     ` : '';
+
+    const deliveryHtml = `
+      <div class="customer-info" style="background: ${deliveryPolicy.qualifiesForFreeDelivery ? '#ecfdf5' : '#fff8e1'}; border-left: 4px solid ${deliveryPolicy.qualifiesForFreeDelivery ? '#16a34a' : '#ff9800'};">
+        <div class="info-row">
+          <span class="label">🚚 Delivery:</span>
+          <span><strong>${deliveryPolicy.statusLabel}</strong></span>
+        </div>
+        <div class="info-row">
+          <span class="label">Policy:</span>
+          <span>${deliveryPolicy.detail}</span>
+        </div>
+      </div>
+    `;
 
     return `
       <!DOCTYPE html>
@@ -571,14 +620,17 @@ export class EmailService {
               
             <div class="total-row">
               <div class="info-row">
-                <span class="label">Total Amount:</span>
+                <span class="label">${deliveryPolicy.totalLabel}:</span>
                 <span style="font-size: 18px; font-weight: bold; color: #00A76F;">AED ${totalPrice.toFixed(2)}</span>
               </div>
             </div>
+
+            ${deliveryHtml}
             
             <p><strong>Action Required:</strong></p>
             <ul>
               <li>Process the order and prepare items for shipment</li>
+              <li>Confirm any delivery fee if the order does not qualify for free Dubai delivery</li>
               <li>Contact customer if needed</li>
               <li>Update order status in admin panel</li>
             </ul>

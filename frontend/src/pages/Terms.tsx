@@ -64,7 +64,7 @@ export default function Terms() {
         <ul className="list-disc space-y-2 pl-5 text-brandTextMedium">
           <li>We offer same-day delivery within Dubai, subject to order time and driver scheduling.</li>
           <li>Delivery across the UAE is available with estimated delivery of 1 to 3 business days.</li>
-          <li>Free delivery is available on eligible orders within Dubai.</li>
+          <li>Free delivery applies only inside Dubai on orders over AED 500.</li>
           <li>Delivery charges, if applicable, will be communicated before order confirmation.</li>
           <li>You must be available at the delivery address to receive and inspect the product.</li>
         </ul>

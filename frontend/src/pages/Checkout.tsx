@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import Seo from '../components/Seo'
 import { buildApiUrl } from '../utils/siteConfig'
+import { getDeliveryPolicy, getGrossVatBreakdown } from '../utils/orderPricing'
 
 interface CheckoutProps {
   onBack: () => void
@@ -13,6 +14,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
   const { items, total, clearCart } = useCart()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const pricing = getGrossVatBreakdown(total)
   const [formData, setFormData] = useState({
     customerName: '',
     customerEmail: '',
@@ -22,6 +24,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
     acceptTerms: false,
     emailConsent: true,
   })
+  const deliveryPolicy = getDeliveryPolicy(pricing.grossTotal, formData.customerAddress)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target
@@ -39,7 +42,6 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
     if (!formData.customerPhone.trim()) return 'Phone is required'
     if (!/^\+?[\d\s\-()]{7,}$/.test(formData.customerPhone)) return 'Invalid phone format'
     if (!formData.customerAddress.trim()) return 'Address is required'
-    if (!/dubai/i.test(formData.customerAddress)) return 'We currently only deliver to Dubai. Please enter a Dubai address.'
     if (!formData.acceptTerms) return 'You must accept the Terms and Conditions to proceed'
     if (items.length === 0) return 'Cart is empty'
     return null
@@ -73,7 +75,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
           customer_phone: formData.customerPhone,
           customer_address: formData.customerAddress,
           items: orderItems, // Send all items
-          total_price: total,
+          total_price: pricing.grossTotal,
           notes: formData.notes,
           email_consent: formData.emailConsent,
         }),
@@ -92,9 +94,10 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
       localStorage.setItem('lastOrderDetails', JSON.stringify({
         orderId,
         items,
-        total,
+        total: pricing.grossTotal,
         customerName: formData.customerName,
         customerEmail: formData.customerEmail,
+        customerAddress: formData.customerAddress,
       }))
 
       clearCart()
@@ -117,7 +120,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
       <div className="text-center py-12 bg-white rounded-lg shadow">
         <Seo
           title="Checkout | PZM Computers & Phones"
-          description="Secure checkout with Cash on Delivery in Dubai."
+          description="Secure checkout with cash on delivery and delivery confirmation by location."
           canonicalPath="/checkout"
           noindex={true}
         />
@@ -137,7 +140,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
     <div>
       <Seo
         title="Checkout | PZM Computers & Phones"
-        description="Secure checkout with Cash on Delivery in Dubai."
+        description="Secure checkout with cash on delivery and delivery confirmation by location."
         canonicalPath="/checkout"
         noindex={true}
       />
@@ -215,21 +218,21 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
               {/* Address */}
               <div>
                 <label className="block text-sm font-semibold text-primary mb-2">
-                  Delivery Address (Dubai) *
+                  Delivery Address *
                 </label>
                 <textarea
                   name="customerAddress"
                   value={formData.customerAddress}
                   onChange={handleChange}
-                  placeholder="e.g., Dubai, Hessa Street Branch, Inside Hessa Union Coop Hypermarket, Ground floor"
+                  placeholder="e.g., Dubai Marina, Al Barsha, Sharjah, building name, area, flat number"
                   rows={3}
                   className="w-full px-4 py-2 border border-brandBorder rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-brandTextDark placeholder-brandTextMedium"
                   required
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  💡 Example: Dubai, Hessa Street Branch, Inside Hessa Union Coop Hypermarket, Ground floor
+                  💡 Example: Al Barsha, Dubai, building name, floor, apartment or villa number
                 </p>
-                <p className="text-xs text-orange-600 mt-1">⚠️ We currently only deliver within Dubai</p>
+                <p className="text-xs text-orange-600 mt-1">⚠️ Free delivery applies only inside Dubai on orders over AED 500. Other delivery fees are confirmed based on location.</p>
               </div>
 
               {/* Notes */}
@@ -300,7 +303,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
                   <div>
                     <p className="font-semibold text-primary">Cash on Delivery (COD)</p>
                     <p className="text-sm text-brandTextMedium mt-1">
-                      Pay when you receive your order. No advance payment required.
+                      Pay when you receive your order. If a delivery fee applies, our team will confirm it before dispatch.
                     </p>
                   </div>
                 </div>
@@ -337,30 +340,34 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
             <div className="space-y-3 mb-6 pb-6 border-b">
               <div className="flex justify-between text-brandTextMedium">
                 <span>Subtotal</span>
-                <span>AED {total.toFixed(2)}</span>
+                <span>AED {pricing.subtotalExVat.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-brandTextMedium">
-                <span>Shipping</span>
-                <span className="text-primary font-semibold">Free</span>
+                <span>Delivery</span>
+                <span className={`font-semibold ${deliveryPolicy.statusToneClass}`}>{deliveryPolicy.statusLabel}</span>
               </div>
+            </div>
+
+            <div className={`mb-6 rounded-lg border p-4 text-sm ${deliveryPolicy.qualifiesForFreeDelivery ? 'border-green-200 bg-green-50 text-green-700' : 'border-amber-200 bg-amber-50 text-amber-700'}`}>
+              {deliveryPolicy.detailedRule}
             </div>
 
             {/* VAT Breakdown */}
             <div className="space-y-2 mb-6 pb-6 border-b bg-blue-50 p-4 rounded-lg">
               <h3 className="font-semibold text-primary mb-3 text-sm">Amount Breakdown</h3>
               <div className="flex justify-between text-sm">
-                <span className="text-brandTextMedium">Mobile Price</span>
-                <span className="font-semibold text-brandTextDark">AED {(total * 0.95).toFixed(2)}</span>
+                <span className="text-brandTextMedium">Items Price</span>
+                <span className="font-semibold text-brandTextDark">AED {pricing.subtotalExVat.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-brandTextMedium">VAT (5%)</span>
-                <span className="font-semibold text-brandTextDark">AED {(total * 0.05).toFixed(2)}</span>
+                <span className="font-semibold text-brandTextDark">AED {pricing.vatAmount.toFixed(2)}</span>
               </div>
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="text-lg font-bold text-brandTextDark">Total</span>
-              <span className="text-3xl font-bold text-primary">AED {total.toFixed(2)}</span>
+              <span className="text-lg font-bold text-brandTextDark">{deliveryPolicy.totalLabel}</span>
+              <span className="text-3xl font-bold text-primary">AED {pricing.grossTotal.toFixed(2)}</span>
             </div>
 
             <div className="mt-6 p-3 bg-green-50 rounded border border-primary">

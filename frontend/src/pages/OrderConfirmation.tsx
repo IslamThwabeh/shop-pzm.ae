@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { CheckCircle, Home, Copy } from 'lucide-react'
 import Seo from '../components/Seo'
 import { siteContact } from '../content/siteData'
+import { getDeliveryPolicy, getGrossVatBreakdown } from '../utils/orderPricing'
 
 interface OrderConfirmationProps {
   orderId: string
@@ -23,6 +24,7 @@ interface OrderDetails {
   total: number
   customerName: string
   customerEmail: string
+  customerAddress?: string
 }
 
 export default function OrderConfirmation({ orderId, onContinueShopping }: OrderConfirmationProps) {
@@ -36,6 +38,8 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
   const parts = rawId?.split('-')
   const randomPart = parts?.[parts.length - 1] || rawId || '000000'
   const displayOrderId = `PZM-${randomPart}`
+  const pricing = orderDetails ? getGrossVatBreakdown(orderDetails.total) : null
+  const deliveryPolicy = orderDetails ? getDeliveryPolicy(orderDetails.total, orderDetails.customerAddress) : null
 
   useEffect(() => {
     // Load order details from localStorage
@@ -129,21 +133,29 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
               </div>
             ))}
             <div className="mt-4 pt-4 border-t-2 border-primary flex justify-between items-center">
-              <span className="text-xl font-bold text-brandTextDark">Total Amount:</span>
-              <span className="text-2xl font-bold text-primary">AED {orderDetails.total.toFixed(2)}</span>
+              <span className="text-brandTextMedium">Delivery</span>
+              <span className={`text-sm font-semibold ${deliveryPolicy?.statusToneClass ?? 'text-amber-600'}`}>{deliveryPolicy?.statusLabel ?? 'Confirmed by location'}</span>
+            </div>
+            <div className="mt-4 pt-4 border-t-2 border-primary flex justify-between items-center">
+              <span className="text-xl font-bold text-brandTextDark">{deliveryPolicy?.totalLabel ?? 'Items Total'}:</span>
+              <span className="text-2xl font-bold text-primary">AED {pricing?.grossTotal.toFixed(2) ?? orderDetails.total.toFixed(2)}</span>
             </div>
             
             {/* VAT Breakdown */}
             <div className="mt-6 pt-6 border-t bg-blue-50 p-4 rounded-lg">
               <h3 className="font-semibold text-primary mb-3 text-sm">Amount Breakdown</h3>
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-brandTextMedium">Mobile Price</span>
-                <span className="font-semibold text-brandTextDark">AED {(orderDetails.total * 0.95).toFixed(2)}</span>
+                <span className="text-brandTextMedium">Items Price</span>
+                <span className="font-semibold text-brandTextDark">AED {pricing?.subtotalExVat.toFixed(2) ?? orderDetails.total.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-brandTextMedium">VAT (5%)</span>
-                <span className="font-semibold text-brandTextDark">AED {(orderDetails.total * 0.05).toFixed(2)}</span>
+                <span className="font-semibold text-brandTextDark">AED {pricing?.vatAmount.toFixed(2) ?? '0.00'}</span>
               </div>
+            </div>
+
+            <div className={`mt-4 rounded-lg border p-4 text-sm ${deliveryPolicy?.qualifiesForFreeDelivery ? 'border-green-200 bg-green-50 text-green-700' : 'border-amber-200 bg-amber-50 text-amber-700'}`}>
+              {deliveryPolicy?.detailedRule ?? 'Delivery fee will be confirmed based on location before dispatch.'}
             </div>
           </div>
         )}
@@ -189,7 +201,9 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
               <div>
                 <p className="font-semibold text-brandTextDark">Delivery</p>
                 <p className="text-sm text-brandTextMedium">
-                  Your order will be delivered to your address. You can pay via cash on delivery.
+                  {deliveryPolicy?.qualifiesForFreeDelivery
+                    ? 'Your Dubai order qualifies for free delivery. We will confirm the timing before dispatch.'
+                    : 'We will confirm delivery timing and any delivery fee based on your location before dispatch.'}
                 </p>
               </div>
             </div>
@@ -214,8 +228,9 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
         <div className="bg-green-50 border-2 border-primary rounded-lg p-6 mb-8">
           <h3 className="font-bold text-primary mb-2">💳 Cash on Delivery Payment</h3>
           <p className="text-sm text-brandTextMedium">
-            You will pay the full amount when the delivery person arrives at your address.
-            Please have the exact amount ready for a smooth transaction.
+            {deliveryPolicy?.qualifiesForFreeDelivery
+              ? `You will pay AED ${pricing?.grossTotal.toFixed(2) ?? orderDetails?.total.toFixed(2) ?? '0.00'} when the delivery person arrives. Delivery is free for this order.`
+              : `You will pay the items total of AED ${pricing?.grossTotal.toFixed(2) ?? orderDetails?.total.toFixed(2) ?? '0.00'}. If a delivery fee applies, we will confirm it based on your location before dispatch.`}
           </p>
         </div>
 

@@ -1,6 +1,7 @@
 import { Trash2, ArrowLeft } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import Seo from '../components/Seo'
+import { getDeliveryPolicy, getGrossVatBreakdown } from '../utils/orderPricing'
 
 interface CartProps {
   onContinueShopping: () => void
@@ -9,6 +10,8 @@ interface CartProps {
 
 export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
   const { items, removeItem, updateQuantity, total } = useCart()
+  const pricing = getGrossVatBreakdown(total)
+  const deliveryPolicy = getDeliveryPolicy(total)
 
   if (items.length === 0) {
     return (
@@ -171,21 +174,21 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
             <div className="space-y-3 mb-6 pb-6 border-b">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span>AED {(total / 1.05).toFixed(2)}</span>
+                <span>AED {pricing.subtotalExVat.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-gray-600">
-                <span>Shipping</span>
-                <span className="text-green-600">Free</span>
+                <span>Delivery</span>
+                <span className={`font-semibold ${deliveryPolicy.statusToneClass}`}>{deliveryPolicy.statusLabel}</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Tax (5% VAT)</span>
-                <span>AED {(total - (total / 1.05)).toFixed(2)}</span>
+                <span>AED {pricing.vatAmount.toFixed(2)}</span>
               </div>
             </div>
 
             <div className="flex justify-between items-center mb-6">
-              <span className="text-lg font-bold text-gray-900">Total</span>
-              <span className="text-3xl font-bold text-primary">AED {total.toFixed(2)}</span>
+              <span className="text-lg font-bold text-gray-900">{deliveryPolicy.totalLabel}</span>
+              <span className="text-3xl font-bold text-primary">AED {pricing.grossTotal.toFixed(2)}</span>
             </div>
 
             <button
@@ -199,6 +202,11 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
               <p className="text-xs text-primary font-semibold">
                 <strong>✓ Cash on Delivery</strong> - Pay when you receive your order
               </p>
+            </div>
+
+            <div className="mt-4 rounded border border-amber-200 bg-amber-50 p-3">
+              <p className="text-xs font-semibold text-amber-700">Delivery policy</p>
+              <p className="mt-1 text-xs text-amber-700">{deliveryPolicy.shortRule}</p>
             </div>
           </div>
         </div>

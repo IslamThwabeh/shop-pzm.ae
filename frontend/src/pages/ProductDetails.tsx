@@ -196,7 +196,7 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
           <div className="grid grid-cols-3 gap-3 border-t border-[#eee] pt-5">
             <div className="text-center">
               <Truck size={18} className="mx-auto text-primary" />
-              <p className="mt-1.5 text-[11px] font-medium text-slate-500">Free Delivery</p>
+              <p className="mt-1.5 text-[11px] font-medium text-slate-500">Dubai free 500+</p>
             </div>
             <div className="text-center">
               <ShieldCheck size={18} className="mx-auto text-primary" />
