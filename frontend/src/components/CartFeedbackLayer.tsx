@@ -15,6 +15,7 @@ export default function CartFeedbackLayer() {
     location.pathname === '/checkout' ||
     location.pathname.startsWith('/order/')
   )
+  const showFloatingCart = !hideFloatingCart && itemCount > 0
 
   useEffect(() => {
     if (!lastAddedTick) {
@@ -57,19 +58,19 @@ export default function CartFeedbackLayer() {
         )}
       </div>
 
-      {!hideFloatingCart && (
-        <div className="pointer-events-none fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-[65] lg:hidden">
+      {showFloatingCart && (
+        <div className="pointer-events-none fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] right-3 z-[65] lg:hidden sm:bottom-[calc(1rem+env(safe-area-inset-bottom))] sm:right-4">
           <Link
             ref={floatingCartRef}
             to="/cart"
             data-cart-feedback-target="mobile-floating"
             aria-label={`Shopping cart, ${itemCount} item${itemCount === 1 ? '' : 's'}`}
-            className="cart-floating-button pointer-events-auto relative inline-flex min-h-[3.5rem] items-center gap-3 rounded-full border border-[#e8ecef] bg-white/96 pl-3 pr-4 text-slate-900 shadow-[0_14px_34px_rgba(15,23,42,0.16)] backdrop-blur transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.18)]"
+            className="cart-floating-button pointer-events-auto relative inline-flex h-14 w-14 items-center justify-center rounded-full border border-[#e8ecef] bg-white/96 p-0 text-slate-900 shadow-[0_14px_34px_rgba(15,23,42,0.16)] backdrop-blur transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.18)] sm:min-h-[3.5rem] sm:w-auto sm:justify-start sm:gap-3 sm:pl-3 sm:pr-4"
           >
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white shadow-sm">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-slate-900 text-white shadow-sm sm:h-10 sm:w-10">
               <ShoppingCart size={18} />
             </span>
-            <span className="pr-3 text-sm font-semibold">Cart</span>
+            <span className="hidden pr-3 text-sm font-semibold sm:inline">Cart</span>
             <span
               key={`floating-${itemCount}-${lastAddedTick}`}
               className={`cart-count-badge absolute -right-1 -top-1 flex h-6 min-w-[1.5rem] items-center justify-center rounded-full px-1.5 text-[11px] font-bold shadow-sm ring-2 ring-white ${badgeToneClass}`}
