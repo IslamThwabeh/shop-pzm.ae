@@ -4,6 +4,7 @@
  */
 
 import type { OrderItem, ServiceRequest, WhatsAppLead } from '../../shared/types';
+import { getDeliveryPolicy } from '../../shared/utils';
 
 interface EmailOptions {
   to: string;
@@ -11,29 +12,17 @@ interface EmailOptions {
   htmlBody: string;
 }
 
+interface OrderPricingSummary {
+  itemsTotal: number;
+  deliveryFee: number | null;
+  totalPrice: number;
+}
+
 const NO_REPLY_EMAIL = 'no-reply@pzm.ae';
 const TEAM_NOTIFICATION_EMAIL = 'islam.thwabeh@gmail.com';
 const CONTACT_PHONE_DISPLAY = '+971 52 802 6677';
 const CONTACT_PHONE_E164 = '+971528026677';
 const CONTACT_WHATSAPP_URL = 'https://wa.me/971528026677?text=Hi%2C%20I%20need%20help%20with%20my%20PZM%20order%20or%20service%20request.';
-const FREE_DUBAI_DELIVERY_THRESHOLD = 500;
-
-function isDubaiAddress(address?: string): boolean {
-  return !!address?.trim() && /\bdubai\b/i.test(address);
-}
-
-function getDeliveryPolicy(totalPrice: number, customerAddress?: string) {
-  const qualifiesForFreeDelivery = isDubaiAddress(customerAddress) && totalPrice > FREE_DUBAI_DELIVERY_THRESHOLD;
-
-  return {
-    qualifiesForFreeDelivery,
-    statusLabel: qualifiesForFreeDelivery ? 'Free' : 'Confirmed by location',
-    totalLabel: qualifiesForFreeDelivery ? 'Total Amount' : 'Items Total',
-    detail: qualifiesForFreeDelivery
-      ? `Delivery is free because the address is in Dubai and the items total is over AED ${FREE_DUBAI_DELIVERY_THRESHOLD}.`
-      : `Delivery fee will be confirmed based on location before dispatch.`,
-  };
-}
 
 export class EmailService {
   private apiToken: string;
@@ -145,7 +134,7 @@ export class EmailService {
     customerName: string,
     orderId: string,
     orderItems: OrderItem[],
-    totalPrice: number,
+    pricing: OrderPricingSummary,
     notes?: string,
     customerAddress?: string
   ): Promise<boolean> {
@@ -154,7 +143,7 @@ export class EmailService {
       customerName,
       displayId,
       orderItems,
-      totalPrice,
+      pricing,
       notes,
       customerAddress
     );
@@ -175,7 +164,7 @@ export class EmailService {
     customerEmail: string,
     customerPhone: string,
     orderItems: OrderItem[],
-    totalPrice: number,
+    pricing: OrderPricingSummary,
     notes?: string,
     customerAddress?: string
   ): Promise<boolean> {
@@ -186,7 +175,7 @@ export class EmailService {
       customerEmail,
       customerPhone,
       orderItems,
-      totalPrice,
+      pricing,
       notes,
       customerAddress
     );
@@ -313,11 +302,11 @@ export class EmailService {
     customerName: string,
     orderId: string,
     orderItems: OrderItem[],
-    totalPrice: number,
+    pricing: OrderPricingSummary,
     notes?: string,
     customerAddress?: string
   ): string {
-    const deliveryPolicy = getDeliveryPolicy(totalPrice, customerAddress);
+    const deliveryPolicy = getDeliveryPolicy(pricing.itemsTotal, customerAddress);
     // Generate items HTML
     const itemsHtml = orderItems.map((item, index) => `
       <div class="product-item">
@@ -377,7 +366,7 @@ export class EmailService {
         </div>
         <div class="detail-row">
           <span class="label">Policy:</span>
-          <span class="value">${deliveryPolicy.detail}</span>
+          <span class="value">${deliveryPolicy.detailedRule}</span>
         </div>
       </div>
     `;
@@ -438,8 +427,16 @@ export class EmailService {
               
             <div class="total-row">
               <div class="detail-row">
+                <span class="label">Items Total:</span>
+                <span class="value">AED ${pricing.itemsTotal.toFixed(2)}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Delivery Fee:</span>
+                <span class="value">${deliveryPolicy.deliveryFee === null ? 'Confirmed by location' : deliveryPolicy.qualifiesForFreeDelivery ? 'Free' : `AED ${pricing.deliveryFee?.toFixed(2) ?? '0.00'}`}</span>
+              </div>
+              <div class="detail-row">
                 <span class="label">${deliveryPolicy.totalLabel}:</span>
-                <span class="value">AED ${totalPrice.toFixed(2)}</span>
+                <span class="value">AED ${pricing.totalPrice.toFixed(2)}</span>
               </div>
             </div>
 
@@ -449,7 +446,7 @@ export class EmailService {
             <ul>
               <li>Your order is being prepared for shipment</li>
               <li>You'll receive a notification when it's ready for delivery</li>
-              <li>${deliveryPolicy.detail}</li>
+              <li>${deliveryPolicy.detailedRule}</li>
               <li>We will keep you updated as your order moves through confirmation, preparation, and delivery.</li>
             </ul>
             ${this.getCustomerContactNoteHtml()}
@@ -484,11 +481,11 @@ export class EmailService {
     customerEmail: string,
     customerPhone: string,
     orderItems: OrderItem[],
-    totalPrice: number,
+    pricing: OrderPricingSummary,
     notes?: string,
     customerAddress?: string
   ): string {
-    const deliveryPolicy = getDeliveryPolicy(totalPrice, customerAddress);
+    const deliveryPolicy = getDeliveryPolicy(pricing.itemsTotal, customerAddress);
     // Generate items HTML
     const itemsHtml = orderItems.map((item, index) => `
       <div class="product-item">
@@ -548,7 +545,7 @@ export class EmailService {
         </div>
         <div class="info-row">
           <span class="label">Policy:</span>
-          <span>${deliveryPolicy.detail}</span>
+          <span>${deliveryPolicy.detailedRule}</span>
         </div>
       </div>
     `;
@@ -620,8 +617,16 @@ export class EmailService {
               
             <div class="total-row">
               <div class="info-row">
+                <span class="label">Items Total:</span>
+                <span style="font-size: 18px; font-weight: bold; color: #00A76F;">AED ${pricing.itemsTotal.toFixed(2)}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">Delivery Fee:</span>
+                <span>${deliveryPolicy.deliveryFee === null ? 'Confirmed by location' : deliveryPolicy.qualifiesForFreeDelivery ? 'Free' : `AED ${pricing.deliveryFee?.toFixed(2) ?? '0.00'}`}</span>
+              </div>
+              <div class="info-row">
                 <span class="label">${deliveryPolicy.totalLabel}:</span>
-                <span style="font-size: 18px; font-weight: bold; color: #00A76F;">AED ${totalPrice.toFixed(2)}</span>
+                <span style="font-size: 18px; font-weight: bold; color: #00A76F;">AED ${pricing.totalPrice.toFixed(2)}</span>
               </div>
             </div>
 
@@ -630,7 +635,7 @@ export class EmailService {
             <p><strong>Action Required:</strong></p>
             <ul>
               <li>Process the order and prepare items for shipment</li>
-              <li>Confirm any delivery fee if the order does not qualify for free Dubai delivery</li>
+              <li>${deliveryPolicy.deliveryFee === null ? 'Confirm the delivery fee based on the customer location before dispatch' : 'Use the stored delivery fee when arranging dispatch and collection'}</li>
               <li>Contact customer if needed</li>
               <li>Update order status in admin panel</li>
             </ul>

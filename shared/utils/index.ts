@@ -2,6 +2,8 @@
  * Shared utility functions used by both frontend and backend
  */
 
+export * from './orderPricing'
+
 // ============ ID GENERATION ============
 
 export function generateId(prefix: string): string {

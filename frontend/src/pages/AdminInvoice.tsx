@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { buildApiUrl } from '../utils/siteConfig'
+import { getGrossVatBreakdown } from '../utils/orderPricing'
 
 interface OrderItemProduct {
   id: string
@@ -32,6 +33,8 @@ interface OrderResponse {
   notes?: string
   product_id?: string | null
   quantity?: number
+  items_total?: number
+  delivery_fee?: number | null
   total_price: number
   payment_method: string
   status: string
@@ -49,7 +52,6 @@ const COMPANY = {
   address: 'Dubai, United Arab Emirates',
 }
 
-const VAT_RATE = 0.05 // 5%
 const round2 = (n: number) => Math.round(n * 100) / 100
 
 function formatOrderId(id: string) {
@@ -137,14 +139,15 @@ export default function AdminInvoice() {
 
     // Fallback for legacy single-product orders
     if (order.product_id && order.quantity) {
+      const legacyItemsTotal = order.items_total ?? order.total_price
       return [
         {
           id: 'legacy-1',
           order_id: order.id,
           product_id: order.product_id,
           quantity: order.quantity,
-          unit_price: order.total_price / order.quantity,
-          subtotal: order.total_price,
+          unit_price: legacyItemsTotal / order.quantity,
+          subtotal: legacyItemsTotal,
           created_at: order.created_at,
         } as OrderItem,
       ]
@@ -153,10 +156,25 @@ export default function AdminInvoice() {
     return []
   }, [order])
 
-  // The order total is considered GROSS (includes VAT)
+  const itemsTotal = useMemo(() => {
+    if (!order) return 0
+    if (typeof order.items_total === 'number') return round2(order.items_total)
+    if (lineItems.length > 0) {
+      return round2(lineItems.reduce((sum, li) => sum + (li.subtotal || li.unit_price * li.quantity), 0))
+    }
+    return round2(order.total_price)
+  }, [lineItems, order])
+
+  const deliveryFee = useMemo(() => {
+    if (typeof order?.delivery_fee !== 'number') {
+      return null
+    }
+
+    return round2(order.delivery_fee)
+  }, [order])
+
+  const itemPricing = useMemo(() => getGrossVatBreakdown(itemsTotal), [itemsTotal])
   const grossTotal = useMemo(() => round2(order?.total_price ?? 0), [order])
-  const vat = useMemo(() => round2(grossTotal * VAT_RATE), [grossTotal])
-  const subtotal = useMemo(() => round2(grossTotal - vat), [grossTotal, vat])
 
   // Allocate net subtotal across items proportionally, keeping rounding consistent
   const allocatedItems = useMemo(() => {
@@ -164,17 +182,17 @@ export default function AdminInvoice() {
     if (!items.length) return [] as Array<{ item: OrderItem; netSub: number; netUnit: number; grossSub: number }>
     const itemsGrossTotal = items.reduce((sum, li) => sum + (li.subtotal || li.unit_price * li.quantity), 0)
 
-    let remaining = subtotal
+    let remaining = itemPricing.subtotalExVat
     return items.map((li, idx) => {
       const grossSub = li.subtotal || li.unit_price * li.quantity
       const netSub = itemsGrossTotal > 0
-        ? round2(idx === items.length - 1 ? remaining : subtotal * (grossSub / itemsGrossTotal))
-        : round2(idx === items.length - 1 ? remaining : subtotal / items.length)
+        ? round2(idx === items.length - 1 ? remaining : itemPricing.subtotalExVat * (grossSub / itemsGrossTotal))
+        : round2(idx === items.length - 1 ? remaining : itemPricing.subtotalExVat / items.length)
       remaining = round2(remaining - netSub)
       const netUnit = round2(netSub / (li.quantity || 1))
       return { item: li, netSub, netUnit, grossSub }
     })
-  }, [lineItems, subtotal])
+  }, [itemPricing.subtotalExVat, lineItems])
 
   useEffect(() => {
     // Auto-show print dialog when ready
@@ -354,15 +372,21 @@ export default function AdminInvoice() {
 
         <div className="totals">
           <div className="totals-row">
-            <span>Subtotal</span>
-            <span>AED {subtotal.toFixed(2)}</span>
+            <span>Items Subtotal</span>
+            <span>AED {itemPricing.subtotalExVat.toFixed(2)}</span>
           </div>
           <div className="totals-row">
-            <span>VAT (5%)</span>
-            <span>AED {vat.toFixed(2)}</span>
+            <span>Items VAT (5%)</span>
+            <span>AED {itemPricing.vatAmount.toFixed(2)}</span>
           </div>
+          {deliveryFee !== null && (
+            <div className="totals-row">
+              <span>Delivery Fee</span>
+              <span>{deliveryFee === 0 ? 'Free' : `AED ${deliveryFee.toFixed(2)}`}</span>
+            </div>
+          )}
           <div className="totals-row total">
-            <span>Total Due</span>
+            <span>{deliveryFee === null ? 'Items Total' : 'Total Due'}</span>
             <span>AED {grossTotal.toFixed(2)}</span>
           </div>
         </div>

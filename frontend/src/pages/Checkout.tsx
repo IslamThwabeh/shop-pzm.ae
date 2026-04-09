@@ -75,7 +75,6 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
           customer_phone: formData.customerPhone,
           customer_address: formData.customerAddress,
           items: orderItems, // Send all items
-          total_price: pricing.grossTotal,
           notes: formData.notes,
           email_consent: formData.emailConsent,
         }),
@@ -88,13 +87,17 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
       }
 
       const data = await response.json()
-      const orderId = data.data?.id || data.id
+      const createdOrder = data.data || data
+      const orderId = createdOrder?.id || data.id
 
       // Save order details to localStorage for confirmation page
       localStorage.setItem('lastOrderDetails', JSON.stringify({
         orderId,
         items,
-        total: pricing.grossTotal,
+        itemsTotal: createdOrder?.items_total ?? pricing.grossTotal,
+        deliveryFee: createdOrder?.delivery_fee ?? null,
+        totalPrice: createdOrder?.total_price ?? deliveryPolicy.totalPrice,
+        total: createdOrder?.total_price ?? deliveryPolicy.totalPrice,
         customerName: formData.customerName,
         customerEmail: formData.customerEmail,
         customerAddress: formData.customerAddress,
@@ -232,7 +235,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
                 <p className="text-xs text-gray-500 mt-1">
                   💡 Example: Al Barsha, Dubai, building name, floor, apartment or villa number
                 </p>
-                <p className="text-xs text-orange-600 mt-1">⚠️ Free delivery applies only inside Dubai on orders over AED 500. Other delivery fees are confirmed based on location.</p>
+                <p className="text-xs text-orange-600 mt-1">⚠️ Free delivery applies only inside Dubai on orders over AED 500. Dubai orders up to AED 500 include a flat AED 20 delivery fee. Other locations are confirmed by address.</p>
               </div>
 
               {/* Notes */}
@@ -303,7 +306,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
                   <div>
                     <p className="font-semibold text-primary">Cash on Delivery (COD)</p>
                     <p className="text-sm text-brandTextMedium mt-1">
-                      Pay when you receive your order. If a delivery fee applies, our team will confirm it before dispatch.
+                      Pay when you receive your order. Dubai orders up to AED 500 include a flat AED 20 delivery fee. Other locations are confirmed before dispatch.
                     </p>
                   </div>
                 </div>
@@ -339,8 +342,8 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
 
             <div className="space-y-3 mb-6 pb-6 border-b">
               <div className="flex justify-between text-brandTextMedium">
-                <span>Subtotal</span>
-                <span>AED {pricing.subtotalExVat.toFixed(2)}</span>
+                <span>Items Total</span>
+                <span>AED {pricing.grossTotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-brandTextMedium">
                 <span>Delivery</span>
@@ -356,18 +359,24 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
             <div className="space-y-2 mb-6 pb-6 border-b bg-blue-50 p-4 rounded-lg">
               <h3 className="font-semibold text-primary mb-3 text-sm">Amount Breakdown</h3>
               <div className="flex justify-between text-sm">
-                <span className="text-brandTextMedium">Items Price</span>
+                <span className="text-brandTextMedium">Items Subtotal</span>
                 <span className="font-semibold text-brandTextDark">AED {pricing.subtotalExVat.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-brandTextMedium">VAT (5%)</span>
                 <span className="font-semibold text-brandTextDark">AED {pricing.vatAmount.toFixed(2)}</span>
               </div>
+              {deliveryPolicy.deliveryFee !== null && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-brandTextMedium">Delivery Fee</span>
+                  <span className="font-semibold text-brandTextDark">{deliveryPolicy.deliveryFee === 0 ? 'Free' : `AED ${deliveryPolicy.deliveryFee.toFixed(2)}`}</span>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-between items-center">
               <span className="text-lg font-bold text-brandTextDark">{deliveryPolicy.totalLabel}</span>
-              <span className="text-3xl font-bold text-primary">AED {pricing.grossTotal.toFixed(2)}</span>
+              <span className="text-3xl font-bold text-primary">AED {deliveryPolicy.totalPrice.toFixed(2)}</span>
             </div>
 
             <div className="mt-6 p-3 bg-green-50 rounded border border-primary">

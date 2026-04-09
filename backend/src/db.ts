@@ -3,6 +3,21 @@ import type { Product, Order, OrderItem, Customer, AdminUser, ServiceRequest, Wh
 export class Database {
   constructor(private db: D1Database) {}
 
+  private async ensureOrderPricingSchema(): Promise<void> {
+    const result = await this.db.prepare('PRAGMA table_info(orders)').all();
+    const columns = new Set(((result.results as Array<{ name: string }>) || []).map((column) => column.name));
+
+    if (!columns.has('items_total')) {
+      await this.db.prepare('ALTER TABLE orders ADD COLUMN items_total REAL').run();
+    }
+
+    if (!columns.has('delivery_fee')) {
+      await this.db.prepare('ALTER TABLE orders ADD COLUMN delivery_fee REAL').run();
+    }
+
+    await this.db.prepare('UPDATE orders SET items_total = total_price WHERE items_total IS NULL').run();
+  }
+
   private async ensureServiceRequestsSchema(): Promise<void> {
     await this.db.prepare(
       `CREATE TABLE IF NOT EXISTS service_requests (
@@ -228,6 +243,7 @@ export class Database {
 
   async getOrders(): Promise<Order[]> {
     try {
+      await this.ensureOrderPricingSchema();
       const result = await this.db
         .prepare('SELECT * FROM orders ORDER BY created_at DESC')
         .all();
@@ -247,6 +263,7 @@ export class Database {
 
   async getOrder(id: string): Promise<Order | null> {
     try {
+      await this.ensureOrderPricingSchema();
       const result = await this.db
         .prepare('SELECT * FROM orders WHERE id = ?')
         .bind(id)
@@ -267,10 +284,11 @@ export class Database {
 
   async createOrder(order: Order): Promise<Order> {
     try {
+      await this.ensureOrderPricingSchema();
       await this.db
         .prepare(
-          `INSERT INTO orders (id, customer_id, customer_name, customer_email, customer_phone, customer_address, product_id, quantity, total_price, payment_method, status, notes, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          `INSERT INTO orders (id, customer_id, customer_name, customer_email, customer_phone, customer_address, product_id, quantity, items_total, delivery_fee, total_price, payment_method, status, notes, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
         .bind(
           order.id,
@@ -281,6 +299,8 @@ export class Database {
           order.customer_address,
           order.product_id,
           order.quantity,
+          order.items_total ?? order.total_price,
+          order.delivery_fee ?? null,
           order.total_price,
           order.payment_method,
           order.status,
@@ -299,6 +319,7 @@ export class Database {
 
   async updateOrder(id: string, updates: Partial<Order>): Promise<Order | null> {
     try {
+      await this.ensureOrderPricingSchema();
       const order = await this.getOrder(id);
       if (!order) return null;
 
@@ -306,7 +327,7 @@ export class Database {
 
       await this.db
         .prepare(
-          `UPDATE orders SET customer_id = ?, customer_name = ?, customer_email = ?, customer_phone = ?, customer_address = ?, product_id = ?, quantity = ?, total_price = ?, payment_method = ?, status = ?, notes = ?, updated_at = ?
+          `UPDATE orders SET customer_id = ?, customer_name = ?, customer_email = ?, customer_phone = ?, customer_address = ?, product_id = ?, quantity = ?, items_total = ?, delivery_fee = ?, total_price = ?, payment_method = ?, status = ?, notes = ?, updated_at = ?
            WHERE id = ?`
         )
         .bind(
@@ -317,6 +338,8 @@ export class Database {
           updated.customer_address,
           updated.product_id,
           updated.quantity,
+          updated.items_total ?? updated.total_price,
+          updated.delivery_fee ?? null,
           updated.total_price,
           updated.payment_method,
           updated.status,

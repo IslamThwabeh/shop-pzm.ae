@@ -1,52 +1,48 @@
 # Next Session Prompt
 
-Use this repository as the source of truth and continue from the post-April-7 deployed migration state without redoing already-verified work.
+Use this repository as the source of truth. The Dubai delivery-pricing rollout is already live; the next session should start from cutover readiness for moving the public storefront from https://shop.pzm.ae to https://pzm.ae.
 
 Context:
 - Workspace: C:\Users\islamt\shop-pzm.ae
 - Legacy reference remains read-only at C:\Users\islamt\pzm.ae
-- Production domain: https://shop.pzm.ae
-- Goal: finish replacement-readiness so shop.pzm.ae can fully replace pzm.ae with clean production copy, stable operations, and verified SEO/admin/email behavior.
+- Current live storefront: https://shop.pzm.ae
+- Target public storefront: https://pzm.ae
+- Frontend production deploy source: frontend/ via `npm run deploy:production`
+- Backend production deploy source: backend/ via `npm run deploy:production`
 
-Important workflow rules for the next chat:
-- Start by reading repo memories and using codegraph memory/context tools before changing code.
-- Work in small, reviewable tasks only.
-- After each task, stop and ask for confirmation before starting the next one.
-- Do not batch multiple large implementation areas into one turn.
-- After each task, do a short review of the affected files/pages for placeholder copy, stale assumptions, broken UX, and missing verification.
-- Treat weak production copy as a bug. If wording sounds internal, migration-specific, or operational rather than customer-facing, fix it before moving on.
+Critical production notes:
+- Do not rerun the full production migration chain blindly. Migration 011 uses plain ALTER TABLE, so the safe production rollout for the new delivery fields was a direct execute of migrations/012_add_order_delivery_fields.sql.
+- Cloudflare Pages custom-domain setup is dashboard-managed. The repo-root CNAME file is not the live cutover switch for the current storefront deployment.
 
 Already completed and verified:
-- Public parity foundation is live for the shared shell, homepage, services index, areas index, blog, return policy, and terms.
-- Legacy-safe .html redirects/aliases are already in place where needed.
-- Frontend site/api URL handling was centralized through shared site config helpers.
-- Service requests persist in D1 and admin service-request management exists.
-- Production transactional email delivery is active through ZeptoMail with sender no-reply@pzm.ae.
-- Dedicated retail slices are live for /services/buy-iphone, /services/brand-new, and /services/secondhand.
-- Live catalog coverage was expanded to 66 storefront products across new and used inventory.
-- Product browsing is category-first and contact-first; standalone product-detail navigation is retired.
-- Public storefront copy was simplified on 2026-04-07 to remove stock-count/status language.
-- Product-feed text is sanitized at the display layer via frontend/src/utils/productPresentation.ts and mirrored in frontend/scripts/prerender-seo-routes.mjs so stock wording does not leak into prerendered HTML or preloaded JSON.
-- Services and areas now follow shorter legacy-style copy patterns with direct actions instead of long explanatory blocks.
-- Live catalog update already applied on 2026-04-07 for both iPhone 17 Pro Max 256GB eSIM Middle East variants: Deep Blue and Cosmic Orange are both set to AED 5100 with quantity 1.
+- 2026-04-09 delivery-pricing rollout is live in production.
+- Production D1 now includes orders.items_total and orders.delivery_fee.
+- Backend production deployed successfully with Worker version ID 70a94258-fbb3-48c9-92b0-a7f80695dce3.
+- Frontend production Pages deploy completed and live shop.pzm.ae serves bundle assets index-BPus-Kgb.js and index-adDw6oiD.css.
+- Production API verification succeeded via https://shop.pzm.ae/api/products?condition=new.
+- Live smoke order ord-mnrrt3by-orn1n4 verified the Dubai <= AED 500 path with items_total 450, delivery_fee 20, and total_price 470; the order was then cancelled in production.
+- Backend production origin checks already include https://pzm.ae and https://www.pzm.ae.
 
-Highest-value remaining priorities:
-- Run a route-by-route final production QA pass against legacy pzm.ae and capture any remaining parity gaps.
-- Perform a focused SEO verification pass on the current production deployment: titles, descriptions, canonicals, JSON-LD, sitemap, robots, internal links, and legacy redirect behavior.
-- Review admin completeness and polish, especially product/service-request/order handling and any hardcoded assumptions.
-- Verify order, service-request, and status-change email flows end to end on production.
-- Decide and prepare for final domain cutover from shop.pzm.ae to pzm.ae when the production checklist is fully green.
-- Optionally review bundle size and loading performance; current production build passes but Vite still warns about a JS chunk above 500 kB.
+Remaining cutover facts from the repo:
+- frontend/src/utils/siteConfig.ts still defaults SITE_URL to https://shop.pzm.ae.
+- frontend/scripts/prerender-seo-routes.mjs still defaults SITE_URL to https://shop.pzm.ae and injects some "via shop.pzm.ae" message text into prerendered output.
+- frontend/public/robots.txt still points to https://shop.pzm.ae/sitemap.xml.
+- frontend/public/sitemap.xml still contains shop.pzm.ae URLs.
+- frontend/public/index.html still contains a canonical for https://shop.pzm.ae/; confirm whether it is still needed in the Pages output or should be updated/removed.
+- backend/wrangler.toml production routes still expose shop.pzm.ae/api/* and r2.pzm.ae/* only; pzm.ae/api/* still needs to be added before the root-domain switch.
+- Pages custom-domain routing for pzm.ae and www.pzm.ae still needs dashboard verification, along with the decision on whether shop.pzm.ae remains an alias or becomes a redirect.
+- The user left an incomplete taxonomy note: "Categorization, at new devices and brand new and". Treat this as an open classification review for New Devices / Brand New / Buy iPhone / Secondhand before Merchant Center and final public cutover.
 
 Suggested execution order:
-1. Task 1: Run a focused production QA sweep on the main public routes and compare them against legacy pzm.ae. Produce a concise punch list of remaining parity issues only.
-2. Task 2: Run SEO and crawlability verification on the live site. Fix only confirmed issues, then recheck the affected routes.
-3. Task 3: Review admin-panel production readiness and fix the next highest-impact gap.
-4. Task 4: Verify production email flows end to end with a narrow smoke test plan and fix wording or flow issues if needed.
-5. Task 5: Prepare a final go/no-go replacement-readiness checklist for domain cutover, including exact config changes still needed for pzm.ae.
+1. Update the active frontend domain defaults in frontend/src/utils/siteConfig.ts and frontend/scripts/prerender-seo-routes.mjs, then rebuild the frontend so canonicals, JSON-LD, sitemap, and prerendered HTML move together.
+2. Update backend/wrangler.toml to add the pzm.ae/api/* production route, then redeploy the backend.
+3. Review frontend/public SEO artifacts actually shipped by the Pages build: robots.txt, sitemap.xml, and any legacy static index canonical behavior.
+4. Redeploy the frontend from frontend/ and verify both the Pages preview URL and live pzm.ae/shop aliases before switching traffic.
+5. Run a narrow production verification pass on pzm.ae: homepage, services, areas, blog, terms, return policy, cart, checkout, robots, sitemap, canonical tags, JSON-LD, and pzm.ae/api reachability.
+6. Finish the ops layer after code is aligned: Merchant Center re-review, Search Console / GA4 domain checks, final catalog audit, and the open categorization cleanup.
 
-Execution requirements:
-- Use codegraph memory/context tools early in each task.
-- Prefer focused implementation plus verification over broad planning.
-- Keep each task narrow enough to finish cleanly in one turn.
-- When a task is complete, give a concise summary, note any risks or unfinished details, and ask whether to proceed.
+Execution rules for the next chat:
+- Start by reading repo memories and this prompt before editing code.
+- Keep tasks narrow and reviewable.
+- After each task, summarize what changed, what was verified, and the next blocker.
+- Treat stale production-domain references as bugs, especially inside prerendered output and structured data.

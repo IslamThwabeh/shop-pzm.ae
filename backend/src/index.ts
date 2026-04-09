@@ -5,7 +5,8 @@ import { AuthService } from './auth';
 import { EmailService } from './email-service';
 import { StorageService } from './storage';
 import { getCorsHeaders, handleCors, generateId, validateRequired, parseRequestBody, logRequest, logError } from './utils';
-import type { Product, Order, ServiceRequest, WhatsAppLead } from '../../shared/types';
+import { getDeliveryPolicy, roundCurrency } from '../../shared/utils';
+import type { Product, Order, OrderItem, ServiceRequest, WhatsAppLead } from '../../shared/types';
 
 interface Env {
   DB: D1Database;
@@ -586,7 +587,6 @@ app.post('/api/orders', async (c) => {
       'customer_phone',
       'customer_address',
       'items', // Now expecting items array
-      'total_price',
     ]);
 
     if (validation) {
@@ -600,13 +600,38 @@ app.post('/api/orders', async (c) => {
 
     const db = new Database(c.env.DB);
     const orderId = generateId('ord');
-    
-    // For multi-item orders, use first item's product_id for backward compatibility with orders table
-    const firstItem = body.items[0];
-    const firstProduct = await db.getProduct(firstItem.product_id);
-    if (!firstProduct) {
-      return c.json({ error: `Product ${firstItem.product_id} not found`, status: 400 }, 400);
+
+    const orderItems: OrderItem[] = [];
+    let itemsTotal = 0;
+
+    for (const item of body.items) {
+      const quantity = Number(item.quantity);
+      if (!Number.isInteger(quantity) || quantity < 1) {
+        return c.json({ error: `Invalid quantity for product ${item.product_id}`, status: 400 }, 400);
+      }
+
+      const product = await db.getProduct(item.product_id);
+      if (!product) {
+        return c.json({ error: `Product ${item.product_id} not found`, status: 400 }, 400);
+      }
+
+      const subtotal = roundCurrency(product.price * quantity);
+      itemsTotal = roundCurrency(itemsTotal + subtotal);
+
+      orderItems.push({
+        id: generateId('oi'),
+        order_id: orderId,
+        product_id: item.product_id,
+        quantity,
+        unit_price: product.price,
+        subtotal,
+        created_at: new Date().toISOString(),
+        product,
+      });
     }
+
+    const deliveryPolicy = getDeliveryPolicy(itemsTotal, body.customer_address);
+    const firstItem = orderItems[0];
     
     const order: Order = {
       id: orderId,
@@ -616,7 +641,9 @@ app.post('/api/orders', async (c) => {
       customer_address: body.customer_address,
       product_id: firstItem.product_id, // Store first product for backward compatibility
       quantity: firstItem.quantity, // Store first item quantity
-      total_price: body.total_price,
+      items_total: itemsTotal,
+      delivery_fee: deliveryPolicy.deliveryFee,
+      total_price: deliveryPolicy.totalPrice,
       payment_method: 'cash_on_delivery',
       status: 'pending',
       notes: body.notes,
@@ -627,26 +654,8 @@ app.post('/api/orders', async (c) => {
     const created = await db.createOrder(order);
 
     // Create order items
-    const orderItems = [];
-    for (const item of body.items) {
-      const product = await db.getProduct(item.product_id);
-      if (!product) {
-        return c.json({ error: `Product ${item.product_id} not found`, status: 400 }, 400);
-      }
-
-      const orderItem = {
-        id: generateId('oi'),
-        order_id: orderId,
-        product_id: item.product_id,
-        quantity: item.quantity,
-        unit_price: product.price,
-        subtotal: product.price * item.quantity,
-        created_at: new Date().toISOString(),
-        product: product,
-      };
-
-      await db.createOrderItem(orderItem);
-      orderItems.push(orderItem);
+    for (const orderItem of orderItems) {
+        await db.createOrderItem(orderItem);
     }
 
     // Send emails with all items
@@ -657,7 +666,11 @@ app.post('/api/orders', async (c) => {
       body.customer_name,
       created.id,
       orderItems,
-      body.total_price,
+      {
+        itemsTotal: created.items_total ?? itemsTotal,
+        deliveryFee: created.delivery_fee ?? null,
+        totalPrice: created.total_price,
+      },
       body.notes,
       body.customer_address
     );
@@ -668,7 +681,11 @@ app.post('/api/orders', async (c) => {
       body.customer_email,
       body.customer_phone,
       orderItems,
-      body.total_price,
+      {
+        itemsTotal: created.items_total ?? itemsTotal,
+        deliveryFee: created.delivery_fee ?? null,
+        totalPrice: created.total_price,
+      },
       body.notes,
       body.customer_address
     );

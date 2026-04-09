@@ -26,6 +26,8 @@ export interface Order {
   customer_address: string
   product_id?: string // Legacy: for backward compatibility with single-item orders
   quantity?: number // Legacy: for backward compatibility
+  items_total?: number
+  delivery_fee?: number | null
   total_price: number
   payment_method: string
   status: 'pending' | 'confirmed' | 'in_progress' | 'ready_for_delivery' | 'shipped' | 'delivered' | 'cancelled'

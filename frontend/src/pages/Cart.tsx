@@ -178,7 +178,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Delivery</span>
-                <span className={`font-semibold ${deliveryPolicy.statusToneClass}`}>{deliveryPolicy.statusLabel}</span>
+                <span className="font-semibold text-amber-600">At checkout</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Tax (5% VAT)</span>
@@ -187,7 +187,7 @@ export default function Cart({ onContinueShopping, onCheckout }: CartProps) {
             </div>
 
             <div className="flex justify-between items-center mb-6">
-              <span className="text-lg font-bold text-gray-900">{deliveryPolicy.totalLabel}</span>
+              <span className="text-lg font-bold text-gray-900">Items Total</span>
               <span className="text-3xl font-bold text-primary">AED {pricing.grossTotal.toFixed(2)}</span>
             </div>
 

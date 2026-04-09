@@ -17,6 +17,8 @@ interface Order {
   notes?: string;
   product_id: string;
   quantity: number;
+  items_total?: number;
+  delivery_fee?: number | null;
   total_price: number;
   payment_method: string;
   status: string;
@@ -137,6 +139,22 @@ function formatDisplayLabel(value: string): string {
     .filter(Boolean)
     .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
     .join(' ');
+}
+
+function getOrderItemsTotal(order: Pick<Order, 'items_total' | 'total_price'>): number {
+  return order.items_total ?? order.total_price;
+}
+
+function formatOrderDeliveryFee(order: Pick<Order, 'delivery_fee'>): string {
+  if (typeof order.delivery_fee !== 'number') {
+    return 'Confirmed by location';
+  }
+
+  if (order.delivery_fee === 0) {
+    return 'Free';
+  }
+
+  return `AED ${order.delivery_fee.toFixed(2)}`;
 }
 
 export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
@@ -972,6 +990,16 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     <div>
                       <p className="mb-1 text-sm font-medium text-brandTextMedium">Total Amount</p>
                       <p className="text-2xl font-bold text-primary">AED {selectedOrder.total_price.toFixed(2)}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <p className="mb-1 text-sm font-medium text-brandTextMedium">Items Total</p>
+                      <p className="text-lg text-slate-950">AED {getOrderItemsTotal(selectedOrder).toFixed(2)}</p>
+                    </div>
+                    <div>
+                      <p className="mb-1 text-sm font-medium text-brandTextMedium">Delivery</p>
+                      <p className="text-lg text-slate-950">{formatOrderDeliveryFee(selectedOrder)}</p>
                     </div>
                   </div>
                 </div>
