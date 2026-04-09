@@ -535,6 +535,68 @@ function buildMerchantFeed(products) {
   return `${lines.join('\n')}\n`
 }
 
+function escapeMerchantTabValue(value) {
+  return String(value || '')
+    .replace(/[\t\r\n]+/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+}
+
+function buildMerchantTabFeed(products) {
+  const uniqueProducts = new Map()
+
+  for (const product of products) {
+    const productId = String(product.id || '').trim()
+    if (!productId || Number(product.price) <= 0 || (product.quantity ?? 0) <= 0) {
+      continue
+    }
+
+    const existing = uniqueProducts.get(productId)
+    if (!existing || getProductTimestamp(product) >= getProductTimestamp(existing)) {
+      uniqueProducts.set(productId, product)
+    }
+  }
+
+  const feedProducts = Array.from(uniqueProducts.values()).sort(sortProducts)
+  const rows = [
+    [
+      'id',
+      'title',
+      'description',
+      'link',
+      'image_link',
+      'availability',
+      'price',
+      'condition',
+      'brand',
+      'product_type',
+      'identifier_exists',
+    ].join('\t'),
+  ]
+
+  for (const product of feedProducts) {
+    const brand = extractProductBrand(product.model) || ''
+    const canonicalPath = normalizeCanonicalPath(buildProductPath(product))
+    const row = [
+      product.id,
+      buildProductLabel(product),
+      buildProductRichDescription(product),
+      toAbsoluteUrl(canonicalPath),
+      getProductImageUrl(product),
+      (product.quantity ?? 0) > 0 ? 'in stock' : 'out of stock',
+      formatMerchantPrice(product.price),
+      product.condition === 'used' ? 'used' : 'new',
+      brand,
+      buildMerchantProductType(product),
+      'no',
+    ].map((value) => escapeMerchantTabValue(value))
+
+    rows.push(row.join('\t'))
+  }
+
+  return `${rows.join('\n')}\n`
+}
+
 const brandNewSnapshotCategories = [
   {
     title: 'Phones, Tablets, and Wearables',
@@ -2134,3 +2196,4 @@ for (const route of aliasRoutes) {
 
 await fs.writeFile(path.join(distRoot, 'sitemap.xml'), buildSitemap(canonicalRoutes), 'utf8')
 await fs.writeFile(path.join(distRoot, 'merchant-feed.xml'), buildMerchantFeed(liveProducts), 'utf8')
+await fs.writeFile(path.join(distRoot, 'merchant-feed.txt'), buildMerchantTabFeed(liveProducts), 'utf8')
