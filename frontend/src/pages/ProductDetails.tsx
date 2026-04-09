@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext'
 import { getPrimaryProductImage } from '../utils/productPresentation'
 import { getProductBrowsePath } from '../utils/productRouting'
 import { openWhatsAppLead } from '../utils/whatsappLead'
+import { triggerCartAddFeedback } from '../utils/cartFeedback'
 import { toAbsoluteSiteUrl } from '../utils/siteConfig'
 import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
@@ -52,8 +53,9 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
   const browsePath = getProductBrowsePath(product)
   const label = `${product.model} ${product.storage ?? ''} ${product.color ?? ''}`.trim()
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (sourceElement: HTMLButtonElement) => {
     if (!inStock) return
+
     addItem({
       id: product.id,
       model: product.model,
@@ -63,6 +65,8 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
       storage: product.storage,
       condition: product.condition,
     })
+
+    triggerCartAddFeedback(sourceElement)
   }
 
   const handleWhatsApp = () => {
@@ -115,10 +119,12 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
       </nav>
 
       {/* Product card */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm md:p-8">
+      <div data-cart-feedback-root className="grid grid-cols-1 md:grid-cols-2 gap-8 rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm md:p-8">
         {/* Image */}
         <div className="flex items-center justify-center rounded-2xl border border-[#eee] bg-slate-50 p-6 min-h-[280px]">
-          <RetailImage src={image} alt={label} name={label} variant="panel" />
+          <div data-cart-feedback-image className="flex h-full w-full items-center justify-center">
+            <RetailImage src={image} alt={label} name={label} variant="panel" />
+          </div>
         </div>
 
         {/* Info */}
@@ -171,16 +177,18 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
             </button>
             <button
               type="button"
-              onClick={handleAddToCart}
+              onClick={(event) => handleAddToCart(event.currentTarget)}
               disabled={!inStock}
-              className={`inline-flex flex-1 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-colors ${
+              className={`cart-add-button inline-flex flex-1 items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition-colors ${
                 inStock
                   ? 'bg-primary text-white hover:bg-brandGreenDark'
                   : 'bg-gray-200 text-gray-500 cursor-not-allowed'
               }`}
             >
-              <ShoppingCart size={16} />
-              {inStock ? 'Add to Cart' : 'Out of Stock'}
+              <span className="cart-add-button__content">
+                <ShoppingCart size={16} />
+                {inStock ? 'Add to Cart' : 'Out of Stock'}
+              </span>
             </button>
           </div>
 

@@ -3,11 +3,13 @@ import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import CartFeedbackLayer from './CartFeedbackLayer'
 import {
   megaMenuCategories,
   megaMenuShopSections,
   siteContact,
 } from '../content/siteData'
+import { formatCartCount, replayAnimationClass } from '../utils/cartFeedback'
 
 interface HeaderProps {
   onNavigate: (page: any) => void
@@ -16,14 +18,19 @@ interface HeaderProps {
 
 export default function Header({ onNavigate }: HeaderProps) {
   const { isAuthenticated, logout } = useAuth()
-  const { items, lastAddedMessage } = useCart()
+  const { itemCount, lastAddedTick } = useCart()
   const location = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMegaOpen, setIsMegaOpen] = useState(false)
   const megaRef = useRef<HTMLDivElement>(null)
   const megaTimerRef = useRef<ReturnType<typeof setTimeout>>()
+  const desktopCartRef = useRef<HTMLAnchorElement>(null)
+  const mobileCartRef = useRef<HTMLAnchorElement>(null)
 
   const isRepairPage = location.pathname.startsWith('/services/repair')
+  const badgeToneClass = itemCount > 0
+    ? 'bg-primary text-white shadow-[0_6px_14px_rgba(0,167,111,0.28)]'
+    : 'bg-slate-200 text-slate-500'
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -53,6 +60,25 @@ export default function Header({ onNavigate }: HeaderProps) {
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [])
+
+  useEffect(() => {
+    if (!lastAddedTick || typeof window === 'undefined' || window.innerWidth < 1024) {
+      return undefined
+    }
+
+    const cartTargets = [desktopCartRef.current]
+
+    cartTargets.forEach((target) => replayAnimationClass(target, 'cart-icon-bounce'))
+
+    const timer = window.setTimeout(() => {
+      cartTargets.forEach((target) => target?.classList.remove('cart-icon-bounce'))
+    }, 760)
+
+    return () => {
+      window.clearTimeout(timer)
+      cartTargets.forEach((target) => target?.classList.remove('cart-icon-bounce'))
+    }
+  }, [lastAddedTick])
 
   const openMega = useCallback(() => {
     clearTimeout(megaTimerRef.current)
@@ -191,32 +217,38 @@ export default function Header({ onNavigate }: HeaderProps) {
                 <MessageCircle size={16} />
               </a>
               <Link
+                ref={desktopCartRef}
                 to="/cart"
-                className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#eee] text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
-                aria-label="Shopping cart"
+                data-cart-feedback-target="desktop"
+                className="cart-icon-button relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#eee] text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
+                aria-label={`Shopping cart, ${itemCount} item${itemCount === 1 ? '' : 's'}`}
               >
                 <ShoppingCart size={16} />
-                {items.length > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
-                    {items.length}
-                  </span>
-                )}
+                <span
+                  key={`desktop-${itemCount}-${lastAddedTick}`}
+                  className={`cart-count-badge absolute -right-1 -top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full px-1 text-[10px] font-bold ring-2 ring-white ${badgeToneClass}`}
+                >
+                  {formatCartCount(itemCount)}
+                </span>
               </Link>
             </div>
 
             {/* Mobile cart + hamburger */}
             <div className="flex lg:hidden items-center gap-1">
               <Link
+                ref={mobileCartRef}
                 to="/cart"
-                className="relative flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
-                aria-label="Shopping cart"
+                data-cart-feedback-target="mobile-header"
+                className="cart-icon-button relative flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
+                aria-label={`Shopping cart, ${itemCount} item${itemCount === 1 ? '' : 's'}`}
               >
                 <ShoppingCart size={20} />
-                {items.length > 0 && (
-                  <span className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
-                    {items.length}
-                  </span>
-                )}
+                <span
+                  key={`mobile-${itemCount}-${lastAddedTick}`}
+                  className={`cart-count-badge absolute right-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full px-1 text-[10px] font-bold ring-2 ring-white ${badgeToneClass}`}
+                >
+                  {formatCartCount(itemCount)}
+                </span>
               </Link>
               <button
               onClick={() => setIsMobileMenuOpen((v) => !v)}
@@ -323,20 +355,7 @@ export default function Header({ onNavigate }: HeaderProps) {
         </div>
       </div>
 
-      {/* Cart toast notification */}
-      <div
-        className={`fixed top-20 right-4 z-[60] flex items-center gap-2 rounded-xl border border-[#eee] bg-white px-4 py-3 shadow-lg transition-all duration-300 ${
-          lastAddedMessage
-            ? 'translate-y-0 opacity-100'
-            : '-translate-y-4 opacity-0 pointer-events-none'
-        }`}
-      >
-        <ShoppingCart size={16} className="text-primary" />
-        <span className="text-sm font-medium text-slate-700">{lastAddedMessage}</span>
-        <Link to="/cart" className="ml-2 text-xs font-semibold text-primary hover:underline">
-          View Cart
-        </Link>
-      </div>
+      <CartFeedbackLayer />
     </header>
   )
 }

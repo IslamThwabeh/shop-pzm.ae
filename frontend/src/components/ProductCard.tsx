@@ -4,6 +4,7 @@ import { getPrimaryProductImage } from '../utils/productPresentation'
 import RetailImage from './RetailImage'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { useCart } from '../context/CartContext'
+import { triggerCartAddFeedback } from '../utils/cartFeedback'
 
 interface Props {
   product: Product
@@ -14,8 +15,9 @@ export default function ProductCard({ product, onViewDetails }: Props) {
   const { addItem } = useCart()
   const inStock = (product.quantity ?? 0) > 0
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (sourceElement: HTMLButtonElement) => {
     if (!inStock) return
+
     addItem({
       id: product.id,
       model: product.model,
@@ -25,6 +27,8 @@ export default function ProductCard({ product, onViewDetails }: Props) {
       storage: product.storage,
       condition: product.condition,
     })
+
+    triggerCartAddFeedback(sourceElement)
   }
 
   const handleWhatsApp = () => {
@@ -38,15 +42,17 @@ export default function ProductCard({ product, onViewDetails }: Props) {
   }
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#eee] bg-white transition-shadow hover:shadow-md">
+    <article data-cart-feedback-root className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#eee] bg-white transition-shadow hover:shadow-md">
       {/* Image frame */}
       <div className="product-image-frame relative h-[140px] sm:h-[150px] lg:h-[160px] border-b border-[#eee]">
-        <RetailImage
-          src={getPrimaryProductImage(product)}
-          alt={`${product.model} ${product.storage} ${product.color}`.trim()}
-          name={product.model}
-          variant="card"
-        />
+        <div data-cart-feedback-image className="flex h-full w-full items-center justify-center">
+          <RetailImage
+            src={getPrimaryProductImage(product)}
+            alt={`${product.model} ${product.storage} ${product.color}`.trim()}
+            name={product.model}
+            variant="card"
+          />
+        </div>
 
         {/* Eye icon — show on hover / always on touch */}
         {onViewDetails && (
@@ -96,11 +102,13 @@ export default function ProductCard({ product, onViewDetails }: Props) {
           {inStock && (
             <button
               type="button"
-              onClick={handleAddToCart}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
+              onClick={(event) => handleAddToCart(event.currentTarget)}
+              className="cart-add-button inline-flex w-full items-center justify-center rounded-xl bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
             >
-              <ShoppingCart size={15} />
-              Add to Cart
+              <span className="cart-add-button__content">
+                <ShoppingCart size={15} />
+                Add to Cart
+              </span>
             </button>
           )}
         </div>

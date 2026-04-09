@@ -6,6 +6,7 @@ import { groupVariantsByColorAndStorage, getPrimaryProductImage, isPlaceholderCo
 import RetailImage from './RetailImage'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { useCart } from '../context/CartContext'
+import { triggerCartAddFeedback } from '../utils/cartFeedback'
 
 interface Props {
   family: BuyIphoneFamily
@@ -33,6 +34,24 @@ export default function IphoneFamilyCard({ family, products }: Props) {
     })
   }
 
+  const handleAddToCart = (sourceElement: HTMLButtonElement) => {
+    if (!activeProduct || (activeProduct.quantity ?? 0) <= 0) {
+      return
+    }
+
+    addItem({
+      id: activeProduct.id,
+      model: family.title,
+      price: activeProduct.price,
+      quantity: 1,
+      color: selectedColor,
+      storage: selectedStorage,
+      condition: activeProduct.condition,
+    })
+
+    triggerCartAddFeedback(sourceElement)
+  }
+
   if (products.length === 0) {
     return (
       <article className="rounded-2xl border border-[#eee] bg-white p-5">
@@ -49,10 +68,12 @@ export default function IphoneFamilyCard({ family, products }: Props) {
   }
 
   return (
-    <article className="flex flex-col rounded-2xl border border-[#eee] bg-white">
+    <article data-cart-feedback-root className="flex flex-col rounded-2xl border border-[#eee] bg-white">
       {/* Image */}
       <div className="product-image-frame relative h-[160px] overflow-hidden rounded-t-2xl border-b border-[#eee] bg-slate-50">
-        <RetailImage src={displayImage} alt={family.imageAlt} name={family.title} variant="card" />
+        <div data-cart-feedback-image className="flex h-full w-full items-center justify-center">
+          <RetailImage src={displayImage} alt={family.imageAlt} name={family.title} variant="card" />
+        </div>
         <span className="absolute left-2.5 top-2.5 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
           New
         </span>
@@ -119,7 +140,7 @@ export default function IphoneFamilyCard({ family, products }: Props) {
         )}
 
         {/* CTA */}
-        <div style={{ marginTop: 'auto' }} className="flex flex-col gap-2">
+        <div className="mt-auto flex flex-col gap-2">
           <button
             type="button"
             onClick={handleWhatsApp}
@@ -131,21 +152,13 @@ export default function IphoneFamilyCard({ family, products }: Props) {
           {activeProduct && (activeProduct.quantity ?? 0) > 0 && (
             <button
               type="button"
-              onClick={() => {
-                addItem({
-                  id: activeProduct.id,
-                  model: family.title,
-                  price: activeProduct.price,
-                  quantity: 1,
-                  color: selectedColor,
-                  storage: selectedStorage,
-                  condition: activeProduct.condition,
-                })
-              }}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-2 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
+              onClick={(event) => handleAddToCart(event.currentTarget)}
+              className="cart-add-button inline-flex w-full items-center justify-center rounded-xl bg-primary py-2 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
             >
-              <ShoppingCart size={15} />
-              Add to Cart
+              <span className="cart-add-button__content">
+                <ShoppingCart size={15} />
+                Add to Cart
+              </span>
             </button>
           )}
         </div>
