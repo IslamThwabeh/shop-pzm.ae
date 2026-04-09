@@ -17,29 +17,27 @@ Critical production notes:
 Already completed and verified:
 - 2026-04-09 delivery-pricing rollout is live in production.
 - Production D1 now includes orders.items_total and orders.delivery_fee.
-- Backend production deployed successfully with Worker version ID 70a94258-fbb3-48c9-92b0-a7f80695dce3.
-- Frontend production Pages deploy completed and live shop.pzm.ae serves bundle assets index-BPus-Kgb.js and index-adDw6oiD.css.
+- Backend production redeployed with root + www API routes and media URL normalization; current Worker version ID is 3f507029-205f-4c02-a4ba-74e4664e176b.
+- Frontend production Pages deploy completed and live shop.pzm.ae now serves bundle assets index-D5-CWK-P.js and index-adDw6oiD.css.
 - Production API verification succeeded via https://shop.pzm.ae/api/products?condition=new.
 - Live smoke order ord-mnrrt3by-orn1n4 verified the Dubai <= AED 500 path with items_total 450, delivery_fee 20, and total_price 470; the order was then cancelled in production.
 - Backend production origin checks already include https://pzm.ae and https://www.pzm.ae.
+- Code-side root cutover work is complete in repo and deployed on the shop alias: site config, prerender SEO output, robots, sitemap, root/www Worker routes, and product/media URL normalization.
+- Live verification on shop.pzm.ae confirms pzm.ae canonicals, pzm.ae media URLs in prerendered product payloads, and the new production bundle.
 
 Remaining cutover facts from the repo:
-- frontend/src/utils/siteConfig.ts still defaults SITE_URL to https://shop.pzm.ae.
-- frontend/scripts/prerender-seo-routes.mjs still defaults SITE_URL to https://shop.pzm.ae and injects some "via shop.pzm.ae" message text into prerendered output.
-- frontend/public/robots.txt still points to https://shop.pzm.ae/sitemap.xml.
-- frontend/public/sitemap.xml still contains shop.pzm.ae URLs.
-- frontend/public/index.html still contains a canonical for https://shop.pzm.ae/; confirm whether it is still needed in the Pages output or should be updated/removed.
-- backend/wrangler.toml production routes still expose shop.pzm.ae/api/* and r2.pzm.ae/* only; pzm.ae/api/* still needs to be added before the root-domain switch.
-- Pages custom-domain routing for pzm.ae and www.pzm.ae still needs dashboard verification, along with the decision on whether shop.pzm.ae remains an alias or becomes a redirect.
+- The main blocker is now external routing: `https://pzm.ae/api/products` still returns the old GitHub Pages 404 externally even though the Worker has `pzm.ae/api/*` and `www.pzm.ae/api/*` routes attached. This means the Cloudflare DNS/custom-domain switch is not finished yet.
+- Pages custom-domain routing for pzm.ae and www.pzm.ae still needs dashboard verification, along with the decision on whether shop.pzm.ae remains an alias or becomes a redirect after root cutover.
+- The old `pzm.ae` repo still has a GitHub Pages workflow (`.github/workflows/static.yml`) and custom-domain marker, so GitHub Pages cleanup is still required after Cloudflare root traffic is confirmed on the new storefront.
 - The user left an incomplete taxonomy note: "Categorization, at new devices and brand new and". Treat this as an open classification review for New Devices / Brand New / Buy iPhone / Secondhand before Merchant Center and final public cutover.
 
 Suggested execution order:
-1. Update the active frontend domain defaults in frontend/src/utils/siteConfig.ts and frontend/scripts/prerender-seo-routes.mjs, then rebuild the frontend so canonicals, JSON-LD, sitemap, and prerendered HTML move together.
-2. Update backend/wrangler.toml to add the pzm.ae/api/* production route, then redeploy the backend.
-3. Review frontend/public SEO artifacts actually shipped by the Pages build: robots.txt, sitemap.xml, and any legacy static index canonical behavior.
-4. Redeploy the frontend from frontend/ and verify both the Pages preview URL and live pzm.ae/shop aliases before switching traffic.
-5. Run a narrow production verification pass on pzm.ae: homepage, services, areas, blog, terms, return policy, cart, checkout, robots, sitemap, canonical tags, JSON-LD, and pzm.ae/api reachability.
-6. Finish the ops layer after code is aligned: Merchant Center re-review, Search Console / GA4 domain checks, final catalog audit, and the open categorization cleanup.
+1. In Cloudflare Pages and DNS, point `pzm.ae` and `www.pzm.ae` to the new Pages project and confirm they proxy through Cloudflare rather than the old GitHub Pages target.
+2. Verify `https://pzm.ae/api/products?condition=new` returns JSON instead of the old GitHub 404 once the domain switch is active.
+3. Decide whether `shop.pzm.ae` remains a temporary alias or becomes a redirect to `pzm.ae`, then verify storefront + API behavior on both hosts.
+4. After root traffic is confirmed on the new storefront, disable GitHub Pages or remove the custom domain from the old `pzm.ae` repo so it cannot take the domain back.
+5. Run a narrow production verification pass on `pzm.ae`: homepage, services, areas, blog, terms, return policy, cart, checkout, robots, sitemap, canonical tags, JSON-LD, and one checkout/service smoke flow.
+6. Finish the ops layer after traffic is switched: Merchant Center re-review, Search Console / GA4 domain checks, final catalog audit, and the open categorization cleanup.
 
 Execution rules for the next chat:
 - Start by reading repo memories and this prompt before editing code.

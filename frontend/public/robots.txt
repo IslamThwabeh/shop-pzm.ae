@@ -10,4 +10,4 @@ Disallow: /admin
 Disallow: /api
 
 # Sitemap location
-Sitemap: https://shop.pzm.ae/sitemap.xml
+Sitemap: https://pzm.ae/sitemap.xml

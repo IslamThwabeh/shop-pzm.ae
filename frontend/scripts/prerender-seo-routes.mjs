@@ -7,9 +7,9 @@ const frontendRoot = path.resolve(__dirname, '..')
 const distRoot = path.join(frontendRoot, 'dist')
 const templatePath = path.join(distRoot, 'index.html')
 const contentRoot = path.join(frontendRoot, 'src', 'content')
-const SITE_URL = (process.env.VITE_SITE_URL || 'https://shop.pzm.ae').replace(/\/+$/, '')
+const SITE_URL = (process.env.VITE_SITE_URL || 'https://pzm.ae').replace(/\/+$/, '')
 const DEFAULT_IMAGE = `${SITE_URL}/images/mini_logo.png`
-const PRODUCT_FEED_URL = `${SITE_URL}/api/products`
+const PRODUCT_FEED_URL = process.env.PZM_PRODUCT_FEED_URL || 'https://shop.pzm.ae/api/products'
 const LASTMOD = '2026-04-07'
 
 function escapeHtml(value) {
@@ -191,8 +191,8 @@ function getProductImageUrl(product) {
 
 function buildProductWhatsAppHref(product, kind) {
   const message = kind === 'new'
-    ? `Hi, I'm interested in the brand-new ${product.model} ${product.storage} ${product.color} for ${formatPrice(product.price)} AED (via shop.pzm.ae)`
-    : `Hi, I'm interested in the used ${product.model} ${product.storage} ${product.color} for ${formatPrice(product.price)} AED (via shop.pzm.ae)`
+    ? `Hi, I'm interested in the brand-new ${product.model} ${product.storage} ${product.color} for ${formatPrice(product.price)} AED (via pzm.ae)`
+    : `Hi, I'm interested in the used ${product.model} ${product.storage} ${product.color} for ${formatPrice(product.price)} AED (via pzm.ae)`
 
   return `https://wa.me/971528026677?text=${encodeURIComponent(message)}`
 }

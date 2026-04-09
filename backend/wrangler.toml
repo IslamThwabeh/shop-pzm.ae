@@ -32,11 +32,19 @@ compatibility_flags = ["nodejs_compat"]
 
 # Local development configuration removed per request
 # =====================================================================
-# Production (shop.pzm.ae/api)
+# Production (pzm.ae/api with shop alias)
 # =====================================================================
 [env.production]
 name = "shop-pzm-ae-api-production"
 vars = { ENVIRONMENT = "production" }
+
+[[env.production.routes]]
+pattern = "pzm.ae/api/*"
+zone_name = "pzm.ae"
+
+[[env.production.routes]]
+pattern = "www.pzm.ae/api/*"
+zone_name = "pzm.ae"
 
 [[env.production.routes]]
 pattern = "shop.pzm.ae/api/*"

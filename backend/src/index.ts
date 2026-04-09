@@ -21,8 +21,9 @@ interface Env {
 const app = new Hono<{ Bindings: Env }>();
 
 const R2_HOST = 'r2.pzm.ae';
-const SHOP_MEDIA_HOSTS = new Set(['shop.pzm.ae']);
+const SHOP_MEDIA_HOSTS = new Set(['pzm.ae', 'www.pzm.ae', 'shop.pzm.ae']);
 const SHOP_MEDIA_PATH_PREFIX = '/api/media/';
+const PUBLIC_SITE_URL = 'https://pzm.ae';
 const ROBOTS_TXT = 'User-agent: *\nDisallow: /\n';
 const SEARCH_BOT_REGEX = /(googlebot|bingbot|yandex(bot|images)?|duckduckbot|baiduspider|slurp|sogou|exabot|facebot|facebookexternalhit|twitterbot|linkedinbot|embedly|pinterestbot|applebot)/i;
 const ROBOTS_HEADERS = {
@@ -69,6 +70,43 @@ function getObjectKeyFromUrl(url: string): string | null {
   } catch {
     return null;
   }
+}
+
+function normalizePublicMediaUrl(url?: string | null): string | undefined {
+  if (!url) {
+    return undefined;
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+    const hostname = parsedUrl.hostname.toLowerCase();
+
+    if (SHOP_MEDIA_HOSTS.has(hostname) && parsedUrl.pathname.startsWith(SHOP_MEDIA_PATH_PREFIX)) {
+      return `${PUBLIC_SITE_URL}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
+    }
+
+    return url;
+  } catch {
+    if (url.startsWith(SHOP_MEDIA_PATH_PREFIX)) {
+      return `${PUBLIC_SITE_URL}${url}`;
+    }
+
+    return url;
+  }
+}
+
+function normalizePublicMediaUrls(urls: string[]): string[] {
+  return urls
+    .map((url) => normalizePublicMediaUrl(url))
+    .filter((url): url is string => typeof url === 'string' && url.length > 0);
+}
+
+function normalizeProductMedia<T extends { image_url?: string | null; images?: string[] }>(product: T): T {
+  return {
+    ...product,
+    image_url: normalizePublicMediaUrl(product.image_url) ?? '',
+    images: normalizePublicMediaUrls(product.images || []),
+  };
 }
 
 async function deleteBucketObjects(storageService: StorageService, urls: string[]) {
@@ -230,10 +268,10 @@ app.get('/api/products', async (c) => {
     const productsWithImages = await Promise.all(
       products.map(async (product) => {
         const images = await db.getProductImages(product.id);
-        return {
+        return normalizeProductMedia({
           ...product,
           images: images.length > 0 ? images : (product.image_url ? [product.image_url] : [])
-        };
+        });
       })
     );
     
@@ -256,10 +294,10 @@ app.get('/api/products/:id', async (c) => {
     
     // Fetch images for this product
     const images = await db.getProductImages(productId);
-    const productWithImages = {
+    const productWithImages = normalizeProductMedia({
       ...product,
       images: images.length > 0 ? images : (product.image_url ? [product.image_url] : [])
-    };
+    });
     
     return c.json({ data: productWithImages, status: 200 }, 200);
   } catch (error) {

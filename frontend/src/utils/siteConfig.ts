@@ -1,4 +1,5 @@
-const DEFAULT_SITE_URL = 'https://shop.pzm.ae'
+const DEFAULT_SITE_URL = 'https://pzm.ae'
+const INTERNAL_SITE_HOSTS = new Set(['pzm.ae', 'www.pzm.ae', 'shop.pzm.ae'])
 
 function trimTrailingSlash(value: string) {
   return value.replace(/\/+$/, '')
@@ -46,6 +47,16 @@ export function buildCanonicalUrl(path = '/') {
 
 export function toAbsoluteSiteUrl(pathOrUrl: string) {
   if (/^https?:\/\//i.test(pathOrUrl)) {
+    try {
+      const url = new URL(pathOrUrl)
+
+      if (INTERNAL_SITE_HOSTS.has(url.hostname.toLowerCase())) {
+        return `${SITE_URL}${url.pathname}${url.search}${url.hash}`
+      }
+    } catch {
+      return pathOrUrl
+    }
+
     return pathOrUrl
   }
 
