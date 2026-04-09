@@ -20,6 +20,15 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
 }
 
+function escapeXml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+}
+
 function decodeSingleQuotedString(value) {
   return value.replace(/\\'/g, "'")
 }
@@ -98,6 +107,31 @@ function formatPrice(value) {
   return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value)
 }
 
+function formatMerchantPrice(value) {
+  const numericValue = Number(value)
+  return `${Number.isFinite(numericValue) ? numericValue.toFixed(2) : '0.00'} AED`
+}
+
+function truncateText(value, maxLength) {
+  if (value.length <= maxLength) {
+    return value
+  }
+
+  const truncated = value.slice(0, maxLength - 1)
+  const safeBoundary = truncated.lastIndexOf(' ')
+
+  return `${(safeBoundary > 60 ? truncated.slice(0, safeBoundary) : truncated).trim()}…`
+}
+
+function formatLastmodDate(value) {
+  if (!value) {
+    return LASTMOD
+  }
+
+  const parsed = new Date(value)
+  return Number.isNaN(parsed.getTime()) ? LASTMOD : parsed.toISOString().slice(0, 10)
+}
+
 function normalizeProductValue(value) {
   return String(value || '')
     .toLowerCase()
@@ -170,6 +204,46 @@ function cleanProductText(value) {
     .trim()
 }
 
+const placeholderProductColors = new Set(['contact us', 'various options', 'color options'])
+
+const productBrandPatterns = [
+  [/^iphone|^ipad/i, 'Apple'],
+  [/^macbook/i, 'Apple'],
+  [/^samsung|^galaxy/i, 'Samsung'],
+  [/^honor/i, 'Honor'],
+  [/^nokia/i, 'Nokia'],
+  [/^tecno/i, 'Tecno'],
+  [/^playstation|^ps[45]/i, 'PlayStation'],
+  [/^xbox/i, 'Xbox'],
+  [/^nintendo/i, 'Nintendo'],
+  [/^hp\b/i, 'HP'],
+  [/^lenovo/i, 'Lenovo'],
+  [/^dell/i, 'Dell'],
+  [/^alienware/i, 'Alienware'],
+  [/^asus|^rog\b/i, 'ASUS'],
+  [/^aorus/i, 'AORUS'],
+  [/^microsoft|^surface/i, 'Microsoft'],
+  [/^huawei|^matepad/i, 'Huawei'],
+  [/^redmi|^xiaomi/i, 'Xiaomi'],
+  [/^lg\b/i, 'LG'],
+]
+
+function isPlaceholderProductColor(color) {
+  return placeholderProductColors.has(String(color || '').trim().toLowerCase())
+}
+
+function extractProductBrand(model) {
+  const normalizedModel = String(model || '').trim()
+
+  for (const [pattern, brand] of productBrandPatterns) {
+    if (pattern.test(normalizedModel)) {
+      return brand
+    }
+  }
+
+  return undefined
+}
+
 function sanitizeProductForDisplay(product) {
   const colorKey = String(product.color || '').trim().toLowerCase()
   let description = String(product.description || '').trim()
@@ -195,6 +269,270 @@ function buildProductWhatsAppHref(product, kind) {
     : `Hi, I'm interested in the used ${product.model} ${product.storage} ${product.color} for ${formatPrice(product.price)} AED (via pzm.ae)`
 
   return `https://wa.me/971528026677?text=${encodeURIComponent(message)}`
+}
+
+function buildProductPath(product) {
+  return `/product/${String(product.id || '').trim()}`
+}
+
+function getProductBrowsePath(product) {
+  if (product.condition === 'used') {
+    return '/services/secondhand'
+  }
+
+  if (/iphone/i.test(String(product.model || ''))) {
+    return '/services/buy-iphone'
+  }
+
+  return '/services/brand-new'
+}
+
+function getProductConditionLabel(product) {
+  return product.condition === 'used' ? 'Used' : 'Brand New'
+}
+
+function buildProductLabel(product) {
+  const segments = [product.model, product.storage]
+
+  if (product.color && !isPlaceholderProductColor(product.color)) {
+    segments.push(product.color)
+  }
+
+  return cleanProductText(segments.filter(Boolean).join(' ')) || String(product.model || 'Product').trim()
+}
+
+function buildProductRichDescription(product) {
+  const fallbackDescription = `${buildProductLabel(product)} from PZM in Dubai with ${product.condition === 'used' ? 'used-device' : 'brand-new'} availability, local support, and Cash on Delivery.`
+  return cleanProductText(String(product.description || '').trim()) || fallbackDescription
+}
+
+function buildProductMetaDescription(product) {
+  const fallbackDescription = `Buy ${buildProductLabel(product)} in Dubai from PZM with Cash on Delivery and local support.`
+  return truncateText(cleanProductText(String(product.description || '').trim()) || fallbackDescription, 160)
+}
+
+function buildMerchantProductType(product) {
+  const model = String(product.model || '').toLowerCase()
+  const inventoryType = product.condition === 'used' ? 'Used Devices' : 'Brand New Devices'
+
+  if (/(iphone|galaxy|pixel|android|phone|mobile|ipad|tablet|\btab\b|watch|wearable)/i.test(model)) {
+    return `${inventoryType} > Phones & Tablets`
+  }
+
+  if (/(macbook|laptop|notebook|surface|thinkpad|lenovo|hp|dell|asus|acer|elitebook|probook|xps|inspiron|spectre|envy)/i.test(model)) {
+    return `${inventoryType} > Laptops & Computers`
+  }
+
+  if (/(playstation|ps5|ps4|xbox|nintendo|switch|gaming|rog|alienware|console)/i.test(model)) {
+    return `${inventoryType} > Gaming`
+  }
+
+  return inventoryType
+}
+
+function buildProductJsonLd(product) {
+  const imageUrl = getProductImageUrl(product)
+  const brand = extractProductBrand(product.model)
+  const canonicalPath = normalizeCanonicalPath(buildProductPath(product))
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: buildProductLabel(product),
+    description: buildProductRichDescription(product),
+    sku: product.id,
+    url: toAbsoluteUrl(canonicalPath),
+    image: imageUrl ? [imageUrl] : [],
+    offers: {
+      '@type': 'Offer',
+      url: toAbsoluteUrl(canonicalPath),
+      priceCurrency: 'AED',
+      price: Number(product.price || 0).toFixed(2),
+      availability: (product.quantity ?? 0) > 0
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/OutOfStock',
+      itemCondition: product.condition === 'used'
+        ? 'https://schema.org/UsedCondition'
+        : 'https://schema.org/NewCondition',
+    },
+  }
+
+  if (brand) {
+    jsonLd.brand = {
+      '@type': 'Brand',
+      name: brand,
+    }
+  }
+
+  return jsonLd
+}
+
+function buildProductSnapshot(product) {
+  const label = buildProductLabel(product)
+  const imageUrl = getProductImageUrl(product)
+  const description = buildProductRichDescription(product)
+  const browsePath = getProductBrowsePath(product)
+  const inStock = (product.quantity ?? 0) > 0
+  const conditionLabel = getProductConditionLabel(product)
+  const stockText = inStock ? `${product.quantity} in stock - Cash on Delivery` : 'Out of stock - Contact us for the latest restock details'
+  const whatsappHref = buildProductWhatsAppHref(product, product.condition === 'used' ? 'used' : 'new')
+  const conditionClassName = product.condition === 'used'
+    ? 'bg-amber-50 text-amber-700'
+    : 'bg-emerald-50 text-emerald-700'
+
+  return `
+    <div class="space-y-8">
+      <nav class="flex items-center gap-2 text-sm text-brandTextMedium">
+        <a href="${normalizeCanonicalPath(browsePath)}" class="font-semibold text-primary hover:underline flex items-center gap-1">
+          Back to catalog
+        </a>
+      </nav>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 rounded-[28px] border border-brandBorder bg-white p-6 shadow-sm md:p-8">
+        <div class="flex items-center justify-center rounded-2xl border border-[#eee] bg-slate-50 p-6 min-h-[280px]">
+          <div class="flex h-full w-full items-center justify-center">
+            <img src="${imageUrl}" alt="${escapeHtml(label)}" loading="eager" style="max-width:100%;max-height:320px;object-fit:contain;" />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-5">
+          <div>
+            <span class="inline-block rounded-md px-2.5 py-0.5 text-xs font-semibold ${conditionClassName}">
+              ${conditionLabel}
+            </span>
+            <h1 class="mt-3 text-2xl font-bold text-slate-900 md:text-3xl">${escapeHtml(product.model)}</h1>
+            <p class="mt-2 text-sm leading-relaxed text-brandTextMedium">${escapeHtml(description)}</p>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            ${product.storage ? `<span class="rounded-full border border-[#eee] bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">${escapeHtml(product.storage)}</span>` : ''}
+            ${product.color && !isPlaceholderProductColor(product.color) ? `<span class="rounded-full border border-[#eee] bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">${escapeHtml(product.color)}</span>` : ''}
+          </div>
+
+          <div>
+            <p class="text-3xl font-bold text-slate-900">AED ${formatPrice(product.price)}</p>
+            <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-brandTextMedium">${escapeHtml(stockText)}</p>
+          </div>
+
+          <div class="flex flex-col gap-3 sm:flex-row">
+            <a href="${whatsappHref}" class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#eee] px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-[#25D366] hover:text-[#25D366]">
+              Order via WhatsApp
+            </a>
+            <a href="${normalizeCanonicalPath(browsePath)}" class="inline-flex flex-1 items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark">
+              Browse Similar Devices
+            </a>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 border-t border-[#eee] pt-5">
+            <div class="text-center">
+              <p class="text-[11px] font-medium text-slate-500">Dubai delivery</p>
+            </div>
+            <div class="text-center">
+              <p class="text-[11px] font-medium text-slate-500">Local support</p>
+            </div>
+            <div class="text-center">
+              <p class="text-[11px] font-medium text-slate-500">Store pickup</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+function buildProductRoutes(products) {
+  const uniqueProducts = new Map()
+
+  for (const product of products) {
+    const productId = String(product.id || '').trim()
+    if (!productId) {
+      continue
+    }
+
+    const existing = uniqueProducts.get(productId)
+    if (!existing || getProductTimestamp(product) >= getProductTimestamp(existing)) {
+      uniqueProducts.set(productId, product)
+    }
+  }
+
+  return Array.from(uniqueProducts.values())
+    .sort(sortProducts)
+    .map((product) => ({
+      path: buildProductPath(product),
+      title: `${buildProductLabel(product)} | PZM Computers & Phones`,
+      description: buildProductMetaDescription(product),
+      canonicalPath: buildProductPath(product),
+      imageUrl: getProductImageUrl(product),
+      priority: (product.quantity ?? 0) > 0 ? '0.8' : '0.5',
+      changefreq: 'daily',
+      lastmod: formatLastmodDate(product.updated_at || product.updatedAt || product.created_at || product.createdAt),
+      rootHtml: buildProductSnapshot(product),
+      preloadedProducts: [product],
+      jsonLd: buildProductJsonLd(product),
+    }))
+}
+
+function buildMerchantFeed(products) {
+  const uniqueProducts = new Map()
+
+  for (const product of products) {
+    const productId = String(product.id || '').trim()
+    if (!productId || Number(product.price) <= 0 || (product.quantity ?? 0) <= 0) {
+      continue
+    }
+
+    const existing = uniqueProducts.get(productId)
+    if (!existing || getProductTimestamp(product) >= getProductTimestamp(existing)) {
+      uniqueProducts.set(productId, product)
+    }
+  }
+
+  const feedProducts = Array.from(uniqueProducts.values()).sort(sortProducts)
+
+  const lines = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">',
+    '  <channel>',
+    '    <title>PZM Merchant Feed</title>',
+    `    <link>${escapeXml(`${SITE_URL}/`)}</link>`,
+    '    <description>Live in-stock products from PZM Computers & Phones Store in Dubai.</description>',
+  ]
+
+  for (const product of feedProducts) {
+    const brand = extractProductBrand(product.model)
+    const canonicalPath = normalizeCanonicalPath(buildProductPath(product))
+    const imageLinks = [getProductImageUrl(product), ...(Array.isArray(product.images) ? product.images : [])]
+      .filter(Boolean)
+      .filter((value, index, values) => values.indexOf(value) === index)
+      .slice(0, 11)
+
+    lines.push('    <item>')
+    lines.push(`      <g:id>${escapeXml(String(product.id))}</g:id>`)
+    lines.push(`      <g:title>${escapeXml(buildProductLabel(product))}</g:title>`)
+    lines.push(`      <g:description>${escapeXml(buildProductRichDescription(product))}</g:description>`)
+    lines.push(`      <g:link>${escapeXml(toAbsoluteUrl(canonicalPath))}</g:link>`)
+    lines.push(`      <g:image_link>${escapeXml(imageLinks[0] || DEFAULT_IMAGE)}</g:image_link>`)
+
+    for (const additionalImage of imageLinks.slice(1)) {
+      lines.push(`      <g:additional_image_link>${escapeXml(toAbsoluteUrl(additionalImage))}</g:additional_image_link>`)
+    }
+
+    lines.push(`      <g:availability>${(product.quantity ?? 0) > 0 ? 'in_stock' : 'out_of_stock'}</g:availability>`)
+    lines.push(`      <g:price>${escapeXml(formatMerchantPrice(product.price))}</g:price>`)
+    lines.push(`      <g:condition>${product.condition === 'used' ? 'used' : 'new'}</g:condition>`)
+    lines.push(`      <g:product_type>${escapeXml(buildMerchantProductType(product))}</g:product_type>`)
+    lines.push('      <g:identifier_exists>no</g:identifier_exists>')
+
+    if (brand) {
+      lines.push(`      <g:brand>${escapeXml(brand)}</g:brand>`)
+    }
+
+    lines.push('    </item>')
+  }
+
+  lines.push('  </channel>')
+  lines.push('</rss>')
+
+  return `${lines.join('\n')}\n`
 }
 
 const brandNewSnapshotCategories = [
@@ -1456,7 +1794,7 @@ function buildSitemap(routes) {
   for (const route of routes) {
     lines.push('  <url>')
     lines.push(`    <loc>${toAbsoluteUrl(normalizeCanonicalPath(route.canonicalPath || route.path))}</loc>`)
-    lines.push(`    <lastmod>${LASTMOD}</lastmod>`)
+    lines.push(`    <lastmod>${route.lastmod || LASTMOD}</lastmod>`)
     if (route.changefreq) {
       lines.push(`    <changefreq>${route.changefreq}</changefreq>`)
     }
@@ -1744,6 +2082,11 @@ const aliasRoutes = [
 ]
 
 const liveProducts = await fetchLiveProducts()
+const productRoutes = buildProductRoutes(liveProducts)
+
+if (productRoutes.length > 0) {
+  canonicalRoutes.push(...productRoutes)
+}
 
 const buyIphoneSnapshotHtml = buildBuyIphoneSnapshot(liveProducts)
 
@@ -1790,3 +2133,4 @@ for (const route of aliasRoutes) {
 }
 
 await fs.writeFile(path.join(distRoot, 'sitemap.xml'), buildSitemap(canonicalRoutes), 'utf8')
+await fs.writeFile(path.join(distRoot, 'merchant-feed.xml'), buildMerchantFeed(liveProducts), 'utf8')
