@@ -11,7 +11,7 @@ import WhatsAppCTA from '../components/WhatsAppCTA'
 import { brandNewCategories, brandNewHero, getBrandNewCategoryGroups, getBrandNewProducts } from '../content/brandNewCatalog'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
-import { extractBrand, groupProductsByModelFamily } from '../utils/productPresentation'
+import { groupProductsByModelFamily, resolveProductBrand } from '../utils/productPresentation'
 
 interface BrandNewPageProps {
   products: Product[]
@@ -40,7 +40,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
       })
     }
     if (activeBrands.size > 0) {
-      result = result.filter((p) => activeBrands.has(extractBrand(p.model)))
+      result = result.filter((p) => activeBrands.has(resolveProductBrand(p)))
     }
     return result
   }, [products, activeCategories, activeBrands])

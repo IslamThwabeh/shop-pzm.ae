@@ -19,7 +19,7 @@ interface OrderPricingSummary {
 }
 
 const NO_REPLY_EMAIL = 'no-reply@pzm.ae';
-const TEAM_NOTIFICATION_EMAIL = 'islam.thwabeh@gmail.com';
+export const TEAM_NOTIFICATION_EMAIL = 'islam.thwabeh@gmail.com';
 const CONTACT_PHONE_DISPLAY = '+971 52 802 6677';
 const CONTACT_PHONE_E164 = '+971528026677';
 const CONTACT_WHATSAPP_URL = 'https://wa.me/971528026677?text=Hi%2C%20I%20need%20help%20with%20my%20PZM%20order%20or%20service%20request.';
@@ -124,6 +124,16 @@ export class EmailService {
       console.error('Error sending email:', error);
       return false;
     }
+  }
+
+  async sendAdminLoginCode(username: string, verificationCode: string, expiresInMinutes = 10): Promise<boolean> {
+    const htmlBody = this.getAdminLoginCodeTemplate(username, verificationCode, expiresInMinutes);
+
+    return this.sendEmail({
+      to: this.teamEmail,
+      subject: 'Admin Login Verification Code',
+      htmlBody,
+    });
   }
 
   /**
@@ -293,6 +303,38 @@ export class EmailService {
       subject: `Service Request Update - ${displayId}`,
       htmlBody,
     });
+  }
+
+  private getAdminLoginCodeTemplate(username: string, verificationCode: string, expiresInMinutes: number): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Admin Login Verification</title>
+      </head>
+      <body style="margin:0;background:#f5f7fb;font-family:Arial,sans-serif;color:#0f172a;">
+        <div style="max-width:560px;margin:0 auto;padding:32px 20px;">
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:20px;overflow:hidden;box-shadow:0 18px 40px rgba(15,23,42,0.08);">
+            <div style="padding:28px 28px 20px;background:linear-gradient(180deg,#111827 0%,#0f172a 100%);color:#f8fafc;">
+              <p style="margin:0;font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:#fde68a;">PZM Admin</p>
+              <h1 style="margin:12px 0 0;font-size:24px;line-height:1.2;">Verification Code</h1>
+            </div>
+            <div style="padding:28px;">
+              <p style="margin:0 0 16px;font-size:15px;line-height:1.7;">A login attempt for <strong>${username}</strong> needs verification.</p>
+              <div style="margin:0 0 18px;padding:18px;border-radius:16px;background:#fff7ed;border:1px solid #fdba74;text-align:center;">
+                <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#9a3412;">One-Time Code</p>
+                <p style="margin:0;font-size:34px;letter-spacing:0.24em;font-weight:700;color:#7c2d12;">${verificationCode}</p>
+              </div>
+              <p style="margin:0 0 12px;font-size:14px;line-height:1.7;color:#475569;">This code expires in ${expiresInMinutes} minutes and can be used once for the current admin login flow.</p>
+              <p style="margin:0;font-size:13px;line-height:1.7;color:#64748b;">If you did not request this code, ignore this email.</p>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
   }
 
   /**

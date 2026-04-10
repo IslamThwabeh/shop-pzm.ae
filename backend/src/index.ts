@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { Database } from './db';
 import { AuthService } from './auth';
-import { EmailService } from './email-service';
+import { EmailService, TEAM_NOTIFICATION_EMAIL } from './email-service';
 import { StorageService } from './storage';
 import { getCorsHeaders, handleCors, generateId, validateRequired, parseRequestBody, logRequest, logError } from './utils';
 import { getDeliveryPolicy, roundCurrency } from '../../shared/utils';
@@ -42,6 +42,18 @@ const PRODUCTION_SITE_ORIGINS = [
 ];
 const LOCAL_DEV_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173'];
 const PRODUCTION_API_HOSTS = new Set(['pzm.ae', 'www.pzm.ae', 'shop.pzm.ae', 'api.pzm.ae']);
+const ADMIN_2FA_CODE_LENGTH = 6;
+const ADMIN_2FA_EXPIRY_SECONDS = 10 * 60;
+const ADMIN_2FA_MAX_ATTEMPTS = 5;
+const ADMIN_2FA_CODE_PATTERN = /^\d{6}$/;
+
+interface AdminTwoFactorChallenge {
+  adminId: string;
+  username: string;
+  codeHash: string;
+  attempts: number;
+  expiresAt: number;
+}
 
 function getAllowedCorsOrigins(environment: string | undefined, host: string | undefined): string[] {
   const origins = [...PRODUCTION_SITE_ORIGINS];
@@ -54,6 +66,16 @@ function getAllowedCorsOrigins(environment: string | undefined, host: string | u
   }
 
   return origins;
+}
+
+function generateAdminVerificationCode(length = ADMIN_2FA_CODE_LENGTH): string {
+  const values = new Uint8Array(length);
+  crypto.getRandomValues(values);
+  return Array.from(values, (value) => String(value % 10)).join('');
+}
+
+function getAdminTwoFactorKey(challengeId: string): string {
+  return `admin-2fa:${challengeId}`;
 }
 
 function getObjectKeyFromUrl(url: string): string | null {
@@ -107,6 +129,26 @@ function normalizeProductMedia<T extends { image_url?: string | null; images?: s
     image_url: normalizePublicMediaUrl(product.image_url) ?? '',
     images: normalizePublicMediaUrls(product.images || []),
   };
+}
+
+function getOptionalFormString(formData: FormData, key: string): string | undefined {
+  const value = formData.get(key);
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const normalized = value.trim();
+  return normalized || undefined;
+}
+
+function getOptionalFormInteger(formData: FormData, key: string): number | undefined {
+  const value = getOptionalFormString(formData, key);
+  if (!value) {
+    return undefined;
+  }
+
+  const parsed = parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
 async function deleteBucketObjects(storageService: StorageService, urls: string[]) {
@@ -325,12 +367,24 @@ app.post('/api/products', async (c) => {
     // Parse FormData for file upload
     const formData = await c.req.formData();
     const model = formData.get('model') as string;
-    const storage = formData.get('storage') as string;
+    const storage = (formData.get('storage') as string) || '';
     const condition = formData.get('condition') as string;
-    const color = formData.get('color') as string;
+    const color = (formData.get('color') as string) || '';
     const price = parseFloat(formData.get('price') as string);
     const quantity = parseInt(formData.get('quantity') as string) || 0;
     const description = formData.get('description') as string || '';
+    const brand = getOptionalFormString(formData, 'brand');
+    const productType = getOptionalFormString(formData, 'product_type');
+    const googleProductCategory = getOptionalFormString(formData, 'google_product_category');
+    const gtin = getOptionalFormString(formData, 'gtin');
+    const mpn = getOptionalFormString(formData, 'mpn');
+    const itemGroupId = getOptionalFormString(formData, 'item_group_id');
+    const warranty = getOptionalFormString(formData, 'warranty');
+    const accessoriesIncluded = getOptionalFormString(formData, 'accessories_included');
+    const cosmeticGrade = getOptionalFormString(formData, 'cosmetic_grade');
+    const repairHistory = getOptionalFormString(formData, 'repair_history');
+    const batteryHealth = getOptionalFormInteger(formData, 'battery_health');
+    const releaseYear = getOptionalFormInteger(formData, 'release_year');
     
     // Get all image files (up to 4)
     const imageFiles: File[] = [];
@@ -342,8 +396,8 @@ app.post('/api/products', async (c) => {
     }
 
     // Validate required fields
-    if (!model || !storage || !condition || !color || !price) {
-      return c.json({ error: 'Missing required fields: model, storage, condition, color, price', status: 400 }, 400);
+    if (!model || !condition || !Number.isFinite(price) || price <= 0) {
+      return c.json({ error: 'Missing required fields: model, condition, price', status: 400 }, 400);
     }
 
     // Upload images if provided
@@ -374,6 +428,18 @@ app.post('/api/products', async (c) => {
       quantity,
       image_url: imageUrls[0] || '', // Primary image for backward compatibility
       images: imageUrls,
+      brand,
+      product_type: productType,
+      google_product_category: googleProductCategory,
+      gtin,
+      mpn,
+      item_group_id: itemGroupId,
+      warranty,
+      accessories_included: accessoriesIncluded,
+      cosmetic_grade: cosmeticGrade,
+      repair_history: repairHistory,
+      battery_health: batteryHealth,
+      release_year: releaseYear,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -423,6 +489,18 @@ app.put('/api/products/:id', async (c) => {
     const price = formData.get('price') as string;
     const quantity = formData.get('quantity') as string;
     const description = formData.get('description') as string;
+    const brand = getOptionalFormString(formData, 'brand');
+    const productType = getOptionalFormString(formData, 'product_type');
+    const googleProductCategory = getOptionalFormString(formData, 'google_product_category');
+    const gtin = getOptionalFormString(formData, 'gtin');
+    const mpn = getOptionalFormString(formData, 'mpn');
+    const itemGroupId = getOptionalFormString(formData, 'item_group_id');
+    const warranty = getOptionalFormString(formData, 'warranty');
+    const accessoriesIncluded = getOptionalFormString(formData, 'accessories_included');
+    const cosmeticGrade = getOptionalFormString(formData, 'cosmetic_grade');
+    const repairHistory = getOptionalFormString(formData, 'repair_history');
+    const batteryHealth = getOptionalFormInteger(formData, 'battery_health');
+    const releaseYear = getOptionalFormInteger(formData, 'release_year');
     const replaceImagesRaw = (formData.get('replace_images') || formData.get('replaceImages') || '') as string;
     const replaceImages = ['1', 'true', 'yes'].includes(replaceImagesRaw.toLowerCase());
     
@@ -436,12 +514,24 @@ app.put('/api/products/:id', async (c) => {
     }
 
     if (model) updates.model = model;
-    if (storage) updates.storage = storage;
+    if (storage !== null) updates.storage = storage || '';
     if (condition) updates.condition = condition as 'new' | 'used';
-    if (color) updates.color = color;
+    if (color !== null) updates.color = color || '';
     if (price) updates.price = parseFloat(price);
     if (quantity) updates.quantity = parseInt(quantity);
     if (description !== null) updates.description = description;
+    if (formData.has('brand')) updates.brand = brand;
+    if (formData.has('product_type')) updates.product_type = productType;
+    if (formData.has('google_product_category')) updates.google_product_category = googleProductCategory;
+    if (formData.has('gtin')) updates.gtin = gtin;
+    if (formData.has('mpn')) updates.mpn = mpn;
+    if (formData.has('item_group_id')) updates.item_group_id = itemGroupId;
+    if (formData.has('warranty')) updates.warranty = warranty;
+    if (formData.has('accessories_included')) updates.accessories_included = accessoriesIncluded;
+    if (formData.has('cosmetic_grade')) updates.cosmetic_grade = cosmeticGrade;
+    if (formData.has('repair_history')) updates.repair_history = repairHistory;
+    if (formData.has('battery_health')) updates.battery_health = batteryHealth;
+    if (formData.has('release_year')) updates.release_year = releaseYear;
 
     const db = new Database(c.env.DB);
     const existingProduct = await db.getProduct(productId);
@@ -1215,12 +1305,120 @@ app.post('/api/auth/admin/login', async (c) => {
       return c.json({ error: 'Invalid credentials', status: 401 }, 401);
     }
 
+    const verificationCode = generateAdminVerificationCode();
+    const codeHash = await authService.hashValue(verificationCode);
+    const challengeId = generateId('a2f');
+    const challenge: AdminTwoFactorChallenge = {
+      adminId: admin.id,
+      username: admin.username,
+      codeHash,
+      attempts: 0,
+      expiresAt: Date.now() + ADMIN_2FA_EXPIRY_SECONDS * 1000,
+    };
+
+    await c.env.KV.put(getAdminTwoFactorKey(challengeId), JSON.stringify(challenge), {
+      expirationTtl: ADMIN_2FA_EXPIRY_SECONDS,
+    });
+
+    const emailService = new EmailService(c.env.ZEPTOMAIL_API_TOKEN);
+    const emailSent = await emailService.sendAdminLoginCode(
+      admin.username,
+      verificationCode,
+      Math.floor(ADMIN_2FA_EXPIRY_SECONDS / 60)
+    );
+
+    if (!emailSent) {
+      await c.env.KV.delete(getAdminTwoFactorKey(challengeId));
+      return c.json({ error: 'Failed to send verification code', status: 503 }, 503);
+    }
+
+    return c.json(
+      {
+        data: {
+          requiresTwoFactor: true,
+          challengeId,
+          destination: TEAM_NOTIFICATION_EMAIL,
+          expiresInSeconds: ADMIN_2FA_EXPIRY_SECONDS,
+        },
+        status: 200,
+      },
+      200
+    );
+  } catch (error) {
+    logError(error, 'POST /api/auth/admin/login');
+    return c.json({ error: 'Login failed', status: 500 }, 500);
+  }
+});
+
+app.post('/api/auth/admin/verify-2fa', async (c) => {
+  try {
+    logRequest('POST', '/api/auth/admin/verify-2fa');
+    const body = await parseRequestBody(c);
+    if (!body) {
+      return c.json({ error: 'Invalid request body', status: 400 }, 400);
+    }
+
+    const validation = validateRequired(body, ['challengeId', 'code']);
+    if (validation) {
+      return c.json({ error: validation, status: 400 }, 400);
+    }
+
+    const challengeId = typeof body.challengeId === 'string' ? body.challengeId.trim() : '';
+    const submittedCode = typeof body.code === 'string' ? body.code.replace(/\s+/g, '').trim() : '';
+    if (!challengeId || !ADMIN_2FA_CODE_PATTERN.test(submittedCode)) {
+      return c.json({ error: 'Invalid verification code', status: 400 }, 400);
+    }
+
+    const authService = new AuthService(c.env.ADMIN_SECRET);
+    const challengeKey = getAdminTwoFactorKey(challengeId);
+    const challenge = await c.env.KV.get<AdminTwoFactorChallenge>(challengeKey, 'json');
+
+    if (!challenge) {
+      return c.json({ error: 'Verification expired. Please login again.', status: 401 }, 401);
+    }
+
+    if (challenge.expiresAt <= Date.now()) {
+      await c.env.KV.delete(challengeKey);
+      return c.json({ error: 'Verification expired. Please login again.', status: 401 }, 401);
+    }
+
+    const submittedCodeHash = await authService.hashValue(submittedCode);
+    if (submittedCodeHash !== challenge.codeHash) {
+      const nextAttempts = challenge.attempts + 1;
+      if (nextAttempts >= ADMIN_2FA_MAX_ATTEMPTS) {
+        await c.env.KV.delete(challengeKey);
+        return c.json({ error: 'Too many attempts. Please login again.', status: 401 }, 401);
+      }
+
+      const remainingTtl = Math.ceil((challenge.expiresAt - Date.now()) / 1000);
+      await c.env.KV.put(
+        challengeKey,
+        JSON.stringify({
+          ...challenge,
+          attempts: nextAttempts,
+        }),
+        { expirationTtl: Math.max(1, remainingTtl) }
+      );
+
+      return c.json({ error: 'Invalid verification code', status: 401 }, 401);
+    }
+    const db = new Database(c.env.DB);
+    const admin = await db.getAdminByUsername(challenge.username);
+
+    if (!admin || admin.id !== challenge.adminId) {
+      await c.env.KV.delete(challengeKey);
+      return c.json({ error: 'Verification expired. Please login again.', status: 401 }, 401);
+    }
+
     const token = await authService.generateToken({
       sub: admin.id,
       type: 'admin',
       email: admin.email,
       username: admin.username,
+      role: admin.role,
     });
+
+    await c.env.KV.delete(challengeKey);
 
     return c.json(
       {
@@ -1238,8 +1436,8 @@ app.post('/api/auth/admin/login', async (c) => {
       200
     );
   } catch (error) {
-    logError(error, 'POST /api/auth/admin/login');
-    return c.json({ error: 'Login failed', status: 500 }, 500);
+    logError(error, 'POST /api/auth/admin/verify-2fa');
+    return c.json({ error: 'Verification failed', status: 500 }, 500);
   }
 });
 

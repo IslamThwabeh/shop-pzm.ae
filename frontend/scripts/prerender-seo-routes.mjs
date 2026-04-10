@@ -204,6 +204,10 @@ function cleanProductText(value) {
     .trim()
 }
 
+function getOptionalProductText(value) {
+  return cleanProductText(value) || undefined
+}
+
 const placeholderProductColors = new Set(['contact us', 'various options', 'color options'])
 
 const productBrandPatterns = [
@@ -226,6 +230,7 @@ const productBrandPatterns = [
   [/^huawei|^matepad/i, 'Huawei'],
   [/^redmi|^xiaomi/i, 'Xiaomi'],
   [/^lg\b/i, 'LG'],
+  [/^gaming pc/i, 'Gaming PC'],
 ]
 
 function isPlaceholderProductColor(color) {
@@ -256,7 +261,53 @@ function sanitizeProductForDisplay(product) {
     ...product,
     color: colorReplacements.get(colorKey) || product.color,
     description: cleanProductText(description) || undefined,
+    brand: getOptionalProductText(product.brand),
+    product_type: getOptionalProductText(product.product_type),
+    google_product_category: getOptionalProductText(product.google_product_category),
+    gtin: getOptionalProductText(product.gtin),
+    mpn: getOptionalProductText(product.mpn),
+    item_group_id: getOptionalProductText(product.item_group_id),
+    warranty: getOptionalProductText(product.warranty),
+    accessories_included: getOptionalProductText(product.accessories_included),
+    cosmetic_grade: getOptionalProductText(product.cosmetic_grade),
+    repair_history: getOptionalProductText(product.repair_history),
   }
+}
+
+function getKnownProductBrand(product) {
+  return getOptionalProductText(product.brand) || extractProductBrand(product.model)
+}
+
+function buildProductDetailEntries(product) {
+  const brand = getKnownProductBrand(product)
+  const entries = []
+
+  if (brand) entries.push({ label: 'Brand', value: brand })
+  if (product.release_year) entries.push({ label: 'Release year', value: String(product.release_year) })
+  if (product.battery_health != null) entries.push({ label: 'Battery health', value: `${product.battery_health}%` })
+  if (product.cosmetic_grade) entries.push({ label: 'Cosmetic grade', value: product.cosmetic_grade })
+  if (product.repair_history) entries.push({ label: 'Repair history', value: product.repair_history })
+  if (product.accessories_included) entries.push({ label: 'Included', value: product.accessories_included })
+  if (product.warranty) entries.push({ label: 'Warranty', value: product.warranty })
+
+  return entries
+}
+
+function buildProductFallbackHighlights(product) {
+  const highlights = []
+
+  if (product.release_year) highlights.push(`Released ${product.release_year}`)
+  if (product.battery_health != null) highlights.push(`Battery ${product.battery_health}%`)
+  if (product.cosmetic_grade) highlights.push(`Cosmetic grade ${product.cosmetic_grade}`)
+  if (product.repair_history) highlights.push(product.repair_history)
+  if (product.accessories_included) highlights.push(`Includes ${product.accessories_included}`)
+  if (product.warranty) highlights.push(product.warranty)
+
+  return highlights
+}
+
+function hasProductIdentifiers(product) {
+  return Boolean(getOptionalProductText(product.gtin) || (getOptionalProductText(product.mpn) && getKnownProductBrand(product)))
 }
 
 function getProductImageUrl(product) {
@@ -264,9 +315,10 @@ function getProductImageUrl(product) {
 }
 
 function buildProductWhatsAppHref(product, kind) {
+  const productLabel = buildProductLabel(product)
   const message = kind === 'new'
-    ? `Hi, I'm interested in the brand-new ${product.model} ${product.storage} ${product.color} for ${formatPrice(product.price)} AED (via pzm.ae)`
-    : `Hi, I'm interested in the used ${product.model} ${product.storage} ${product.color} for ${formatPrice(product.price)} AED (via pzm.ae)`
+    ? `Hi, I'm interested in the brand-new ${productLabel} for ${formatPrice(product.price)} AED (via pzm.ae)`
+    : `Hi, I'm interested in the used ${productLabel} for ${formatPrice(product.price)} AED (via pzm.ae)`
 
   return `https://wa.me/971528026677?text=${encodeURIComponent(message)}`
 }
@@ -302,16 +354,25 @@ function buildProductLabel(product) {
 }
 
 function buildProductRichDescription(product) {
+  const description = cleanProductText(String(product.description || '').trim())
+  if (description) {
+    return description
+  }
+
+  const highlights = buildProductFallbackHighlights(product)
   const fallbackDescription = `${buildProductLabel(product)} from PZM in Dubai with ${product.condition === 'used' ? 'used-device' : 'brand-new'} availability, local support, and Cash on Delivery.`
-  return cleanProductText(String(product.description || '').trim()) || fallbackDescription
+  return cleanProductText([fallbackDescription, ...highlights].join(' '))
 }
 
 function buildProductMetaDescription(product) {
-  const fallbackDescription = `Buy ${buildProductLabel(product)} in Dubai from PZM with Cash on Delivery and local support.`
-  return truncateText(cleanProductText(String(product.description || '').trim()) || fallbackDescription, 160)
+  return truncateText(buildProductRichDescription(product), 160)
 }
 
 function buildMerchantProductType(product) {
+  if (product.product_type) {
+    return product.product_type
+  }
+
   const model = String(product.model || '').toLowerCase()
   const inventoryType = product.condition === 'used' ? 'Used Devices' : 'Brand New Devices'
 
@@ -330,9 +391,13 @@ function buildMerchantProductType(product) {
   return inventoryType
 }
 
+function buildMerchantGoogleProductCategory(product) {
+  return getOptionalProductText(product.google_product_category)
+}
+
 function buildProductJsonLd(product) {
   const imageUrl = getProductImageUrl(product)
-  const brand = extractProductBrand(product.model)
+  const brand = getKnownProductBrand(product)
   const canonicalPath = normalizeCanonicalPath(buildProductPath(product))
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -363,6 +428,18 @@ function buildProductJsonLd(product) {
     }
   }
 
+  if (product.color && !isPlaceholderProductColor(product.color)) {
+    jsonLd.color = product.color
+  }
+
+  if (product.gtin) {
+    jsonLd.gtin = product.gtin
+  }
+
+  if (product.mpn) {
+    jsonLd.mpn = product.mpn
+  }
+
   return jsonLd
 }
 
@@ -373,8 +450,10 @@ function buildProductSnapshot(product) {
   const browsePath = getProductBrowsePath(product)
   const inStock = (product.quantity ?? 0) > 0
   const conditionLabel = getProductConditionLabel(product)
+  const detailEntries = buildProductDetailEntries(product)
   const stockText = inStock ? `${product.quantity} in stock - Cash on Delivery` : 'Out of stock - Contact us for the latest restock details'
   const whatsappHref = buildProductWhatsAppHref(product, product.condition === 'used' ? 'used' : 'new')
+  const warrantyLabel = product.warranty || (product.condition === 'new' ? 'Warranty' : 'Inspected & Tested')
   const conditionClassName = product.condition === 'used'
     ? 'bg-amber-50 text-amber-700'
     : 'bg-emerald-50 text-emerald-700'
@@ -408,6 +487,17 @@ function buildProductSnapshot(product) {
             ${product.color && !isPlaceholderProductColor(product.color) ? `<span class="rounded-full border border-[#eee] bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">${escapeHtml(product.color)}</span>` : ''}
           </div>
 
+          ${detailEntries.length > 0 ? `
+            <dl class="grid grid-cols-1 gap-3 rounded-2xl border border-[#eee] bg-slate-50/70 p-4 sm:grid-cols-2">
+              ${detailEntries.map((entry) => `
+                <div>
+                  <dt class="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">${escapeHtml(entry.label)}</dt>
+                  <dd class="mt-1 text-sm font-medium text-slate-700">${escapeHtml(entry.value)}</dd>
+                </div>
+              `).join('')}
+            </dl>
+          ` : ''}
+
           <div>
             <p class="text-3xl font-bold text-slate-900">AED ${formatPrice(product.price)}</p>
             <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-brandTextMedium">${escapeHtml(stockText)}</p>
@@ -427,7 +517,7 @@ function buildProductSnapshot(product) {
               <p class="text-[11px] font-medium text-slate-500">Dubai delivery</p>
             </div>
             <div class="text-center">
-              <p class="text-[11px] font-medium text-slate-500">Local support</p>
+              <p class="text-[11px] font-medium text-slate-500">${escapeHtml(warrantyLabel)}</p>
             </div>
             <div class="text-center">
               <p class="text-[11px] font-medium text-slate-500">Store pickup</p>
@@ -494,11 +584,15 @@ function buildMerchantFeed(products) {
     '  <channel>',
     '    <title>PZM Merchant Feed</title>',
     `    <link>${escapeXml(`${SITE_URL}/`)}</link>`,
-    '    <description>Live in-stock products from PZM Computers & Phones Store in Dubai.</description>',
+    `    <description>${escapeXml('Live in-stock products from PZM Computers & Phones Store in Dubai.')}</description>`,
   ]
 
   for (const product of feedProducts) {
-    const brand = extractProductBrand(product.model)
+    const brand = getKnownProductBrand(product)
+    const googleProductCategory = buildMerchantGoogleProductCategory(product)
+    const gtin = getOptionalProductText(product.gtin)
+    const mpn = getOptionalProductText(product.mpn)
+    const itemGroupId = getOptionalProductText(product.item_group_id)
     const canonicalPath = normalizeCanonicalPath(buildProductPath(product))
     const imageLinks = [getProductImageUrl(product), ...(Array.isArray(product.images) ? product.images : [])]
       .filter(Boolean)
@@ -520,10 +614,29 @@ function buildMerchantFeed(products) {
     lines.push(`      <g:price>${escapeXml(formatMerchantPrice(product.price))}</g:price>`)
     lines.push(`      <g:condition>${product.condition === 'used' ? 'used' : 'new'}</g:condition>`)
     lines.push(`      <g:product_type>${escapeXml(buildMerchantProductType(product))}</g:product_type>`)
-    lines.push('      <g:identifier_exists>no</g:identifier_exists>')
+
+    if (googleProductCategory) {
+      lines.push(`      <g:google_product_category>${escapeXml(googleProductCategory)}</g:google_product_category>`)
+    }
+
+    if (itemGroupId) {
+      lines.push(`      <g:item_group_id>${escapeXml(itemGroupId)}</g:item_group_id>`)
+    }
 
     if (brand) {
       lines.push(`      <g:brand>${escapeXml(brand)}</g:brand>`)
+    }
+
+    if (gtin) {
+      lines.push(`      <g:gtin>${escapeXml(gtin)}</g:gtin>`)
+    }
+
+    if (mpn) {
+      lines.push(`      <g:mpn>${escapeXml(mpn)}</g:mpn>`)
+    }
+
+    if (!hasProductIdentifiers(product)) {
+      lines.push('      <g:identifier_exists>no</g:identifier_exists>')
     }
 
     lines.push('    </item>')
@@ -570,12 +683,16 @@ function buildMerchantTabFeed(products) {
       'condition',
       'brand',
       'product_type',
+      'google_product_category',
+      'gtin',
+      'mpn',
+      'item_group_id',
       'identifier_exists',
     ].join('\t'),
   ]
 
   for (const product of feedProducts) {
-    const brand = extractProductBrand(product.model) || ''
+    const brand = getKnownProductBrand(product) || ''
     const canonicalPath = normalizeCanonicalPath(buildProductPath(product))
     const row = [
       product.id,
@@ -588,7 +705,11 @@ function buildMerchantTabFeed(products) {
       product.condition === 'used' ? 'used' : 'new',
       brand,
       buildMerchantProductType(product),
-      'no',
+      buildMerchantGoogleProductCategory(product) || '',
+      getOptionalProductText(product.gtin) || '',
+      getOptionalProductText(product.mpn) || '',
+      getOptionalProductText(product.item_group_id) || '',
+      hasProductIdentifiers(product) ? '' : 'no',
     ].map((value) => escapeMerchantTabValue(value))
 
     rows.push(row.join('\t'))

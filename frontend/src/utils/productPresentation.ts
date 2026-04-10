@@ -23,6 +23,11 @@ function cleanText(value: string) {
     .trim()
 }
 
+function sanitizeOptionalText(value?: string | null) {
+  const normalized = cleanText(String(value || ''))
+  return normalized || undefined
+}
+
 const placeholderColors = new Set(['contact us', 'color options', 'various options'])
 
 export function isPlaceholderColor(color: string) {
@@ -54,6 +59,17 @@ export function sanitizeProductDescription(description?: string) {
   return sanitizedDescription || undefined
 }
 
+export function buildProductDisplayLabel(product: Pick<Product, 'model' | 'storage' | 'color'>) {
+  const color = sanitizeProductColor(product.color)
+  const segments = [sanitizeOptionalText(product.model), sanitizeOptionalText(product.storage)]
+
+  if (color && !isPlaceholderColor(color)) {
+    segments.push(color)
+  }
+
+  return cleanText(segments.filter(Boolean).join(' ')) || product.model.trim()
+}
+
 export function getPrimaryProductImage(product?: Pick<Product, 'image_url' | 'images'> | null) {
   if (!product) {
     return undefined
@@ -75,6 +91,16 @@ export function sanitizeProductForDisplay<T extends Product>(product: T): T {
     ...product,
     color: sanitizeProductColor(product.color),
     description: sanitizeProductDescription(product.description),
+    brand: sanitizeOptionalText(product.brand),
+    product_type: sanitizeOptionalText(product.product_type),
+    google_product_category: sanitizeOptionalText(product.google_product_category),
+    gtin: sanitizeOptionalText(product.gtin),
+    mpn: sanitizeOptionalText(product.mpn),
+    item_group_id: sanitizeOptionalText(product.item_group_id),
+    warranty: sanitizeOptionalText(product.warranty),
+    accessories_included: sanitizeOptionalText(product.accessories_included),
+    cosmetic_grade: sanitizeOptionalText(product.cosmetic_grade),
+    repair_history: sanitizeOptionalText(product.repair_history),
   }
 }
 
@@ -115,6 +141,36 @@ export function extractBrand(model: string): string {
     if (pattern.test(trimmed)) return brand
   }
   return 'Other'
+}
+
+export function getKnownProductBrand(product: Pick<Product, 'brand' | 'model'>) {
+  const explicitBrand = sanitizeOptionalText(product.brand)
+  if (explicitBrand) {
+    return explicitBrand
+  }
+
+  const inferredBrand = extractBrand(product.model)
+  return inferredBrand === 'Other' ? undefined : inferredBrand
+}
+
+export function resolveProductBrand(product: Pick<Product, 'brand' | 'model'>) {
+  return getKnownProductBrand(product) || 'Other'
+}
+
+export function getProductDetailRows(product: Product) {
+  const brand = getKnownProductBrand(product)
+
+  return [
+    brand && { label: 'Brand', value: brand },
+    sanitizeOptionalText(product.storage) && { label: 'Storage', value: product.storage.trim() },
+    product.color && !isPlaceholderColor(product.color) && { label: 'Color', value: product.color },
+    product.release_year && { label: 'Release year', value: String(product.release_year) },
+    product.battery_health != null && { label: 'Battery health', value: `${product.battery_health}%` },
+    sanitizeOptionalText(product.cosmetic_grade) && { label: 'Cosmetic grade', value: product.cosmetic_grade!.trim() },
+    sanitizeOptionalText(product.repair_history) && { label: 'Repair history', value: product.repair_history!.trim() },
+    sanitizeOptionalText(product.accessories_included) && { label: 'Included', value: product.accessories_included!.trim() },
+    sanitizeOptionalText(product.warranty) && { label: 'Warranty', value: product.warranty!.trim() },
+  ].filter(Boolean) as { label: string; value: string }[]
 }
 
 /* ------------------------------------------------------------------ */

@@ -12,7 +12,7 @@ import WhatsAppCTA from '../components/WhatsAppCTA'
 import { getSecondhandCategoryGroups, getSecondhandProducts, secondhandCategories, secondhandHero } from '../content/secondhandCatalog'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
-import { extractBrand } from '../utils/productPresentation'
+import { resolveProductBrand } from '../utils/productPresentation'
 
 interface SecondhandPageProps {
   products: Product[]
@@ -42,7 +42,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
       })
     }
     if (activeBrands.size > 0) {
-      result = result.filter((p) => activeBrands.has(extractBrand(p.model)))
+      result = result.filter((p) => activeBrands.has(resolveProductBrand(p)))
     }
     return result
   }, [products, activeCategories, activeBrands])

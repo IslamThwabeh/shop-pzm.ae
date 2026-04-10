@@ -10,6 +10,18 @@ export interface Product {
   image_url?: string
   images?: string[]
   description?: string
+  brand?: string
+  product_type?: string
+  google_product_category?: string
+  gtin?: string
+  mpn?: string
+  item_group_id?: string
+  warranty?: string
+  accessories_included?: string
+  cosmetic_grade?: string
+  repair_history?: string
+  battery_health?: number | null
+  release_year?: number | null
   created_at?: string
   updated_at?: string
   createdAt?: string

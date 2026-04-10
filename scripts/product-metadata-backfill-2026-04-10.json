@@ -1,0 +1,515 @@
+{
+  "generatedAt": "2026-04-10T19:11:09.870Z",
+  "sourceSite": "https://pzm.ae",
+  "productCount": 66,
+  "products": [
+    {
+      "id": "prod-mke7jjyb-sokfrf",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-256gb-esim-middle-east-version-256"
+    },
+    {
+      "id": "prod-mknumxrc-5kdqrp",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-512gb-esim-middle-east-version-512gb"
+    },
+    {
+      "id": "prod-mknuqumj-3j89kt",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-1tb-esim-middle-east-version-1-tb"
+    },
+    {
+      "id": "prod-mknusqvw-d9butr",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-2-tb-esim-middle-east-version-2-tb"
+    },
+    {
+      "id": "prod-mknv2rci-80a2e7",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-256gb-esim-physical-sim-256"
+    },
+    {
+      "id": "prod-mknv4zof-onc9d0",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-512gb-esim-physical-sim-512gb"
+    },
+    {
+      "id": "prod-mknv6fcz-frk68g",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-1tb-esim-physical-sim-1-tb"
+    },
+    {
+      "id": "prod-mknvkqh4-r09vyc",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-256gb-esim-middle-east-version-256"
+    },
+    {
+      "id": "prod-mknvlvka-5183je",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-512gb-esim-middle-east-version-512gb"
+    },
+    {
+      "id": "prod-mknvs9uz-hvxekh",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-1tb-esim-middle-east-version-1-tb"
+    },
+    {
+      "id": "prod-mknvt9r4-rcv8iz",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-2-tb-esim-middle-east-version-2-tb"
+    },
+    {
+      "id": "prod-mknvvb95-87l8ks",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-256gb-esim-physical-sim-256"
+    },
+    {
+      "id": "prod-mknvw4iv-71wisb",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-512gb-esim-physical-sim-512gb"
+    },
+    {
+      "id": "prod-mknvxaif-cv1v8g",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-1tb-esim-physical-sim-1-tb"
+    },
+    {
+      "id": "prod-mknwhpm1-w3ypw6",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-max-256gb-esim-physical-sim-256"
+    },
+    {
+      "id": "prod-mnku9mqc-99c8wd",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-pro-256gb-esim-physical-sim-256gb"
+    },
+    {
+      "id": "prod-mnku9nbd-ob74rl",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-air-1tb-esim-physical-sim-1tb"
+    },
+    {
+      "id": "prod-mnku9nz1-0jms1d",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-17-256gb-esim-physical-sim-256gb"
+    },
+    {
+      "id": "prod-mnnylbbb-y7nfct",
+      "brand": "Samsung",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "samsung-samsung-a56-5g-128gb-8gb-ram",
+      "color": "",
+      "warranty": "Official manufacturer warranty"
+    },
+    {
+      "id": "prod-mnnylbrz-gnvfvh",
+      "brand": "Samsung",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "samsung-samsung-a36-5g-128gb-6gb-ram",
+      "color": "",
+      "warranty": "Official manufacturer warranty"
+    },
+    {
+      "id": "prod-mnnylcht-o6llx3",
+      "brand": "Samsung",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "samsung-samsung-a17-4g-128gb-4gb-ram",
+      "color": "",
+      "warranty": "Official manufacturer warranty"
+    },
+    {
+      "id": "prod-mnnyld0a-ejxqds",
+      "brand": "Samsung",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "samsung-samsung-a06-4g-64gb-4gb-ram",
+      "color": "",
+      "warranty": "Official manufacturer warranty"
+    },
+    {
+      "id": "prod-mnnyldsg-91l1yj",
+      "brand": "Apple",
+      "product_type": "Brand New Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Laptops",
+      "item_group_id": "apple-macbook-air-13-m4-256gb-16gb-ram"
+    },
+    {
+      "id": "prod-mnnyleed-ndwdbb",
+      "brand": "Nintendo",
+      "product_type": "Brand New Devices > Gaming",
+      "google_product_category": "Electronics > Video Game Consoles",
+      "item_group_id": "nintendo-nintendo-switch-new",
+      "storage": "",
+      "color": ""
+    },
+    {
+      "id": "prod-mnnyleu0-e6x4n1",
+      "brand": "PlayStation",
+      "product_type": "Brand New Devices > Gaming",
+      "google_product_category": "Electronics > Video Game Consoles",
+      "item_group_id": "playstation-ps5-digital-edition-1tb"
+    },
+    {
+      "id": "prod-mnnylfgi-563z4b",
+      "brand": "PlayStation",
+      "product_type": "Brand New Devices > Gaming",
+      "google_product_category": "Electronics > Video Game Consoles",
+      "item_group_id": "playstation-ps4-new",
+      "storage": "",
+      "color": "",
+      "accessories_included": "Controller"
+    },
+    {
+      "id": "prod-mnnylg1u-8oymq7",
+      "brand": "Xbox",
+      "product_type": "Brand New Devices > Gaming",
+      "google_product_category": "Electronics > Video Game Consoles",
+      "item_group_id": "xbox-xbox-one-new",
+      "storage": "",
+      "color": ""
+    },
+    {
+      "id": "prod-mnnylguu-t5h6b2",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-16-pro-max-256gb",
+      "repair_history": "Never fixed",
+      "battery_health": 98,
+      "description": "Pre-owned iPhone 16 Pro Max with 256GB in Desert Titanium. Battery health 98%. Never fixed."
+    },
+    {
+      "id": "prod-mnnylhk1-chkb48",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-16-pro-128gb",
+      "repair_history": "Never fixed",
+      "battery_health": 91,
+      "description": "Pre-owned iPhone 16 Pro with 128GB in White. Battery health 91%. Never fixed."
+    },
+    {
+      "id": "prod-mnnyli5x-ahzdn4",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-15-pro-max-256gb",
+      "battery_health": 88,
+      "description": "Pre-owned iPhone 15 Pro Max with 256GB in Black. Battery health 88%."
+    },
+    {
+      "id": "prod-mnnyliq5-vclzt3",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-15-plus-256gb",
+      "repair_history": "Never fixed",
+      "battery_health": 88,
+      "description": "Pre-owned iPhone 15 Plus with 256GB in Pink. Battery health 88%. Never fixed."
+    },
+    {
+      "id": "prod-mnnylj55-ahu1yf",
+      "brand": "Apple",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Laptops",
+      "item_group_id": "apple-macbook-air-m2-2022-8gb-256gb",
+      "release_year": 2022
+    },
+    {
+      "id": "prod-mnnyljke-go92k4",
+      "brand": "Lenovo",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Laptops",
+      "item_group_id": "lenovo-lenovo-thinkbook-i5-13th-8gb-256gb"
+    },
+    {
+      "id": "prod-mnnyljzi-16mj7n",
+      "brand": "Microsoft",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Laptops",
+      "item_group_id": "microsoft-microsoft-surface-pro-snapdragon-x-plus-16gb-512gb",
+      "accessories_included": "Keyboard"
+    },
+    {
+      "id": "prod-mnnylkm1-3qon8s",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Computers > Tablet Computers",
+      "item_group_id": "apple-ipad-pro-11-64gb",
+      "repair_history": "Never fixed"
+    },
+    {
+      "id": "prod-mnnyll1d-42xb7j",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Computers > Tablet Computers",
+      "item_group_id": "apple-ipad-9th-gen-64gb",
+      "color": "Grey"
+    },
+    {
+      "id": "prod-mnnyllrg-78sb84",
+      "brand": "Gaming PC",
+      "product_type": "Used Devices > Gaming",
+      "google_product_category": "Electronics > Computers > Desktop Computers",
+      "item_group_id": "gaming-pc-gaming-pc-i7-12th-ddr5-32gb-ssd-1tb"
+    },
+    {
+      "id": "prod-mnnylm7o-c5k8ap",
+      "brand": "Gaming PC",
+      "product_type": "Used Devices > Gaming",
+      "google_product_category": "Electronics > Computers > Desktop Computers",
+      "item_group_id": "gaming-pc-gaming-pc-amd-ryzen-9-5900h-48gb-nvme-512gb"
+    },
+    {
+      "id": "prod-mnnz785s-i7iu13",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-14-pro-512gb",
+      "battery_health": 94,
+      "description": "Pre-owned iPhone 14 Pro with 512GB in Black. Battery health 94%."
+    },
+    {
+      "id": "prod-mnnz78oc-j05d04",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-14-pro-256gb",
+      "battery_health": 100,
+      "description": "Pre-owned iPhone 14 Pro with 256GB in Purple. Battery health 100%."
+    },
+    {
+      "id": "prod-mnnz7942-sy45e4",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-14-pro-128gb",
+      "battery_health": 96,
+      "description": "Pre-owned iPhone 14 Pro with 128GB in White. Battery health 96%."
+    },
+    {
+      "id": "prod-mnnz79rn-hqlaav",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-13-pro-max-256gb",
+      "battery_health": 97,
+      "description": "Pre-owned iPhone 13 Pro Max with 256GB in Blue. Battery health 97%."
+    },
+    {
+      "id": "prod-mnnz7aii-6j2evv",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-13-pro-1tb",
+      "battery_health": 97,
+      "description": "Pre-owned iPhone 13 Pro with 1TB in Blue. Battery health 97%."
+    },
+    {
+      "id": "prod-mnnz7b8r-fzll92",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "apple-iphone-12-mini-64gb",
+      "battery_health": 90,
+      "description": "Pre-owned iPhone 12 Mini with 64GB in Rose White. Battery health 90%."
+    },
+    {
+      "id": "prod-mnnz7boc-pchv3y",
+      "brand": "Honor",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "honor-honor-x8-6-2gb-128gb"
+    },
+    {
+      "id": "prod-mnnz7c6q-ztw1ea",
+      "brand": "Honor",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "honor-honor-x9c-12gb-256gb"
+    },
+    {
+      "id": "prod-mnnz7crj-1msd5r",
+      "brand": "Samsung",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "samsung-samsung-galaxy-a73-5g-128gb-8gb-ram"
+    },
+    {
+      "id": "prod-mnnz7dcf-h2lui0",
+      "brand": "Xiaomi",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "xiaomi-redmi-note-8-6gb-128gb"
+    },
+    {
+      "id": "prod-mnnz7dy1-88bplj",
+      "brand": "Tecno",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "tecno-tecno-spark-go-1-64gb-3gb-ram"
+    },
+    {
+      "id": "prod-mnnz7elc-iwnhq1",
+      "brand": "Nokia",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "item_group_id": "nokia-nokia-c20-32gb"
+    },
+    {
+      "id": "prod-mnnz7f1p-375zkm",
+      "brand": "ASUS",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Laptops",
+      "item_group_id": "asus-asus-rog-strix-gaming-32gb-1tb-rtx-4070"
+    },
+    {
+      "id": "prod-mnnz7fpb-dd66y3",
+      "brand": "AORUS",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Laptops",
+      "item_group_id": "aorus-aorus-gaming-i7-11th-32gb-1tb-rtx-3080"
+    },
+    {
+      "id": "prod-mnnz7gce-ct98iq",
+      "brand": "Alienware",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Laptops",
+      "item_group_id": "alienware-alienware-19-gaming-i7-12th-32gb-1tb-rtx-3080-240hz-16"
+    },
+    {
+      "id": "prod-mnnz7h04-2f73ci",
+      "brand": "Dell",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Laptops",
+      "item_group_id": "dell-dell-inspiron-15-7000-gaming-i7-7th-8gb-512gb-gtx-1050-ti"
+    },
+    {
+      "id": "prod-mnnz7hfp-d4coml",
+      "brand": "Apple",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Laptops",
+      "item_group_id": "apple-macbook-pro-16-36gb-512gb-gpu-18-core"
+    },
+    {
+      "id": "prod-mnnz7i37-f45q0m",
+      "brand": "Apple",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Laptops",
+      "item_group_id": "apple-macbook-pro-2019-15-32gb-512gb-touch-bar",
+      "release_year": 2019
+    },
+    {
+      "id": "prod-mnnz7ini-ebpaz7",
+      "brand": "Apple",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Laptops",
+      "item_group_id": "apple-macbook-air-m1-2020-8gb-256gb",
+      "release_year": 2020
+    },
+    {
+      "id": "prod-mnnz7j6x-ps3zhi",
+      "brand": "HP",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Laptops",
+      "item_group_id": "hp-hp-laptop-i7-12th-16gb-1tb"
+    },
+    {
+      "id": "prod-mnnz7jsh-rh2ju7",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Computers > Tablet Computers",
+      "item_group_id": "apple-ipad-5th-gen-64gb-wi-fi-cellular",
+      "color": "",
+      "accessories_included": "Keyboard"
+    },
+    {
+      "id": "prod-mnnz7kbm-9xdr7p",
+      "brand": "Apple",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Computers > Tablet Computers",
+      "item_group_id": "apple-ipad-8th-gen-32gb"
+    },
+    {
+      "id": "prod-mnnz7krp-31gl1c",
+      "brand": "Huawei",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Computers > Tablet Computers",
+      "item_group_id": "huawei-huawei-matepad-128gb"
+    },
+    {
+      "id": "prod-mnnz7lck-2n3b85",
+      "brand": "Samsung",
+      "product_type": "Used Devices > Phones & Tablets",
+      "google_product_category": "Electronics > Computers > Tablet Computers",
+      "item_group_id": "samsung-samsung-tab-a6-32gb"
+    },
+    {
+      "id": "prod-mnnz7m0y-phqtnu",
+      "brand": "Gaming PC",
+      "product_type": "Used Devices > Gaming",
+      "google_product_category": "Electronics > Computers > Desktop Computers",
+      "item_group_id": "gaming-pc-gaming-pc-i7-14th-corsair-64gb-ssd-480gb-hdd-1tb"
+    },
+    {
+      "id": "prod-mnnz7mm7-a76u51",
+      "brand": "LG",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Computer Monitors",
+      "item_group_id": "lg-lg-ultragear-45-wqhd-oled-curved-240hz-0-03ms-hdr-10"
+    },
+    {
+      "id": "prod-mnnz7n1b-cyflma",
+      "brand": "ASUS",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Computer Monitors",
+      "item_group_id": "asus-asus-rog-swift-27-qhd-360hz-g-sync-1ms-displayhdr-600"
+    },
+    {
+      "id": "prod-mnnz7nhe-sbagxe",
+      "brand": "Samsung",
+      "product_type": "Used Devices > Laptops & Computers",
+      "google_product_category": "Electronics > Computers > Computer Monitors",
+      "item_group_id": "samsung-samsung-viewfinity-s7-32-4k-flat"
+    }
+  ]
+}

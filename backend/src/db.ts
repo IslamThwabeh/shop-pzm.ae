@@ -1,5 +1,20 @@
 import type { Product, Order, OrderItem, Customer, AdminUser, ServiceRequest, WhatsAppLead } from '../../shared/types';
 
+const PRODUCT_METADATA_COLUMNS: Array<{ name: string; type: string }> = [
+  { name: 'brand', type: 'TEXT' },
+  { name: 'product_type', type: 'TEXT' },
+  { name: 'google_product_category', type: 'TEXT' },
+  { name: 'gtin', type: 'TEXT' },
+  { name: 'mpn', type: 'TEXT' },
+  { name: 'item_group_id', type: 'TEXT' },
+  { name: 'warranty', type: 'TEXT' },
+  { name: 'accessories_included', type: 'TEXT' },
+  { name: 'cosmetic_grade', type: 'TEXT' },
+  { name: 'repair_history', type: 'TEXT' },
+  { name: 'battery_health', type: 'INTEGER' },
+  { name: 'release_year', type: 'INTEGER' },
+];
+
 export class Database {
   constructor(private db: D1Database) {}
 
@@ -50,10 +65,26 @@ export class Database {
     ).run();
   }
 
+  private async ensureProductMetadataSchema(): Promise<void> {
+    const result = await this.db.prepare('PRAGMA table_info(products)').all();
+    const columns = new Set(((result.results as Array<{ name: string }>) || []).map((column) => column.name));
+
+    for (const column of PRODUCT_METADATA_COLUMNS) {
+      if (!columns.has(column.name)) {
+        await this.db.prepare(`ALTER TABLE products ADD COLUMN ${column.name} ${column.type}`).run();
+      }
+    }
+
+    await this.db.prepare('CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand)').run();
+    await this.db.prepare('CREATE INDEX IF NOT EXISTS idx_products_gtin ON products(gtin)').run();
+    await this.db.prepare('CREATE INDEX IF NOT EXISTS idx_products_item_group_id ON products(item_group_id)').run();
+  }
+
   // ============ PRODUCTS ============
 
   async getProducts(condition?: 'new' | 'used', includeOutOfStock: boolean = false): Promise<Product[]> {
     try {
+      await this.ensureProductMetadataSchema();
       let query = 'SELECT * FROM products';
       const params: any[] = [];
 
@@ -80,6 +111,7 @@ export class Database {
 
   async getProduct(id: string): Promise<Product | null> {
     try {
+      await this.ensureProductMetadataSchema();
       const result = await this.db
         .prepare('SELECT * FROM products WHERE id = ?')
         .bind(id)
@@ -93,21 +125,58 @@ export class Database {
 
   async createProduct(product: Product): Promise<Product> {
     try {
+      await this.ensureProductMetadataSchema();
       await this.db
         .prepare(
-          `INSERT INTO products (id, model, storage, condition, color, price, description, quantity, image_url, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          `INSERT INTO products (
+             id,
+             model,
+             storage,
+             condition,
+             color,
+             price,
+             description,
+             quantity,
+             image_url,
+             brand,
+             product_type,
+             google_product_category,
+             gtin,
+             mpn,
+             item_group_id,
+             warranty,
+             accessories_included,
+             cosmetic_grade,
+             repair_history,
+             battery_health,
+             release_year,
+             created_at,
+             updated_at
+           )
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
         .bind(
           product.id,
           product.model,
-          product.storage,
+          product.storage || '',
           product.condition,
-          product.color,
+          product.color || '',
           product.price,
           product.description || '',
           product.quantity,
           product.image_url || '',
+          product.brand || null,
+          product.product_type || null,
+          product.google_product_category || null,
+          product.gtin || null,
+          product.mpn || null,
+          product.item_group_id || null,
+          product.warranty || null,
+          product.accessories_included || null,
+          product.cosmetic_grade || null,
+          product.repair_history || null,
+          product.battery_health ?? null,
+          product.release_year ?? null,
           new Date().toISOString(),
           new Date().toISOString()
         )
@@ -122,6 +191,7 @@ export class Database {
 
   async updateProduct(id: string, updates: Partial<Product>): Promise<Product | null> {
     try {
+      await this.ensureProductMetadataSchema();
       const product = await this.getProduct(id);
       if (!product) return null;
 
@@ -129,18 +199,30 @@ export class Database {
 
       await this.db
         .prepare(
-          `UPDATE products SET model = ?, storage = ?, condition = ?, color = ?, price = ?, description = ?, quantity = ?, image_url = ?, updated_at = ?
+          `UPDATE products SET model = ?, storage = ?, condition = ?, color = ?, price = ?, description = ?, quantity = ?, image_url = ?, brand = ?, product_type = ?, google_product_category = ?, gtin = ?, mpn = ?, item_group_id = ?, warranty = ?, accessories_included = ?, cosmetic_grade = ?, repair_history = ?, battery_health = ?, release_year = ?, updated_at = ?
            WHERE id = ?`
         )
         .bind(
           updated.model,
-          updated.storage,
+          updated.storage || '',
           updated.condition,
-          updated.color,
+          updated.color || '',
           updated.price,
           updated.description,
           updated.quantity,
           updated.image_url,
+          updated.brand || null,
+          updated.product_type || null,
+          updated.google_product_category || null,
+          updated.gtin || null,
+          updated.mpn || null,
+          updated.item_group_id || null,
+          updated.warranty || null,
+          updated.accessories_included || null,
+          updated.cosmetic_grade || null,
+          updated.repair_history || null,
+          updated.battery_health ?? null,
+          updated.release_year ?? null,
           updated.updated_at,
           id
         )

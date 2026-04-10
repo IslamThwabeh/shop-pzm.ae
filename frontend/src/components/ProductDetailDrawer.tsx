@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { MessageCircle, X, Truck, ShieldCheck, Banknote } from 'lucide-react'
 import type { Product } from '@shared/types'
 import RetailImage from './RetailImage'
-import { getPrimaryProductImage } from '../utils/productPresentation'
+import { buildProductDisplayLabel, getPrimaryProductImage, getProductDetailRows } from '../utils/productPresentation'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 
 interface ProductDetailDrawerProps {
@@ -43,20 +43,20 @@ export default function ProductDetailDrawer({ product, onClose }: ProductDetailD
     openWhatsAppLead({
       leadType: 'product',
       referenceId: product.id,
-      referenceLabel: `${product.model} ${product.storage} ${product.color}`.trim(),
+      referenceLabel: buildProductDisplayLabel(product),
       referencePrice: product.price,
       sourcePage: window.location.pathname,
     })
   }
 
   const specs = [
-    product.storage && { label: 'Storage', value: product.storage },
     product.condition && {
       label: 'Condition',
       value: product.condition === 'new' ? 'Brand New' : 'Certified Used',
     },
-    product.color && { label: 'Color', value: product.color },
+    ...getProductDetailRows(product),
   ].filter(Boolean) as { label: string; value: string }[]
+  const warrantyLabel = product.warranty || (product.condition === 'new' ? 'Official Warranty' : 'Inspected & Tested')
 
   return (
     <div
@@ -80,7 +80,7 @@ export default function ProductDetailDrawer({ product, onClose }: ProductDetailD
         <div className="product-image-frame mx-4 mt-4 aspect-square max-h-[320px]">
           <RetailImage
             src={getPrimaryProductImage(product)}
-            alt={`${product.model} ${product.storage} ${product.color}`.trim()}
+            alt={buildProductDisplayLabel(product)}
             name={product.model}
             variant="panel"
             loading="eager"
@@ -128,7 +128,7 @@ export default function ProductDetailDrawer({ product, onClose }: ProductDetailD
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600">
               <ShieldCheck size={14} />
-              {product.condition === 'new' ? 'Official Warranty' : 'Inspected & Tested'}
+              {warrantyLabel}
             </span>
           </div>
 

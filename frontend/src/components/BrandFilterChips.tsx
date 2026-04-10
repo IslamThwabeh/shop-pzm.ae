@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import type { Product } from '@shared/types'
-import { extractBrand } from '../utils/productPresentation'
+import { resolveProductBrand } from '../utils/productPresentation'
 
 export interface FilterCategory {
   key: string
@@ -55,7 +55,7 @@ export default function CatalogFilter({
   const brands = useMemo(() => {
     const countMap = new Map<string, number>()
     for (const product of categoryFilteredProducts) {
-      const brand = extractBrand(product.model)
+      const brand = resolveProductBrand(product)
       countMap.set(brand, (countMap.get(brand) || 0) + 1)
     }
     return Array.from(countMap.entries())

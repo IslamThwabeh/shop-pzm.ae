@@ -1,6 +1,6 @@
 import { Eye, MessageCircle, ShoppingCart } from 'lucide-react'
 import type { Product } from '@shared/types'
-import { getPrimaryProductImage } from '../utils/productPresentation'
+import { buildProductDisplayLabel, getPrimaryProductImage } from '../utils/productPresentation'
 import RetailImage from './RetailImage'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { useCart } from '../context/CartContext'
@@ -14,6 +14,7 @@ interface Props {
 export default function ProductCard({ product, onViewDetails }: Props) {
   const { addItem } = useCart()
   const inStock = (product.quantity ?? 0) > 0
+  const productLabel = buildProductDisplayLabel(product)
 
   const handleAddToCart = (sourceElement: HTMLButtonElement) => {
     if (!inStock) return
@@ -35,7 +36,7 @@ export default function ProductCard({ product, onViewDetails }: Props) {
     openWhatsAppLead({
       leadType: 'product',
       referenceId: product.id,
-      referenceLabel: `${product.model} ${product.storage} ${product.color}`.trim(),
+      referenceLabel: productLabel,
       referencePrice: product.price,
       sourcePage: window.location.pathname,
     })
@@ -48,7 +49,7 @@ export default function ProductCard({ product, onViewDetails }: Props) {
         <div data-cart-feedback-image className="flex h-full w-full items-center justify-center">
           <RetailImage
             src={getPrimaryProductImage(product)}
-            alt={`${product.model} ${product.storage} ${product.color}`.trim()}
+            alt={productLabel}
             name={product.model}
             variant="card"
           />

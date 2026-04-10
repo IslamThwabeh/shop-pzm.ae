@@ -2,6 +2,21 @@ import { createHash, createHmac } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
+const OPTIONAL_PRODUCT_FIELDS = [
+  'brand',
+  'product_type',
+  'google_product_category',
+  'gtin',
+  'mpn',
+  'item_group_id',
+  'warranty',
+  'accessories_included',
+  'cosmetic_grade',
+  'repair_history',
+  'battery_health',
+  'release_year',
+];
+
 function printUsage() {
   console.log(`Usage: node scripts/sync-products-to-shop.mjs <manifest.json>
 
@@ -24,6 +39,13 @@ Manifest shape:
       "price": 5999,
       "quantity": 3,
       "description": "optional",
+      "brand": "Apple",
+      "warranty": "Official manufacturer warranty",
+      "gtin": "optional-verified-gtin",
+      "mpn": "optional-verified-mpn",
+      "google_product_category": "Electronics > Communications > Telephony > Mobile Phones",
+      "product_type": "Brand New Devices > Phones & Tablets",
+      "item_group_id": "iphone-17-pro-max",
       "replaceImages": true,
       "imagePaths": [
         "C:/Users/you/Pictures/catalog/iphone-17-black-front.jpg",
@@ -158,6 +180,11 @@ async function login(siteUrl) {
   }
 
   const payload = await response.json();
+
+  if (payload.data?.requiresTwoFactor) {
+    throw new Error('Admin login now requires 2FA. Set PZM_ADMIN_TOKEN or ADMIN_SECRET for automated sync runs.');
+  }
+
   return payload.data?.token;
 }
 
@@ -184,9 +211,9 @@ function findExistingProduct(products, product) {
     products.find(
       (item) =>
         item.model === product.model &&
-        item.storage === product.storage &&
+        (item.storage || '') === (product.storage || '') &&
         item.condition === product.condition &&
-        item.color === product.color
+        (item.color || '') === (product.color || '')
     ) || null
   );
 }
@@ -195,12 +222,17 @@ async function buildFormData(product, manifestDir, existingProduct) {
   const mergedProduct = existingProduct ? { ...existingProduct, ...product } : product;
   const formData = new FormData();
   formData.append('model', mergedProduct.model);
-  formData.append('storage', mergedProduct.storage);
+  formData.append('storage', mergedProduct.storage || '');
   formData.append('condition', mergedProduct.condition);
-  formData.append('color', mergedProduct.color);
+  formData.append('color', mergedProduct.color || '');
   formData.append('price', String(mergedProduct.price));
   formData.append('quantity', String(mergedProduct.quantity ?? 0));
   formData.append('description', mergedProduct.description || '');
+
+  for (const field of OPTIONAL_PRODUCT_FIELDS) {
+    const value = mergedProduct[field];
+    formData.append(field, value == null ? '' : String(value));
+  }
 
   if (product.replaceImages) {
     formData.append('replace_images', 'true');
@@ -230,7 +262,7 @@ function validateManifest(manifest) {
       continue;
     }
 
-    for (const field of ['model', 'storage', 'condition', 'color', 'price']) {
+    for (const field of ['model', 'condition', 'price']) {
       if (product[field] === undefined || product[field] === null || product[field] === '') {
         throw new Error(`Product is missing required field: ${field}`);
       }
@@ -293,11 +325,11 @@ async function main() {
 
     if (existingProduct) {
       summary.updated += 1;
-      console.log(`Updated ${result.id}: ${result.model} (${result.color})`);
+      console.log(`Updated ${result.id}: ${result.model}${result.color ? ` (${result.color})` : ''}`);
     } else {
       summary.created += 1;
       currentProducts.unshift(result);
-      console.log(`Created ${result.id}: ${result.model} (${result.color})`);
+      console.log(`Created ${result.id}: ${result.model}${result.color ? ` (${result.color})` : ''}`);
     }
   }
 

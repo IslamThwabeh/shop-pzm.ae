@@ -1,4 +1,16 @@
-import type { JWTPayload } from '../../shared/types';
+const DEFAULT_TOKEN_EXPIRY_SECONDS = 24 * 60 * 60;
+
+export interface AuthTokenPayload {
+  sub: string;
+  email: string;
+  iat: number;
+  exp: number;
+  role?: string;
+  type?: string;
+  username?: string;
+}
+
+type AuthTokenPayloadInput = Omit<AuthTokenPayload, 'iat' | 'exp'>;
 
 export class AuthService {
   constructor(private secret: string) {}
@@ -18,19 +30,18 @@ export class AuthService {
   /**
    * Generate JWT token
    */
-  async generateToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): Promise<string> {
+  async generateToken(payload: AuthTokenPayloadInput, expiresInSeconds = DEFAULT_TOKEN_EXPIRY_SECONDS): Promise<string> {
     const header = {
       alg: 'HS256',
       typ: 'JWT',
     };
 
     const now = Math.floor(Date.now() / 1000);
-    const expiresIn = 24 * 60 * 60; // 24 hours
 
-    const tokenPayload: JWTPayload = {
+    const tokenPayload: AuthTokenPayload = {
       ...payload,
       iat: now,
-      exp: now + expiresIn,
+      exp: now + expiresInSeconds,
     };
 
     const headerEncoded = this.base64UrlEncode(JSON.stringify(header));
@@ -45,7 +56,7 @@ export class AuthService {
   /**
    * Verify JWT token
    */
-  async verifyToken(token: string): Promise<JWTPayload | null> {
+  async verifyToken(token: string): Promise<AuthTokenPayload | null> {
     try {
       const parts = token.split('.');
       if (parts.length !== 3) return null;
@@ -62,7 +73,7 @@ export class AuthService {
 
       // Decode and parse payload
       const payloadJson = this.base64UrlDecode(payloadEncoded);
-      const payload: JWTPayload = JSON.parse(payloadJson);
+      const payload: AuthTokenPayload = JSON.parse(payloadJson);
 
       // Check expiration
       const now = Math.floor(Date.now() / 1000);
@@ -83,6 +94,12 @@ export class AuthService {
    */
   async verifyPasswordHash(receivedHash: string, storedHash: string): Promise<boolean> {
     return receivedHash === storedHash;
+  }
+
+  async hashValue(value: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const digest = await crypto.subtle.digest('SHA-256', encoder.encode(value));
+    return this.base64UrlEncode(new Uint8Array(digest));
   }
 
   /**

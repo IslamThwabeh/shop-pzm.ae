@@ -14,6 +14,10 @@ const CABLE_THRESHOLD = 34
 export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [verificationCode, setVerificationCode] = useState('')
+  const [challengeId, setChallengeId] = useState<string | null>(null)
+  const [verificationDestination, setVerificationDestination] = useState<string | null>(null)
+  const [loginStep, setLoginStep] = useState<'credentials' | 'verification'>('credentials')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [lampOn, setLampOn] = useState(false)
@@ -21,7 +25,9 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
   const [cablePull, setCablePull] = useState(0)
   const dragStartYRef = useRef<number | null>(null)
   const usernameInputRef = useRef<HTMLInputElement | null>(null)
+  const verificationInputRef = useRef<HTMLInputElement | null>(null)
   const suppressCableClickRef = useRef(false)
+  const isVerificationStep = loginStep === 'verification'
 
   const toggleLamp = () => {
     if (loading) {
@@ -34,9 +40,13 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
 
   useEffect(() => {
     if (lampOn) {
-      usernameInputRef.current?.focus()
+      if (isVerificationStep) {
+        verificationInputRef.current?.focus()
+      } else {
+        usernameInputRef.current?.focus()
+      }
     }
-  }, [lampOn])
+  }, [isVerificationStep, lampOn])
 
   useEffect(() => {
     if (!isDraggingCable) {
@@ -112,31 +122,107 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
     toggleLamp()
   }
 
-  const handleLogin = async (event: React.FormEvent) => {
+  const completeLogin = (data: { token: string; user: unknown }) => {
+    localStorage.setItem('adminToken', data.token)
+    localStorage.setItem('adminUser', JSON.stringify(data.user))
+    onSuccess()
+  }
+
+  const resetVerificationStep = () => {
+    setLoginStep('credentials')
+    setChallengeId(null)
+    setVerificationCode('')
+    setVerificationDestination(null)
+  }
+
+  const handleBack = () => {
+    setError(null)
+
+    if (isVerificationStep) {
+      resetVerificationStep()
+      return
+    }
+
+    onCancel()
+  }
+
+  const requestVerificationCode = async () => {
+    const passwordHash = await hashPassword(password)
+
+    const response = await fetch('/api/auth/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password: passwordHash }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Invalid credentials')
+    }
+
+    if (data.data?.requiresTwoFactor && data.data?.challengeId) {
+      setChallengeId(data.data.challengeId)
+      setVerificationDestination(data.data.destination || null)
+      setVerificationCode('')
+      setLoginStep('verification')
+      return
+    }
+
+    if (data.data?.token && data.data?.user) {
+      completeLogin(data.data)
+      return
+    }
+
+    throw new Error('Unexpected login response')
+  }
+
+  const verifyLoginCode = async () => {
+    if (!challengeId) {
+      throw new Error('Verification expired. Please login again.')
+    }
+
+    const normalizedCode = verificationCode.replace(/\s+/g, '').trim()
+
+    const response = await fetch('/api/auth/admin/verify-2fa', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ challengeId, code: normalizedCode }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Verification failed')
+    }
+
+    if (data.data?.token && data.data?.user) {
+      completeLogin(data.data)
+      return
+    }
+
+    throw new Error('Unexpected verification response')
+  }
+
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     setLoading(true)
     setError(null)
 
     try {
-      const passwordHash = await hashPassword(password)
+      if (isVerificationStep) {
+        await verifyLoginCode()
+      } else {
+        await requestVerificationCode()
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Login failed'
 
-      const response = await fetch('/api/auth/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password: passwordHash }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Invalid credentials')
+      if (message.toLowerCase().includes('login again')) {
+        resetVerificationStep()
       }
 
-      const data = await response.json()
-      localStorage.setItem('adminToken', data.data.token)
-      localStorage.setItem('adminUser', JSON.stringify(data.data.user))
-      onSuccess()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      setError(message)
     } finally {
       setLoading(false)
     }
@@ -209,7 +295,10 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
                     <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/[0.08] text-amber-100 shadow-sm">
                       <Lock size={18} />
                     </div>
-                    <h2 className="mt-3 text-[1.35rem] font-bold text-white">Admin Login</h2>
+                    <h2 className="mt-3 text-[1.35rem] font-bold text-white">{isVerificationStep ? 'Verify Login' : 'Admin Login'}</h2>
+                    {isVerificationStep && verificationDestination && (
+                      <p className="mt-2 text-sm text-white/62">Enter the 6-digit code sent to {verificationDestination}.</p>
+                    )}
                   </div>
 
                   {error && (
@@ -218,35 +307,57 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
                     </div>
                   )}
 
-                  <form onSubmit={handleLogin} className="relative mt-5 space-y-3.5">
-                    <div>
-                      <label htmlFor="username" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-white/62">
-                        Username
-                      </label>
-                      <input
-                        ref={usernameInputRef}
-                        id="username"
-                        type="text"
-                        value={username}
-                        onChange={(event) => setUsername(event.target.value)}
-                        className="w-full rounded-[14px] border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-300/70"
-                        required
-                      />
-                    </div>
+                  <form onSubmit={handleSubmit} className="relative mt-5 space-y-3.5">
+                    {isVerificationStep ? (
+                      <div>
+                        <label htmlFor="verification-code" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-white/62">
+                          Verification Code
+                        </label>
+                        <input
+                          ref={verificationInputRef}
+                          id="verification-code"
+                          type="text"
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
+                          maxLength={6}
+                          value={verificationCode}
+                          onChange={(event) => setVerificationCode(event.target.value.replace(/\D/g, '').slice(0, 6))}
+                          className="w-full rounded-[14px] border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-center text-lg tracking-[0.28em] text-white focus:outline-none focus:ring-2 focus:ring-amber-300/70"
+                          required
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          <label htmlFor="username" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-white/62">
+                            Username
+                          </label>
+                          <input
+                            ref={usernameInputRef}
+                            id="username"
+                            type="text"
+                            value={username}
+                            onChange={(event) => setUsername(event.target.value)}
+                            className="w-full rounded-[14px] border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-300/70"
+                            required
+                          />
+                        </div>
 
-                    <div>
-                      <label htmlFor="password" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-white/62">
-                        Password
-                      </label>
-                      <input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        className="w-full rounded-[14px] border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-300/70"
-                        required
-                      />
-                    </div>
+                        <div>
+                          <label htmlFor="password" className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-white/62">
+                            Password
+                          </label>
+                          <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(event) => setPassword(event.target.value)}
+                            className="w-full rounded-[14px] border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-300/70"
+                            required
+                          />
+                        </div>
+                      </>
+                    )}
 
                     <div className="pt-1 space-y-2.5">
                       <button
@@ -254,11 +365,11 @@ export default function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
                         disabled={loading}
                         className="inline-flex w-full items-center justify-center rounded-[14px] bg-[linear-gradient(135deg,#f7d66c_0%,#fff1b0_38%,#c88d32_100%)] px-4 py-2.5 text-sm font-semibold text-slate-950 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(225,181,73,0.2)] disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        {loading ? 'Logging in...' : 'Login'}
+                        {loading ? (isVerificationStep ? 'Verifying...' : 'Sending code...') : (isVerificationStep ? 'Verify' : 'Continue')}
                       </button>
                       <button
                         type="button"
-                        onClick={onCancel}
+                        onClick={handleBack}
                         className="w-full rounded-[14px] border border-white/10 bg-white/[0.06] px-4 py-2.5 text-sm font-semibold text-white/80 transition-colors hover:border-white/20 hover:bg-white/[0.1] hover:text-white"
                       >
                         Back

@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, MessageCircle, ShoppingCart, ShieldCheck, Truck, CreditCard } from 'lucide-react'
 import type { Product } from '@shared/types'
 import { useCart } from '../context/CartContext'
-import { getPrimaryProductImage } from '../utils/productPresentation'
+import { buildProductDisplayLabel, getKnownProductBrand, getPrimaryProductImage, getProductDetailRows } from '../utils/productPresentation'
 import { getProductBrowsePath } from '../utils/productRouting'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { triggerCartAddFeedback } from '../utils/cartFeedback'
@@ -51,7 +51,10 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
   const image = getPrimaryProductImage(product)
   const inStock = (product.quantity ?? 0) > 0
   const browsePath = getProductBrowsePath(product)
-  const label = `${product.model} ${product.storage ?? ''} ${product.color ?? ''}`.trim()
+  const label = buildProductDisplayLabel(product)
+  const brand = getKnownProductBrand(product)
+  const detailRows = getProductDetailRows(product).filter((row) => row.label !== 'Storage' && row.label !== 'Color')
+  const warrantyLabel = product.warranty || (product.condition === 'new' ? 'Warranty' : 'Inspected & Tested')
 
   const handleAddToCart = (sourceElement: HTMLButtonElement) => {
     if (!inStock) return
@@ -86,6 +89,17 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
     description: product.description || `${label} available at PZM Computers & Phones in Dubai.`,
     image: image ? [toAbsoluteSiteUrl(image)] : [],
     sku: product.id,
+    ...(brand
+      ? {
+          brand: {
+            '@type': 'Brand',
+            name: brand,
+          },
+        }
+      : {}),
+    ...(product.color ? { color: product.color } : {}),
+    ...(product.gtin ? { gtin: product.gtin } : {}),
+    ...(product.mpn ? { mpn: product.mpn } : {}),
     offers: {
       '@type': 'Offer',
       priceCurrency: 'AED',
@@ -157,6 +171,17 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
             )}
           </div>
 
+          {detailRows.length > 0 && (
+            <dl className="grid grid-cols-1 gap-3 rounded-2xl border border-[#eee] bg-slate-50/70 p-4 sm:grid-cols-2">
+              {detailRows.map((row) => (
+                <div key={row.label}>
+                  <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">{row.label}</dt>
+                  <dd className="mt-1 text-sm font-medium text-slate-700">{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+
           {/* Price */}
           <div>
             <p className="text-3xl font-bold text-slate-900">AED {product.price.toFixed(0)}</p>
@@ -200,7 +225,7 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
             </div>
             <div className="text-center">
               <ShieldCheck size={18} className="mx-auto text-primary" />
-              <p className="mt-1.5 text-[11px] font-medium text-slate-500">Warranty</p>
+              <p className="mt-1.5 text-[11px] font-medium text-slate-500">{warrantyLabel}</p>
             </div>
             <div className="text-center">
               <CreditCard size={18} className="mx-auto text-primary" />
