@@ -356,6 +356,16 @@ export class Database {
     }
   }
 
+  async deleteOrder(id: string): Promise<boolean> {
+    try {
+      const result = await this.db.prepare('DELETE FROM orders WHERE id = ?').bind(id).run();
+      return result.success;
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      return false;
+    }
+  }
+
   // ============ ORDER ITEMS ============
 
   async createOrderItem(item: OrderItem): Promise<OrderItem> {

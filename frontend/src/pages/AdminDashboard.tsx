@@ -163,6 +163,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [loading, setLoading] = useState(true);
   const [reportsLoading, setReportsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [statusFilter, setStatusFilter] = useState<AdminOrderStatus | 'all'>('all');
   const [activeTab, setActiveTab] = useState<'orders' | 'serviceRequests' | 'whatsappLeads' | 'reports'>('orders');
@@ -296,6 +297,65 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     }
   };
 
+  const handleDeleteOrder = async (orderId: string) => {
+    const confirmed = window.confirm(
+      `Delete order ${formatOrderId(orderId)} permanently?\n\nThis action cannot be undone.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setError(null);
+      setDeletingOrderId(orderId);
+
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        setError('Not authenticated');
+        onLogout();
+        return;
+      }
+
+      const response = await fetch(buildApiUrl(`/orders/${orderId}`), {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUser');
+          onLogout();
+          throw new Error('Session expired. Please login again.');
+        }
+
+        let message = 'Failed to delete order';
+
+        try {
+          const responseData = await response.json();
+          if (typeof responseData?.error === 'string') {
+            message = responseData.error;
+          }
+        } catch {
+          // Keep the default error message when the response has no JSON body.
+        }
+
+        throw new Error(message);
+      }
+
+      setOrders((prev) => prev.filter((order) => order.id !== orderId));
+      setSelectedOrder((prev) => (prev?.id === orderId ? null : prev));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete order');
+    } finally {
+      setDeletingOrderId((current) => (current === orderId ? null : current));
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUser');
@@ -420,6 +480,14 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   useEffect(() => {
     setCurrentPage(1);
   }, [statusFilter]);
+
+  useEffect(() => {
+    const maxPage = Math.max(1, totalPages);
+
+    if (currentPage > maxPage) {
+      setCurrentPage(maxPage);
+    }
+  }, [currentPage, totalPages]);
 
   return (
     <div className="admin-portal min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(0,167,111,0.14),transparent_18%),radial-gradient(circle_at_bottom_left,rgba(30,41,59,0.1),transparent_22%),linear-gradient(180deg,#eef5fb_0%,#f7fbff_48%,#ffffff_100%)]">
@@ -612,12 +680,21 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                                 {new Date(order.created_at).toLocaleDateString()}
                               </td>
                               <td className="px-6 py-4 text-sm">
-                                <button
-                                  onClick={() => setSelectedOrder(order)}
-                                  className="font-semibold text-primary transition-colors hover:text-brandGreenDark"
-                                >
-                                  Manage
-                                </button>
+                                <div className="flex items-center gap-4">
+                                  <button
+                                    onClick={() => setSelectedOrder(order)}
+                                    className="font-semibold text-primary transition-colors hover:text-brandGreenDark"
+                                  >
+                                    Manage
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteOrder(order.id)}
+                                    disabled={deletingOrderId === order.id}
+                                    className="font-semibold text-rose-600 transition-colors hover:text-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                  >
+                                    {deletingOrderId === order.id ? 'Deleting...' : 'Delete'}
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           ))}
@@ -1075,6 +1152,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                       }
                     }}
                     value=""
+                    disabled={deletingOrderId === selectedOrder.id}
                     className="w-full rounded-full border border-white/60 bg-white/82 px-4 py-3 text-base text-brandTextDark focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="">Select new status</option>
@@ -1085,6 +1163,27 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     ))}
                   </select>
                   <p className="mt-3 text-sm text-brandTextMedium">Selecting a status will automatically update the order and send notifications.</p>
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <h3 className="mb-4 flex items-center gap-2 text-xl font-semibold text-slate-950">
+                  <svg className="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16" />
+                  </svg>
+                  Delete Order
+                </h3>
+                <div className="rounded-[24px] border border-rose-200 bg-rose-50 p-6">
+                  <p className="text-sm leading-6 text-rose-700">
+                    Remove test or invalid orders permanently. This action cannot be undone and will also remove the linked line items.
+                  </p>
+                  <button
+                    onClick={() => handleDeleteOrder(selectedOrder.id)}
+                    disabled={deletingOrderId === selectedOrder.id}
+                    className="mt-4 inline-flex items-center justify-center rounded-full bg-rose-600 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-rose-300"
+                  >
+                    {deletingOrderId === selectedOrder.id ? 'Deleting Order...' : 'Delete Order'}
+                  </button>
                 </div>
               </div>
 

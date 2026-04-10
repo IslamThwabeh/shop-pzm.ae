@@ -814,6 +814,42 @@ app.put('/api/orders/:id', async (c) => {
   }
 });
 
+app.delete('/api/orders/:id', async (c) => {
+  try {
+    const orderId = c.req.param('id');
+    logRequest('DELETE', `/api/orders/${orderId}`);
+    const authService = new AuthService(c.env.ADMIN_SECRET);
+    const authHeader = c.req.header('Authorization');
+    const token = authService.extractToken(authHeader);
+
+    if (!token) {
+      return c.json({ error: 'Unauthorized', status: 401 }, 401);
+    }
+
+    const payload = await authService.verifyToken(token);
+    if (!payload || payload.type !== 'admin') {
+      return c.json({ error: 'Forbidden', status: 403 }, 403);
+    }
+
+    const db = new Database(c.env.DB);
+    const order = await db.getOrder(orderId);
+    if (!order) {
+      return c.json({ error: 'Order not found', status: 404 }, 404);
+    }
+
+    const success = await db.deleteOrder(orderId);
+
+    if (!success) {
+      return c.json({ error: 'Failed to delete order', status: 500 }, 500);
+    }
+
+    return c.json({ data: { success: true, id: orderId }, status: 200 }, 200);
+  } catch (error) {
+    logError(error, 'DELETE /api/orders/:id');
+    return c.json({ error: 'Failed to delete order', status: 500 }, 500);
+  }
+});
+
 // ============ SERVICE REQUESTS API ============
 
 app.post('/api/service-requests', async (c) => {
