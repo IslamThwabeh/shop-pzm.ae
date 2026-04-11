@@ -345,18 +345,18 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
   'buy-iphone': {
     slug: 'buy-iphone',
     title: 'Buy iPhone',
-    description: 'iPhone models in Dubai with direct WhatsApp ordering.',
+    description: 'iPhone 15, 16, and 17 models in Dubai with direct WhatsApp ordering.',
     heroTitle: 'Buy iPhone in Dubai',
-    heroDescription: 'Browse the current iPhone lineup and message us for the model you want.',
+    heroDescription: 'Browse iPhone 15, 16, and 17 families and message us for the model you want.',
     highlights: [
       'Pro Max, Pro, Air, and standard iPhone models',
       'Storage, color, and pricing guidance',
       'Pickup, delivery, and WhatsApp ordering',
     ],
-    imageUrl: generatedServiceMedia('buy-iphone/buy-iphone-service.webp'),
-    imageAlt: 'iPhone 17 Pro Max color lineup at PZM',
+    imageUrl: buildApiUrl('/media/generated/buy-iphone/iphone-17-pro-max-family.webp'),
+    imageAlt: 'iPhone 17 Pro Max family image at PZM',
     cardImageUrl: '/images/Catigories/mini_buy_iphone.webp',
-    cardDescription: 'iPhone 17 series in all colors — Cash on Delivery',
+    cardDescription: 'iPhone 15, 16, and 17 families with direct ordering',
     requestKinds: [
       { value: 'availability', label: 'Ask about an iPhone', description: 'Tell us the model, storage option, or color you want.' },
       { value: 'quote', label: 'Request a confirmed offer', description: 'Ask for pricing confirmation before placing the order.' },

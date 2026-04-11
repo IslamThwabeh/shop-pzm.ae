@@ -30,9 +30,9 @@ export interface HomeAreaHighlight {
 export const homeCategoryCards: HomeCategoryCard[] = [
   {
     title: 'Buy iPhone',
-    subtitle: 'iPhone 17 series & more',
+    subtitle: 'iPhone 15, 16 & 17',
     to: page('/services/buy-iphone'),
-    imageUrl: svcMedia('generated/services/buy-iphone/buy-iphone-service.webp'),
+    imageUrl: svcMedia('generated/buy-iphone/iphone-17-pro-max-family.webp'),
   },
   {
     title: 'New Devices',

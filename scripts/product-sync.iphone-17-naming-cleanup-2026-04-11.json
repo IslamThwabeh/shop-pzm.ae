@@ -1,0 +1,130 @@
+{
+  "products": [
+    {
+      "id": "prod-mnku9nz1-0jms1d",
+      "model": "iPhone 17 (eSIM + Physical SIM)",
+      "storage": "256GB",
+      "description": "Brand new iPhone 17 256GB in Silver with eSIM plus physical SIM support.",
+      "item_group_id": "apple-iphone-17-esim-physical-sim"
+    },
+    {
+      "id": "prod-mnku9nbd-ob74rl",
+      "model": "iPhone 17 Air (eSIM + Physical SIM)",
+      "storage": "1TB",
+      "description": "Brand new iPhone 17 Air 1TB in Blue with eSIM plus physical SIM support.",
+      "item_group_id": "apple-iphone-17-air-esim-physical-sim"
+    },
+    {
+      "id": "prod-mnku9mqc-99c8wd",
+      "model": "iPhone 17 Pro (eSIM + Physical SIM)",
+      "storage": "256GB",
+      "description": "Brand new iPhone 17 Pro 256GB in Deep Blue with eSIM plus physical SIM support.",
+      "item_group_id": "apple-iphone-17-pro-esim-physical-sim"
+    },
+    {
+      "id": "prod-mknvvb95-87l8ks",
+      "model": "iPhone 17 Pro Max (eSIM + Physical SIM)",
+      "storage": "256GB",
+      "description": "Brand new iPhone 17 Pro Max 256GB in Cosmic Orange with eSIM plus physical SIM support.",
+      "item_group_id": "apple-iphone-17-pro-max-esim-physical-sim"
+    },
+    {
+      "id": "prod-mknwhpm1-w3ypw6",
+      "model": "iPhone 17 Pro Max (eSIM + Physical SIM)",
+      "storage": "256GB",
+      "description": "Brand new iPhone 17 Pro Max 256GB in Silver with eSIM plus physical SIM support.",
+      "item_group_id": "apple-iphone-17-pro-max-esim-physical-sim"
+    },
+    {
+      "id": "prod-mknv2rci-80a2e7",
+      "model": "iPhone 17 Pro Max (eSIM + Physical SIM)",
+      "storage": "256GB",
+      "description": "Brand new iPhone 17 Pro Max 256GB in Deep Blue with eSIM plus physical SIM support.",
+      "item_group_id": "apple-iphone-17-pro-max-esim-physical-sim"
+    },
+    {
+      "id": "prod-mknvw4iv-71wisb",
+      "model": "iPhone 17 Pro Max (eSIM + Physical SIM)",
+      "storage": "512GB",
+      "description": "Brand new iPhone 17 Pro Max 512GB in Cosmic Orange with eSIM plus physical SIM support.",
+      "item_group_id": "apple-iphone-17-pro-max-esim-physical-sim"
+    },
+    {
+      "id": "prod-mknv4zof-onc9d0",
+      "model": "iPhone 17 Pro Max (eSIM + Physical SIM)",
+      "storage": "512GB",
+      "description": "Brand new iPhone 17 Pro Max 512GB in Deep Blue with eSIM plus physical SIM support.",
+      "item_group_id": "apple-iphone-17-pro-max-esim-physical-sim"
+    },
+    {
+      "id": "prod-mknvxaif-cv1v8g",
+      "model": "iPhone 17 Pro Max (eSIM + Physical SIM)",
+      "storage": "1TB",
+      "description": "Brand new iPhone 17 Pro Max 1TB in Cosmic Orange with eSIM plus physical SIM support.",
+      "item_group_id": "apple-iphone-17-pro-max-esim-physical-sim"
+    },
+    {
+      "id": "prod-mknv6fcz-frk68g",
+      "model": "iPhone 17 Pro Max (eSIM + Physical SIM)",
+      "storage": "1TB",
+      "description": "Brand new iPhone 17 Pro Max 1TB in Deep Blue with eSIM plus physical SIM support.",
+      "item_group_id": "apple-iphone-17-pro-max-esim-physical-sim"
+    },
+    {
+      "id": "prod-mknvkqh4-r09vyc",
+      "model": "iPhone 17 Pro Max (Middle East eSIM)",
+      "storage": "256GB",
+      "description": "Brand new iPhone 17 Pro Max 256GB in Cosmic Orange, Middle East eSIM edition.",
+      "item_group_id": "apple-iphone-17-pro-max-middle-east-esim"
+    },
+    {
+      "id": "prod-mke7jjyb-sokfrf",
+      "model": "iPhone 17 Pro Max (Middle East eSIM)",
+      "storage": "256GB",
+      "description": "Brand new iPhone 17 Pro Max 256GB in Deep Blue, Middle East eSIM edition.",
+      "item_group_id": "apple-iphone-17-pro-max-middle-east-esim"
+    },
+    {
+      "id": "prod-mknvlvka-5183je",
+      "model": "iPhone 17 Pro Max (Middle East eSIM)",
+      "storage": "512GB",
+      "description": "Brand new iPhone 17 Pro Max 512GB in Cosmic Orange, Middle East eSIM edition.",
+      "item_group_id": "apple-iphone-17-pro-max-middle-east-esim"
+    },
+    {
+      "id": "prod-mknumxrc-5kdqrp",
+      "model": "iPhone 17 Pro Max (Middle East eSIM)",
+      "storage": "512GB",
+      "description": "Brand new iPhone 17 Pro Max 512GB in Deep Blue, Middle East eSIM edition.",
+      "item_group_id": "apple-iphone-17-pro-max-middle-east-esim"
+    },
+    {
+      "id": "prod-mknvs9uz-hvxekh",
+      "model": "iPhone 17 Pro Max (Middle East eSIM)",
+      "storage": "1TB",
+      "description": "Brand new iPhone 17 Pro Max 1TB in Cosmic Orange, Middle East eSIM edition.",
+      "item_group_id": "apple-iphone-17-pro-max-middle-east-esim"
+    },
+    {
+      "id": "prod-mknuqumj-3j89kt",
+      "model": "iPhone 17 Pro Max (Middle East eSIM)",
+      "storage": "1TB",
+      "description": "Brand new iPhone 17 Pro Max 1TB in Deep Blue, Middle East eSIM edition.",
+      "item_group_id": "apple-iphone-17-pro-max-middle-east-esim"
+    },
+    {
+      "id": "prod-mknvt9r4-rcv8iz",
+      "model": "iPhone 17 Pro Max (Middle East eSIM)",
+      "storage": "2TB",
+      "description": "Brand new iPhone 17 Pro Max 2TB in Cosmic Orange, Middle East eSIM edition.",
+      "item_group_id": "apple-iphone-17-pro-max-middle-east-esim"
+    },
+    {
+      "id": "prod-mknusqvw-d9butr",
+      "model": "iPhone 17 Pro Max (Middle East eSIM)",
+      "storage": "2TB",
+      "description": "Brand new iPhone 17 Pro Max 2TB in Deep Blue, Middle East eSIM edition.",
+      "item_group_id": "apple-iphone-17-pro-max-middle-east-esim"
+    }
+  ]
+}

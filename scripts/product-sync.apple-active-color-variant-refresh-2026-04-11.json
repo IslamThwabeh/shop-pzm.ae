@@ -1,0 +1,140 @@
+{
+  "products": [
+    {
+      "id": "prod-mntdte6k-jv9z3l",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/phone/iphone/iphone-16-black.webp",
+        "D:/Personal/PZM Website/GiminiImages/phone/iphone/iphone-16-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdtfjh-cb8f5v",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/phone/iphone/iphone-16-white.webp",
+        "D:/Personal/PZM Website/GiminiImages/phone/iphone/iphone-16-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdth2i-45do4s",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/phone/iphone/iphone-16-teal.webp",
+        "D:/Personal/PZM Website/GiminiImages/phone/iphone/iphone-16-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdtiic-z89l6o",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-blue.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdtk5y-ds0h7f",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-pink.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdtlgo-ipk06q",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-silver.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdtmvl-r1h6rv",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-yellow.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdto2u-4p3089",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-blue.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdtpu8-m2te56",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-pink.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdtr87-jjomrn",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-silver.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-11-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdtsg5-hahmqe",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-air-11-m3-blue.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-air-11-m3-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdttrw-hp71ny",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-air-11-m3-purple.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-air-11-m3-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdtv37-wdwlqw",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-air-11-m3-space-gray.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-air-11-m3-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdtwfb-mefjnt",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-air-11-m3-blue.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-air-11-m3-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdtxpv-r1ffjs",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-air-11-m3-space-gray.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-air-11-m3-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdtz27-kybe2d",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-pro-11-m5-black.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-pro-11-m5-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdu0pp-uvtxu6",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-pro-11-m5-silver.webp",
+        "D:/Personal/PZM Website/GiminiImages/tablets/ipad/ipad-pro-11-m5-family-secondary.webp"
+      ]
+    }
+  ]
+}

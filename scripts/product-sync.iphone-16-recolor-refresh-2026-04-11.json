@@ -1,0 +1,28 @@
+{
+  "products": [
+    {
+      "id": "prod-mntdte6k-jv9z3l",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/phone/iphone/iphone-16-black.webp",
+        "D:/Personal/PZM Website/GiminiImages/phone/iphone/iphone-16-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdtfjh-cb8f5v",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/phone/iphone/iphone-16-white.webp",
+        "D:/Personal/PZM Website/GiminiImages/phone/iphone/iphone-16-family-secondary.webp"
+      ]
+    },
+    {
+      "id": "prod-mntdth2i-45do4s",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:/Personal/PZM Website/GiminiImages/phone/iphone/iphone-16-teal.webp",
+        "D:/Personal/PZM Website/GiminiImages/phone/iphone/iphone-16-family-secondary.webp"
+      ]
+    }
+  ]
+}

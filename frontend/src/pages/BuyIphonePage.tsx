@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import type { Product } from '@shared/types'
 import IphoneFamilyCard from '../components/IphoneFamilyCard'
+import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { buyIphoneFamilies, getBuyIphoneFamilyGroups, getBuyIphoneProducts } from '../content/buyIphoneCatalog'
@@ -12,19 +13,20 @@ interface BuyIphonePageProps {
 }
 
 export default function BuyIphonePage({ products, loading }: BuyIphonePageProps) {
+  const heroImagePath = '/api/media/generated/buy-iphone/iphone-17-pro-max-family.webp'
 
   const liveIphoneProducts = useMemo(() => getBuyIphoneProducts(products), [products])
   const familyGroups = useMemo(() => getBuyIphoneFamilyGroups(products), [products])
   const availableFamilyCount = familyGroups.filter((group) => group.products.length > 0).length
   const lowestPrice = liveIphoneProducts.length > 0 ? Math.min(...liveIphoneProducts.map((product) => product.price)) : null
-  const heroImageUrl = toAbsoluteSiteUrl(buyIphoneFamilies[0].imageUrl)
+  const heroImageUrl = toAbsoluteSiteUrl(heroImagePath)
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: 'Buy iPhone in Dubai | PZM',
     url: buildSiteUrl('/services/buy-iphone'),
-    description: 'Buy iPhone in Dubai from PZM with direct WhatsApp ordering and local support.',
+    description: 'Browse iPhone 15, 16, and 17 families in Dubai with direct WhatsApp ordering and local support from PZM.',
     mainEntity: {
       '@type': 'ItemList',
       itemListElement: liveIphoneProducts.slice(0, 16).map((product, index) => ({
@@ -34,7 +36,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
           '@type': 'Product',
           name: `${product.model} ${product.storage}`.trim(),
           url: buildSiteUrl(`/product/${product.id}`),
-          image: [toAbsoluteSiteUrl(product.image_url || product.images?.[0] || buyIphoneFamilies[0].imageUrl)],
+          image: [toAbsoluteSiteUrl(product.image_url || product.images?.[0] || heroImagePath)],
           offers: {
             '@type': 'Offer',
             priceCurrency: 'AED',
@@ -49,22 +51,57 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 space-y-8">
       <Seo
-        title="Buy iPhone 17 Pro Max, Pro, Air & iPhone 17 in Dubai | PZM"
-        description="Buy iPhone in Dubai from PZM with direct WhatsApp ordering and local support."
+        title="Buy iPhone 15, 16 and 17 in Dubai | PZM Dubai"
+        description="Browse iPhone 15, 16, and 17 families in Dubai with direct WhatsApp ordering and local support from PZM."
         canonicalPath="/services/buy-iphone"
         imageUrl={heroImageUrl}
         jsonLd={jsonLd}
       />
 
-      {/* Compact heading row */}
-      <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">Buy iPhone in Dubai</h1>
-        <div className="flex flex-wrap gap-3 text-sm text-slate-500">
-          <span>{liveIphoneProducts.length} models</span>
-          <span>{availableFamilyCount}/{buyIphoneFamilies.length} families</span>
-          {lowestPrice && <span>From AED {lowestPrice.toFixed(0)}</span>}
+      <section className="overflow-hidden rounded-3xl border border-brandBorder bg-white shadow-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr,0.95fr] lg:items-stretch">
+          <div className="p-6 md:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Apple lineup</p>
+            <h1 className="mt-3 text-[1.9rem] font-bold text-slate-950 md:text-[2.4rem]">Buy iPhone in Dubai</h1>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-brandTextMedium md:text-base">
+              Browse iPhone 15, 16, and 17 families with direct WhatsApp ordering, storage guidance, and local pickup or delivery support from PZM.
+            </p>
+
+            <div className="mt-5 flex flex-wrap gap-2.5 text-xs font-medium text-slate-500">
+              <span className="rounded-full border border-brandBorder bg-slate-50 px-3 py-1.5">{liveIphoneProducts.length} models</span>
+              <span className="rounded-full border border-brandBorder bg-slate-50 px-3 py-1.5">{availableFamilyCount}/{buyIphoneFamilies.length} families</span>
+              <span className="rounded-full border border-brandBorder bg-slate-50 px-3 py-1.5">{lowestPrice ? `From AED ${lowestPrice.toFixed(0)}` : 'Request pricing'}</span>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href="#iphone-models"
+                className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
+              >
+                Browse families
+              </a>
+              <a
+                href="#buy-iphone-contact"
+                className="inline-flex items-center rounded-xl border border-brandBorder px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-950"
+              >
+                Ask on WhatsApp
+              </a>
+            </div>
+          </div>
+
+          <div className="retail-panel-media min-h-0 bg-slate-100">
+            <RetailImage
+              src={heroImageUrl}
+              alt="iPhone 17 Pro Max family image"
+              name="Buy iPhone"
+              variant="panel"
+              className="h-full w-full object-cover"
+              loading="eager"
+              fetchPriority="high"
+            />
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Family cards grid */}
       {loading ? (
