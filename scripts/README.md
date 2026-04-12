@@ -37,6 +37,22 @@ Notes:
 - It is meant for safe backfills of obvious fields such as `brand`, `product_type`, `google_product_category`, `item_group_id`, `warranty`, `accessories_included`, `repair_history`, `battery_health`, and cleanup of fake `storage` or `color` values.
 - Review the generated manifest before syncing if a row needs hand-edited product knowledge like GTIN or MPN.
 
+## Merchant Description Remediation
+
+Generate a focused description-update manifest from a Merchant Center CSV export and the live catalog:
+
+```powershell
+node .\scripts\generate-merchant-description-manifest.mjs "C:\Users\your-name\Desktop\merchant-issues.csv"
+npm run catalog:sync -- .\scripts\product-sync.merchant-description-remediation-YYYY-MM-DD.json
+```
+
+Notes:
+
+- The generator only produces updates for repo-backed live products with internal `prod-*` IDs.
+- It skips non-catalog IDs or stale Merchant-only rows and writes those to a markdown report next to the generated manifest.
+- Description enrichment is limited to verified catalog facts already present in the live API, such as storage, real color, SIM variant wording, battery health, repair history, warranty, and release year.
+- Merchant feed files are static frontend build artifacts, so a description sync still requires a frontend rebuild and deploy before Google can fetch the updated copy.
+
 ## Gemini Device Image Workflow
 
 Use this workflow when generating new product or family imagery with Gemini and assigning it to live catalog items.
