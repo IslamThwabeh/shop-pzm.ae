@@ -53,6 +53,33 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
       ? 'Free'
       : `AED ${deliveryFee.toFixed(2)}`
     : deliveryPolicy?.statusLabel ?? 'Confirmed by location'
+  const orderItems = orderDetails?.items ?? []
+  const primaryOrderLabel = orderItems.length === 1 ? orderItems[0].model : 'your order'
+  const deliveryStepText = typeof deliveryFee === 'number'
+    ? deliveryFee === 0
+      ? 'Your Dubai order qualifies for free delivery. We will confirm the timing before dispatch.'
+      : `Your Dubai delivery fee is fixed at AED ${deliveryFee.toFixed(2)}. We will confirm the timing before dispatch.`
+    : 'We will confirm delivery timing and any delivery fee based on your location before dispatch.'
+  const paymentSummaryText = typeof deliveryFee === 'number'
+    ? deliveryFee === 0
+      ? `You will pay AED ${totalPrice.toFixed(2)} when the delivery person arrives. Delivery is free for this order.`
+      : `You will pay AED ${totalPrice.toFixed(2)} when the delivery person arrives. This includes the AED ${deliveryFee.toFixed(2)} Dubai delivery fee.`
+    : `You will pay the items total of AED ${itemsTotal.toFixed(2)}. If a delivery fee applies, we will confirm it based on your location before dispatch.`
+
+  const orderSteps = [
+    {
+      title: 'Confirmation',
+      description: 'A confirmation email will be sent shortly with your order details and reference number.',
+    },
+    {
+      title: 'Preparation',
+      description: `Our team will prepare ${primaryOrderLabel} and confirm dispatch timing as soon as it is ready.`,
+    },
+    {
+      title: 'Delivery',
+      description: deliveryStepText,
+    },
+  ]
 
   useEffect(() => {
     // Load order details from localStorage
@@ -71,7 +98,7 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="mx-auto max-w-xl px-4 py-6 sm:px-6 sm:py-8">
       {orderDetails?.customerEmail && (orderDetails.orderId || rawId) && (
         <GoogleCustomerReviewsOptIn
           orderId={orderDetails.orderId || rawId}
@@ -86,196 +113,136 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
         canonicalPath="/order/confirmation"
         noindex={true}
       />
-      <div className="bg-white rounded-lg shadow-lg p-8 text-center border border-brandBorder">
-        {/* Success Icon */}
-        <div className="flex justify-center mb-6">
-          <CheckCircle size={80} className="text-primary" />
+      <div className="rounded-[30px] border border-[#eee] bg-white p-6 text-center shadow-sm sm:p-8">
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-emerald-100 bg-emerald-50">
+          <CheckCircle size={36} className="text-primary" />
         </div>
 
-        {/* Success Message */}
-        <h1 className="text-4xl font-bold text-primary mb-2">Order Confirmed!</h1>
-        <p className="text-xl text-brandTextMedium mb-8">
+        <h1 className="text-3xl font-bold text-slate-900 sm:text-[2rem]">Order Confirmed!</h1>
+        <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-slate-500 sm:text-base">
           Thank you for your purchase. Your order has been successfully placed.
         </p>
 
-        <p className="mb-8 text-sm text-brandTextMedium">
-          After checkout you may see a Google review request for your purchase experience.
+        <p className="mx-auto mt-4 max-w-md text-xs leading-5 text-slate-400">
+          If enabled for this order, Google may show a small review tray at the bottom of this page after it finishes loading.
         </p>
 
-        {/* Order ID */}
-        <div className="bg-green-50 border-2 border-primary rounded-lg p-6 mb-8">
-          <p className="text-sm text-primary mb-2">Order ID</p>
-          <div className="flex items-center justify-center gap-3">
-            <p className="text-2xl font-bold text-primary font-mono">{displayOrderId}</p>
+        <div className="mt-6 rounded-2xl border border-[#d8ece4] bg-[#f6fcf9] p-4 sm:p-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Order ID</p>
+          <div className="mt-3 flex items-center justify-center gap-2">
+            <p className="text-[1.7rem] font-bold tracking-[0.04em] text-primary font-mono">{displayOrderId}</p>
             <button
               onClick={handleCopyOrderId}
-              className="p-2 text-primary hover:bg-primary/10 rounded transition-colors border border-primary/20"
+              className="rounded-xl border border-primary/20 p-2 text-primary transition-colors hover:bg-primary/10"
               title="Copy order ID"
             >
-              <Copy size={20} />
+              <Copy size={18} />
             </button>
           </div>
-          {copied && <p className="text-sm text-green-600 mt-2">Copied to clipboard!</p>}
+          {copied && <p className="mt-2 text-xs text-green-600">Copied to clipboard!</p>}
         </div>
 
-        {/* Order Details */}
         {orderDetails && orderDetails.items && orderDetails.items.length > 0 && (
-          <div className="bg-gray-50 rounded-lg p-6 mb-8 text-left border border-brandBorder">
-            <h2 className="text-lg font-bold text-primary mb-4">Order Details</h2>
+          <div className="mt-5 rounded-[28px] border border-[#eee] bg-[#fafafa] p-5 text-left shadow-sm sm:p-6">
+            <h2 className="text-lg font-bold text-slate-900">Order Details</h2>
             {orderDetails.items.map((item, index) => (
-              <div key={index} className="mb-4 pb-4 border-b last:border-b-0">
-                <h3 className="font-semibold text-brandTextDark mb-2">{item.model}</h3>
-                <div className="grid grid-cols-2 gap-2 text-sm">
+              <div key={index} className="border-b border-[#e7e7e7] py-4 last:border-b-0 last:pb-0">
+                <h3 className="text-base font-semibold text-slate-900">{item.model}</h3>
+                <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
                   <div>
-                    <span className="text-brandTextMedium">Storage:</span>
-                    <span className="ml-2 font-semibold text-brandTextDark">{item.storage}</span>
+                    <span className="text-slate-500">Storage:</span>
+                    <span className="ml-2 font-semibold text-slate-800">{item.storage}</span>
                   </div>
                   <div>
-                    <span className="text-brandTextMedium">Color:</span>
-                    <span className="ml-2 font-semibold text-brandTextDark">{item.color}</span>
+                    <span className="text-slate-500">Color:</span>
+                    <span className="ml-2 font-semibold text-slate-800">{item.color}</span>
                   </div>
                   <div>
-                    <span className="text-brandTextMedium">Condition:</span>
-                    <span className="ml-2 font-semibold text-brandTextDark">
+                    <span className="text-slate-500">Condition:</span>
+                    <span className="ml-2 font-semibold text-slate-800">
                       {item.condition === 'new' ? '✨ Brand New' : '📱 Used'}
                     </span>
                   </div>
                   <div>
-                    <span className="text-brandTextMedium">Quantity:</span>
-                    <span className="ml-2 font-semibold text-brandTextDark">{item.quantity}</span>
+                    <span className="text-slate-500">Quantity:</span>
+                    <span className="ml-2 font-semibold text-slate-800">{item.quantity}</span>
                   </div>
                 </div>
-                <div className="mt-3 pt-3 border-t flex justify-between items-center">
-                  <span className="text-brandTextMedium">Item Price:</span>
-                  <span className="text-lg font-bold text-primary">AED {item.price.toFixed(2)}</span>
+                <div className="mt-4 flex items-center justify-between border-t border-[#ececec] pt-3">
+                  <span className="text-sm text-slate-500">Item Price</span>
+                  <span className="text-base font-bold text-slate-900">AED {item.price.toFixed(2)}</span>
                 </div>
                 {item.quantity > 1 && (
-                  <div className="flex justify-between items-center mt-1">
-                    <span className="text-sm text-brandTextMedium">Subtotal ({item.quantity} items):</span>
-                    <span className="text-lg font-bold text-primary">AED {(item.price * item.quantity).toFixed(2)}</span>
+                  <div className="mt-1 flex items-center justify-between">
+                    <span className="text-sm text-slate-500">Subtotal ({item.quantity} items)</span>
+                    <span className="text-base font-bold text-slate-900">AED {(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 )}
               </div>
             ))}
-            <div className="mt-4 pt-4 border-t-2 border-primary flex justify-between items-center">
-              <span className="text-brandTextMedium">Delivery</span>
+            <div className="mt-4 flex items-center justify-between border-t border-[#e3e3e3] pt-4">
+              <span className="text-sm text-slate-500">Delivery</span>
               <span className={`text-sm font-semibold ${deliveryPolicy?.statusToneClass ?? 'text-amber-600'}`}>{deliveryLabel}</span>
             </div>
-            <div className="mt-4 pt-4 border-t-2 border-primary flex justify-between items-center">
-              <span className="text-xl font-bold text-brandTextDark">{deliveryPolicy?.totalLabel ?? 'Items Total'}:</span>
+            <div className="mt-3 flex items-center justify-between border-t border-[#e3e3e3] pt-4">
+              <span className="text-lg font-bold text-slate-900">{deliveryPolicy?.totalLabel ?? 'Items Total'}</span>
               <span className="text-2xl font-bold text-primary">AED {totalPrice.toFixed(2)}</span>
             </div>
-            
-            {/* VAT Breakdown */}
-            <div className="mt-6 pt-6 border-t bg-blue-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-primary mb-3 text-sm">Amount Breakdown</h3>
-              <div className="flex justify-between text-sm mb-2">
-                <span className="text-brandTextMedium">Items Subtotal</span>
-                <span className="font-semibold text-brandTextDark">AED {pricing?.subtotalExVat.toFixed(2) ?? itemsTotal.toFixed(2)}</span>
+
+            <div className="mt-4 rounded-2xl border border-[#e7eef6] bg-white p-4">
+              <h3 className="text-sm font-semibold text-slate-900">Amount Breakdown</h3>
+              <div className="mt-3 flex justify-between text-sm">
+                <span className="text-slate-500">Items Subtotal</span>
+                <span className="font-semibold text-slate-800">AED {pricing?.subtotalExVat.toFixed(2) ?? itemsTotal.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-brandTextMedium">VAT (5%)</span>
-                <span className="font-semibold text-brandTextDark">AED {pricing?.vatAmount.toFixed(2) ?? '0.00'}</span>
+              <div className="mt-2 flex justify-between text-sm">
+                <span className="text-slate-500">VAT (5%)</span>
+                <span className="font-semibold text-slate-800">AED {pricing?.vatAmount.toFixed(2) ?? '0.00'}</span>
               </div>
               {typeof deliveryFee === 'number' && (
-                <div className="flex justify-between text-sm mt-2">
-                  <span className="text-brandTextMedium">Delivery Fee</span>
-                  <span className="font-semibold text-brandTextDark">{deliveryFee === 0 ? 'Free' : `AED ${deliveryFee.toFixed(2)}`}</span>
+                <div className="mt-2 flex justify-between text-sm">
+                  <span className="text-slate-500">Delivery Fee</span>
+                  <span className="font-semibold text-slate-800">{deliveryFee === 0 ? 'Free' : `AED ${deliveryFee.toFixed(2)}`}</span>
                 </div>
               )}
             </div>
 
-            <div className={`mt-4 rounded-lg border p-4 text-sm ${deliveryPolicy?.qualifiesForFreeDelivery ? 'border-green-200 bg-green-50 text-green-700' : 'border-amber-200 bg-amber-50 text-amber-700'}`}>
+            <div className={`mt-4 rounded-2xl border px-4 py-3 text-xs leading-5 ${deliveryPolicy?.qualifiesForFreeDelivery ? 'border-green-200 bg-green-50 text-green-700' : 'border-amber-200 bg-amber-50 text-amber-700'}`}>
               {deliveryPolicy?.detailedRule ?? 'Delivery fee will be confirmed based on location before dispatch.'}
             </div>
           </div>
         )}
 
-        {/* What Happens Next */}
-        <div className="bg-gray-50 rounded-lg p-6 mb-8 text-left">
-          <h2 className="text-lg font-bold text-primary mb-4">What Happens Next?</h2>
-          <div className="space-y-4">
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary text-white font-bold">
-                  1
+        <div className="mt-5 rounded-[28px] border border-[#eee] bg-white p-5 text-left shadow-sm sm:p-6">
+          <h2 className="text-lg font-bold text-slate-900">What Happens Next?</h2>
+          <div className="mt-4 space-y-4">
+            {orderSteps.map((step, index) => (
+              <div key={step.title} className="flex gap-3">
+                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
+                  {index + 1}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">{step.title}</p>
+                  <p className="mt-1 text-sm leading-6 text-slate-500">{step.description}</p>
                 </div>
               </div>
-              <div>
-                <p className="font-semibold text-brandTextDark">Order Confirmation</p>
-                <p className="text-sm text-brandTextMedium">
-                  You will receive a confirmation email shortly with your order details.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary text-white font-bold">
-                  2
-                </div>
-              </div>
-              <div>
-                <p className="font-semibold text-brandTextDark">Preparation</p>
-                <p className="text-sm text-brandTextMedium">
-                  Our team will prepare your iPhone for delivery (usually within 24-48 hours).
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary text-white font-bold">
-                  3
-                </div>
-              </div>
-              <div>
-                <p className="font-semibold text-brandTextDark">Delivery</p>
-                <p className="text-sm text-brandTextMedium">
-                  {typeof deliveryFee === 'number'
-                    ? deliveryFee === 0
-                      ? 'Your Dubai order qualifies for free delivery. We will confirm the timing before dispatch.'
-                      : `Your Dubai delivery fee is fixed at AED ${deliveryFee.toFixed(2)}. We will confirm the timing before dispatch.`
-                    : 'We will confirm delivery timing and any delivery fee based on your location before dispatch.'}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary text-white font-bold">
-                  4
-                </div>
-              </div>
-              <div>
-                <p className="font-semibold text-brandTextDark">Enjoy</p>
-                <p className="text-sm text-brandTextMedium">
-                  Unbox your new iPhone and start using it immediately!
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* COD Information */}
-        <div className="bg-green-50 border-2 border-primary rounded-lg p-6 mb-8">
-          <h3 className="font-bold text-primary mb-2">💳 Cash on Delivery Payment</h3>
-          <p className="text-sm text-brandTextMedium">
-            {typeof deliveryFee === 'number'
-              ? deliveryFee === 0
-                ? `You will pay AED ${totalPrice.toFixed(2)} when the delivery person arrives. Delivery is free for this order.`
-                : `You will pay AED ${totalPrice.toFixed(2)} when the delivery person arrives. This includes the AED ${deliveryFee.toFixed(2)} Dubai delivery fee.`
-              : `You will pay the items total of AED ${itemsTotal.toFixed(2)}. If a delivery fee applies, we will confirm it based on your location before dispatch.`}
+        <div className="mt-5 rounded-2xl border border-[#d8ece4] bg-[#f6fcf9] p-4 text-left sm:p-5">
+          <h3 className="text-sm font-bold text-slate-900">Cash on Delivery</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+            {paymentSummaryText}
           </p>
         </div>
 
-        {/* Contact Information */}
-        <div className="bg-gray-50 rounded-lg p-6 mb-8">
-          <h3 className="font-bold text-brandTextDark mb-3">Need Help?</h3>
-          <p className="text-sm text-brandTextMedium mb-2">
+        <div className="mt-5 rounded-2xl border border-[#eee] bg-[#fafafa] p-5 text-left sm:p-6">
+          <h3 className="text-base font-bold text-slate-900">Need Help?</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-500">
             If you have any questions about your order, please contact us:
           </p>
-          <div className="space-y-1 text-sm">
+          <div className="mt-3 space-y-1 text-sm">
             <p>
               <strong>WhatsApp:</strong>{' '}
               <a href={siteContact.whatsappSupportHref} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
@@ -291,17 +258,15 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
           </div>
         </div>
 
-        {/* Continue Shopping Button */}
         <button
           onClick={onContinueShopping}
-          className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white rounded-lg hover:bg-brandGreenDark font-semibold transition-colors"
+          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brandGreenDark"
         >
-          <Home size={20} />
+          <Home size={18} />
           Continue Shopping
         </button>
 
-        {/* Order Summary Note */}
-        <p className="text-xs text-brandTextMedium mt-8">
+        <p className="mt-6 text-xs leading-5 text-slate-400">
           A detailed order confirmation has been sent to your email address.
           Please save your order ID for reference.
         </p>
