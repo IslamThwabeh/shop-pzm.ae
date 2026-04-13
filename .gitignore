@@ -28,6 +28,12 @@ backend/.env
 # Environment files - NEVER commit these!
 .env
 .env.*
+
+# Static deployment artifacts (generated in frontend/dist/ only)
+/sitemap.xml
+/robots.txt
+/merchant-feed.xml
+/merchant-feed.txt
 *.env
 
 wrangler.toml
