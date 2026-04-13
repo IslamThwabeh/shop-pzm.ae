@@ -2017,6 +2017,35 @@ function buildSitemap(routes) {
   return `${lines.join('\n')}\n`
 }
 
+async function writeRouteHeaders(routes) {
+  const headersPath = path.join(distRoot, '_headers')
+  let baseHeaders = ''
+
+  try {
+    baseHeaders = await fs.readFile(headersPath, 'utf8')
+  } catch {
+    baseHeaders = ''
+  }
+
+  const noindexHeaderRoutes = routes
+    .filter((route) => route.robots === 'noindex, follow')
+    .map((route) => normalizeCanonicalPath(route.canonicalPath || route.path))
+
+  if (noindexHeaderRoutes.length === 0) {
+    if (baseHeaders) {
+      await fs.writeFile(headersPath, `${baseHeaders.trimEnd()}\n`, 'utf8')
+    }
+    return
+  }
+
+  const routeBlocks = noindexHeaderRoutes
+    .map((routePath) => `${routePath}\n  X-Robots-Tag: noindex, follow`)
+    .join('\n\n')
+
+  const output = [baseHeaders.trimEnd(), routeBlocks].filter(Boolean).join('\n\n')
+  await fs.writeFile(headersPath, `${output}\n`, 'utf8')
+}
+
 const baseRoutes = [
   {
     path: '/',
@@ -2343,3 +2372,4 @@ for (const route of aliasRoutes) {
 await fs.writeFile(path.join(distRoot, 'sitemap.xml'), buildSitemap(canonicalRoutes), 'utf8')
 await fs.writeFile(path.join(distRoot, 'merchant-feed.xml'), buildMerchantFeed(liveProducts), 'utf8')
 await fs.writeFile(path.join(distRoot, 'merchant-feed.txt'), buildMerchantTabFeed(liveProducts), 'utf8')
+await writeRouteHeaders(canonicalRoutes)
