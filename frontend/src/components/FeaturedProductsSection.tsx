@@ -10,19 +10,24 @@ interface FeaturedProductsSectionProps {
   description: string
   products: Product[]
   eyebrow?: string
+  animated?: boolean
 }
 
 function getConditionLabel(product: Product) {
   return product.condition === 'used' ? 'Pre-Owned' : 'Brand New'
 }
 
-export default function FeaturedProductsSection({ title, description, products, eyebrow = 'Featured devices' }: FeaturedProductsSectionProps) {
+export default function FeaturedProductsSection({ title, description, products, eyebrow = 'Featured devices', animated = false }: FeaturedProductsSectionProps) {
   if (products.length === 0) {
     return null
   }
 
+  const sectionClassName = animated
+    ? 'reveal-on-scroll border-t border-[#eee] bg-[#fafafa] px-4 py-12 sm:px-6 lg:px-8 lg:py-14'
+    : 'border-t border-[#eee] bg-[#fafafa] px-4 py-12 sm:px-6 lg:px-8 lg:py-14'
+
   return (
-    <section className="reveal-on-scroll border-t border-[#eee] bg-[#fafafa] px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
+    <section className={sectionClassName}>
       <div className="mx-auto max-w-7xl rounded-[30px] border border-[#eee] bg-white p-6 shadow-sm sm:p-8">
         <div className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{eyebrow}</p>

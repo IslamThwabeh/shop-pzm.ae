@@ -124,7 +124,7 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
         </p>
 
         <p className="mx-auto mt-4 max-w-md text-xs leading-5 text-slate-400">
-          If enabled for this order, Google may show a small review tray at the bottom of this page after it finishes loading.
+          If enabled for this order, Google may show a short review prompt after this page finishes loading.
         </p>
 
         <div className="mt-6 rounded-2xl border border-[#d8ece4] bg-[#f6fcf9] p-4 sm:p-5">

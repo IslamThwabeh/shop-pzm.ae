@@ -166,6 +166,7 @@ export default function HomePage({ products }: HomePageProps) {
         title="Ready-to-buy devices worth opening first"
         description="These in-stock listings have enough detail to help both shoppers and search engines understand what is actually available right now."
         products={featuredProducts}
+        animated
       />
 
       {/* ── Trust Strip ──────────────────────────────── */}

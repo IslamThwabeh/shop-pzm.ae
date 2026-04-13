@@ -2,11 +2,15 @@ import { useEffect, useMemo, useRef } from 'react'
 import { isDubaiAddress } from '../utils/orderPricing'
 
 const DEFAULT_GOOGLE_MERCHANT_ID = 5751786279
-const GOOGLE_CUSTOMER_REVIEWS_STYLE = 'BOTTOM_TRAY'
+const GOOGLE_CUSTOMER_REVIEWS_DESKTOP_STYLE = 'BOTTOM_TRAY'
+const GOOGLE_CUSTOMER_REVIEWS_MOBILE_STYLE = 'CENTER_DIALOG'
 const GOOGLE_CUSTOMER_REVIEWS_SCRIPT_ID = 'google-customer-reviews-platform'
 
 declare global {
   interface Window {
+    ___gcfg?: {
+      lang?: string
+    }
     gapi?: {
       load: (feature: string, callback: () => void) => void
       surveyoptin?: {
@@ -20,6 +24,7 @@ declare global {
         }) => void
       }
     }
+    renderOptIn?: () => void
   }
 }
 
@@ -66,25 +71,40 @@ function buildEstimatedDeliveryDate(address?: string | null, placedAt?: string |
   return formatDateForGoogle(addBusinessDays(normalizedBaseDate, businessDays))
 }
 
+function resolveOptInStyle() {
+  if (typeof window === 'undefined') {
+    return GOOGLE_CUSTOMER_REVIEWS_DESKTOP_STYLE
+  }
+
+  const isSmallScreen = typeof window.matchMedia === 'function'
+    ? window.matchMedia('(max-width: 639px)').matches
+    : window.innerWidth < 640
+
+  return isSmallScreen ? GOOGLE_CUSTOMER_REVIEWS_MOBILE_STYLE : GOOGLE_CUSTOMER_REVIEWS_DESKTOP_STYLE
+}
+
 export default function GoogleCustomerReviewsOptIn({ orderId, email, address, placedAt }: GoogleCustomerReviewsOptInProps) {
   const hasRenderedRef = useRef(false)
   const merchantId = useMemo(() => parseMerchantId(), [])
   const trimmedEmail = email.trim()
   const trimmedOrderId = orderId.trim()
   const estimatedDeliveryDate = useMemo(() => buildEstimatedDeliveryDate(address, placedAt), [address, placedAt])
+  const optInStyle = useMemo(() => resolveOptInStyle(), [])
 
   useEffect(() => {
     if (!trimmedOrderId || !trimmedEmail || hasRenderedRef.current) {
       return undefined
     }
 
+    let isDisposed = false
+
     const renderOptIn = () => {
-      if (!window.gapi || hasRenderedRef.current) {
+      if (!window.gapi || hasRenderedRef.current || isDisposed) {
         return
       }
 
       window.gapi.load('surveyoptin', () => {
-        if (hasRenderedRef.current) {
+        if (hasRenderedRef.current || isDisposed || typeof window.gapi?.surveyoptin?.render !== 'function') {
           return
         }
 
@@ -94,40 +114,50 @@ export default function GoogleCustomerReviewsOptIn({ orderId, email, address, pl
           email: trimmedEmail,
           delivery_country: 'AE',
           estimated_delivery_date: estimatedDeliveryDate,
-          opt_in_style: GOOGLE_CUSTOMER_REVIEWS_STYLE,
+          opt_in_style: optInStyle,
         })
 
         hasRenderedRef.current = true
       })
     }
 
+    window.___gcfg = {
+      ...(window.___gcfg ?? {}),
+      lang: window.___gcfg?.lang || 'en',
+    }
+    window.renderOptIn = renderOptIn
+
     const existingScript = document.getElementById(GOOGLE_CUSTOMER_REVIEWS_SCRIPT_ID) as HTMLScriptElement | null
 
     if (window.gapi) {
       renderOptIn()
-      return undefined
+      return () => {
+        isDisposed = true
+      }
     }
 
     if (existingScript) {
       existingScript.addEventListener('load', renderOptIn, { once: true })
 
       return () => {
+        isDisposed = true
         existingScript.removeEventListener('load', renderOptIn)
       }
     }
 
     const script = document.createElement('script')
     script.id = GOOGLE_CUSTOMER_REVIEWS_SCRIPT_ID
-    script.src = 'https://apis.google.com/js/platform.js'
+    script.src = 'https://apis.google.com/js/platform.js?onload=renderOptIn'
     script.async = true
     script.defer = true
     script.addEventListener('load', renderOptIn, { once: true })
     document.body.appendChild(script)
 
     return () => {
+      isDisposed = true
       script.removeEventListener('load', renderOptIn)
     }
-  }, [estimatedDeliveryDate, merchantId, trimmedEmail, trimmedOrderId])
+  }, [estimatedDeliveryDate, merchantId, optInStyle, trimmedEmail, trimmedOrderId])
 
   return null
 }
