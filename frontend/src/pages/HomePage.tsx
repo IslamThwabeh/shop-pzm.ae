@@ -1,6 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ShieldCheck, Zap, CheckCircle, Truck, MapPin } from 'lucide-react'
+import type { Product } from '@shared/types'
+import FeaturedProductsSection from '../components/FeaturedProductsSection'
 import Seo from '../components/Seo'
 import FaqAccordion from '../components/FaqAccordion'
 import CategoryCard from '../components/CategoryCard'
@@ -15,6 +17,7 @@ import {
 } from '../content/homePageContent'
 import { blogPostsNewestFirst } from '../content/blogCatalog'
 import { siteContact, siteIdentity } from '../content/siteData'
+import { selectHomepageFeaturedProducts } from '../utils/featuredProducts'
 import { buildCanonicalUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 const trustIcons = [ShieldCheck, Zap, CheckCircle, Truck] as const
@@ -25,7 +28,13 @@ const homeAreaServed = Array.from(
   new Set(['Al Barsha, Dubai', ...homeAreaHighlights.map((area) => area.placeName)]),
 )
 
-export default function HomePage() {
+interface HomePageProps {
+  products: Product[]
+}
+
+export default function HomePage({ products }: HomePageProps) {
+  const featuredProducts = useMemo(() => selectHomepageFeaturedProducts(products, 3), [products])
+
   useEffect(() => {
     if (typeof window === 'undefined') return undefined
 
@@ -151,6 +160,13 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <FeaturedProductsSection
+        eyebrow="Featured inventory"
+        title="Ready-to-buy devices worth opening first"
+        description="These in-stock listings have enough detail to help both shoppers and search engines understand what is actually available right now."
+        products={featuredProducts}
+      />
 
       {/* ── Trust Strip ──────────────────────────────── */}
       <section className="reveal-on-scroll border-t border-[#eee] px-4 py-10 sm:px-6 lg:px-8">

@@ -1,0 +1,56 @@
+[
+  {
+    "key": "iphone",
+    "label": "iPhone",
+    "snapshotDescription": "Jump straight into the iPhone collection and current Apple phone listings from the Dubai storefront.",
+    "destinations": {
+      "brand-new": "/services/buy-iphone",
+      "pre-owned": "/services/secondhand?category=used-phones&finder=iphone"
+    }
+  },
+  {
+    "key": "macbook",
+    "label": "MacBook",
+    "snapshotDescription": "Open the laptop route already filtered toward MacBook shoppers and related Apple notebook stock.",
+    "destinations": {
+      "brand-new": "/services/brand-new?category=laptops-computers&finder=macbook",
+      "pre-owned": "/services/secondhand?category=used-laptops&finder=macbook"
+    }
+  },
+  {
+    "key": "ipad",
+    "label": "iPad",
+    "snapshotDescription": "Browse tablet-focused pages for current iPad availability, pricing direction, and contact options.",
+    "destinations": {
+      "brand-new": "/services/brand-new?category=phones-tablets&finder=ipad",
+      "pre-owned": "/services/secondhand?category=used-tablets&finder=ipad"
+    }
+  },
+  {
+    "key": "samsung",
+    "label": "Samsung",
+    "snapshotDescription": "Move into Samsung and Galaxy-focused pages without manually filtering through the wider catalog.",
+    "destinations": {
+      "brand-new": "/services/brand-new?category=phones-tablets&finder=samsung",
+      "pre-owned": "/services/secondhand?category=used-phones&finder=samsung"
+    }
+  },
+  {
+    "key": "gaming",
+    "label": "Gaming",
+    "snapshotDescription": "Open gaming systems, consoles, and performance hardware routes from the homepage finder flow.",
+    "destinations": {
+      "brand-new": "/services/brand-new?category=gaming-systems&finder=gaming",
+      "pre-owned": "/services/secondhand?category=used-gaming&finder=gaming"
+    }
+  },
+  {
+    "key": "all",
+    "label": "All",
+    "snapshotDescription": "Browse the full storefront collection when you want every listed device category in one view.",
+    "destinations": {
+      "brand-new": "/services/brand-new",
+      "pre-owned": "/services/secondhand"
+    }
+  }
+]

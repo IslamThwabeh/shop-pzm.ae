@@ -93,6 +93,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
       // Save order details to localStorage for confirmation page
       localStorage.setItem('lastOrderDetails', JSON.stringify({
         orderId,
+        placedAt: new Date().toISOString(),
         items,
         itemsTotal: createdOrder?.items_total ?? pricing.grossTotal,
         deliveryFee: createdOrder?.delivery_fee ?? null,

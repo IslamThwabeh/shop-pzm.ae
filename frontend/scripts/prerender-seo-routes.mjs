@@ -7,10 +7,96 @@ const frontendRoot = path.resolve(__dirname, '..')
 const distRoot = path.join(frontendRoot, 'dist')
 const templatePath = path.join(distRoot, 'index.html')
 const contentRoot = path.join(frontendRoot, 'src', 'content')
+const deviceFinderEntries = JSON.parse(
+  await fs.readFile(path.join(contentRoot, 'deviceFinderDestinations.json'), 'utf8')
+)
 const SITE_URL = (process.env.VITE_SITE_URL || 'https://pzm.ae').replace(/\/+$/, '')
 const DEFAULT_IMAGE = `${SITE_URL}/images/mini_logo.png`
 const PRODUCT_FEED_URL = process.env.PZM_PRODUCT_FEED_URL || 'https://shop.pzm.ae/api/products'
 const LASTMOD = '2026-04-07'
+
+const homeSnapshotPrimaryRoutes = [
+  {
+    eyebrow: 'Homepage route',
+    title: 'New Devices',
+    description: 'Open the brand-new catalog from the same entry point customers see on the live homepage.',
+    href: '/services/brand-new',
+    cta: 'Browse new devices',
+  },
+  {
+    eyebrow: 'Homepage route',
+    title: 'Pre-Owned',
+    description: 'Jump directly into the certified used catalog with pricing, grading context, and contact options.',
+    href: '/services/secondhand',
+    cta: 'Browse pre-owned',
+  },
+  {
+    eyebrow: 'Homepage route',
+    title: 'Repair Services',
+    description: 'Move from discovery into repairs, diagnostics, and same-day support from the Al Barsha store.',
+    href: '/services/repair',
+    cta: 'Open repair services',
+  },
+]
+
+const homeSnapshotCategoryEntries = [
+  {
+    eyebrow: 'Category',
+    title: 'Buy iPhone',
+    description: 'Browse the latest iPhone family listings and Apple-specific buying flow.',
+    href: '/services/buy-iphone',
+    cta: 'Open collection',
+  },
+  {
+    eyebrow: 'Category',
+    title: 'Brand-New Devices',
+    description: 'Explore phones, laptops, tablets, gaming systems, and other new arrivals.',
+    href: '/services/brand-new',
+    cta: 'Browse category',
+  },
+  {
+    eyebrow: 'Category',
+    title: 'Pre-Owned Devices',
+    description: 'Compare certified used phones, tablets, laptops, and gaming hardware.',
+    href: '/services/secondhand',
+    cta: 'Browse category',
+  },
+  {
+    eyebrow: 'Category',
+    title: 'Repair Services',
+    description: 'Open phone, laptop, and board-level repair routes with clear next steps.',
+    href: '/services/repair',
+    cta: 'Open category',
+  },
+  {
+    eyebrow: 'Category',
+    title: 'Sell & Trade-In',
+    description: 'See the trade-in and sell-gadgets routes for upgrades, quotes, and store follow-up.',
+    href: '/services/sell-gadgets',
+    cta: 'Open category',
+  },
+  {
+    eyebrow: 'Category',
+    title: 'Accessories',
+    description: 'Find chargers, cables, cases, adapters, and supporting device add-ons.',
+    href: '/services/accessories',
+    cta: 'Open category',
+  },
+  {
+    eyebrow: 'Category',
+    title: 'Custom PCs',
+    description: 'Browse custom-build guidance, gaming desktops, and performance hardware support.',
+    href: '/services/custom-pc',
+    cta: 'Open category',
+  },
+  {
+    eyebrow: 'Category',
+    title: 'Areas We Serve',
+    description: 'Open local Dubai pages for nearby communities that use the Al Barsha store.',
+    href: '/areas',
+    cta: 'View areas',
+  },
+]
 
 function escapeHtml(value) {
   return value
@@ -179,6 +265,55 @@ function dedupeProducts(products) {
   }
 
   return Array.from(uniqueProducts.values())
+}
+
+function getFeaturedModelKey(product) {
+  const normalizedModel = normalizeProductValue(String(product.model || '').replace(/\b\d+\s*(gb|tb)\b/ig, ' '))
+  return `${product.condition || 'unknown'}|${normalizedModel || getProductDeduplicationKey(product)}`
+}
+
+function selectFeaturedSnapshotProducts(products, { condition, limit = 6 } = {}) {
+  const featuredProducts = []
+  const seenModels = new Set()
+  const visibleProducts = dedupeProducts(products)
+    .filter((product) => isQualityProduct(product) && (!condition || product.condition === condition))
+    .sort(sortProducts)
+
+  for (const product of visibleProducts) {
+    const modelKey = getFeaturedModelKey(product)
+
+    if (seenModels.has(modelKey)) {
+      continue
+    }
+
+    seenModels.add(modelKey)
+    featuredProducts.push(product)
+
+    if (featuredProducts.length >= limit) {
+      break
+    }
+  }
+
+  return featuredProducts
+}
+
+function selectHomepageFeaturedSnapshotProducts(products, perCondition = 3) {
+  const featuredProducts = [
+    ...selectFeaturedSnapshotProducts(products, { condition: 'new', limit: perCondition }),
+    ...selectFeaturedSnapshotProducts(products, { condition: 'used', limit: perCondition }),
+  ]
+  const targetCount = perCondition * 2
+
+  if (featuredProducts.length >= targetCount) {
+    return featuredProducts.slice(0, targetCount)
+  }
+
+  const usedIds = new Set(featuredProducts.map((product) => product.id))
+  const remainingProducts = selectFeaturedSnapshotProducts(products, { limit: targetCount * 2 }).filter(
+    (product) => !usedIds.has(product.id)
+  )
+
+  return [...featuredProducts, ...remainingProducts].slice(0, targetCount)
 }
 
 const colorReplacements = new Map([
@@ -703,6 +838,7 @@ function buildMerchantTabFeed(products) {
       'description',
       'link',
       'image_link',
+      'additional_image_link',
       'availability',
       'price',
       'condition',
@@ -719,12 +855,17 @@ function buildMerchantTabFeed(products) {
   for (const product of feedProducts) {
     const brand = getKnownProductBrand(product) || ''
     const canonicalPath = normalizeCanonicalPath(buildProductPath(product))
+    const imageLinks = [getProductImageUrl(product), ...(Array.isArray(product.images) ? product.images : [])]
+      .filter(Boolean)
+      .filter((value, index, values) => values.indexOf(value) === index)
+      .slice(0, 11)
     const row = [
       product.id,
       buildProductLabel(product),
       buildProductRichDescription(product),
       toAbsoluteUrl(canonicalPath),
-      getProductImageUrl(product),
+      imageLinks[0] || DEFAULT_IMAGE,
+      imageLinks.slice(1).map((image) => toAbsoluteUrl(image)).join(','),
       (product.quantity ?? 0) > 0 ? 'in stock' : 'out of stock',
       formatMerchantPrice(product.price),
       product.condition === 'used' ? 'used' : 'new',
@@ -1010,6 +1151,7 @@ function groupCatalogProducts(products, condition, categories) {
 
 function buildSnapshotCard(product, kind) {
   const badge = kind === 'new' ? 'Brand new' : 'Used'
+  const productPath = buildProductPath(product)
 
   return `
     <article style="overflow:hidden;border:1px solid #e2e8f0;border-radius:24px;background:#ffffff;box-shadow:0 1px 3px rgba(15,23,42,0.06);">
@@ -1023,7 +1165,10 @@ function buildSnapshotCard(product, kind) {
         <div style="margin-top:16px;">
           <strong style="font-size:24px;line-height:1;color:#0f172a;">AED ${formatPrice(product.price)}</strong>
         </div>
-        <a href="${escapeHtml(buildProductWhatsAppHref(product, kind))}" style="display:inline-block;margin-top:16px;padding:12px 16px;border-radius:12px;border:1px solid #e2e8f0;color:#0f172a;font-weight:700;text-decoration:none;">Contact us</a>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px;">
+          <a href="${escapeHtml(buildProductWhatsAppHref(product, kind))}" style="display:inline-block;padding:12px 16px;border-radius:12px;border:1px solid #e2e8f0;color:#0f172a;font-weight:700;text-decoration:none;">Contact us</a>
+          <a href="${escapeHtml(normalizePublicHref(productPath))}" style="display:inline-block;font-size:14px;font-weight:700;color:#00A76F;text-decoration:none;">View details</a>
+        </div>
       </div>
     </article>`
 }
@@ -1053,7 +1198,7 @@ function buildCatalogSnapshot({ eyebrow, title, intro, groups, emptyTitle, empty
       </section>`
 
   return `
-    <div data-pzm-prerender-catalog="true" style="max-width:1280px;margin:0 auto;padding:48px 16px 64px;font-family:'Open Sans',system-ui,sans-serif;background:#f8fafc;color:#0f172a;">
+    <div data-pzm-prerender-catalog="true" style="max-width:1280px;margin:0 auto;padding:48px 16px 64px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:#f8fafc;color:#0f172a;">
       <div style="max-width:960px;">
         <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#00A76F;">${escapeHtml(eyebrow)}</p>
         <h1 style="margin:14px 0 0;font-size:42px;line-height:1.08;color:#0f172a;">${escapeHtml(title)}</h1>
@@ -1088,7 +1233,7 @@ function buildBlogIndexSnapshot(entries) {
     .join('')
 
   return `
-    <div data-pzm-prerender-blog="true" style="max-width:1280px;margin:0 auto;padding:48px 16px 64px;font-family:'Open Sans',system-ui,sans-serif;background:#f8fafc;color:#0f172a;">
+    <div data-pzm-prerender-blog="true" style="max-width:1280px;margin:0 auto;padding:48px 16px 64px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:#f8fafc;color:#0f172a;">
       <div style="max-width:960px;">
         <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#00A76F;">PZM Blog</p>
         <h1 style="margin:14px 0 0;font-size:42px;line-height:1.08;color:#0f172a;">Latest Tech Updates</h1>
@@ -1102,7 +1247,7 @@ function buildBlogIndexSnapshot(entries) {
 
 function buildBlogArticleSnapshot(entry) {
   return `
-    <div data-pzm-prerender-blog-article="true" style="max-width:1100px;margin:0 auto;padding:48px 16px 64px;font-family:'Open Sans',system-ui,sans-serif;background:#f8fafc;color:#0f172a;">
+    <div data-pzm-prerender-blog-article="true" style="max-width:1100px;margin:0 auto;padding:48px 16px 64px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:#f8fafc;color:#0f172a;">
       <a href="${escapeHtml(normalizePublicHref('/blog/'))}" style="display:inline-block;font-size:14px;font-weight:700;color:#00A76F;text-decoration:none;">&larr; Back to blog</a>
       <div style="margin-top:18px;max-width:860px;">
         <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#00A76F;">${escapeHtml(entry.category)}</p>
@@ -1175,7 +1320,7 @@ function buildPageShell({ eyebrow, title, intro, stats = [], sections = [] }) {
     : ''
 
   return `
-    <div data-pzm-prerender-page="true" style="max-width:1280px;margin:0 auto;padding:48px 16px 64px;font-family:'Open Sans',system-ui,sans-serif;background:#f8fafc;color:#0f172a;">
+    <div data-pzm-prerender-page="true" style="max-width:1280px;margin:0 auto;padding:48px 16px 64px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:#f8fafc;color:#0f172a;">
       <div style="max-width:960px;">
         <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#00A76F;">${escapeHtml(eyebrow)}</p>
         <h1 style="margin:14px 0 0;font-size:42px;line-height:1.08;color:#0f172a;">${escapeHtml(title)}</h1>
@@ -1261,6 +1406,58 @@ function buildActionLinks(actions) {
     </div>`
 }
 
+function buildSnapshotProductGrid(products) {
+  return `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+      ${products.map((product) => buildSnapshotCard(product, product.condition === 'used' ? 'used' : 'new')).join('')}
+    </div>`
+}
+
+function buildFinderSnapshotTitle(entry, condition) {
+  if (entry.key === 'all') {
+    return condition === 'brand-new' ? 'Full brand-new catalog' : 'Full pre-owned catalog'
+  }
+
+  return condition === 'brand-new' ? `${entry.label} brand-new` : `${entry.label} pre-owned`
+}
+
+function buildHomeFinderSnapshot() {
+  const finderGroups = [
+    {
+      title: 'Brand-new routes',
+      condition: 'brand-new',
+      description: 'Use the homepage finder to land on the new-device route with the right device family already selected.',
+    },
+    {
+      title: 'Pre-owned routes',
+      condition: 'pre-owned',
+      description: 'These links mirror the certified used finder routes and keep the category context attached.',
+    },
+  ]
+
+  return `
+    <div style="display:grid;gap:22px;">
+      ${finderGroups
+        .map(
+          (group) => `
+            <div>
+              <p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#64748b;">${escapeHtml(group.title)}</p>
+              <p style="margin:0 0 16px;font-size:14px;line-height:1.75;color:#475569;">${escapeHtml(group.description)}</p>
+              ${buildLinkGrid(
+                deviceFinderEntries.map((entry) => ({
+                  eyebrow: entry.label,
+                  title: buildFinderSnapshotTitle(entry, group.condition),
+                  description: entry.snapshotDescription,
+                  href: entry.destinations[group.condition],
+                  cta: 'Open route',
+                }))
+              )}
+            </div>`
+        )
+        .join('')}
+    </div>`
+}
+
 function buildLegalSnapshot({ eyebrow, title, intro, lastUpdated, sections }) {
   return buildPageShell({
     eyebrow,
@@ -1282,7 +1479,12 @@ function buildLegalSnapshot({ eyebrow, title, intro, lastUpdated, sections }) {
   })
 }
 
-function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries) {
+function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, products) {
+  const featuredProducts = selectHomepageFeaturedSnapshotProducts(products)
+  const featuredAreaEntries = areaEntries.filter((entry) => /(barsha|jvc|tecom|science|marina)/i.test(`${entry.slug} ${entry.title}`))
+  const visibleAreaEntries = (featuredAreaEntries.length > 0 ? featuredAreaEntries : areaEntries).slice(0, 5)
+  const visibleBlogEntries = blogEntries.slice(0, 2)
+
   return buildPageShell({
     eyebrow: 'PZM Storefront',
     title: 'PZM Computers & Phones Store',
@@ -1291,19 +1493,43 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries) {
     stats: [
       `${serviceEntries.length} service pages`,
       `${areaEntries.length} Dubai area pages`,
-      `${blogEntries.length} blog articles`,
+      `${featuredProducts.length} featured in-stock devices`,
     ],
     sections: [
       buildSnapshotSection(
-        'Our Services',
-        'Everything you need for phones, laptops, and PCs from the Al Barsha branch on Hessa Street.',
+        'Choose your route',
+        'These are the same primary homepage entry points that guide users into the retail and repair flows.',
+        buildLinkGrid(homeSnapshotPrimaryRoutes)
+      ),
+      buildSnapshotSection(
+        'Use the device finder',
+        'The homepage finder now points shoppers and crawlers into the exact category route for iPhone, MacBook, iPad, Samsung, gaming, or the full catalog.',
+        buildHomeFinderSnapshot()
+      ),
+      buildSnapshotSection(
+        'Shop by category',
+        'Browse the same major categories surfaced on the homepage so product and service discovery starts from clear intent.',
+        buildLinkGrid(homeSnapshotCategoryEntries)
+      ),
+      ...(featuredProducts.length > 0
+        ? [
+            buildSnapshotSection(
+              'Featured in-stock devices',
+              'These are quality product pages with enough detail to stand on their own and create stronger internal product links from the homepage.',
+              buildSnapshotProductGrid(featuredProducts)
+            ),
+          ]
+        : []),
+      buildSnapshotSection(
+        'Areas We Serve in Dubai',
+        'Open the most relevant local pages linked from the homepage and continue into store visits, repairs, and nearby support coverage.',
         buildLinkGrid(
-          serviceEntries.map((entry) => ({
-            eyebrow: 'Service',
+          visibleAreaEntries.map((entry) => ({
+            eyebrow: entry.badge,
             title: entry.title,
-            description: entry.heroDescription || entry.description,
-            href: `/services/${entry.slug}`,
-            cta: 'Open service',
+            description: `${entry.heroDescription} ${entry.travelNote}`,
+            href: `/areas/${entry.slug}`,
+            cta: 'Open area page',
           }))
         )
       ),
@@ -1311,25 +1537,12 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries) {
         'Latest Tech Updates',
         'Stay informed with current buying guides, repair advice, and market updates that connect directly to the retail and service pages.',
         buildLinkGrid(
-          blogEntries.slice(0, 3).map((entry) => ({
+          visibleBlogEntries.map((entry) => ({
             eyebrow: `${entry.category} • ${formatPublishedDate(entry.publishedAt)}`,
             title: entry.title,
             description: entry.excerpt,
             href: `/blog/${entry.slug}`,
             cta: 'Read article',
-          }))
-        )
-      ),
-      buildSnapshotSection(
-        'Areas We Serve in Dubai',
-        'Open your local page for Barsha 1-3, Dubai Science Park, JVC, JLT, Springs, Meadows Village, Barsha Heights, Tecom, Al Sufouh, and nearby communities.',
-        buildLinkGrid(
-          areaEntries.map((entry) => ({
-            eyebrow: entry.badge,
-            title: entry.title,
-            description: `${entry.heroDescription} ${entry.travelNote}`,
-            href: `/areas/${entry.slug}`,
-            cta: 'Open area page',
           }))
         )
       ),
@@ -2213,6 +2426,7 @@ const canonicalRoutes = [
   }}),
 ]
 
+const liveProducts = await fetchLiveProducts()
 const serviceEntryMap = new Map(serviceEntries.map((entry) => [entry.slug, entry]))
 const areaEntryMap = new Map(areaEntries.map((entry) => [entry.slug, entry]))
 
@@ -2220,7 +2434,7 @@ for (const route of canonicalRoutes) {
   const normalizedCanonicalPath = normalizeCanonicalPath(route.canonicalPath || route.path)
 
   if (normalizedCanonicalPath === '/') {
-    route.rootHtml = buildHomeSnapshot(serviceEntries, areaEntries, blogEntries)
+    route.rootHtml = buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, liveProducts)
     continue
   }
 
@@ -2318,7 +2532,6 @@ const aliasRoutes = [
   },
 ]
 
-const liveProducts = await fetchLiveProducts()
 const productRoutes = buildProductRoutes(liveProducts)
 
 if (productRoutes.length > 0) {

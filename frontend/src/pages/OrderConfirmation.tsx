@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { CheckCircle, Home, Copy } from 'lucide-react'
+import GoogleCustomerReviewsOptIn from '../components/GoogleCustomerReviewsOptIn'
 import Seo from '../components/Seo'
 import { siteContact } from '../content/siteData'
 import { getDeliveryPolicy, getGrossVatBreakdown } from '../utils/orderPricing'
@@ -12,6 +13,7 @@ interface OrderConfirmationProps {
 
 interface OrderDetails {
   orderId: string
+  placedAt?: string
   items: Array<{
     id: string
     model: string
@@ -70,6 +72,14 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
 
   return (
     <div className="max-w-2xl mx-auto">
+      {orderDetails?.customerEmail && (orderDetails.orderId || rawId) && (
+        <GoogleCustomerReviewsOptIn
+          orderId={orderDetails.orderId || rawId}
+          email={orderDetails.customerEmail}
+          address={orderDetails.customerAddress}
+          placedAt={orderDetails.placedAt}
+        />
+      )}
       <Seo
         title="Order Confirmation | PZM Computers & Phones"
         description="Your order has been confirmed."
@@ -86,6 +96,10 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
         <h1 className="text-4xl font-bold text-primary mb-2">Order Confirmed!</h1>
         <p className="text-xl text-brandTextMedium mb-8">
           Thank you for your purchase. Your order has been successfully placed.
+        </p>
+
+        <p className="mb-8 text-sm text-brandTextMedium">
+          After checkout you may see a Google review request for your purchase experience.
         </p>
 
         {/* Order ID */}

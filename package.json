@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "catalog:sync": "node scripts/sync-products-to-shop.mjs",
     "media:upload": "node scripts/upload-owned-media-to-r2.mjs",
+    "smoke:deploy": "node scripts/deploy-smoke-tests.mjs",
     "frontend:dev": "cd frontend && npm run dev",
     "frontend:build": "cd frontend && npm run build",
     "backend:dev": "cd backend && npm run dev",

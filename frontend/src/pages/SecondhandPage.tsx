@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { BatteryCharging, ChevronDown, RefreshCcw, ShieldCheck } from 'lucide-react'
 import type { Product } from '@shared/types'
 import CatalogFilter from '../components/BrandFilterChips'
+import FeaturedProductsSection from '../components/FeaturedProductsSection'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
 import ProductCard from '../components/ProductCard'
 import ProductDetailDrawer from '../components/ProductDetailDrawer'
@@ -12,6 +13,7 @@ import WhatsAppCTA from '../components/WhatsAppCTA'
 import { getSecondhandCategoryGroups, getSecondhandProducts, secondhandCategories, secondhandHero } from '../content/secondhandCatalog'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { getDeviceFinderLabel, matchesDeviceFinderProduct, normalizeDeviceFinderKey } from '../utils/deviceFinder'
+import { selectFeaturedProducts } from '../utils/featuredProducts'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 import { resolveProductBrand } from '../utils/productPresentation'
 
@@ -80,6 +82,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
   }, [products, activeCategories, activeFinder, activeBrands])
 
   const liveSecondhandProducts = useMemo(() => getSecondhandProducts(filteredProducts), [filteredProducts])
+  const featuredProducts = useMemo(() => selectFeaturedProducts(allSecondhandProducts, { condition: 'used', limit: 6 }), [allSecondhandProducts])
   const categoryGroups = useMemo(() => getSecondhandCategoryGroups(filteredProducts), [filteredProducts])
   const liveCategoryGroups = categoryGroups.filter((group) => group.products.length > 0)
 
@@ -211,6 +214,15 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
         onToggleCategory={toggleCategory}
         onToggleBrand={toggleBrand}
       />
+
+      {activeCategories.size === 0 && activeBrands.size === 0 && !activeFinder && (
+        <FeaturedProductsSection
+          eyebrow="Pre-owned picks"
+          title="Certified used devices with enough context to compare quickly"
+          description="These listings surface the strongest in-stock options first, then the rest of the catalog stays one click away through category filtering."
+          products={featuredProducts}
+        />
+      )}
 
       {activeFinder && activeFinder !== 'all' && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#eee] bg-slate-50 px-4 py-3">

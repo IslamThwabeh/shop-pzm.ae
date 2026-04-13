@@ -159,7 +159,7 @@ function AppContent() {
           <Route path="/admin/orders/:id/invoice" element={<AdminInvoice />} />
           <Route
             path="/"
-            element={<HomePage />}
+            element={<HomePage products={products} />}
           />
           <Route
             path="/services"

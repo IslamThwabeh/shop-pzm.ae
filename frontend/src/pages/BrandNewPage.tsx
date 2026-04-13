@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { ChevronDown, CreditCard, ShieldCheck, Truck } from 'lucide-react'
 import type { Product } from '@shared/types'
 import CatalogFilter from '../components/BrandFilterChips'
+import FeaturedProductsSection from '../components/FeaturedProductsSection'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
 import ProductGrid from '../components/ProductGrid'
 import VariantCard from '../components/VariantCard'
@@ -11,6 +12,7 @@ import WhatsAppCTA from '../components/WhatsAppCTA'
 import { brandNewCategories, brandNewHero, getBrandNewCategoryGroups, getBrandNewProducts } from '../content/brandNewCatalog'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { getDeviceFinderLabel, matchesDeviceFinderProduct, normalizeDeviceFinderKey } from '../utils/deviceFinder'
+import { selectFeaturedProducts } from '../utils/featuredProducts'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 import { groupProductsByModelFamily, resolveProductBrand } from '../utils/productPresentation'
 
@@ -78,6 +80,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
   }, [products, activeCategories, activeFinder, activeBrands])
 
   const liveBrandNewProducts = useMemo(() => getBrandNewProducts(filteredProducts), [filteredProducts])
+  const featuredProducts = useMemo(() => selectFeaturedProducts(allBrandNewProducts, { condition: 'new', limit: 6 }), [allBrandNewProducts])
   const categoryGroups = useMemo(() => getBrandNewCategoryGroups(filteredProducts), [filteredProducts])
   const liveCategoryGroups = categoryGroups.filter((group) => group.products.length > 0)
   const requestCategoryGroups = categoryGroups.filter((group) => group.products.length === 0)
@@ -210,6 +213,15 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         onToggleCategory={toggleCategory}
         onToggleBrand={toggleBrand}
       />
+
+      {activeCategories.size === 0 && activeBrands.size === 0 && !activeFinder && (
+        <FeaturedProductsSection
+          eyebrow="Brand-new picks"
+          title="Popular brand-new devices with complete listing details"
+          description="Start with the clearest, in-stock listings, then move into the wider catalog once you know the device family you want."
+          products={featuredProducts}
+        />
+      )}
 
       {activeFinder && activeFinder !== 'all' && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#eee] bg-slate-50 px-4 py-3">
