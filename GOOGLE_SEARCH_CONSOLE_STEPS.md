@@ -9,13 +9,15 @@
 
 1. **Deleted outdated workspace files** — Removed `sitemap.xml` and `robots.txt` from workspace root (they had wrong domain `shop.pzm.ae`)
 2. **Updated .gitignore** — Added exclusions to prevent workspace-root deployment artifacts
-3. **Verified sitemap generation** — Fresh build generates complete sitemap with 115 URLs using `https://pzm.ae` domain
-4. **Verified production deployment**:
-   - ✓ Deployed sitemap at `https://pzm.ae/sitemap.xml` has correct domain and all 115 URLs
-   - ✓ All 81 affected URLs are present in deployed sitemap
-   - ✓ Sample pages have correct `<meta name="robots" content="index, follow">`
-   - ✓ Sample pages have correct canonical URLs (`https://pzm.ae/...`)
-   - ✓ JSON-LD structured data is present on pages
+3. **Added crawlable product-detail links** — Catalog cards now expose crawlable `/product/:id` links so Google can reach product pages from the retail flows
+4. **Added homepage device finder + URL-synced catalog filters** — Users can start from the homepage and land on pre-filtered catalog states
+5. **Applied strict indexing policy for product pages**:
+   - Only in-stock products with description length >= 90 characters are included in the sitemap
+   - Low-quality product pages remain reachable for users but now serve `noindex, follow`
+6. **Verified production deployment**:
+   - ✓ Deployed sitemap at `https://pzm.ae/sitemap.xml` uses the correct `https://pzm.ae` domain only
+   - ✓ Current sitemap contains **55 total URLs**, including **24 product URLs** that meet the quality threshold
+   - ✓ Low-quality product pages are excluded from the sitemap and should not be manually requested for indexing
 
 ---
 
@@ -47,8 +49,8 @@
    https://pzm.ae/blog/gold-record-highs-tech-buyers-dubai-2026/
    https://pzm.ae/services/repair/
    https://pzm.ae/services/brand-new/
-   https://pzm.ae/product/prod-mnnylkm1-3qon8s/
-   https://pzm.ae/product/prod-mnku9nz1-0jms1d/
+   https://pzm.ae/product/prod-mntdu0pp-uvtxu6/
+   https://pzm.ae/product/prod-mntdtz27-kybe2d/
    https://pzm.ae/terms/
    https://pzm.ae/return-policy/
    ```
@@ -59,24 +61,25 @@
      - Click **"Request Indexing"**
      - Confirm the request
      - Wait ~30 seconds, then test the next URL
-4. **Note**: You're limited to a few dozen indexing requests per day, so start with these 10 samples
+4. **Important**: Only request indexing for URLs that are in the sitemap or are intentionally meant to index. Do **not** request indexing for low-quality product pages that are now excluded from the sitemap.
+5. **Note**: You're limited to a few dozen indexing requests per day, so start with these 10 samples
 
 ### Step 4: Monitor Coverage Report
 1. In Google Search Console, navigate to **Coverage** (or **Pages** in newer interface)
-2. Look for the "Crawled - currently not indexed" section
-3. Check the count — it should show 81 affected URLs initially
+2. Look for the "Crawled - currently not indexed" and "Excluded by 'noindex' tag" sections
+3. Expect some previously submitted thin product pages to move out of the crawl queue and into the correct excluded/noindex bucket over time
 4. **Wait 3-7 days** for Google to re-crawl after sitemap submission
-5. Return to this report weekly to monitor the count decreasing
+5. Return to this report weekly to monitor the indexed quality URLs stabilizing and the noisy low-quality set dropping out
 
 ---
 
 ## 📊 Expected Timeline
 
-- **Day 0 (Today)**: Submit sitemap + request indexing for 10 sample URLs
-- **Day 1-3**: Google begins re-crawling with new sitemap
-- **Day 7**: Check Coverage report — count should start decreasing
-- **Day 14**: Most URLs should be indexed if content is good quality
-- **Day 21-30**: Remaining stragglers get indexed
+- **Day 0 (Today)**: Submit sitemap + request indexing for the sample quality URLs
+- **Day 1-3**: Google begins re-crawling with the new stricter sitemap
+- **Day 7**: Check Coverage report — low-value product URLs should start moving out of the active crawl queue
+- **Day 14**: Quality product URLs and core service/blog/area pages should stabilize
+- **Day 21-30**: Remaining low-quality URLs should settle into excluded/noindex buckets unless content is improved later
 
 ---
 
@@ -88,7 +91,7 @@ Before leaving Google Search Console, verify:
 - [ ] Sitemap `https://pzm.ae/sitemap.xml` is submitted and shows "Success" status
 - [ ] Old `shop.pzm.ae` sitemap removed (if it existed)
 - [ ] URL inspection passed for at least 5 of the 10 sample URLs
-- [ ] Indexing requests submitted for any URLs showing as "not indexed"
+- [ ] Indexing requests submitted only for core pages and quality product pages
 
 ---
 
@@ -96,10 +99,11 @@ Before leaving Google Search Console, verify:
 
 **If URLs remain "Crawled - currently not indexed" after 2 weeks:**
 
-1. **Check for thin content**: Some product pages may have very short descriptions
+1. **Check whether the URL is intentionally excluded**: If the product is not in the sitemap and now serves `noindex, follow`, that is expected behavior
 2. **Check for duplicates**: Ensure canonicals point to preferred versions
 3. **Check internal linking**: Verify affected pages are linked from high-priority pages (homepage, category pages)
 4. **Manual review**: Use URL Inspection tool to see Google's specific reason for not indexing
+5. **Content upgrade path**: If you want a currently excluded product to index, improve its description first, then re-include it in a later sitemap pass
 
 **If you see "Submitted URL not found (404)":**
 - This shouldn't happen for the 81 URLs we verified, but if it does:
@@ -117,4 +121,4 @@ If you encounter issues during these steps or need clarification, let me know!
 
 ## Summary
 
-**The technical side is fixed** — your sitemap is correct, all pages are prerendered with proper SEO tags, and the domain is consistent. Now it's just about telling Google where to find the updated sitemap and requesting re-indexing of the affected pages through Search Console.
+**The technical side is fixed** — your sitemap, product indexing policy, internal links, and domain configuration are now aligned. The remaining work in Search Console is to submit the stricter sitemap, request indexing only for quality URLs, and let Google re-crawl the low-value product pages into the proper excluded buckets.

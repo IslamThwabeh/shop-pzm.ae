@@ -582,7 +582,7 @@ function buildProductRoutes(products) {
   // Low-quality routes are returned with excludeFromSitemap so they still get prerendered HTML pages
   return [
     ...qualityProducts.map((p) => toRoute(p)),
-    ...lowQualityProducts.map((p) => ({ ...toRoute(p), excludeFromSitemap: true })),
+    ...lowQualityProducts.map((p) => ({ ...toRoute(p), excludeFromSitemap: true, robots: 'noindex, follow' })),
   ]
 }
 
