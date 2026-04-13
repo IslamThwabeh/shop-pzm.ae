@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { CheckCircle, Home, Copy } from 'lucide-react'
 import GoogleCustomerReviewsOptIn from '../components/GoogleCustomerReviewsOptIn'
 import Seo from '../components/Seo'
@@ -34,8 +34,10 @@ interface OrderDetails {
 
 export default function OrderConfirmation({ orderId, onContinueShopping }: OrderConfirmationProps) {
   const params = useParams()
+  const location = useLocation()
   const [copied, setCopied] = useState(false)
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null)
+  const [gcrStatus, setGcrStatus] = useState('idle')
 
   const rawId = orderId || params.id || ''
   // Full ID format: ord-[timestamp]-[random 6 chars]
@@ -65,6 +67,7 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
       ? `You will pay AED ${totalPrice.toFixed(2)} when the delivery person arrives. Delivery is free for this order.`
       : `You will pay AED ${totalPrice.toFixed(2)} when the delivery person arrives. This includes the AED ${deliveryFee.toFixed(2)} Dubai delivery fee.`
     : `You will pay the items total of AED ${itemsTotal.toFixed(2)}. If a delivery fee applies, we will confirm it based on your location before dispatch.`
+  const showGcrDebug = new URLSearchParams(location.search).get('gcr-debug') === '1'
 
   const orderSteps = [
     {
@@ -105,6 +108,7 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
           email={orderDetails.customerEmail}
           address={orderDetails.customerAddress}
           placedAt={orderDetails.placedAt}
+          onStatusChange={setGcrStatus}
         />
       )}
       <Seo
@@ -126,6 +130,16 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
         <p className="mx-auto mt-4 max-w-md text-xs leading-5 text-slate-400">
           If enabled for this order, Google may show a short review prompt after this page finishes loading.
         </p>
+
+        {showGcrDebug && (
+          <div className="mx-auto mt-4 max-w-md rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-left text-xs leading-5 text-sky-800">
+            <p className="font-semibold uppercase tracking-[0.16em] text-sky-700">GCR Debug</p>
+            <p className="mt-2">Status: {gcrStatus}</p>
+            <p className="mt-1 text-sky-700">
+              `render-complete` means the Google render call ran. If no prompt is visible after that, the remaining cause is likely Google-side eligibility, Merchant Center setup, browser blocking, or domain/account mismatch.
+            </p>
+          </div>
+        )}
 
         <div className="mt-6 rounded-2xl border border-[#d8ece4] bg-[#f6fcf9] p-4 sm:p-5">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Order ID</p>

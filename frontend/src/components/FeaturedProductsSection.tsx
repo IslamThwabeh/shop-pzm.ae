@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import type { Product } from '@shared/types'
-import ProductGrid from './ProductGrid'
 import RetailImage from './RetailImage'
 import { buildProductDisplayLabel, getKnownProductBrand, getPrimaryProductImage, sanitizeProductDescription } from '../utils/productPresentation'
 import { getProductBrowsePath } from '../utils/productRouting'
@@ -35,7 +34,7 @@ export default function FeaturedProductsSection({ title, description, products, 
           <p className="mt-3 text-sm leading-7 text-slate-500 sm:text-base">{description}</p>
         </div>
 
-        <ProductGrid className="mt-8">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => {
             const descriptionText = sanitizeProductDescription(product.description)
             const browsePath = getProductBrowsePath(product)
@@ -62,7 +61,7 @@ export default function FeaturedProductsSection({ title, description, products, 
 
                   <h3 className="mt-3 text-lg font-bold leading-7 text-slate-950">{product.model}</h3>
                   <p className="mt-2 text-sm font-medium text-slate-500">{buildProductDisplayLabel(product)}</p>
-                  <p className="mt-3 min-h-[66px] text-sm leading-6 text-slate-600">
+                  <p className="mt-3 text-sm leading-6 text-slate-600 line-clamp-5 sm:min-h-[66px] sm:line-clamp-4 lg:line-clamp-none">
                     {descriptionText || `${getConditionLabel(product)} ${product.model} available from the PZM Dubai team.`}
                   </p>
 
@@ -91,7 +90,7 @@ export default function FeaturedProductsSection({ title, description, products, 
               </article>
             )
           })}
-        </ProductGrid>
+        </div>
       </div>
     </section>
   )
