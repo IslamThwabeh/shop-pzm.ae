@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { ChevronDown, CreditCard, ShieldCheck, Truck } from 'lucide-react'
 import type { Product } from '@shared/types'
 import CatalogFilter from '../components/BrandFilterChips'
@@ -10,6 +10,7 @@ import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { brandNewCategories, brandNewHero, getBrandNewCategoryGroups, getBrandNewProducts } from '../content/brandNewCatalog'
 import { resolveServiceSlug } from '../content/serviceCatalog'
+import { getDeviceFinderLabel, matchesDeviceFinderProduct, normalizeDeviceFinderKey } from '../utils/deviceFinder'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 import { groupProductsByModelFamily, resolveProductBrand } from '../utils/productPresentation'
 
@@ -20,9 +21,37 @@ interface BrandNewPageProps {
 
 export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
   const service = resolveServiceSlug('brand-new')
+  const [searchParams, setSearchParams] = useSearchParams()
   const [appointmentOpen, setAppointmentOpen] = useState(false)
-  const [activeCategories, setActiveCategories] = useState<Set<string>>(new Set())
-  const [activeBrands, setActiveBrands] = useState<Set<string>>(new Set())
+  const validCategoryKeys = useMemo(
+    () => new Set<string>(brandNewCategories.map((category) => category.key)),
+    [],
+  )
+  const activeCategories = useMemo(
+    () => new Set<string>(
+      (searchParams.get('category') ?? '')
+        .split(',')
+        .map((value) => value.trim())
+        .filter((value) => value.length > 0 && validCategoryKeys.has(value)),
+    ),
+    [searchParams, validCategoryKeys],
+  )
+  const activeBrands = useMemo(
+    () => {
+      if (activeCategories.size === 0) {
+        return new Set<string>()
+      }
+
+      return new Set<string>(
+        (searchParams.get('brand') ?? '')
+          .split(',')
+          .map((value) => value.trim())
+          .filter((value) => value.length > 0),
+      )
+    },
+    [searchParams, activeCategories],
+  )
+  const activeFinder = useMemo(() => normalizeDeviceFinderKey(searchParams.get('finder')), [searchParams])
 
   if (!service) {
     return null
@@ -39,11 +68,14 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         return activeCats.some((cat) => cat.matcher.test(norm))
       })
     }
+    if (activeFinder && activeFinder !== 'all') {
+      result = result.filter((product) => matchesDeviceFinderProduct(product, activeFinder))
+    }
     if (activeBrands.size > 0) {
       result = result.filter((p) => activeBrands.has(resolveProductBrand(p)))
     }
     return result
-  }, [products, activeCategories, activeBrands])
+  }, [products, activeCategories, activeFinder, activeBrands])
 
   const liveBrandNewProducts = useMemo(() => getBrandNewProducts(filteredProducts), [filteredProducts])
   const categoryGroups = useMemo(() => getBrandNewCategoryGroups(filteredProducts), [filteredProducts])
@@ -51,22 +83,53 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
   const requestCategoryGroups = categoryGroups.filter((group) => group.products.length === 0)
 
   const toggleCategory = (key: string) => {
-    setActiveCategories((prev) => {
-      const next = new Set(prev)
-      if (next.has(key)) next.delete(key)
-      else next.add(key)
-      return next
-    })
-    setActiveBrands(new Set())
+    if (!validCategoryKeys.has(key)) {
+      return
+    }
+
+    const nextCategories = new Set(activeCategories)
+    if (nextCategories.has(key)) nextCategories.delete(key)
+    else nextCategories.add(key)
+
+    const nextParams = new URLSearchParams(searchParams)
+
+    if (nextCategories.size > 0) {
+      nextParams.set('category', Array.from(nextCategories).sort().join(','))
+    } else {
+      nextParams.delete('category')
+    }
+
+    nextParams.delete('brand')
+    nextParams.delete('finder')
+    setSearchParams(nextParams, { replace: true })
   }
 
   const toggleBrand = (brand: string) => {
-    setActiveBrands((prev) => {
-      const next = new Set(prev)
-      if (next.has(brand)) next.delete(brand)
-      else next.add(brand)
-      return next
-    })
+    if (activeCategories.size === 0) {
+      return
+    }
+
+    const nextBrands = new Set(activeBrands)
+    if (nextBrands.has(brand)) nextBrands.delete(brand)
+    else nextBrands.add(brand)
+
+    const nextParams = new URLSearchParams(searchParams)
+    nextParams.set('category', Array.from(activeCategories).sort().join(','))
+
+    if (nextBrands.size > 0) {
+      nextParams.set('brand', Array.from(nextBrands).sort().join(','))
+    } else {
+      nextParams.delete('brand')
+    }
+
+    nextParams.delete('finder')
+    setSearchParams(nextParams, { replace: true })
+  }
+
+  const clearFinder = () => {
+    const nextParams = new URLSearchParams(searchParams)
+    nextParams.delete('finder')
+    setSearchParams(nextParams, { replace: true })
   }
   const lowestPrice = liveBrandNewProducts.length > 0 ? Math.min(...liveBrandNewProducts.map((product) => product.price)) : null
   const heroImageUrl = toAbsoluteSiteUrl(brandNewHero.imageUrl)
@@ -147,6 +210,21 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         onToggleCategory={toggleCategory}
         onToggleBrand={toggleBrand}
       />
+
+      {activeFinder && activeFinder !== 'all' && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#eee] bg-slate-50 px-4 py-3">
+          <p className="text-sm text-slate-600">
+            Showing focused matches for <span className="font-semibold text-slate-900">{getDeviceFinderLabel(activeFinder)}</span>.
+          </p>
+          <button
+            type="button"
+            onClick={clearFinder}
+            className="text-sm font-semibold text-slate-700 underline-offset-2 hover:text-slate-900 hover:underline"
+          >
+            Show full category
+          </button>
+        </div>
+      )}
 
       <section id="brand-new-devices" className="space-y-8">
         {loading ? (

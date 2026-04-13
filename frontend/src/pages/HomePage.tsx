@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ShieldCheck, Zap, CheckCircle, Truck, MapPin } from 'lucide-react'
-import type { Product } from '@shared/types'
 import Seo from '../components/Seo'
 import FaqAccordion from '../components/FaqAccordion'
 import CategoryCard from '../components/CategoryCard'
+import DeviceFinder from '../components/DeviceFinder'
 import RetailImage from '../components/RetailImage'
 import TestimonialCards from '../components/TestimonialCards'
 import {
@@ -17,11 +17,6 @@ import { blogPostsNewestFirst } from '../content/blogCatalog'
 import { siteContact, siteIdentity } from '../content/siteData'
 import { buildCanonicalUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
-interface HomePageProps {
-  products: Product[]
-  onShopClick: () => void
-}
-
 const trustIcons = [ShieldCheck, Zap, CheckCircle, Truck] as const
 const homeSeoTitle = 'Buy iPhones, Laptops & Repair in Al Barsha, JVC & Tecom | PZM'
 const homeSeoDescription =
@@ -30,7 +25,7 @@ const homeAreaServed = Array.from(
   new Set(['Al Barsha, Dubai', ...homeAreaHighlights.map((area) => area.placeName)]),
 )
 
-export default function HomePage({ onShopClick }: HomePageProps) {
+export default function HomePage() {
   useEffect(() => {
     if (typeof window === 'undefined') return undefined
 
@@ -107,13 +102,19 @@ export default function HomePage({ onShopClick }: HomePageProps) {
             New &amp; used devices, expert repairs, and custom builds — Al Barsha, Dubai.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <button
-              onClick={onShopClick}
+            <Link
+              to="/services/brand-new"
               className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
             >
-              Browse Products
+              New Devices
               <ArrowRight size={16} />
-            </button>
+            </Link>
+            <Link
+              to="/services/secondhand"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-900 px-7 py-3.5 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-50"
+            >
+              Pre-Owned
+            </Link>
             <Link
               to="/services/repair/"
               className="inline-flex items-center gap-2 rounded-xl border border-[#eee] px-7 py-3.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-900"
@@ -122,6 +123,11 @@ export default function HomePage({ onShopClick }: HomePageProps) {
             </Link>
           </div>
         </div>
+      </section>
+
+      {/* ── Device Finder ────────────────────────── */}
+      <section className="reveal-on-scroll border-t border-[#eee] px-4 py-12 sm:px-6 lg:px-8">
+        <DeviceFinder />
       </section>
 
       {/* ── Shop by Category ─────────────────────────── */}

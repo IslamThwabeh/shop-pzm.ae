@@ -159,7 +159,7 @@ function AppContent() {
           <Route path="/admin/orders/:id/invoice" element={<AdminInvoice />} />
           <Route
             path="/"
-            element={<HomePage products={products} onShopClick={() => navigateTo('/services/brand-new')} />}
+            element={<HomePage />}
           />
           <Route
             path="/services"

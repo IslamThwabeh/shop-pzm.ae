@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { MessageCircle, ShoppingCart } from 'lucide-react'
 import type { Product } from '@shared/types'
 import { groupVariantsByColorAndStorage, getPrimaryProductImage, isPlaceholderColor } from '../utils/productPresentation'
@@ -155,6 +156,18 @@ export default function VariantCard({ title, products, condition }: Props) {
             </button>
           )}
         </div>
+
+        {/* SEO-visible link to product detail page */}
+        {products[0] && (
+          <div className="border-t border-[#eee] pt-2 text-right">
+            <Link
+              to={`/product/${activeProduct?.id ?? products[0].id}`}
+              className="text-[11px] text-slate-400 underline-offset-2 hover:text-slate-600 hover:underline"
+            >
+              View details
+            </Link>
+          </div>
+        )}
       </div>
     </article>
   )

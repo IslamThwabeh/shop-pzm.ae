@@ -529,6 +529,16 @@ function buildProductSnapshot(product) {
   `
 }
 
+/** Minimum description length for a product to qualify for sitemap inclusion. */
+const SITEMAP_MIN_DESCRIPTION_LENGTH = 90
+
+/** Returns true when a product meets the quality bar for sitemap inclusion. */
+function isQualityProduct(product) {
+  const descLength = (product.description || '').trim().length
+  const inStock = (product.quantity ?? 0) > 0
+  return inStock && descLength >= SITEMAP_MIN_DESCRIPTION_LENGTH
+}
+
 function buildProductRoutes(products) {
   const uniqueProducts = new Map()
 
@@ -544,21 +554,36 @@ function buildProductRoutes(products) {
     }
   }
 
-  return Array.from(uniqueProducts.values())
-    .sort(sortProducts)
-    .map((product) => ({
-      path: buildProductPath(product),
-      title: `${buildProductLabel(product)} | PZM Computers & Phones`,
-      description: buildProductMetaDescription(product),
-      canonicalPath: buildProductPath(product),
-      imageUrl: getProductImageUrl(product),
-      priority: (product.quantity ?? 0) > 0 ? '0.8' : '0.5',
-      changefreq: 'daily',
-      lastmod: formatLastmodDate(product.updated_at || product.updatedAt || product.created_at || product.createdAt),
-      rootHtml: buildProductSnapshot(product),
-      preloadedProducts: [product],
-      jsonLd: buildProductJsonLd(product),
-    }))
+  const allProducts = Array.from(uniqueProducts.values()).sort(sortProducts)
+
+  // Quality products → included in sitemap; non-qualifying → prerendered HTML only (noindex via client)
+  const qualityProducts = allProducts.filter(isQualityProduct)
+  const lowQualityProducts = allProducts.filter((p) => !isQualityProduct(p))
+
+  if (lowQualityProducts.length > 0) {
+    console.log(`[prerender] Sitemap: ${qualityProducts.length} quality products included, ${lowQualityProducts.length} thin/OOS products excluded.`)
+  }
+
+  const toRoute = (product) => ({
+    path: buildProductPath(product),
+    title: `${buildProductLabel(product)} | PZM Computers & Phones`,
+    description: buildProductMetaDescription(product),
+    canonicalPath: buildProductPath(product),
+    imageUrl: getProductImageUrl(product),
+    priority: (product.quantity ?? 0) > 0 ? '0.8' : '0.5',
+    changefreq: 'daily',
+    lastmod: formatLastmodDate(product.updated_at || product.updatedAt || product.created_at || product.createdAt),
+    rootHtml: buildProductSnapshot(product),
+    preloadedProducts: [product],
+    jsonLd: buildProductJsonLd(product),
+  })
+
+  // Quality routes are returned normally (included in sitemap via canonicalRoutes)
+  // Low-quality routes are returned with excludeFromSitemap so they still get prerendered HTML pages
+  return [
+    ...qualityProducts.map((p) => toRoute(p)),
+    ...lowQualityProducts.map((p) => ({ ...toRoute(p), excludeFromSitemap: true })),
+  ]
 }
 
 function buildMerchantFeed(products) {
@@ -1975,6 +2000,7 @@ function buildSitemap(routes) {
   ]
 
   for (const route of routes) {
+    if (route.excludeFromSitemap) continue
     lines.push('  <url>')
     lines.push(`    <loc>${toAbsoluteUrl(normalizeCanonicalPath(route.canonicalPath || route.path))}</loc>`)
     lines.push(`    <lastmod>${route.lastmod || LASTMOD}</lastmod>`)

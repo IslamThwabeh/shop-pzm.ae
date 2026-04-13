@@ -1,4 +1,5 @@
 import { Eye, MessageCircle, ShoppingCart } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import type { Product } from '@shared/types'
 import { buildProductDisplayLabel, getPrimaryProductImage } from '../utils/productPresentation'
 import RetailImage from './RetailImage'
@@ -113,6 +114,16 @@ export default function ProductCard({ product, onViewDetails }: Props) {
             </button>
           )}
         </div>
+      </div>
+
+      {/* SEO-visible link to product detail page */}
+      <div className="border-t border-[#eee] px-3 py-2 text-right">
+        <Link
+          to={`/product/${product.id}`}
+          className="text-[11px] text-slate-400 underline-offset-2 hover:text-slate-600 hover:underline"
+        >
+          View details
+        </Link>
       </div>
     </article>
   )

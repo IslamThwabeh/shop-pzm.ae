@@ -50,6 +50,7 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
 
   const image = getPrimaryProductImage(product)
   const inStock = (product.quantity ?? 0) > 0
+  const isQualityProduct = inStock && (product.description || '').trim().length >= 90
   const browsePath = getProductBrowsePath(product)
   const label = buildProductDisplayLabel(product)
   const brand = getKnownProductBrand(product)
@@ -122,6 +123,7 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
         canonicalPath={`/product/${product.id}`}
         imageUrl={image}
         jsonLd={jsonLd}
+        noindex={!isQualityProduct}
       />
 
       {/* Breadcrumb */}
