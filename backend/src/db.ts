@@ -1,4 +1,4 @@
-import type { Product, Order, OrderItem, Customer, AdminUser, ServiceRequest, WhatsAppLead } from '../../shared/types';
+import type { Product, Order, OrderItem, Customer, AdminUser, ServiceRequest, WhatsAppLead, GcrOptInEvent } from '../../shared/types';
 
 const PRODUCT_METADATA_COLUMNS: Array<{ name: string; type: string }> = [
   { name: 'brand', type: 'TEXT' },
@@ -78,6 +78,36 @@ export class Database {
     await this.db.prepare('CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand)').run();
     await this.db.prepare('CREATE INDEX IF NOT EXISTS idx_products_gtin ON products(gtin)').run();
     await this.db.prepare('CREATE INDEX IF NOT EXISTS idx_products_item_group_id ON products(item_group_id)').run();
+  }
+
+  private async ensureGcrOptInEventsSchema(): Promise<void> {
+    await this.db.prepare(
+      `CREATE TABLE IF NOT EXISTS gcr_opt_in_events (
+         id TEXT PRIMARY KEY,
+         order_id TEXT NOT NULL,
+         status TEXT NOT NULL,
+         prompt_style TEXT,
+         source TEXT NOT NULL,
+         page_path TEXT NOT NULL,
+         page_origin TEXT,
+         user_agent TEXT,
+         viewport_width INTEGER,
+         viewport_height INTEGER,
+         debug_enabled INTEGER NOT NULL DEFAULT 0,
+         created_at TEXT NOT NULL,
+         FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE
+       )`
+    ).run();
+
+    await this.db.prepare(
+      'CREATE INDEX IF NOT EXISTS idx_gcr_opt_in_events_order_id ON gcr_opt_in_events(order_id)'
+    ).run();
+    await this.db.prepare(
+      'CREATE INDEX IF NOT EXISTS idx_gcr_opt_in_events_created_at ON gcr_opt_in_events(created_at)'
+    ).run();
+    await this.db.prepare(
+      'CREATE INDEX IF NOT EXISTS idx_gcr_opt_in_events_status ON gcr_opt_in_events(status)'
+    ).run();
   }
 
   // ============ PRODUCTS ============
@@ -742,6 +772,88 @@ export class Database {
     } catch (error) {
       console.error('Error updating whatsapp lead:', error);
       return null;
+    }
+  }
+
+  // ============ GOOGLE CUSTOMER REVIEWS ============
+
+  async createGcrOptInEvent(event: GcrOptInEvent): Promise<GcrOptInEvent> {
+    try {
+      await this.ensureGcrOptInEventsSchema();
+      await this.db
+        .prepare(
+          `INSERT INTO gcr_opt_in_events (
+             id,
+             order_id,
+             status,
+             prompt_style,
+             source,
+             page_path,
+             page_origin,
+             user_agent,
+             viewport_width,
+             viewport_height,
+             debug_enabled,
+             created_at
+           )
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        )
+        .bind(
+          event.id,
+          event.order_id,
+          event.status,
+          event.prompt_style ?? null,
+          event.source,
+          event.page_path,
+          event.page_origin ?? null,
+          event.user_agent ?? null,
+          event.viewport_width ?? null,
+          event.viewport_height ?? null,
+          event.debug_enabled ? 1 : 0,
+          event.created_at
+        )
+        .run();
+
+      return event;
+    } catch (error) {
+      console.error('Error creating GCR opt-in event:', error);
+      throw error;
+    }
+  }
+
+  async getGcrOptInEvents(limit: number = 50, orderId?: string): Promise<GcrOptInEvent[]> {
+    try {
+      await this.ensureGcrOptInEventsSchema();
+      const boundedLimit = Math.max(1, Math.min(limit, 200));
+      const orderIdFilter = orderId?.trim();
+
+      const result = orderIdFilter
+        ? await this.db
+          .prepare('SELECT * FROM gcr_opt_in_events WHERE order_id = ? ORDER BY created_at DESC LIMIT ?')
+          .bind(orderIdFilter, boundedLimit)
+          .all()
+        : await this.db
+          .prepare('SELECT * FROM gcr_opt_in_events ORDER BY created_at DESC LIMIT ?')
+          .bind(boundedLimit)
+          .all();
+
+      return ((result.results as Array<Record<string, unknown>>) || []).map((row) => ({
+        id: String(row.id || ''),
+        order_id: String(row.order_id || ''),
+        status: String(row.status || ''),
+        prompt_style: typeof row.prompt_style === 'string' ? row.prompt_style : null,
+        source: String(row.source || ''),
+        page_path: String(row.page_path || ''),
+        page_origin: typeof row.page_origin === 'string' ? row.page_origin : null,
+        user_agent: typeof row.user_agent === 'string' ? row.user_agent : null,
+        viewport_width: typeof row.viewport_width === 'number' ? row.viewport_width : null,
+        viewport_height: typeof row.viewport_height === 'number' ? row.viewport_height : null,
+        debug_enabled: Boolean(row.debug_enabled),
+        created_at: String(row.created_at || ''),
+      }));
+    } catch (error) {
+      console.error('Error fetching GCR opt-in events:', error);
+      return [];
     }
   }
 

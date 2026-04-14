@@ -1481,9 +1481,21 @@ function buildLegalSnapshot({ eyebrow, title, intro, lastUpdated, sections }) {
 
 function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, products) {
   const featuredProducts = selectHomepageFeaturedSnapshotProducts(products)
+  const compactFeaturedProducts = featuredProducts.slice(0, 3)
   const featuredAreaEntries = areaEntries.filter((entry) => /(barsha|jvc|tecom|science|marina)/i.test(`${entry.slug} ${entry.title}`))
-  const visibleAreaEntries = (featuredAreaEntries.length > 0 ? featuredAreaEntries : areaEntries).slice(0, 5)
+  const visibleAreaEntries = (featuredAreaEntries.length > 0 ? featuredAreaEntries : areaEntries).slice(0, 3)
   const visibleBlogEntries = blogEntries.slice(0, 2)
+
+  const compactRouteLinks = [
+    ...homeSnapshotCategoryEntries
+      .filter((entry) => ['Buy iPhone', 'Brand-New Devices', 'Pre-Owned Devices', 'Repair Services', 'Accessories'].includes(entry.title))
+      .map((entry) => ({ href: entry.href, label: entry.title })),
+    { href: '/areas', label: 'Dubai Areas' },
+    { href: '/blog/', label: 'Latest Blog Posts' },
+  ]
+
+  const compactAreaLinks = visibleAreaEntries.map((entry) => ({ href: `/areas/${entry.slug}`, label: entry.title }))
+  const compactBlogLinks = visibleBlogEntries.map((entry) => ({ href: `/blog/${entry.slug}`, label: entry.title }))
 
   return buildPageShell({
     eyebrow: 'PZM Storefront',
@@ -1493,7 +1505,7 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, products) {
     stats: [
       `${serviceEntries.length} service pages`,
       `${areaEntries.length} Dubai area pages`,
-      `${featuredProducts.length} featured in-stock devices`,
+      `${compactFeaturedProducts.length} featured in-stock devices`,
     ],
     sections: [
       buildSnapshotSection(
@@ -1502,49 +1514,41 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, products) {
         buildLinkGrid(homeSnapshotPrimaryRoutes)
       ),
       buildSnapshotSection(
-        'Use the device finder',
-        'The homepage finder now points shoppers and crawlers into the exact category route for iPhone, MacBook, iPad, Samsung, gaming, or the full catalog.',
-        buildHomeFinderSnapshot()
+        'Popular storefront routes',
+        'Use these direct links to move into the main shopping, repair, area, and blog flows without loading the full interactive homepage first.',
+        buildActionLinks(compactRouteLinks)
       ),
-      buildSnapshotSection(
-        'Shop by category',
-        'Browse the same major categories surfaced on the homepage so product and service discovery starts from clear intent.',
-        buildLinkGrid(homeSnapshotCategoryEntries)
-      ),
-      ...(featuredProducts.length > 0
+      ...(compactFeaturedProducts.length > 0
         ? [
             buildSnapshotSection(
               'Featured in-stock devices',
-              'These are quality product pages with enough detail to stand on their own and create stronger internal product links from the homepage.',
-              buildSnapshotProductGrid(featuredProducts)
+              'These direct product links keep a few strong internal paths to live inventory without shipping the full product-card snapshot to every homepage visit.',
+              buildLinkGrid(
+                compactFeaturedProducts.map((product) => ({
+                  eyebrow: product.condition === 'used' ? 'Pre-Owned Device' : 'Brand-New Device',
+                  title: product.model,
+                  description: `AED ${formatPrice(product.price)}${product.storage ? ` • ${product.storage}` : ''}${product.color ? ` • ${product.color}` : ''}`,
+                  href: buildProductPath(product),
+                  cta: 'View product',
+                }))
+              )
             ),
           ]
         : []),
       buildSnapshotSection(
-        'Areas We Serve in Dubai',
-        'Open the most relevant local pages linked from the homepage and continue into store visits, repairs, and nearby support coverage.',
-        buildLinkGrid(
-          visibleAreaEntries.map((entry) => ({
-            eyebrow: entry.badge,
-            title: entry.title,
-            description: `${entry.heroDescription} ${entry.travelNote}`,
-            href: `/areas/${entry.slug}`,
-            cta: 'Open area page',
-          }))
-        )
-      ),
-      buildSnapshotSection(
-        'Latest Tech Updates',
-        'Stay informed with current buying guides, repair advice, and market updates that connect directly to the retail and service pages.',
-        buildLinkGrid(
-          visibleBlogEntries.map((entry) => ({
-            eyebrow: `${entry.category} • ${formatPublishedDate(entry.publishedAt)}`,
-            title: entry.title,
-            description: entry.excerpt,
-            href: `/blog/${entry.slug}`,
-            cta: 'Read article',
-          }))
-        )
+        'Dubai areas and latest updates',
+        'Keep crawlable paths into nearby-community pages and recent articles, but in a lighter snapshot than the full homepage content grid.',
+        `
+          <div style="display:grid;gap:18px;">
+            <div>
+              <p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#64748b;">Dubai areas</p>
+              ${buildActionLinks(compactAreaLinks)}
+            </div>
+            <div>
+              <p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#64748b;">Latest articles</p>
+              ${buildActionLinks(compactBlogLinks)}
+            </div>
+          </div>`
       ),
       buildSnapshotSection(
         'Need help with our services or products?',
@@ -2504,30 +2508,13 @@ for (const route of canonicalRoutes) {
 
 const canonicalRouteMap = new Map(canonicalRoutes.map((route) => [normalizeCanonicalPath(route.canonicalPath || route.path), route]))
 const blogRoute = canonicalRouteMap.get('/blog/')
-const secondhandRoute = canonicalRouteMap.get('/services/secondhand/')
 
-// NOTE: .html aliases removed for routes that have canonical clean-URL prerendered
-// pages. Cloudflare Pages Pretty URLs resolves /path to path.html, which would
-// serve the noindex alias instead of the canonical path/index.html.
-// Those .html URLs are handled by 301 redirects in _redirects instead.
 const aliasRoutes = [
   {
     ...blogRoute,
     path: '/blog-post.html',
     title: 'Tech Blog - iPhone, PC & Repair Tips | PZM Dubai',
     canonicalPath: '/blog/',
-    robots: 'noindex, follow',
-  },
-  {
-    ...secondhandRoute,
-    path: '/services/buy-used',
-    canonicalPath: '/services/secondhand/',
-    robots: 'noindex, follow',
-  },
-  {
-    ...secondhandRoute,
-    path: '/services/buy-used.html',
-    canonicalPath: '/services/secondhand/',
     robots: 'noindex, follow',
   },
 ]

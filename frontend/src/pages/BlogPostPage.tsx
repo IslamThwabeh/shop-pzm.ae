@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
 import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
 import { getRelatedBlogPosts, resolveBlogPost } from '../content/blogCatalog'
@@ -25,6 +25,15 @@ export default function BlogPostPage() {
   const searchParams = new URLSearchParams(location.search)
   const slug = routeSlug || searchParams.get('slug')
   const post = resolveBlogPost(slug)
+  const isLegacyBlogPath = location.pathname === '/blog-post' || location.pathname === '/blog-post.html'
+
+  if (post && (isLegacyBlogPath || searchParams.has('slug'))) {
+    return <Navigate replace to={`/blog/${post.slug}/`} />
+  }
+
+  if (!post && isLegacyBlogPath) {
+    return <Navigate replace to="/blog/" />
+  }
 
   if (!post) {
     return (

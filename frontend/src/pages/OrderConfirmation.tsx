@@ -4,7 +4,23 @@ import { CheckCircle, Home, Copy } from 'lucide-react'
 import GoogleCustomerReviewsOptIn from '../components/GoogleCustomerReviewsOptIn'
 import Seo from '../components/Seo'
 import { siteContact } from '../content/siteData'
+import { buildApiUrl } from '../utils/siteConfig'
 import { getDeliveryPolicy, getGrossVatBreakdown } from '../utils/orderPricing'
+
+const GCR_TELEMETRY_STORAGE_PREFIX = 'gcr-telemetry'
+
+function isReportableGcrStatus(status: string) {
+  return status.startsWith('prompt-visible:')
+    || status.startsWith('prompt-hidden:')
+    || status.startsWith('prompt-missing:')
+    || status === 'script-load-error'
+    || status === 'surveyoptin-api-missing'
+    || status === 'gapi-unavailable'
+}
+
+function getTelemetryKey(orderId: string, status: string) {
+  return `${GCR_TELEMETRY_STORAGE_PREFIX}:${orderId}:${status}`
+}
 
 interface OrderConfirmationProps {
   orderId: string
@@ -100,6 +116,36 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
     }
   }, [rawId])
 
+  useEffect(() => {
+    if (!rawId || !isReportableGcrStatus(gcrStatus)) {
+      return
+    }
+
+    const telemetryKey = getTelemetryKey(rawId, gcrStatus)
+    if (sessionStorage.getItem(telemetryKey)) {
+      return
+    }
+
+    sessionStorage.setItem(telemetryKey, new Date().toISOString())
+
+    void fetch(buildApiUrl('/gcr-opt-in-events'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        order_id: rawId,
+        status: gcrStatus,
+        source: 'order-confirmation',
+        page_path: location.pathname,
+        debug_enabled: showGcrDebug,
+        viewport_width: window.innerWidth,
+        viewport_height: window.innerHeight,
+      }),
+    }).catch(() => {
+      sessionStorage.removeItem(telemetryKey)
+    })
+  }, [gcrStatus, location.pathname, rawId, showGcrDebug])
+
   const handleCopyOrderId = () => {
     navigator.clipboard.writeText(displayOrderId)
     setCopied(true)
@@ -142,7 +188,7 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
             <p className="font-semibold uppercase tracking-[0.16em] text-sky-700">GCR Debug</p>
             <p className="mt-2">Status: {gcrStatus}</p>
             <p className="mt-1 text-sky-700">
-              `prompt-visible:*` means the review prompt is actually displayable. `prompt-hidden:*` means Google created the frame but kept it hidden, which usually points to browser suppression or Google-side eligibility.
+              `prompt-visible:*` means the review prompt is actually displayable. `prompt-hidden:*` means Google created the frame but kept it hidden. `prompt-missing:*` means the Google prompt iframe never appeared before the diagnostic timeout.
             </p>
           </div>
         )}

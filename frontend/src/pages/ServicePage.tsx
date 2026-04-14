@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import Seo from '../components/Seo'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
 import RetailImage from '../components/RetailImage'
@@ -14,6 +14,10 @@ const appointmentServiceTypes: Partial<Record<string, string>> = {
 export default function ServicePage() {
   const { slug } = useParams()
   const service = resolveServiceSlug(slug)
+
+  if (service && slug && slug.toLowerCase() !== service.slug) {
+    return <Navigate replace to={`/services/${service.slug}/`} />
+  }
 
   if (!service) {
     return (

@@ -60,6 +60,21 @@ export interface OrderItem {
   product?: Product // Populated when fetching order with products
 }
 
+export interface GcrOptInEvent {
+  id: string
+  order_id: string
+  status: string
+  prompt_style?: string | null
+  source: string
+  page_path: string
+  page_origin?: string | null
+  user_agent?: string | null
+  viewport_width?: number | null
+  viewport_height?: number | null
+  debug_enabled: boolean
+  created_at: string
+}
+
 // Service Request Types
 export type ServiceRequestKind = 'quote' | 'booking' | 'callback' | 'availability'
 

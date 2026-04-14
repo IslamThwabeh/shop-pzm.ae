@@ -5,6 +5,8 @@ const DEFAULT_GOOGLE_MERCHANT_ID = 5751786279
 const GOOGLE_CUSTOMER_REVIEWS_OPT_IN_STYLE = 'CENTER_DIALOG'
 const GOOGLE_CUSTOMER_REVIEWS_SCRIPT_ID = 'google-customer-reviews-platform'
 const GOOGLE_CUSTOMER_REVIEWS_IFRAME_SELECTOR = 'iframe[src*="google.com/shopping/customerreviews/optin"]'
+const GOOGLE_CUSTOMER_REVIEWS_PROMPT_CHECK_INTERVAL_MS = 1000
+const GOOGLE_CUSTOMER_REVIEWS_PROMPT_CHECK_ATTEMPTS = 6
 
 declare global {
   interface Window {
@@ -99,12 +101,33 @@ export default function GoogleCustomerReviewsOptIn({ orderId, email, address, pl
     }
 
     let isDisposed = false
-    let promptCheckTimeoutId: number | undefined
+    const promptCheckTimeoutIds: number[] = []
 
-    const reportPromptPresence = () => {
+    const clearPromptCheckTimeouts = () => {
+      promptCheckTimeoutIds.forEach((timeoutId) => window.clearTimeout(timeoutId))
+      promptCheckTimeoutIds.length = 0
+    }
+
+    const schedulePromptPresenceCheck = (attempt: number) => {
+      const timeoutId = window.setTimeout(() => {
+        if (!isDisposed) {
+          reportPromptPresence(attempt)
+        }
+      }, GOOGLE_CUSTOMER_REVIEWS_PROMPT_CHECK_INTERVAL_MS)
+
+      promptCheckTimeoutIds.push(timeoutId)
+    }
+
+    const reportPromptPresence = (attempt: number) => {
       const promptIframe = document.querySelector(GOOGLE_CUSTOMER_REVIEWS_IFRAME_SELECTOR) as HTMLIFrameElement | null
 
       if (!promptIframe) {
+        if (attempt >= GOOGLE_CUSTOMER_REVIEWS_PROMPT_CHECK_ATTEMPTS - 1) {
+          updateStatus(`prompt-missing:${optInStyle.toLowerCase()}`)
+          return
+        }
+
+        schedulePromptPresenceCheck(attempt + 1)
         return
       }
 
@@ -119,7 +142,17 @@ export default function GoogleCustomerReviewsOptIn({ orderId, email, address, pl
         && promptRect.width > 40
         && promptRect.height > 40
 
-      updateStatus(`${promptVisible ? 'prompt-visible' : 'prompt-hidden'}:${promptStyle}`)
+      if (promptVisible) {
+        updateStatus(`prompt-visible:${promptStyle}`)
+        return
+      }
+
+      if (attempt >= GOOGLE_CUSTOMER_REVIEWS_PROMPT_CHECK_ATTEMPTS - 1) {
+        updateStatus(`prompt-hidden:${promptStyle}`)
+        return
+      }
+
+      schedulePromptPresenceCheck(attempt + 1)
     }
 
     const renderOptIn = () => {
@@ -155,12 +188,7 @@ export default function GoogleCustomerReviewsOptIn({ orderId, email, address, pl
 
         hasRenderedRef.current = true
         updateStatus('render-complete')
-
-        promptCheckTimeoutId = window.setTimeout(() => {
-          if (!isDisposed) {
-            reportPromptPresence()
-          }
-        }, 2500)
+        schedulePromptPresenceCheck(0)
       })
     }
 
@@ -176,9 +204,7 @@ export default function GoogleCustomerReviewsOptIn({ orderId, email, address, pl
       renderOptIn()
       return () => {
         isDisposed = true
-        if (typeof promptCheckTimeoutId === 'number') {
-          window.clearTimeout(promptCheckTimeoutId)
-        }
+        clearPromptCheckTimeouts()
       }
     }
 
@@ -187,9 +213,7 @@ export default function GoogleCustomerReviewsOptIn({ orderId, email, address, pl
 
       return () => {
         isDisposed = true
-        if (typeof promptCheckTimeoutId === 'number') {
-          window.clearTimeout(promptCheckTimeoutId)
-        }
+        clearPromptCheckTimeouts()
       }
     }
 
@@ -204,9 +228,7 @@ export default function GoogleCustomerReviewsOptIn({ orderId, email, address, pl
 
     return () => {
       isDisposed = true
-      if (typeof promptCheckTimeoutId === 'number') {
-        window.clearTimeout(promptCheckTimeoutId)
-      }
+      clearPromptCheckTimeouts()
     }
   }, [estimatedDeliveryDate, merchantId, optInStyle, trimmedEmail, trimmedOrderId])
 

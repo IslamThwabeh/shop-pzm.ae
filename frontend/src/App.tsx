@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, lazy, Suspense } from 'react'
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import './App.css'
@@ -110,6 +110,8 @@ function AppContent() {
     window.scrollTo(0, 0)
   }
 
+  const redirectTo = (path: string) => <Navigate replace to={path} />
+
   const isInvoiceRoute = location.pathname.startsWith('/admin/orders/') && location.pathname.endsWith('/invoice')
   const isAdminRoute = location.pathname.startsWith('/admin')
   const isHomeRoute = location.pathname === '/'
@@ -158,6 +160,10 @@ function AppContent() {
         <Routes>
           <Route path="/admin/orders/:id/invoice" element={<AdminInvoice />} />
           <Route
+            path="/index.html"
+            element={redirectTo('/')}
+          />
+          <Route
             path="/"
             element={<HomePage products={products} />}
           />
@@ -167,7 +173,7 @@ function AppContent() {
           />
           <Route
             path="/services/index.html"
-            element={<ServicesPage />}
+            element={redirectTo('/services/')}
           />
           <Route
             path="/services/buy-iphone"
@@ -175,7 +181,7 @@ function AppContent() {
           />
           <Route
             path="/services/buy-iphone.html"
-            element={<BuyIphonePage products={products} loading={loading} />}
+            element={redirectTo('/services/buy-iphone/')}
           />
           <Route
             path="/services/brand-new"
@@ -183,7 +189,7 @@ function AppContent() {
           />
           <Route
             path="/services/brand-new.html"
-            element={<BrandNewPage products={products} loading={loading} />}
+            element={redirectTo('/services/brand-new/')}
           />
           <Route
             path="/services/secondhand"
@@ -191,15 +197,15 @@ function AppContent() {
           />
           <Route
             path="/services/secondhand.html"
-            element={<SecondhandPage products={products} loading={loading} />}
+            element={redirectTo('/services/secondhand/')}
           />
           <Route
             path="/services/buy-used"
-            element={<SecondhandPage products={products} loading={loading} />}
+            element={redirectTo('/services/secondhand/')}
           />
           <Route
             path="/services/buy-used.html"
-            element={<SecondhandPage products={products} loading={loading} />}
+            element={redirectTo('/services/secondhand/')}
           />
           <Route
             path="/services/:slug"
@@ -211,7 +217,7 @@ function AppContent() {
           />
           <Route
             path="/areas/index.html"
-            element={<AreasPage />}
+            element={redirectTo('/areas/')}
           />
           <Route
             path="/areas/:slug"
@@ -223,7 +229,7 @@ function AppContent() {
           />
           <Route
             path="/blog.html"
-            element={<BlogPage />}
+            element={redirectTo('/blog/')}
           />
           <Route
             path="/blog/:slug"
@@ -260,7 +266,7 @@ function AppContent() {
           />
           <Route
             path="/terms.html"
-            element={<Terms />}
+            element={redirectTo('/terms/')}
           />
           <Route
             path="/return-policy"
@@ -268,7 +274,7 @@ function AppContent() {
           />
           <Route
             path="/return-policy.html"
-            element={<ReturnPolicyPage />}
+            element={redirectTo('/return-policy/')}
           />
           <Route
             path="/admin"
