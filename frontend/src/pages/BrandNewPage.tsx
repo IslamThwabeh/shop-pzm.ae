@@ -220,7 +220,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
           title="Popular brand-new devices with complete listing details"
           description="Start with the clearest, in-stock listings, then move into the wider catalog once you know the device family you want."
           products={featuredProducts}
-          collectionHref="/services/brand-new#brand-new-devices"
+          collectionHref="#brand-new-devices"
           collectionLabel="See all devices"
         />
       )}

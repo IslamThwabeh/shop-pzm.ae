@@ -34,6 +34,7 @@ export default function FeaturedProductsSection({
   const sectionClassName = animated
     ? 'reveal-on-scroll border-t border-[#eee] bg-[#fafafa] px-4 py-12 sm:px-6 lg:px-8 lg:py-14'
     : 'border-t border-[#eee] bg-[#fafafa] px-4 py-12 sm:px-6 lg:px-8 lg:py-14'
+  const useAnchorNavigation = Boolean(collectionHref?.startsWith('#'))
 
   return (
     <section className={sectionClassName}>
@@ -82,12 +83,21 @@ export default function FeaturedProductsSection({
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <Link
-                        to={collectionPath}
-                        className="inline-flex items-center rounded-full border border-[#e5e7eb] px-3 py-2 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-950"
-                      >
-                        {collectionLabel}
-                      </Link>
+                      {useAnchorNavigation ? (
+                        <a
+                          href={collectionPath}
+                          className="inline-flex items-center rounded-full border border-[#e5e7eb] px-3 py-2 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-950"
+                        >
+                          {collectionLabel}
+                        </a>
+                      ) : (
+                        <Link
+                          to={collectionPath}
+                          className="inline-flex items-center rounded-full border border-[#e5e7eb] px-3 py-2 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-950"
+                        >
+                          {collectionLabel}
+                        </Link>
+                      )}
                       <Link
                         to={`/product/${product.id}`}
                         className="text-sm font-semibold text-primary transition-colors hover:text-primary/80"

@@ -88,11 +88,17 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
     // Load order details from localStorage
     const savedDetails = localStorage.getItem('lastOrderDetails')
     if (savedDetails) {
-      setOrderDetails(JSON.parse(savedDetails))
-      // Clear after loading to avoid showing stale data
-      localStorage.removeItem('lastOrderDetails')
+      try {
+        const parsedDetails = JSON.parse(savedDetails) as OrderDetails
+
+        if (!rawId || !parsedDetails?.orderId || parsedDetails.orderId === rawId) {
+          setOrderDetails(parsedDetails)
+        }
+      } catch {
+        localStorage.removeItem('lastOrderDetails')
+      }
     }
-  }, [])
+  }, [rawId])
 
   const handleCopyOrderId = () => {
     navigator.clipboard.writeText(displayOrderId)
@@ -136,7 +142,7 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
             <p className="font-semibold uppercase tracking-[0.16em] text-sky-700">GCR Debug</p>
             <p className="mt-2">Status: {gcrStatus}</p>
             <p className="mt-1 text-sky-700">
-              `render-complete` means the Google render call ran. If no prompt is visible after that, the remaining cause is likely Google-side eligibility, Merchant Center setup, browser blocking, or domain/account mismatch.
+              `prompt-visible:*` means the review prompt is actually displayable. `prompt-hidden:*` means Google created the frame but kept it hidden, which usually points to browser suppression or Google-side eligibility.
             </p>
           </div>
         )}
