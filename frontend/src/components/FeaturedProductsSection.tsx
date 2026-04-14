@@ -10,13 +10,23 @@ interface FeaturedProductsSectionProps {
   products: Product[]
   eyebrow?: string
   animated?: boolean
+  collectionHref?: string
+  collectionLabel?: string
 }
 
 function getConditionLabel(product: Product) {
   return product.condition === 'used' ? 'Pre-Owned' : 'Brand New'
 }
 
-export default function FeaturedProductsSection({ title, description, products, eyebrow = 'Featured devices', animated = false }: FeaturedProductsSectionProps) {
+export default function FeaturedProductsSection({
+  title,
+  description,
+  products,
+  eyebrow = 'Featured devices',
+  animated = false,
+  collectionHref,
+  collectionLabel = 'Open category',
+}: FeaturedProductsSectionProps) {
   if (products.length === 0) {
     return null
   }
@@ -37,7 +47,7 @@ export default function FeaturedProductsSection({ title, description, products, 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => {
             const descriptionText = sanitizeProductDescription(product.description)
-            const browsePath = getProductBrowsePath(product)
+            const collectionPath = collectionHref ?? getProductBrowsePath(product)
             const imageUrl = getPrimaryProductImage(product)
 
             return (
@@ -73,10 +83,10 @@ export default function FeaturedProductsSection({ title, description, products, 
 
                     <div className="flex items-center gap-3">
                       <Link
-                        to={browsePath}
+                        to={collectionPath}
                         className="inline-flex items-center rounded-full border border-[#e5e7eb] px-3 py-2 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:text-slate-950"
                       >
-                        Browse collection
+                        {collectionLabel}
                       </Link>
                       <Link
                         to={`/product/${product.id}`}

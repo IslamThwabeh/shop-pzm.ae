@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ShieldCheck, Zap, CheckCircle, Truck, MapPin } from 'lucide-react'
 import type { Product } from '@shared/types'
@@ -34,33 +34,6 @@ interface HomePageProps {
 
 export default function HomePage({ products }: HomePageProps) {
   const featuredProducts = useMemo(() => selectHomepageFeaturedProducts(products, 3), [products])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return undefined
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const elements = Array.from(document.querySelectorAll<HTMLElement>('.reveal-on-scroll'))
-
-    if (reduceMotion || !('IntersectionObserver' in window)) {
-      elements.forEach((el) => el.classList.add('is-visible'))
-      return undefined
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible')
-            observer.unobserve(entry.target)
-          }
-        })
-      },
-      { threshold: 0.18, rootMargin: '0px 0px -40px 0px' },
-    )
-
-    elements.forEach((el) => observer.observe(el))
-    return () => observer.disconnect()
-  }, [])
 
   const faqJsonLd = {
     '@context': 'https://schema.org',
@@ -135,12 +108,12 @@ export default function HomePage({ products }: HomePageProps) {
       </section>
 
       {/* ── Device Finder ────────────────────────── */}
-      <section className="reveal-on-scroll border-t border-[#eee] px-4 py-12 sm:px-6 lg:px-8">
+      <section className="border-t border-[#eee] px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
         <DeviceFinder />
       </section>
 
       {/* ── Shop by Category ─────────────────────────── */}
-      <section id="products" className="reveal-on-scroll border-t border-[#eee] bg-[#fafafa] px-4 py-14 sm:px-6 lg:px-8 lg:py-18">
+      <section id="products" className="border-t border-[#eee] bg-[#fafafa] px-4 py-12 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-center text-2xl font-bold text-slate-900 sm:text-[1.75rem]">Shop by Category</h2>
           <p className="mx-auto mt-3 max-w-lg text-center text-sm text-slate-500">
@@ -166,11 +139,10 @@ export default function HomePage({ products }: HomePageProps) {
         title="Ready-to-buy devices worth opening first"
         description="These in-stock listings have enough detail to help both shoppers and search engines understand what is actually available right now."
         products={featuredProducts}
-        animated
       />
 
       {/* ── Trust Strip ──────────────────────────────── */}
-      <section className="reveal-on-scroll border-t border-[#eee] px-4 py-10 sm:px-6 lg:px-8">
+      <section className="border-t border-[#eee] px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
         <div className="mx-auto grid max-w-5xl grid-cols-2 gap-6 sm:grid-cols-4">
           {homeTrustCards.map((card, i) => {
             const Icon = trustIcons[i % trustIcons.length]
@@ -185,7 +157,7 @@ export default function HomePage({ products }: HomePageProps) {
         </div>
       </section>
 
-      <section className="reveal-on-scroll border-t border-[#eee] bg-[#fafafa] px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
+      <section className="border-t border-[#eee] bg-[#fafafa] px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
         <div className="mx-auto max-w-7xl rounded-[30px] border border-[#eee] bg-white p-6 shadow-sm sm:p-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
@@ -226,7 +198,7 @@ export default function HomePage({ products }: HomePageProps) {
       </section>
 
       {/* ── Testimonials ─────────────────────────────── */}
-      <section className="reveal-on-scroll border-t border-[#eee] px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+      <section className="border-t border-[#eee] px-4 py-12 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-center text-2xl font-bold text-slate-900">Customer Reviews</h2>
           <div className="mt-10">
@@ -236,7 +208,7 @@ export default function HomePage({ products }: HomePageProps) {
       </section>
 
       {/* ── Blog ─────────────────────────────────────── */}
-      <section className="reveal-on-scroll border-t border-[#eee] px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+      <section className="border-t border-[#eee] px-4 py-12 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-center text-2xl font-bold text-slate-900">Latest from the Blog</h2>
           <div className="mt-10 grid gap-6 md:grid-cols-2">
@@ -280,7 +252,7 @@ export default function HomePage({ products }: HomePageProps) {
       </section>
 
       {/* ── FAQ ──────────────────────────────────────── */}
-      <section id="faq" className="reveal-on-scroll border-t border-[#eee] bg-[#fafafa] px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+      <section id="faq" className="border-t border-[#eee] bg-[#fafafa] px-4 py-12 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-3xl">
           <h2 className="text-center text-2xl font-bold text-slate-900">Frequently Asked Questions</h2>
           <div className="mt-10">

@@ -221,6 +221,8 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
           title="Certified used devices with enough context to compare quickly"
           description="These listings surface the strongest in-stock options first, then the rest of the catalog stays one click away through category filtering."
           products={featuredProducts}
+          collectionHref="/services/secondhand#secondhand-devices"
+          collectionLabel="See all devices"
         />
       )}
 
@@ -239,7 +241,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
         </div>
       )}
 
-      <section id="secondhand-devices" className="space-y-8">
+      <section id="secondhand-devices" className="scroll-mt-28 space-y-8">
         {loading ? (
           <div className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm text-brandTextMedium">
             Loading used inventory...

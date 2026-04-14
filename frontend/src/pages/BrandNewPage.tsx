@@ -220,6 +220,8 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
           title="Popular brand-new devices with complete listing details"
           description="Start with the clearest, in-stock listings, then move into the wider catalog once you know the device family you want."
           products={featuredProducts}
+          collectionHref="/services/brand-new#brand-new-devices"
+          collectionLabel="See all devices"
         />
       )}
 
@@ -238,7 +240,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         </div>
       )}
 
-      <section id="brand-new-devices" className="space-y-8">
+      <section id="brand-new-devices" className="scroll-mt-28 space-y-8">
         {loading ? (
           <div className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm text-brandTextMedium">
             Loading brand-new inventory...
