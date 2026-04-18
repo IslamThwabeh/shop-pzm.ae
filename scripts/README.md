@@ -53,6 +53,31 @@ Notes:
 - Description enrichment is limited to verified catalog facts already present in the live API, such as storage, real color, SIM variant wording, battery health, repair history, warranty, and release year.
 - Merchant feed files are static frontend build artifacts, so a description sync still requires a frontend rebuild and deploy before Google can fetch the updated copy.
 
+## Merchant Local Inventory Feed
+
+The frontend prerender can now generate a separate local inventory feed for Merchant Center at `frontend/dist/merchant-local-inventory.txt`.
+
+Recommended workflow:
+
+```powershell
+$env:PZM_MERCHANT_STORE_CODE = "your-case-sensitive-business-profile-store-code"
+cd .\frontend
+npm run build:production
+```
+
+Notes:
+
+- Configure the exact Google Business Profile `store_code` with `PZM_MERCHANT_STORE_CODE` or by filling `frontend/src/content/localInventoryConfig.json` after it is confirmed in Merchant Center.
+- The primary Merchant product feed is now configured to exclude `Local_inventory_ads` and `Free_local_listings` by default through `primaryFeedExcludedDestinations` in `frontend/src/content/localInventoryConfig.json`, because the current Merchant account has no linked store profiles.
+- The local inventory feed reuses the current primary Merchant product IDs exactly as they appear in `merchant-feed.txt`.
+- Only positive-price, in-stock products are considered, then the local config further narrows the set with `includedProductIds` or `excludedProductIds`.
+- If `includedProductIds` is non-empty, only those IDs are emitted. Otherwise, all eligible in-stock products are emitted except the IDs listed under `excludedProductIds`.
+- The initial config excludes the 17 `Available soon` IDs from the 2026-04-15 Merchant export so they are not claimed as in-store stock on day one.
+- If no store code is configured, the build skips the local inventory file instead of generating an invalid feed.
+- Add `merchant-local-inventory.txt` in Merchant Center as a `Local product inventory` data source, not as a supplemental feed.
+- Code-side exclusions help, but if the Merchant product source itself still has physical-store marketing methods enabled, you should also remove `Free local listings` / `Local inventory ads` in the data source settings until a real Business Profile store is linked.
+- Like the main Merchant feed, this file is a frontend build artifact, so Merchant will only see updates after the frontend is rebuilt and deployed.
+
 ## Gemini Device Image Workflow
 
 Use this workflow when generating new product or family imagery with Gemini and assigning it to live catalog items.

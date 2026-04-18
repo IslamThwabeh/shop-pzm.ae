@@ -34,6 +34,7 @@ backend/.env
 /robots.txt
 /merchant-feed.xml
 /merchant-feed.txt
+/merchant-local-inventory.txt
 *.env
 
 wrangler.toml

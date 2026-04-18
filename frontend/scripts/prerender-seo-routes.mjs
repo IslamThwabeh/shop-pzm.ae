@@ -10,10 +10,14 @@ const contentRoot = path.join(frontendRoot, 'src', 'content')
 const deviceFinderEntries = JSON.parse(
   await fs.readFile(path.join(contentRoot, 'deviceFinderDestinations.json'), 'utf8')
 )
+const localInventoryConfigSource = JSON.parse(
+  await fs.readFile(path.join(contentRoot, 'localInventoryConfig.json'), 'utf8')
+)
 const SITE_URL = (process.env.VITE_SITE_URL || 'https://pzm.ae').replace(/\/+$/, '')
 const DEFAULT_IMAGE = `${SITE_URL}/images/mini_logo.png`
 const PRODUCT_FEED_URL = process.env.PZM_PRODUCT_FEED_URL || 'https://shop.pzm.ae/api/products'
 const LASTMOD = '2026-04-07'
+const MERCHANT_LOCAL_INVENTORY_FILE = 'merchant-local-inventory.txt'
 
 const homeSnapshotPrimaryRoutes = [
   {
@@ -233,6 +237,114 @@ function getProductDeduplicationKey(product) {
 
 function getProductTimestamp(product) {
   return Date.parse(product.updated_at || product.updatedAt || product.created_at || product.createdAt || '') || 0
+}
+
+function normalizeProductIdList(values) {
+  if (!Array.isArray(values)) {
+    return []
+  }
+
+  return Array.from(
+    new Set(
+      values
+        .map((value) => String(value || '').trim())
+        .filter(Boolean)
+    )
+  )
+}
+
+function normalizeMerchantDestinationList(values) {
+  if (!Array.isArray(values)) {
+    return []
+  }
+
+  return Array.from(
+    new Set(
+      values
+        .map((value) => String(value || '').trim())
+        .filter(Boolean)
+    )
+  )
+}
+
+function getResolvedLocalInventoryConfig() {
+  return {
+    enabled: localInventoryConfigSource.enabled !== false,
+    storeCode: String(
+      process.env.PZM_MERCHANT_LOCAL_STORE_CODE
+        || process.env.PZM_MERCHANT_STORE_CODE
+        || localInventoryConfigSource.storeCode
+        || ''
+    ).trim(),
+    primaryFeedExcludedDestinations: normalizeMerchantDestinationList(
+      localInventoryConfigSource.primaryFeedExcludedDestinations
+    ),
+    includedProductIds: normalizeProductIdList(localInventoryConfigSource.includedProductIds),
+    excludedProductIds: normalizeProductIdList(localInventoryConfigSource.excludedProductIds),
+  }
+}
+
+function isMerchantFeedEligibleProduct(product) {
+  const productId = String(product.id || '').trim()
+  return Boolean(productId) && Number(product.price) > 0 && (product.quantity ?? 0) > 0
+}
+
+function getMerchantFeedProducts(products) {
+  const uniqueProducts = new Map()
+
+  for (const product of products) {
+    if (!isMerchantFeedEligibleProduct(product)) {
+      continue
+    }
+
+    const productId = String(product.id || '').trim()
+    const existing = uniqueProducts.get(productId)
+
+    if (!existing || getProductTimestamp(product) >= getProductTimestamp(existing)) {
+      uniqueProducts.set(productId, product)
+    }
+  }
+
+  return Array.from(uniqueProducts.values()).sort(sortProducts)
+}
+
+function getMerchantLocalInventoryProducts(products, config) {
+  const includedIds = new Set(config.includedProductIds)
+  const excludedIds = new Set(config.excludedProductIds)
+
+  return getMerchantFeedProducts(products).filter((product) => {
+    const productId = String(product.id || '').trim()
+
+    if (!productId || excludedIds.has(productId)) {
+      return false
+    }
+
+    if (includedIds.size > 0) {
+      return includedIds.has(productId)
+    }
+
+    return true
+  })
+}
+
+function getLocalInventoryAvailability(product) {
+  const quantity = Math.max(0, Math.trunc(Number(product.quantity) || 0))
+
+  if (quantity <= 0) {
+    return 'out_of_stock'
+  }
+
+  if (quantity <= 2) {
+    return 'limited_availability'
+  }
+
+  return 'in_stock'
+}
+
+function getMerchantExcludedDestinations(config) {
+  return Array.isArray(config?.primaryFeedExcludedDestinations)
+    ? config.primaryFeedExcludedDestinations
+    : []
 }
 
 function sortProducts(left, right) {
@@ -721,22 +833,9 @@ function buildProductRoutes(products) {
   ]
 }
 
-function buildMerchantFeed(products) {
-  const uniqueProducts = new Map()
-
-  for (const product of products) {
-    const productId = String(product.id || '').trim()
-    if (!productId || Number(product.price) <= 0 || (product.quantity ?? 0) <= 0) {
-      continue
-    }
-
-    const existing = uniqueProducts.get(productId)
-    if (!existing || getProductTimestamp(product) >= getProductTimestamp(existing)) {
-      uniqueProducts.set(productId, product)
-    }
-  }
-
-  const feedProducts = Array.from(uniqueProducts.values()).sort(sortProducts)
+function buildMerchantFeed(products, config = getResolvedLocalInventoryConfig()) {
+  const feedProducts = getMerchantFeedProducts(products)
+  const excludedDestinations = getMerchantExcludedDestinations(config)
 
   const lines = [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -799,6 +898,10 @@ function buildMerchantFeed(products) {
       lines.push('      <g:identifier_exists>no</g:identifier_exists>')
     }
 
+    for (const excludedDestination of excludedDestinations) {
+      lines.push(`      <g:excluded_destination>${escapeXml(excludedDestination)}</g:excluded_destination>`)
+    }
+
     lines.push('    </item>')
   }
 
@@ -815,22 +918,9 @@ function escapeMerchantTabValue(value) {
     .trim()
 }
 
-function buildMerchantTabFeed(products) {
-  const uniqueProducts = new Map()
-
-  for (const product of products) {
-    const productId = String(product.id || '').trim()
-    if (!productId || Number(product.price) <= 0 || (product.quantity ?? 0) <= 0) {
-      continue
-    }
-
-    const existing = uniqueProducts.get(productId)
-    if (!existing || getProductTimestamp(product) >= getProductTimestamp(existing)) {
-      uniqueProducts.set(productId, product)
-    }
-  }
-
-  const feedProducts = Array.from(uniqueProducts.values()).sort(sortProducts)
+function buildMerchantTabFeed(products, config = getResolvedLocalInventoryConfig()) {
+  const feedProducts = getMerchantFeedProducts(products)
+  const excludedDestinations = getMerchantExcludedDestinations(config)
   const rows = [
     [
       'id',
@@ -848,6 +938,7 @@ function buildMerchantTabFeed(products) {
       'gtin',
       'mpn',
       'item_group_id',
+      'excluded_destination',
       'identifier_exists',
     ].join('\t'),
   ]
@@ -875,11 +966,52 @@ function buildMerchantTabFeed(products) {
       getOptionalProductText(product.gtin) || '',
       getOptionalProductText(product.mpn) || '',
       getOptionalProductText(product.item_group_id) || '',
+      excludedDestinations.join(','),
       hasProductIdentifiers(product) ? '' : 'no',
     ].map((value) => escapeMerchantTabValue(value))
 
     rows.push(row.join('\t'))
   }
+
+  return `${rows.join('\n')}\n`
+}
+
+function buildMerchantLocalInventoryTabFeed(products, config) {
+  if (!config.enabled) {
+    console.log('[prerender] Skipping merchant local inventory feed because it is disabled in localInventoryConfig.json.')
+    return null
+  }
+
+  if (!config.storeCode) {
+    console.warn(
+      '[prerender] Skipping merchant-local-inventory.txt because no store code is configured. Set PZM_MERCHANT_STORE_CODE or update frontend/src/content/localInventoryConfig.json.'
+    )
+    return null
+  }
+
+  const localProducts = getMerchantLocalInventoryProducts(products, config)
+
+  if (localProducts.length === 0) {
+    console.warn('[prerender] Skipping merchant-local-inventory.txt because no eligible in-store products were selected.')
+    return null
+  }
+
+  const rows = [
+    ['store_code', 'id', 'availability', 'quantity'].join('\t'),
+  ]
+
+  for (const product of localProducts) {
+    const quantity = Math.max(0, Math.trunc(Number(product.quantity) || 0))
+    rows.push(
+      [config.storeCode, product.id, getLocalInventoryAvailability(product), String(quantity)]
+        .map((value) => escapeMerchantTabValue(value))
+        .join('\t')
+    )
+  }
+
+  console.log(
+    `[prerender] Local inventory feed ready for ${localProducts.length} products using store code ${config.storeCode}.`
+  )
 
   return `${rows.join('\n')}\n`
 }
@@ -2431,6 +2563,7 @@ const canonicalRoutes = [
 ]
 
 const liveProducts = await fetchLiveProducts()
+const merchantFeedConfig = getResolvedLocalInventoryConfig()
 const serviceEntryMap = new Map(serviceEntries.map((entry) => [entry.slug, entry]))
 const areaEntryMap = new Map(areaEntries.map((entry) => [entry.slug, entry]))
 
@@ -2570,6 +2703,15 @@ for (const route of aliasRoutes) {
 }
 
 await fs.writeFile(path.join(distRoot, 'sitemap.xml'), buildSitemap(canonicalRoutes), 'utf8')
-await fs.writeFile(path.join(distRoot, 'merchant-feed.xml'), buildMerchantFeed(liveProducts), 'utf8')
-await fs.writeFile(path.join(distRoot, 'merchant-feed.txt'), buildMerchantTabFeed(liveProducts), 'utf8')
+await fs.writeFile(path.join(distRoot, 'merchant-feed.xml'), buildMerchantFeed(liveProducts, merchantFeedConfig), 'utf8')
+await fs.writeFile(path.join(distRoot, 'merchant-feed.txt'), buildMerchantTabFeed(liveProducts, merchantFeedConfig), 'utf8')
+const merchantLocalInventoryFeed = buildMerchantLocalInventoryTabFeed(liveProducts, merchantFeedConfig)
+const merchantLocalInventoryPath = path.join(distRoot, MERCHANT_LOCAL_INVENTORY_FILE)
+
+if (merchantLocalInventoryFeed) {
+  await fs.writeFile(merchantLocalInventoryPath, merchantLocalInventoryFeed, 'utf8')
+} else {
+  await fs.rm(merchantLocalInventoryPath, { force: true })
+}
+
 await writeRouteHeaders(canonicalRoutes)
