@@ -17,6 +17,43 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
   const availableFamilyCount = familyGroups.filter((group) => group.products.length > 0).length
   const lowestPrice = liveIphoneProducts.length > 0 ? Math.min(...liveIphoneProducts.map((product) => product.price)) : null
 
+  const sharedReturnPolicy = {
+    '@type': 'MerchantReturnPolicy',
+    applicableCountry: 'AE',
+    returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+    merchantReturnDays: 7,
+    returnMethod: 'https://schema.org/ReturnInStore',
+    returnFees: 'https://schema.org/FreeReturn',
+  }
+
+  const sharedShipping = {
+    '@type': 'OfferShippingDetails',
+    shippingRate: {
+      '@type': 'MonetaryAmount',
+      value: '0',
+      currency: 'AED',
+    },
+    shippingDestination: {
+      '@type': 'DefinedRegion',
+      addressCountry: 'AE',
+    },
+    deliveryTime: {
+      '@type': 'ShippingDeliveryTime',
+      handlingTime: {
+        '@type': 'QuantitativeValue',
+        minValue: 0,
+        maxValue: 1,
+        unitCode: 'DAY',
+      },
+      transitTime: {
+        '@type': 'QuantitativeValue',
+        minValue: 1,
+        maxValue: 3,
+        unitCode: 'DAY',
+      },
+    },
+  }
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -27,20 +64,30 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
       '@type': 'ItemList',
       itemListElement: liveIphoneProducts.slice(0, 16).map((product, index) => {
         const productImage = product.image_url || product.images?.[0]
+        const productName = `${product.model} ${product.storage}`.trim()
 
         return {
           '@type': 'ListItem',
           position: index + 1,
           item: {
             '@type': 'Product',
-            name: `${product.model} ${product.storage}`.trim(),
+            name: productName,
+            description: `Apple ${productName} available in Dubai. Order via WhatsApp for same-day delivery in Dubai or 1–3 business days UAE-wide. Sold by PZM.`,
             url: buildSiteUrl(`/product/${product.id}`),
+            brand: {
+              '@type': 'Brand',
+              name: 'Apple',
+            },
             ...(productImage ? { image: [toAbsoluteSiteUrl(productImage)] } : {}),
             offers: {
               '@type': 'Offer',
               priceCurrency: 'AED',
               price: product.price,
+              availability: 'https://schema.org/InStock',
               itemCondition: 'https://schema.org/NewCondition',
+              url: buildSiteUrl(`/product/${product.id}`),
+              hasMerchantReturnPolicy: sharedReturnPolicy,
+              shippingDetails: sharedShipping,
             },
           },
         }
