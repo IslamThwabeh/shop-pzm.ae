@@ -1,12 +1,19 @@
 from __future__ import annotations
 
 import argparse
+import io
 import shutil
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from PIL import Image, ImageOps, UnidentifiedImageError, features
+
+try:
+    import rembg
+    REMBG_AVAILABLE = True
+except ImportError:
+    REMBG_AVAILABLE = False
 
 
 SUPPORTED_EXTENSIONS = {".jpg", ".jpeg", ".png"}
@@ -43,6 +50,12 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_QUALITY,
         help="WebP quality setting.",
     )
+    parser.add_argument(
+        "--remove-bg",
+        action="store_true",
+        default=False,
+        help="Remove background and composite on white using rembg (requires: pip install rembg).",
+    )
     return parser.parse_args()
 
 
@@ -74,7 +87,18 @@ def create_backup(source_dir: Path, backup_dir: Path) -> None:
     shutil.copytree(source_dir, backup_dir, copy_function=shutil.copy2)
 
 
-def prepare_image(image: Image.Image, original_path: Path) -> Image.Image:
+def remove_background(image: Image.Image) -> Image.Image:
+    """Remove background via rembg and composite onto a white canvas."""
+    buf = io.BytesIO()
+    image.convert("RGB").save(buf, format="PNG")
+    result_bytes = rembg.remove(buf.getvalue())
+    fg = Image.open(io.BytesIO(result_bytes)).convert("RGBA")
+    bg = Image.new("RGBA", fg.size, (255, 255, 255, 255))
+    bg.paste(fg, mask=fg.split()[3])
+    return bg.convert("RGB")
+
+
+def prepare_image(image: Image.Image, original_path: Path, apply_remove_bg: bool = False) -> Image.Image:
     image = ImageOps.exif_transpose(image)
 
     if image.mode not in {"RGB", "RGBA"}:
@@ -88,19 +112,22 @@ def prepare_image(image: Image.Image, original_path: Path) -> Image.Image:
     if image.mode == "RGBA" and original_path.suffix.lower() in {".jpg", ".jpeg"}:
         image = image.convert("RGB")
 
+    if apply_remove_bg:
+        image = remove_background(image)
+
     resized = image.copy()
     resized.thumbnail(MAX_SIZE, Image.Resampling.LANCZOS)
     return resized
 
 
-def optimize_image(image_path: Path, quality: int) -> tuple[int, int]:
+def optimize_image(image_path: Path, quality: int, apply_remove_bg: bool = False) -> tuple[int, int]:
     output_path = image_path.with_suffix(".webp")
     temp_output_path = output_path.with_name(f"{output_path.stem}.tmp.webp")
 
     before_size = image_path.stat().st_size
 
     with Image.open(image_path) as source_image:
-        optimized_image = prepare_image(source_image, image_path)
+        optimized_image = prepare_image(source_image, image_path, apply_remove_bg=apply_remove_bg)
 
         save_kwargs = {
             "format": "WEBP",
@@ -156,6 +183,13 @@ def main() -> int:
         print("Pillow WebP support is not available in this Python environment.", file=sys.stderr)
         return 1
 
+    apply_remove_bg = getattr(args, "remove_bg", False)
+    if apply_remove_bg and not REMBG_AVAILABLE:
+        print("--remove-bg requires rembg. Install it with: pip install rembg", file=sys.stderr)
+        return 1
+    if apply_remove_bg:
+        print("Background removal enabled (rembg u2net model).")
+
     print(f"Creating backup: {source_dir} -> {backup_dir}")
     create_backup(source_dir, backup_dir)
     print("Backup completed successfully.")
@@ -166,7 +200,7 @@ def main() -> int:
 
     for image_path in image_paths:
         try:
-            before_size, after_size = optimize_image(image_path, args.quality)
+            before_size, after_size = optimize_image(image_path, args.quality, apply_remove_bg=apply_remove_bg)
             report.processed += 1
             report.total_before_bytes += before_size
             report.total_after_bytes += after_size

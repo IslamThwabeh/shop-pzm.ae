@@ -1,0 +1,6 @@
+{
+  "products": [
+    { "id": "prod-mo4quv3l-4vqs9i", "model": "iPhone XS Max", "color": "Gold", "condition": "used", "storage": "512GB", "replaceImages": true, "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\iPhone XS Max Gold.webp"] },
+    { "id": "prod-mo4qutbh-1i7n4y", "model": "iPhone 15 Pro", "color": "Black", "condition": "used", "storage": "256GB", "replaceImages": true, "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\iPhone 15 Pro Black.webp"] }
+  ]
+}
