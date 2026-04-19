@@ -63,7 +63,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
     mainEntity: {
       '@type': 'ItemList',
       itemListElement: liveIphoneProducts.slice(0, 16).map((product, index) => {
-        const productImage = product.image_url || product.images?.[0]
+        const productImage = product.image_url || product.images?.[0] || '/images/Catigories/mini_buy_iphone.webp'
         const productName = `${product.model} ${product.storage}`.trim()
 
         return {
@@ -78,7 +78,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
               '@type': 'Brand',
               name: 'Apple',
             },
-            ...(productImage ? { image: [toAbsoluteSiteUrl(productImage)] } : {}),
+            image: [toAbsoluteSiteUrl(productImage)],
             offers: {
               '@type': 'Offer',
               priceCurrency: 'AED',
