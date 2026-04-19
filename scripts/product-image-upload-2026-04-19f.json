@@ -1,0 +1,19 @@
+{
+  "products": [
+    {
+      "id": "prod-mo4quzyw-nxxqq1",
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\Apple Pencil USB-C White.webp"]
+    },
+    {
+      "id": "prod-mo4quzkt-96k1wf",
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\Apple Watch SE 40mm Silver Starlight.webp"]
+    },
+    {
+      "id": "prod-mo4quvwx-668ugf",
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\iPhone 6S Gold.webp"]
+    }
+  ]
+}
