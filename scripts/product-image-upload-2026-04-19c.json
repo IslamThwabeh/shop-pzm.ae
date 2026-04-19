@@ -1,0 +1,8 @@
+{
+  "products": [
+    { "id": "prod-mnnz7boc-pchv3y", "model": "Honor X8", "color": "Good Condition", "condition": "used", "replaceImages": true, "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\Honor X8.webp"] },
+    { "id": "prod-mnnz7dcf-h2lui0", "model": "Redmi Note 8", "color": "Good Condition", "condition": "used", "replaceImages": true, "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\Redmi Note 8.webp"] },
+    { "id": "prod-mnnz7dy1-88bplj", "model": "Tecno Spark Go 1", "color": "Good Condition", "condition": "used", "replaceImages": true, "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\Tecno Spark Go 1.webp"] },
+    { "id": "prod-mo4quu5q-738u4c", "model": "iPhone 13 Pro", "color": "Gold", "condition": "used", "storage": "256GB", "replaceImages": true, "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\iPhone 13 Pro Gold.webp"] }
+  ]
+}

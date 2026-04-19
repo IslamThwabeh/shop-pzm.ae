@@ -4,7 +4,7 @@ import { buildApiUrl } from '../utils/siteConfig'
 const generatedBuyIphoneFamilyMedia = (filename: string) => buildApiUrl(`/media/generated/buy-iphone/${filename}`)
 
 export interface BuyIphoneFamily {
-  key: 'iphone-17-pro-max' | 'iphone-17-pro' | 'iphone-17-air' | 'iphone-17' | 'iphone-16' | 'iphone-15'
+  key: 'iphone-17-pro-max' | 'iphone-17-pro' | 'iphone-17-air' | 'iphone-17' | 'iphone-16'
   title: string
   shortTitle: string
   description: string
@@ -59,16 +59,8 @@ export const buyIphoneFamilies: BuyIphoneFamily[] = [
     imageAlt: 'iPhone 16 color lineup',
     matcher: /\biphone\s*16\b(?!\s*pro\b)(?!\s*plus\b)/i,
   },
-  {
-    key: 'iphone-15',
-    title: 'iPhone 15',
-    shortTitle: '15',
-    description: 'Apple value picks for buyers who want a lower entry price without going old.',
-    imageUrl: generatedBuyIphoneFamilyMedia('iphone-15-family-primary.webp'),
-    imageAlt: 'iPhone 15 color lineup',
-    matcher: /\biphone\s*15\b(?!\s*pro\b)(?!\s*plus\b)/i,
-  },
 ]
+
 
 function normalizeModel(model: string) {
   return model.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()

@@ -59,7 +59,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
     '@type': 'CollectionPage',
     name: 'Buy iPhone in Dubai | PZM',
     url: buildSiteUrl('/services/buy-iphone'),
-    description: 'Browse iPhone 15, 16, and 17 families in Dubai with direct WhatsApp ordering and local support from PZM.',
+    description: 'Browse iPhone 16 and 17 families in Dubai with direct WhatsApp ordering and local support from PZM.',
     mainEntity: {
       '@type': 'ItemList',
       itemListElement: liveIphoneProducts.slice(0, 16).map((product, index) => {
@@ -98,8 +98,8 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 space-y-8">
       <Seo
-        title="Buy iPhone 15, 16 and 17 in Dubai | PZM Dubai"
-        description="Browse iPhone 15, 16, and 17 families in Dubai with direct WhatsApp ordering and local support from PZM."
+        title="Buy iPhone 16 and 17 in Dubai | PZM Dubai"
+        description="Browse iPhone 16 and 17 families in Dubai with direct WhatsApp ordering and local support from PZM."
         canonicalPath="/services/buy-iphone"
         jsonLd={jsonLd}
       />
@@ -108,7 +108,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Apple lineup</p>
         <h1 className="mt-3 text-[1.9rem] font-bold text-slate-950 md:text-[2.4rem]">Buy iPhone in Dubai</h1>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-brandTextMedium md:text-base">
-          Browse iPhone 15, 16, and 17 families with direct WhatsApp ordering, storage guidance, and local pickup or delivery support from PZM.
+          Browse iPhone 16 and 17 families with direct WhatsApp ordering, storage guidance, and local pickup or delivery support from PZM.
         </p>
 
         <div className="mt-5 flex flex-wrap gap-2.5 text-xs font-medium text-slate-500">
