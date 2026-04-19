@@ -44,7 +44,7 @@ export const brandNewCategories: BrandNewCategory[] = [
     description: 'Consoles, gaming laptops, VR, and gaming hardware.',
     examples: ['Custom gaming PCs', 'Gaming laptops', 'Latest consoles', 'VR headsets', 'Gaming accessories'],
     accentClassName: 'from-violet-100 via-purple-50 to-white',
-    matcher: /(playstation|ps5|ps4|xbox|nintendo|switch|gaming|rog|alienware|vr|console)/i,
+    matcher: /(playstation|ps5|ps4|xbox|nintendo|switch|gaming|rog|alienware|vr|console|jbl|partybox|speaker)/i,
   },
   {
     key: 'professional-equipment',

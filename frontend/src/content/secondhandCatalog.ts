@@ -26,7 +26,7 @@ export const secondhandCategories: SecondhandCategory[] = [
     description: 'Used iPhones, Samsung devices, Pixels, Honors, and other phones.',
     examples: ['Used iPhones', 'Samsung Galaxy', 'Google Pixel', 'Honor phones', 'Premium Android phones'],
     accentClassName: 'from-emerald-100 via-green-50 to-white',
-    matcher: /(iphone|galaxy|samsung|pixel|android|phone|mobile|honor|redmi|tecno|nokia)/i,
+    matcher: /(iphone|galaxy|samsung|pixel|android|phone|mobile|honor|redmi|tecno|nokia|nothing|airpod|watch|pencil)/i,
   },
   {
     key: 'used-laptops',

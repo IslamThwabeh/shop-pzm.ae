@@ -1,28 +1,7 @@
 {
   "enabled": true,
-  "storeCode": "",
-  "primaryFeedExcludedDestinations": [
-    "Local_inventory_ads",
-    "Free_local_listings"
-  ],
+  "storeCode": "15302387347957747833",
+  "primaryFeedExcludedDestinations": [],
   "includedProductIds": [],
-  "excludedProductIds": [
-    "prod-mntdtwfb-mefjnt",
-    "prod-mntdth2i-45do4s",
-    "prod-mntdu0pp-uvtxu6",
-    "prod-mntdttrw-hp71ny",
-    "prod-mntdte6k-jv9z3l",
-    "prod-mntdtv37-wdwlqw",
-    "prod-mntdtmvl-r1h6rv",
-    "prod-mntdtpu8-m2te56",
-    "prod-mntdtcr8-d0vmwe",
-    "prod-mntdtsg5-hahmqe",
-    "prod-mntdtk5y-ds0h7f",
-    "prod-mntdtfjh-cb8f5v",
-    "prod-mntdtiic-z89l6o",
-    "prod-mntdto2u-4p3089",
-    "prod-mntdtxpv-r1ffjs",
-    "prod-mntdtz27-kybe2d",
-    "prod-mntdtlgo-ipk06q"
-  ]
+  "excludedProductIds": []
 }

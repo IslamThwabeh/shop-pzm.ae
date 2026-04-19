@@ -1,0 +1,90 @@
+{
+  "products": [
+  {
+    "id": "prod-mo4qtqv4-tougpx",
+    "model": "iPhone 17 Pro",
+    "color": "Black Titanium",
+    "condition": "new",
+    "storage": "256GB",
+    "replaceImages": true,
+    "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\iPhone 17 Pro Black Titanium.webp"]
+  },
+  {
+    "id": "prod-mo4qtt5g-vc9uze",
+    "model": "iPhone 17 Pro",
+    "color": "Black Titanium",
+    "condition": "new",
+    "storage": "512GB",
+    "replaceImages": true,
+    "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\iPhone 17 Pro Black Titanium.webp"]
+  },
+  {
+    "id": "prod-mo4qtv50-4n6gws",
+    "model": "iPhone 17 Pro",
+    "color": "Black Titanium",
+    "condition": "new",
+    "storage": "1TB",
+    "replaceImages": true,
+    "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\iPhone 17 Pro Black Titanium.webp"]
+  },
+  {
+    "id": "prod-mo4qtru7-zvxcd4",
+    "model": "iPhone 17 Pro",
+    "color": "Natural Titanium",
+    "condition": "new",
+    "storage": "256GB",
+    "replaceImages": true,
+    "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\iPhone 17 Pro Natural Titanium.webp"]
+  },
+  {
+    "id": "prod-mo4qtu5y-9qn5fg",
+    "model": "iPhone 17 Pro",
+    "color": "Natural Titanium",
+    "condition": "new",
+    "storage": "512GB",
+    "replaceImages": true,
+    "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\iPhone 17 Pro Natural Titanium.webp"]
+  },
+  {
+    "id": "prod-mo4qtvwt-m4lafk",
+    "model": "iPhone 17 Pro",
+    "color": "Natural Titanium",
+    "condition": "new",
+    "storage": "1TB",
+    "replaceImages": true,
+    "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\iPhone 17 Pro Natural Titanium.webp"]
+  },
+  {
+    "id": "prod-mo4qtkrb-gp5r0d",
+    "model": "iPhone 17 Pro Max",
+    "color": "Black Titanium",
+    "condition": "new",
+    "replaceImages": true,
+    "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\iPhone 17 Pro Max \u2014 Black Titanium.webp"]
+  },
+  {
+    "id": "prod-mo4qtmqa-h7xolq",
+    "model": "iPhone 17 Pro Max",
+    "color": "Black Titanium",
+    "condition": "new",
+    "replaceImages": true,
+    "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\iPhone 17 Pro Max \u2014 Black Titanium.webp"]
+  },
+  {
+    "id": "prod-mo4qtoyr-r82epy",
+    "model": "iPhone 17 Pro Max",
+    "color": "Black Titanium",
+    "condition": "new",
+    "replaceImages": true,
+    "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\iPhone 17 Pro Max \u2014 Black Titanium.webp"]
+  },
+  {
+    "id": "prod-mo4qvi13-zp6a78",
+    "model": "Samsung CF390 Curved 27\"",
+    "color": "Black",
+    "condition": "used",
+    "replaceImages": true,
+    "imagePaths": ["D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\Samsung CF390 Curved 27.webp"]
+  }
+  ]
+}
