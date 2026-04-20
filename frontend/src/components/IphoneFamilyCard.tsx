@@ -71,9 +71,9 @@ export default function IphoneFamilyCard({ family, products }: Props) {
   return (
     <article data-cart-feedback-root className="flex flex-col rounded-2xl border border-[#eee] bg-white">
       {/* Image */}
-      <div className="product-image-frame relative h-[160px] overflow-hidden rounded-t-2xl border-b border-[#eee] bg-slate-50">
-        <div data-cart-feedback-image className="flex h-full w-full items-center justify-center">
-          <RetailImage src={displayImage} alt={family.imageAlt} name={family.title} variant="card" />
+      <div className="relative h-[200px] sm:h-[210px] overflow-hidden rounded-t-2xl border-b border-[#eee] bg-white">
+        <div data-cart-feedback-image className="flex h-full w-full items-center justify-center p-4">
+          <RetailImage src={displayImage} alt={family.imageAlt} name={family.title} variant="card" className="max-h-full w-full object-contain" />
         </div>
         <span className="absolute left-2.5 top-2.5 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
           New

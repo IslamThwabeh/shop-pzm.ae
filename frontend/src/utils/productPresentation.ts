@@ -187,6 +187,14 @@ export interface VariantGroup {
   products: Product[]
 }
 
+/** Return a numeric magnitude for a storage string so they sort ascending by size. */
+function getStorageMagnitude(storage: string): number {
+  const match = storage.trim().match(/^(\d+)\s*(GB|TB)$/i)
+  if (!match) return Number.MAX_SAFE_INTEGER
+  const n = parseInt(match[1], 10)
+  return match[2].toUpperCase() === 'TB' ? n * 1024 : n
+}
+
 export function groupVariantsByColorAndStorage(products: Product[]): VariantGroup {
   const colorSet = new Set<string>()
   const storageSet = new Set<string>()
@@ -208,7 +216,7 @@ export function groupVariantsByColorAndStorage(products: Product[]): VariantGrou
 
   return {
     colors: Array.from(colorSet),
-    storages: Array.from(storageSet),
+    storages: Array.from(storageSet).sort((a, b) => getStorageMagnitude(a) - getStorageMagnitude(b)),
     lowestPrice: sorted.length > 0 ? sorted[0].price : 0,
     getProduct: (color, storage) => map.get(`${color}|||${storage}`),
     products: sorted,

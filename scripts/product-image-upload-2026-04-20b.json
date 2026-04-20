@@ -1,0 +1,115 @@
+{
+  "products": [
+    {
+      "model": "iPhone 17 Pro Max",
+      "color": "Silver",
+      "storage": "256GB",
+      "condition": "new",
+      "price": 5100,
+      "quantity": 5,
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\Fix-Images\\iphone-17-pro-max-finish-select-202509-6-3inch-silver-1024x576.webp"]
+    },
+    {
+      "model": "iPhone 17 Pro Max",
+      "color": "Silver",
+      "storage": "512GB",
+      "condition": "new",
+      "price": 5900,
+      "quantity": 5,
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\Fix-Images\\iphone-17-pro-max-finish-select-202509-6-3inch-silver-1024x576.webp"]
+    },
+    {
+      "model": "iPhone 17 Pro Max",
+      "color": "Silver",
+      "storage": "1TB",
+      "condition": "new",
+      "price": 6400,
+      "quantity": 5,
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\Fix-Images\\iphone-17-pro-max-finish-select-202509-6-3inch-silver-1024x576.webp"]
+    },
+    {
+      "id": "prod-mo4qtqv4-tougpx",
+      "model": "iPhone 17 Pro",
+      "color": "Cosmic Orange",
+      "storage": "256GB",
+      "condition": "new",
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\Fix-Images\\iphone-17-pro-finish-select-202509-6-3inch-cosmicorange-1024x576.webp"]
+    },
+    {
+      "id": "prod-mo4qtt5g-vc9uze",
+      "model": "iPhone 17 Pro",
+      "color": "Cosmic Orange",
+      "storage": "512GB",
+      "condition": "new",
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\Fix-Images\\iphone-17-pro-finish-select-202509-6-3inch-cosmicorange-1024x576.webp"]
+    },
+    {
+      "id": "prod-mo4qtv50-4n6gws",
+      "model": "iPhone 17 Pro",
+      "color": "Cosmic Orange",
+      "storage": "1TB",
+      "condition": "new",
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\Fix-Images\\iphone-17-pro-finish-select-202509-6-3inch-cosmicorange-1024x576.webp"]
+    },
+    {
+      "id": "prod-mo4qtrgk-ajcp0z",
+      "model": "iPhone 17 Pro",
+      "color": "Deep Blue",
+      "storage": "256GB",
+      "condition": "new",
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\Fix-Images\\iphone-17-pro-finish-select-202509-6-3inch-deepblue-1024x576.webp"]
+    },
+    {
+      "id": "prod-mo4qttpa-oqdrk9",
+      "model": "iPhone 17 Pro",
+      "color": "Deep Blue",
+      "storage": "512GB",
+      "condition": "new",
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\Fix-Images\\iphone-17-pro-finish-select-202509-6-3inch-deepblue-1024x576.webp"]
+    },
+    {
+      "id": "prod-mo4qtvia-13noxy",
+      "model": "iPhone 17 Pro",
+      "color": "Deep Blue",
+      "storage": "1TB",
+      "condition": "new",
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\Fix-Images\\iphone-17-pro-finish-select-202509-6-3inch-deepblue-1024x576.webp"]
+    },
+    {
+      "id": "prod-mo4qtru7-zvxcd4",
+      "model": "iPhone 17 Pro",
+      "color": "Silver",
+      "storage": "256GB",
+      "condition": "new",
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\Fix-Images\\iphone-17-pro-finish-select-202509-6-3inch-silver-1024x576.webp"]
+    },
+    {
+      "id": "prod-mo4qtu5y-9qn5fg",
+      "model": "iPhone 17 Pro",
+      "color": "Silver",
+      "storage": "512GB",
+      "condition": "new",
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\Fix-Images\\iphone-17-pro-finish-select-202509-6-3inch-silver-1024x576.webp"]
+    },
+    {
+      "id": "prod-mo4qtvwt-m4lafk",
+      "model": "iPhone 17 Pro",
+      "color": "Silver",
+      "storage": "1TB",
+      "condition": "new",
+      "replaceImages": true,
+      "imagePaths": ["D:\\Personal\\PZM Website\\Fix-Images\\iphone-17-pro-finish-select-202509-6-3inch-silver-1024x576.webp"]
+    }
+  ]
+}
