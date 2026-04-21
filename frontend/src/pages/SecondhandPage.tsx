@@ -306,7 +306,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
       <section className="grid gap-4 md:grid-cols-3">
         <article className="rounded-2xl border border-brandBorder bg-white p-5 shadow-sm">
           <ShieldCheck className="text-primary" size={20} />
-          <h2 className="mt-4 text-base font-bold text-slate-950">30-day warranty</h2>
+          <h2 className="mt-4 text-base font-bold text-slate-950">6-month warranty</h2>
           <p className="mt-2 text-sm text-brandTextMedium">All certified pre-owned devices include hardware warranty.</p>
         </article>
         <article className="rounded-2xl border border-brandBorder bg-white p-5 shadow-sm">

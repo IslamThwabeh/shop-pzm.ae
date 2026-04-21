@@ -476,7 +476,7 @@ export default function ProductManagement({ token }: ProductManagementProps) {
                     value={formData.warranty}
                     onChange={handleInputChange}
                     className="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Official warranty, 30-day store warranty..."
+                    placeholder="Official warranty, 6-month store warranty..."
                   />
                 </div>
                 <div>

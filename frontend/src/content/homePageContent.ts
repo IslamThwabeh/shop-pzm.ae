@@ -162,7 +162,7 @@ export const homeTrustCards: HomeTrustCard[] = [
 export const homeFaqItems: HomeFaqItem[] = [
   {
     question: 'Do you offer warranty on used devices?',
-    answer: 'Yes. Certified pre-owned devices include warranty coverage, and iPhones and MacBooks typically include a 30-day hardware warranty.',
+    answer: 'Yes. Certified pre-owned devices include warranty coverage, and iPhones and MacBooks typically include a 6-month hardware warranty.',
   },
   {
     question: 'How long does a phone or laptop repair take?',
