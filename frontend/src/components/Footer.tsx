@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="border-t border-[#eee] bg-white">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-6 text-sm text-slate-500 sm:flex-row sm:justify-between sm:px-6 lg:px-8">
         {/* Left: copyright */}
-        <p className="order-2 sm:order-none">&copy; {new Date().getFullYear()} {siteIdentity.name}</p>
+        <p className="order-2 sm:order-none">&copy; {new Date().getFullYear()} {siteIdentity.publicBrandName}</p>
 
         {/* Center: links */}
         <nav className="order-1 flex flex-wrap justify-center gap-x-5 gap-y-2 sm:order-none">

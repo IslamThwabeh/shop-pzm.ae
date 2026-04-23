@@ -1631,7 +1631,7 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, products) {
 
   return buildPageShell({
     eyebrow: 'PZM Storefront',
-    title: 'PZM Computers & Phones Store',
+    title: WEBSITE_BRAND,
     intro:
       'Your integrated device solutions hub in Al Barsha, Dubai, serving Barsha 1-3, Dubai Science Park, JVC, Meadows Village, JLT, Springs, Barsha Heights, Tecom, and Al Sufouh with devices, repairs, accessories, and buying guides.',
     stats: [
@@ -2103,7 +2103,9 @@ function outputPathForRoute(routePath) {
   return path.join(distRoot, normalized.replace(/\/+$/, ''), 'index.html')
 }
 
-const HOME_ROUTE_TITLE = 'Buy iPhones, Laptops & Repair in Al Barsha, JVC & Tecom | PZM'
+const BUSINESS_NAME = 'PZM Computers & Phones Store'
+const WEBSITE_BRAND = 'PZM Computers & Phones Store - New, Used, Repair, PC Build'
+const HOME_ROUTE_TITLE = 'Buy iPhones, Laptops & Repair in Al Barsha, JVC & Tecom | PZM Computers & Phones Store - New, Used, Repair, PC Build'
 const HOME_ROUTE_DESCRIPTION =
   "PZM's Al Barsha store serves Barsha 1-3, Dubai Science Park, JVC, Meadows Village, JLT, Springs, Barsha Heights, Tecom, and Al Sufouh for phones, laptops, repairs, and device support."
 const HOME_AREA_SERVED = [
@@ -2127,7 +2129,7 @@ function buildStoreJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'ComputerStore',
-    name: 'PZM Computers & Phones Store',
+    name: BUSINESS_NAME,
     description: HOME_ROUTE_DESCRIPTION,
     url: `${SITE_URL}/`,
     telephone: '+971528026677',
@@ -2147,7 +2149,7 @@ function buildAreaJsonLd(route) {
   return {
     '@context': 'https://schema.org',
     '@type': 'ComputerStore',
-    name: `PZM Computers & Phones Store - ${route.name}, Dubai`,
+    name: `${BUSINESS_NAME} - ${route.name}, Dubai`,
     description: route.description,
     url: `${SITE_URL}/areas/${route.slug}/`,
     telephone: '+971528026677',
@@ -2190,11 +2192,11 @@ function buildArticleJsonLd(route) {
     dateModified: `${route.publishedAt}T00:00:00+04:00`,
     author: {
       '@type': 'Organization',
-      name: 'PZM Computers & Phones Store',
+      name: BUSINESS_NAME,
     },
     publisher: {
       '@type': 'Organization',
-      name: 'PZM Computers & Phones Store',
+      name: BUSINESS_NAME,
       logo: {
         '@type': 'ImageObject',
         url: DEFAULT_IMAGE,
@@ -2302,7 +2304,7 @@ function buildHtml(template, route) {
   const headBlock = [
     `<meta name="robots" content="${robots}" />`,
     `<link rel="canonical" href="${canonicalUrl}" />`,
-    `<meta property="og:site_name" content="PZM Computers & Phones Store" />`,
+    `<meta property="og:site_name" content="${escapeHtml(WEBSITE_BRAND)}" />`,
     `<meta property="og:title" content="${escapeHtml(route.title)}" />`,
     `<meta property="og:description" content="${escapeHtml(route.description)}" />`,
     `<meta property="og:type" content="${ogType}" />`,

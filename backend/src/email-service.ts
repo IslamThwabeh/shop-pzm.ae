@@ -493,16 +493,16 @@ export class EmailService {
             </ul>
             ${this.getCustomerContactNoteHtml()}
             
-            <p>Thank you for shopping with PZM Shop!</p>
+            <p>Thank you for shopping with PZM Computers & Phones Store!</p>
             
             <p>
               <strong>Best regards,</strong><br>
-              PZM Shop Team
+              PZM Computers & Phones Store Team
             </p>
           </div>
           
           <div class="footer">
-            <p>© ${new Date().getFullYear()} PZM Shop. All rights reserved.</p>
+            <p>© ${new Date().getFullYear()} PZM Computers & Phones Store. All rights reserved.</p>
             <p>This is an automated email from ${this.senderEmail}. Replies are not monitored.</p>
             <div class="unsubscribe">
               <p>For help, use WhatsApp or phone support instead of replying.</p>
@@ -685,7 +685,7 @@ export class EmailService {
           </div>
           
           <div class="footer">
-            <p>© ${new Date().getFullYear()} PZM Shop - Internal Notification</p>
+            <p>© ${new Date().getFullYear()} PZM Computers & Phones Store - Internal Notification</p>
           </div>
         </div>
       </body>
@@ -835,9 +835,9 @@ export class EmailService {
             ${this.getCustomerContactNoteHtml()}
             
             <p>
-              <strong>Thank you for shopping with PZM Shop!</strong><br>
+              <strong>Thank you for shopping with PZM Computers & Phones Store!</strong><br>
               Best regards,<br>
-              PZM Shop Team
+              PZM Computers & Phones Store Team
             </p>
           </div>
           
@@ -1178,7 +1178,7 @@ export class EmailService {
             <p>Check the WhatsApp Business inbox for an incoming message and follow up accordingly.</p>
           </div>
           <div class="footer">
-            <p>© ${new Date().getFullYear()} PZM Shop - Internal Lead Notification</p>
+            <p>© ${new Date().getFullYear()} PZM Computers & Phones Store - Internal Lead Notification</p>
           </div>
         </div>
       </body>
@@ -1308,7 +1308,7 @@ export class EmailService {
           </table>
         </div>
         <div style="padding:16px 24px;background:#f9fafb;text-align:center;font-size:12px;color:#999;">
-          <p style="margin:0;">© ${new Date().getFullYear()} PZM Shop – Automated Daily Report</p>
+          <p style="margin:0;">© ${new Date().getFullYear()} PZM Computers & Phones Store – Automated Daily Report</p>
         </div>
       </div>
     </body></html>`;
@@ -1368,7 +1368,7 @@ export class EmailService {
           </div>` : ''}
         </div>
         <div style="padding:16px 24px;background:#f9fafb;text-align:center;font-size:12px;color:#999;">
-          <p style="margin:0;">© ${new Date().getFullYear()} PZM Shop – Automated Monthly Report</p>
+          <p style="margin:0;">© ${new Date().getFullYear()} PZM Computers & Phones Store – Automated Monthly Report</p>
         </div>
       </div>
     </body></html>`;

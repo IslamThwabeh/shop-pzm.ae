@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async'
+import { siteIdentity } from '../content/siteData'
 import { buildCanonicalUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 interface SeoProps {
@@ -10,7 +11,7 @@ interface SeoProps {
   jsonLd?: Record<string, any> | Array<Record<string, any>>
 }
 
-const SITE_NAME = 'PZM Computers & Phones Store'
+const SITE_NAME = siteIdentity.publicBrandName
 const DEFAULT_IMAGE = toAbsoluteSiteUrl('/images/mini_logo.png')
 
 export default function Seo({

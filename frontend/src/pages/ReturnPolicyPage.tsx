@@ -71,7 +71,7 @@ export default function ReturnPolicyPage() {
             </a>
           </p>
           <p>
-            <strong>Visit us:</strong> PZM Store, Hessa Street, Al Barsha, Dubai (Inside Hessa Union Coop Hypermarket, Ground Floor)
+            <strong>Visit us:</strong> {siteIdentity.name}, Hessa Street, Al Barsha, Dubai (Inside Hessa Union Coop Hypermarket, Ground Floor)
           </p>
         </div>
         <p className="text-brandTextMedium">
