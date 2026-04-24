@@ -10,10 +10,10 @@
 /services/buy-used.html /services/secondhand/ 301
 /areas/index.html /areas/ 301
 /blog /blog/ 301
-/services /services/index.html 200
-/areas /areas/index.html 200
-/terms /terms/index.html 200
-/return-policy /return-policy/index.html 200
+/services /services/ 301
+/areas /areas/ 301
+/terms /terms/ 301
+/return-policy /return-policy/ 301
 /services/* /services/:splat/index.html 200
 /areas/* /areas/:splat/index.html 200
 /blog/* /blog/:splat/index.html 200
