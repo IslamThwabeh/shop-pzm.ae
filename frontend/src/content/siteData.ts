@@ -115,7 +115,6 @@ export const footerQuickLinks: NavigationLink[] = [
   { label: 'Repair', to: page('/services/repair') },
   { label: 'Shop', to: page('/services/brand-new') },
   { label: 'PC Build', to: page('/services/gaming-pc') },
-  { label: 'Blog', to: page('/blog') },
-  { label: 'Return Policy', to: page('/return-policy') },
+  { label: 'Blog', to: page('/blog') },    { label: 'Areas', to: page('/areas') },  { label: 'Return Policy', to: page('/return-policy') },
   { label: 'Terms', to: page('/terms') },
 ]
