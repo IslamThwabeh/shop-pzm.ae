@@ -58,7 +58,18 @@ export default function AreaPage() {
             latitude: geoCoordinates.latitude,
             longitude: geoCoordinates.longitude,
           },
-          areaServed: area.areaServed.map((name) => ({ '@type': 'Place', name })),
+          areaServed: [
+            ...area.areaServed.map((name) => ({ '@type': 'Place', name })),
+            {
+              '@type': 'GeoCircle',
+              geoMidpoint: {
+                '@type': 'GeoCoordinates',
+                latitude: geoCoordinates.latitude,
+                longitude: geoCoordinates.longitude,
+              },
+              geoRadius: '10000',
+            },
+          ],
           image: toAbsoluteSiteUrl('/images/mini_logo.png'),
           priceRange: 'AED 150 - AED 7,000',
         }}

@@ -59,7 +59,18 @@ export default function HomePage({ products }: HomePageProps) {
       addressCountry: 'AE',
     },
     geo: { '@type': 'GeoCoordinates', latitude: 25.0848627, longitude: 55.1992671 },
-    areaServed: homeAreaServed.map((name) => ({ '@type': 'Place', name })),
+    areaServed: [
+      ...homeAreaServed.map((name) => ({ '@type': 'Place', name })),
+      {
+        '@type': 'GeoCircle',
+        geoMidpoint: {
+          '@type': 'GeoCoordinates',
+          latitude: 25.0848627,
+          longitude: 55.1992671,
+        },
+        geoRadius: '10000',
+      },
+    ],
     hasMap: siteContact.mapsHref,
     image: toAbsoluteSiteUrl('/images/mini_logo.png'),
     priceRange: 'AED 150 - AED 7,000',

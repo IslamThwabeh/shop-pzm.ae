@@ -2139,7 +2139,23 @@ function buildStoreJsonLd() {
       addressLocality: 'Dubai',
       addressCountry: 'AE',
     },
-    areaServed: HOME_AREA_SERVED.map((name) => ({ '@type': 'Place', name })),
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: '25.0848627',
+      longitude: '55.1992671',
+    },
+    areaServed: [
+      ...HOME_AREA_SERVED.map((name) => ({ '@type': 'Place', name })),
+      {
+        '@type': 'GeoCircle',
+        geoMidpoint: {
+          '@type': 'GeoCoordinates',
+          latitude: '25.0848627',
+          longitude: '55.1992671',
+        },
+        geoRadius: '10000',
+      },
+    ],
     image: DEFAULT_IMAGE,
     priceRange: 'AED 150 - AED 7,000',
   }
@@ -2161,10 +2177,21 @@ function buildAreaJsonLd(route) {
     },
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: 25.0848627,
-      longitude: 55.1992671,
+      latitude: '25.0848627',
+      longitude: '55.1992671',
     },
-    areaServed: route.areaServed.map((name) => ({ '@type': 'Place', name })),
+    areaServed: [
+      ...route.areaServed.map((name) => ({ '@type': 'Place', name })),
+      {
+        '@type': 'GeoCircle',
+        geoMidpoint: {
+          '@type': 'GeoCoordinates',
+          latitude: '25.0848627',
+          longitude: '55.1992671',
+        },
+        geoRadius: '10000',
+      },
+    ],
     image: DEFAULT_IMAGE,
     priceRange: 'AED 150 - AED 7,000',
   }
