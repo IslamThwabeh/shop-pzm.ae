@@ -15,6 +15,7 @@ import { getDeviceFinderLabel, matchesDeviceFinderProduct, normalizeDeviceFinder
 import { selectFeaturedProducts } from '../utils/featuredProducts'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 import { groupProductsByModelFamily, resolveProductBrand } from '../utils/productPresentation'
+import { extractBrandFromName, sharedReturnPolicy, sharedShippingDetails } from '../utils/seoConfig'
 
 interface BrandNewPageProps {
   products: Product[]
@@ -145,31 +146,43 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
     description: 'Browse brand-new devices in Dubai from PZM, including phones, laptops, consoles, and more.',
     mainEntity: {
       '@type': 'ItemList',
-      itemListElement: liveBrandNewProducts.slice(0, 16).map((product, index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        item: {
-          '@type': 'Product',
-          name: `${product.model} ${product.storage}`.trim(),
-          url: buildSiteUrl(`/product/${product.id}`),
-          image: [toAbsoluteSiteUrl(product.image_url || product.images?.[0] || brandNewHero.imageUrl)],
-          offers: {
-            '@type': 'Offer',
-            priceCurrency: 'AED',
-            price: product.price,
-            itemCondition: 'https://schema.org/NewCondition',
-          },
-        },
-      })),
-    },
-  }
+        itemListElement: liveBrandNewProducts.slice(0, 16).map((product, index) => {
+          const productName = `${product.model} ${product.storage}`.trim()
+          return {
+            '@type': 'ListItem',
+            position: index + 1,
+            item: {
+              '@type': 'Product',
+              name: productName,
+              description: product.description || `Brand new ${productName} available in Dubai. Order for quick delivery.`,
+              brand: {
+                '@type': 'Brand',
+                name: resolveProductBrand(product) || extractBrandFromName(productName),
+              },
+              url: buildSiteUrl(`/product/${product.id}`),
+              image: [toAbsoluteSiteUrl(product.image_url || product.images?.[0] || brandNewHero.imageUrl)],
+              offers: {
+                '@type': 'Offer',
+                priceCurrency: 'AED',
+                price: product.price,
+                availability: (product.quantity ?? 0) > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                itemCondition: 'https://schema.org/NewCondition',
+                hasMerchantReturnPolicy: sharedReturnPolicy,
+                shippingDetails: sharedShippingDetails,
+              },
+            },
+          }
+        }),
+        
+      },
+    }
 
-  return (
-    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
-      <Seo
-        title="Brand New Devices in Dubai | PZM Dubai"
-        description="Browse brand-new devices in Dubai from PZM, including phones, laptops, consoles, and more."
-        canonicalPath="/services/brand-new"
+    return (
+      <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+        <Seo
+          title="Buy Brand New Devices in Dubai | PZM Computers & Phones"
+          description="Looking for brand-new devices? PZM offers phones, laptops, consoles, and more in Dubai. Top specs, guaranteed."
+          canonicalPath="/services/brand-new"
         imageUrl={heroImageUrl}
         jsonLd={jsonLd}
       />

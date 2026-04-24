@@ -646,12 +646,17 @@ function buildProductJsonLd(product) {
   const imageUrl = getProductImageUrl(product)
   const brand = getKnownProductBrand(product)
   const canonicalPath = normalizeCanonicalPath(buildProductPath(product))
+  const productName = buildProductLabel(product)
+  const brandMatch = productName.match(/^(Apple|Samsung|Sony|Dell|HP|Lenovo|Asus|Acer|Microsoft|Google|Meta|Razer|MSI|Oculus|PlayStation|Xbox|Nintendo)/i)
+  const fallbackBrand = brandMatch ? brandMatch[1] : productName.split(' ')[0] || 'Unknown Brand'
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: buildProductLabel(product),
+    name: productName,
     description: buildProductRichDescription(product),
     sku: product.id,
+    brand: { '@type': 'Brand', name: brand || fallbackBrand },
     url: toAbsoluteUrl(canonicalPath),
     image: imageUrl ? [imageUrl] : [],
     offers: {
@@ -659,35 +664,17 @@ function buildProductJsonLd(product) {
       url: toAbsoluteUrl(canonicalPath),
       priceCurrency: 'AED',
       price: Number(product.price || 0).toFixed(2),
-      availability: (product.quantity ?? 0) > 0
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-      itemCondition: product.condition === 'used'
-        ? 'https://schema.org/UsedCondition'
-        : 'https://schema.org/NewCondition',
-    },
-  }
-
-  if (brand) {
-    jsonLd.brand = {
-      '@type': 'Brand',
-      name: brand,
+      availability: (product.quantity ?? 0) > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      itemCondition: product.condition === 'used' ? 'https://schema.org/UsedCondition' : 'https://schema.org/NewCondition',
+      hasMerchantReturnPolicy: { '@type': 'MerchantReturnPolicy', applicableCountry: 'AE', returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow', merchantReturnDays: 7, returnMethod: 'https://schema.org/ReturnInStore', returnFees: 'https://schema.org/FreeReturn' },
+      shippingDetails: { '@type': 'OfferShippingDetails', shippingRate: { '@type': 'MonetaryAmount', value: '0', currency: 'AED' }, shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'AE' }, deliveryTime: { '@type': 'ShippingDeliveryTime', handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 1, unitCode: 'd' }, transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'd' } } }
     }
   }
 
-  if (product.color && !isPlaceholderProductColor(product.color)) {
-    jsonLd.color = product.color
-  }
-
-  if (product.gtin) {
-    jsonLd.gtin = product.gtin
-  }
-
-  if (product.mpn) {
-    jsonLd.mpn = product.mpn
-  }
-
-  return jsonLd
+  if (product.color && !isPlaceholderProductColor(product.color)) jsonLd.color = product.color;
+  if (product.gtin) jsonLd.gtin = product.gtin;
+  if (product.mpn) jsonLd.mpn = product.mpn;
+  return jsonLd;
 }
 
 function buildProductSnapshot(product) {

@@ -10,6 +10,7 @@ import { triggerCartAddFeedback } from '../utils/cartFeedback'
 import { toAbsoluteSiteUrl } from '../utils/siteConfig'
 import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
+import { extractBrandFromName, sharedReturnPolicy, sharedShippingDetails } from '../utils/seoConfig'
 
 interface ProductDetailsProps {
   products: Product[]
@@ -90,14 +91,10 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
     description: product.description || `${label} available at PZM Computers & Phones in Dubai.`,
     image: image ? [toAbsoluteSiteUrl(image)] : [],
     sku: product.id,
-    ...(brand
-      ? {
-          brand: {
-            '@type': 'Brand',
-            name: brand,
-          },
-        }
-      : {}),
+    brand: {
+      '@type': 'Brand',
+      name: brand || extractBrandFromName(label),
+    },
     ...(product.color ? { color: product.color } : {}),
     ...(product.gtin ? { gtin: product.gtin } : {}),
     ...(product.mpn ? { mpn: product.mpn } : {}),
@@ -112,6 +109,8 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
         product.condition === 'new'
           ? 'https://schema.org/NewCondition'
           : 'https://schema.org/UsedCondition',
+      hasMerchantReturnPolicy: sharedReturnPolicy,
+      shippingDetails: sharedShippingDetails,
     },
   }
 

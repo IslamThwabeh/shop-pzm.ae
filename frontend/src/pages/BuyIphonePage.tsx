@@ -6,6 +6,8 @@ import WhatsAppCTA from '../components/WhatsAppCTA'
 import { buyIphoneFamilies, getBuyIphoneFamilyGroups, getBuyIphoneProducts } from '../content/buyIphoneCatalog'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
+import { sharedReturnPolicy, sharedShippingDetails } from '../utils/seoConfig'
+
 interface BuyIphonePageProps {
   products: Product[]
   loading: boolean
@@ -16,43 +18,6 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
   const familyGroups = useMemo(() => getBuyIphoneFamilyGroups(products), [products])
   const availableFamilyCount = familyGroups.filter((group) => group.products.length > 0).length
   const lowestPrice = liveIphoneProducts.length > 0 ? Math.min(...liveIphoneProducts.map((product) => product.price)) : null
-
-  const sharedReturnPolicy = {
-    '@type': 'MerchantReturnPolicy',
-    applicableCountry: 'AE',
-    returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-    merchantReturnDays: 7,
-    returnMethod: 'https://schema.org/ReturnInStore',
-    returnFees: 'https://schema.org/FreeReturn',
-  }
-
-  const sharedShipping = {
-    '@type': 'OfferShippingDetails',
-    shippingRate: {
-      '@type': 'MonetaryAmount',
-      value: '0',
-      currency: 'AED',
-    },
-    shippingDestination: {
-      '@type': 'DefinedRegion',
-      addressCountry: 'AE',
-    },
-    deliveryTime: {
-      '@type': 'ShippingDeliveryTime',
-      handlingTime: {
-        '@type': 'QuantitativeValue',
-        minValue: 0,
-        maxValue: 1,
-        unitCode: 'DAY',
-      },
-      transitTime: {
-        '@type': 'QuantitativeValue',
-        minValue: 1,
-        maxValue: 3,
-        unitCode: 'DAY',
-      },
-    },
-  }
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -87,7 +52,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
               itemCondition: 'https://schema.org/NewCondition',
               url: buildSiteUrl(`/product/${product.id}`),
               hasMerchantReturnPolicy: sharedReturnPolicy,
-              shippingDetails: sharedShipping,
+              shippingDetails: sharedShippingDetails,
             },
           },
         }

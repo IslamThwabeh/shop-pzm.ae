@@ -14,6 +14,7 @@ import { resolveServiceSlug } from '../content/serviceCatalog'
 import { getDeviceFinderLabel, matchesDeviceFinderProduct, normalizeDeviceFinderKey } from '../utils/deviceFinder'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 import { resolveProductBrand } from '../utils/productPresentation'
+import { extractBrandFromName, sharedReturnPolicy, sharedShippingDetails } from '../utils/seoConfig'
 
 interface SecondhandPageProps {
   products: Product[]
@@ -143,31 +144,43 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
     description: 'Browse certified pre-owned devices in Dubai from PZM, including phones, laptops, tablets, and gaming hardware.',
     mainEntity: {
       '@type': 'ItemList',
-      itemListElement: liveSecondhandProducts.slice(0, 16).map((product, index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        item: {
-          '@type': 'Product',
-          name: `${product.model} ${product.storage}`.trim(),
-          url: buildSiteUrl(`/product/${product.id}`),
-          image: [toAbsoluteSiteUrl(product.image_url || product.images?.[0] || secondhandHero.imageUrl)],
-          offers: {
-            '@type': 'Offer',
-            priceCurrency: 'AED',
-            price: product.price,
-            itemCondition: 'https://schema.org/UsedCondition',
-          },
-        },
-      })),
-    },
-  }
+        itemListElement: liveSecondhandProducts.slice(0, 16).map((product, index) => {
+          const productName = `${product.model} ${product.storage}`.trim()
+          return {
+            '@type': 'ListItem',
+            position: index + 1,
+            item: {
+              '@type': 'Product',
+              name: productName,
+              description: product.description || `Certified pre-owned ${productName} available in Dubai at PZM.`,
+              brand: {
+                '@type': 'Brand',
+                name: resolveProductBrand(product) || extractBrandFromName(productName),
+              },
+              url: buildSiteUrl(`/product/${product.id}`),
+              image: [toAbsoluteSiteUrl(product.image_url || product.images?.[0] || secondhandHero.imageUrl)],
+              offers: {
+                '@type': 'Offer',
+                priceCurrency: 'AED',
+                price: product.price,
+                availability: (product.quantity ?? 0) > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                itemCondition: 'https://schema.org/UsedCondition',
+                hasMerchantReturnPolicy: sharedReturnPolicy,
+                shippingDetails: sharedShippingDetails,
+              },
+            },
+          }
+        }),
+        
+      },
+    }
 
-  return (
-    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
-      <Seo
-        title="Buy Used iPhones, Laptops & Gaming PCs | PZM Dubai"
-        description="Browse certified pre-owned devices in Dubai from PZM, including phones, laptops, tablets, and gaming hardware."
-        canonicalPath="/services/secondhand"
+    return (
+      <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+        <Seo
+          title="Buy Used Phones & Laptops in Dubai | Pre-owned by PZM"
+          description="Shop certified pre-owned devices at PZM. Phones, laptops, and tablets inspected for quality and sold with warranty."
+          canonicalPath="/services/secondhand"
         imageUrl={heroImageUrl}
         jsonLd={jsonLd}
       />
