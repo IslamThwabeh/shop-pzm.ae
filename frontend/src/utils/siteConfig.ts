@@ -1,5 +1,5 @@
 const DEFAULT_SITE_URL = 'https://pzm.ae'
-const INTERNAL_SITE_HOSTS = new Set(['pzm.ae', 'www.pzm.ae', 'shop.pzm.ae'])
+const INTERNAL_SITE_HOSTS = new Set(['pzm.ae', 'www.pzm.ae'])
 
 function trimTrailingSlash(value: string) {
   return value.replace(/\/+$/, '')

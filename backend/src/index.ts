@@ -21,7 +21,7 @@ interface Env {
 const app = new Hono<{ Bindings: Env }>();
 
 const R2_HOST = 'r2.pzm.ae';
-const SHOP_MEDIA_HOSTS = new Set(['pzm.ae', 'www.pzm.ae', 'shop.pzm.ae']);
+const SHOP_MEDIA_HOSTS = new Set(['pzm.ae', 'www.pzm.ae']);
 const SHOP_MEDIA_PATH_PREFIX = '/api/media/';
 const PUBLIC_SITE_URL = 'https://pzm.ae';
 const ROBOTS_TXT = 'User-agent: *\nDisallow: /\n';
@@ -36,12 +36,11 @@ const SERVICE_TIME_PERIODS = ['morning', 'afternoon', 'evening'];
 const PRODUCTION_SITE_ORIGINS = [
   'https://pzm.ae',
   'https://www.pzm.ae',
-  'https://shop.pzm.ae',
   'https://api.pzm.ae',
   'https://pzm-store-frontend.pages.dev',
 ];
 const LOCAL_DEV_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173'];
-const PRODUCTION_API_HOSTS = new Set(['pzm.ae', 'www.pzm.ae', 'shop.pzm.ae', 'api.pzm.ae']);
+const PRODUCTION_API_HOSTS = new Set(['pzm.ae', 'www.pzm.ae', 'api.pzm.ae']);
 const ADMIN_2FA_CODE_LENGTH = 6;
 const ADMIN_2FA_EXPIRY_SECONDS = 10 * 60;
 const ADMIN_2FA_MAX_ATTEMPTS = 5;

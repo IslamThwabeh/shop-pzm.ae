@@ -15,7 +15,7 @@ const localInventoryConfigSource = JSON.parse(
 )
 const SITE_URL = (process.env.VITE_SITE_URL || 'https://pzm.ae').replace(/\/+$/, '')
 const DEFAULT_IMAGE = `${SITE_URL}/images/mini_logo.png`
-const PRODUCT_FEED_URL = process.env.PZM_PRODUCT_FEED_URL || 'https://shop.pzm.ae/api/products'
+const PRODUCT_FEED_URL = process.env.PZM_PRODUCT_FEED_URL || 'https://pzm.ae/api/products'
 const LASTMOD = '2026-04-07'
 const MERCHANT_LOCAL_INVENTORY_FILE = 'merchant-local-inventory.txt'
 
