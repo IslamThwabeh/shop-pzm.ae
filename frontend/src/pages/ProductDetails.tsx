@@ -10,6 +10,8 @@ import { triggerCartAddFeedback } from '../utils/cartFeedback'
 import { toAbsoluteSiteUrl } from '../utils/siteConfig'
 import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
+import { brandNewHero } from '../content/brandNewCatalog'
+import { secondhandHero } from '../content/secondhandCatalog'
 import { extractBrandFromName, sharedReturnPolicy, sharedShippingDetails } from '../utils/seoConfig'
 
 interface ProductDetailsProps {
@@ -53,6 +55,13 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
   const inStock = (product.quantity ?? 0) > 0
   const isQualityProduct = inStock && (product.description || '').trim().length >= 90
   const browsePath = getProductBrowsePath(product)
+  const schemaImage = image || (
+    browsePath === '/services/buy-iphone'
+      ? '/images/Catigories/mini_buy_iphone.webp'
+      : browsePath === '/services/secondhand'
+        ? secondhandHero.imageUrl
+        : brandNewHero.imageUrl
+  )
   const label = buildProductDisplayLabel(product)
   const brand = getKnownProductBrand(product)
   const detailRows = getProductDetailRows(product).filter((row) => row.label !== 'Storage' && row.label !== 'Color')
@@ -89,7 +98,7 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
     '@type': 'Product',
     name: label,
     description: product.description || `${label} available at PZM Computers & Phones in Dubai.`,
-    image: image ? [toAbsoluteSiteUrl(image)] : [],
+    image: [toAbsoluteSiteUrl(schemaImage)],
     sku: product.id,
     brand: {
       '@type': 'Brand',
@@ -120,7 +129,7 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
         title={`${label} | PZM Computers & Phones`}
         description={product.description || `Buy ${label} in Dubai with Cash on Delivery from PZM.`}
         canonicalPath={`/product/${product.id}`}
-        imageUrl={image}
+        imageUrl={schemaImage}
         jsonLd={jsonLd}
         noindex={!isQualityProduct}
       />

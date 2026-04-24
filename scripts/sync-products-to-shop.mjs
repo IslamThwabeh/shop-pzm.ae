@@ -21,7 +21,7 @@ function printUsage() {
   console.log(`Usage: node scripts/sync-products-to-shop.mjs <manifest.json>
 
 Environment variables:
-  PZM_SITE_URL             Optional. Defaults to https://shop.pzm.ae
+  PZM_SITE_URL             Optional. Defaults to https://pzm.ae
   PZM_ADMIN_TOKEN          Optional. Reuses an existing admin token.
   PZM_ADMIN_USERNAME       Required if token is not provided.
   PZM_ADMIN_PASSWORD       Plain-text password. Script hashes it before login.
@@ -57,7 +57,7 @@ Manifest shape:
 }
 
 function normalizeSiteUrl(value) {
-  return (value || 'https://shop.pzm.ae').replace(/\/+$/, '');
+  return (value || 'https://pzm.ae').replace(/\/+$/, '');
 }
 
 function parseArgs(argv) {

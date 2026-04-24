@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const frontendRoot = path.resolve(__dirname, '..')
+const repoRoot = path.resolve(frontendRoot, '..')
 const distRoot = path.join(frontendRoot, 'dist')
 const templatePath = path.join(distRoot, 'index.html')
 const contentRoot = path.join(frontendRoot, 'src', 'content')
@@ -15,9 +16,30 @@ const localInventoryConfigSource = JSON.parse(
 )
 const SITE_URL = (process.env.VITE_SITE_URL || 'https://pzm.ae').replace(/\/+$/, '')
 const DEFAULT_IMAGE = `${SITE_URL}/images/mini_logo.png`
+const BRAND_NEW_FALLBACK_IMAGE = `${SITE_URL}/api/media/generated/services/brand-new/brand-new-service.webp`
+const SECONDHAND_FALLBACK_IMAGE = `${SITE_URL}/api/media/generated/services/secondhand/secondhand-service.webp`
+const BUY_IPHONE_FALLBACK_IMAGE = `${SITE_URL}/images/Catigories/mini_buy_iphone.webp`
 const PRODUCT_FEED_URL = process.env.PZM_PRODUCT_FEED_URL || 'https://pzm.ae/api/products'
 const LASTMOD = '2026-04-07'
 const MERCHANT_LOCAL_INVENTORY_FILE = 'merchant-local-inventory.txt'
+const SHARED_RETURN_POLICY = {
+  '@type': 'MerchantReturnPolicy',
+  applicableCountry: 'AE',
+  returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+  merchantReturnDays: 7,
+  returnMethod: 'https://schema.org/ReturnInStore',
+  returnFees: 'https://schema.org/FreeReturn',
+}
+const SHARED_SHIPPING_DETAILS = {
+  '@type': 'OfferShippingDetails',
+  shippingRate: { '@type': 'MonetaryAmount', value: '0', currency: 'AED' },
+  shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'AE' },
+  deliveryTime: {
+    '@type': 'ShippingDeliveryTime',
+    handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 1, unitCode: 'DAY' },
+    transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
+  },
+}
 
 const homeSnapshotPrimaryRoutes = [
   {
@@ -557,8 +579,20 @@ function hasProductIdentifiers(product) {
   return Boolean(getOptionalProductText(product.gtin) || (getOptionalProductText(product.mpn) && getKnownProductBrand(product)))
 }
 
+function getProductFallbackImageUrl(product) {
+  if (product.condition === 'used') {
+    return SECONDHAND_FALLBACK_IMAGE
+  }
+
+  if (/iphone/i.test(String(product.model || ''))) {
+    return BUY_IPHONE_FALLBACK_IMAGE
+  }
+
+  return BRAND_NEW_FALLBACK_IMAGE
+}
+
 function getProductImageUrl(product) {
-  return toAbsoluteUrl(product.image_url || product.images?.[0] || DEFAULT_IMAGE)
+  return toAbsoluteUrl(product.image_url || product.images?.[0] || getProductFallbackImageUrl(product))
 }
 
 function buildProductWhatsAppHref(product, kind) {
@@ -666,8 +700,8 @@ function buildProductJsonLd(product) {
       price: Number(product.price || 0).toFixed(2),
       availability: (product.quantity ?? 0) > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       itemCondition: product.condition === 'used' ? 'https://schema.org/UsedCondition' : 'https://schema.org/NewCondition',
-      hasMerchantReturnPolicy: { '@type': 'MerchantReturnPolicy', applicableCountry: 'AE', returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow', merchantReturnDays: 7, returnMethod: 'https://schema.org/ReturnInStore', returnFees: 'https://schema.org/FreeReturn' },
-      shippingDetails: { '@type': 'OfferShippingDetails', shippingRate: { '@type': 'MonetaryAmount', value: '0', currency: 'AED' }, shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'AE' }, deliveryTime: { '@type': 'ShippingDeliveryTime', handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 1, unitCode: 'd' }, transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'd' } } }
+      hasMerchantReturnPolicy: SHARED_RETURN_POLICY,
+      shippingDetails: SHARED_SHIPPING_DETAILS,
     }
   }
 
@@ -766,11 +800,19 @@ function buildProductSnapshot(product) {
 /** Minimum description length for a product to qualify for sitemap inclusion. */
 const SITEMAP_MIN_DESCRIPTION_LENGTH = 90
 
+function getProductDescriptionLength(product) {
+  return String(product.description || '').trim().length
+}
+
 /** Returns true when a product meets the quality bar for sitemap inclusion. */
 function isQualityProduct(product) {
-  const descLength = (product.description || '').trim().length
+  const descLength = getProductDescriptionLength(product)
   const inStock = (product.quantity ?? 0) > 0
   return inStock && descLength >= SITEMAP_MIN_DESCRIPTION_LENGTH
+}
+
+function countQualityProducts(products) {
+  return products.filter(isQualityProduct).length
 }
 
 function buildProductRoutes(products) {
@@ -2062,6 +2104,14 @@ function extractFeaturedServices(source) {
 }
 
 async function fetchLiveProducts() {
+  let snapshotFallback = null
+
+  try {
+    snapshotFallback = await loadProductsFromSnapshotTsv()
+  } catch (error) {
+    console.warn(`Could not load local TSV fallback for prerender snapshots: ${error instanceof Error ? error.message : error}`)
+  }
+
   try {
     const response = await fetch(PRODUCT_FEED_URL)
     if (!response.ok) {
@@ -2069,10 +2119,187 @@ async function fetchLiveProducts() {
     }
 
     const payload = await response.json()
-    return Array.isArray(payload.data) ? payload.data.map((product) => sanitizeProductForDisplay(product)) : []
+    const liveProducts = Array.isArray(payload.data)
+      ? payload.data.map((product) => sanitizeProductForDisplay(product))
+      : []
+
+    if (liveProducts.length > 0) {
+      if (!snapshotFallback) {
+        return liveProducts
+      }
+
+      const enrichedLiveProducts = enrichProductsWithSnapshotFallback(liveProducts, snapshotFallback.products)
+      const liveQualityCount = countQualityProducts(liveProducts)
+      const enrichedQualityCount = countQualityProducts(enrichedLiveProducts)
+
+      if (enrichedQualityCount > liveQualityCount) {
+        console.warn(
+          `[prerender] Enriched live product feed with ${snapshotFallback.fileName}. Sitemap-quality products improved from ${liveQualityCount} to ${enrichedQualityCount}.`
+        )
+      }
+
+      return enrichedLiveProducts
+    }
+
+    if (snapshotFallback) {
+      console.warn(
+        `[prerender] Live product feed returned 0 products. Falling back to ${snapshotFallback.fileName} with ${snapshotFallback.products.length} products.`
+      )
+      return snapshotFallback.products
+    }
+
+    throw new Error('Live product feed returned 0 products and no local TSV fallback was found')
   } catch (error) {
+    if (snapshotFallback) {
+      console.warn(
+        `[prerender] Could not fetch live product feed (${error instanceof Error ? error.message : error}). Falling back to ${snapshotFallback.fileName} with ${snapshotFallback.products.length} products.`
+      )
+      return snapshotFallback.products
+    }
+
     console.warn(`Could not fetch live product feed for prerender snapshots: ${error instanceof Error ? error.message : error}`)
     return []
+  }
+}
+
+function chooseLongerProductText(primaryValue, fallbackValue) {
+  const primary = cleanProductText(String(primaryValue || '').trim())
+  const fallback = cleanProductText(String(fallbackValue || '').trim())
+
+  if (!primary) {
+    return fallback || undefined
+  }
+
+  if (!fallback) {
+    return primary
+  }
+
+  return primary.length >= fallback.length ? primary : fallback
+}
+
+function enrichProductsWithSnapshotFallback(liveProducts, snapshotProducts) {
+  const snapshotById = new Map(
+    snapshotProducts.map((product) => [String(product.id || '').trim(), product])
+  )
+
+  return liveProducts.map((liveProduct) => {
+    const snapshotProduct = snapshotById.get(String(liveProduct.id || '').trim())
+
+    if (!snapshotProduct) {
+      return liveProduct
+    }
+
+    const liveImages = Array.isArray(liveProduct.images) ? liveProduct.images.filter(Boolean) : []
+    const snapshotImages = Array.isArray(snapshotProduct.images) ? snapshotProduct.images.filter(Boolean) : []
+
+    return sanitizeProductForDisplay({
+      ...snapshotProduct,
+      ...liveProduct,
+      description: chooseLongerProductText(liveProduct.description, snapshotProduct.description),
+      image_url: getOptionalProductText(liveProduct.image_url) || getOptionalProductText(snapshotProduct.image_url),
+      images: liveImages.length > 0 ? liveImages : snapshotImages,
+      brand: getOptionalProductText(liveProduct.brand) || getOptionalProductText(snapshotProduct.brand),
+      product_type: getOptionalProductText(liveProduct.product_type) || getOptionalProductText(snapshotProduct.product_type),
+      google_product_category: getOptionalProductText(liveProduct.google_product_category) || getOptionalProductText(snapshotProduct.google_product_category),
+      gtin: getOptionalProductText(liveProduct.gtin) || getOptionalProductText(snapshotProduct.gtin),
+      mpn: getOptionalProductText(liveProduct.mpn) || getOptionalProductText(snapshotProduct.mpn),
+      item_group_id: getOptionalProductText(liveProduct.item_group_id) || getOptionalProductText(snapshotProduct.item_group_id),
+      warranty: getOptionalProductText(liveProduct.warranty) || getOptionalProductText(snapshotProduct.warranty),
+      accessories_included: getOptionalProductText(liveProduct.accessories_included) || getOptionalProductText(snapshotProduct.accessories_included),
+      cosmetic_grade: getOptionalProductText(liveProduct.cosmetic_grade) || getOptionalProductText(snapshotProduct.cosmetic_grade),
+      repair_history: getOptionalProductText(liveProduct.repair_history) || getOptionalProductText(snapshotProduct.repair_history),
+      battery_health: liveProduct.battery_health ?? snapshotProduct.battery_health,
+      release_year: liveProduct.release_year ?? snapshotProduct.release_year,
+      updated_at: liveProduct.updated_at || liveProduct.updatedAt || snapshotProduct.updated_at || snapshotProduct.updatedAt,
+      created_at: liveProduct.created_at || liveProduct.createdAt || snapshotProduct.created_at || snapshotProduct.createdAt,
+    })
+  })
+}
+
+function parseSnapshotTsvCell(value) {
+  const normalized = String(value || '').trim()
+  if (normalized.startsWith('"') && normalized.endsWith('"')) {
+    return normalized.slice(1, -1).replace(/""/g, '"').trim()
+  }
+
+  return normalized
+}
+
+function parseSnapshotPrice(value) {
+  const numericValue = Number.parseFloat(String(value || '').replace(/[^\d.]+/g, ''))
+  return Number.isFinite(numericValue) ? numericValue : 0
+}
+
+async function loadProductsFromSnapshotTsv() {
+  const entries = await fs.readdir(repoRoot, { withFileTypes: true })
+  const snapshotEntry = entries
+    .filter((entry) => entry.isFile() && /^products_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.tsv$/i.test(entry.name))
+    .sort((left, right) => left.name.localeCompare(right.name))
+    .at(-1)
+
+  if (!snapshotEntry) {
+    return null
+  }
+
+  const snapshotPath = path.join(repoRoot, snapshotEntry.name)
+  const snapshotSource = await fs.readFile(snapshotPath, 'utf8')
+  const rows = snapshotSource
+    .split(/\r?\n/)
+    .map((line) => line.trimEnd())
+    .filter((line) => line.length > 0)
+
+  if (rows.length < 2) {
+    return null
+  }
+
+  const headers = rows[0].split('\t').map((header) => parseSnapshotTsvCell(header))
+  const stats = await fs.stat(snapshotPath)
+  const snapshotTimestamp = stats.mtime.toISOString()
+  const products = rows.slice(1)
+    .map((line) => {
+      const columns = line.split('\t').map((value) => parseSnapshotTsvCell(value))
+      const record = Object.fromEntries(headers.map((header, index) => [header, columns[index] || '']))
+      const id = String(record.id || '').trim()
+
+      if (!id.startsWith('prod-')) {
+        return null
+      }
+
+      const imageUrl = String(record['image link'] || '').trim()
+      const additionalImages = String(record['additional image link'] || '')
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean)
+
+      return sanitizeProductForDisplay({
+        id,
+        model: String(record.title || '').trim(),
+        storage: '',
+        color: String(record.color || '').trim(),
+        description: String(record.description || '').trim() || undefined,
+        condition: String(record.condition || '').trim().toLowerCase() === 'used' ? 'used' : 'new',
+        price: parseSnapshotPrice(record.price),
+        quantity: String(record.availability || '').trim().toLowerCase() === 'in stock' ? 1 : 0,
+        image_url: imageUrl || undefined,
+        images: additionalImages.length > 0 ? additionalImages : (imageUrl ? [imageUrl] : []),
+        brand: String(record.brand || '').trim() || undefined,
+        google_product_category: String(record['google product category'] || '').trim() || undefined,
+        item_group_id: String(record['item group id'] || '').trim() || undefined,
+        mpn: String(record.mpn || '').trim() || undefined,
+        product_type: String(record['product type'] || '').trim() || undefined,
+        updated_at: snapshotTimestamp,
+        created_at: snapshotTimestamp,
+      })
+    })
+    .filter(Boolean)
+
+  if (products.length === 0) {
+    return null
+  }
+
+  return {
+    fileName: snapshotEntry.name,
+    products,
   }
 }
 

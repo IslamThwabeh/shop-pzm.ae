@@ -30,6 +30,22 @@ npm ci
 npx wrangler deploy --env staging
 ```
 
+## Production
+- Production worker: `shop-pzm-ae-api-production` (routes: `pzm.ae/api/*`, `www.pzm.ae/api/*`)
+
+To deploy to production:
+
+```bash
+cd backend
+npm ci
+npm run deploy
+```
+
+Notes:
+
+- `npm run deploy` is intentionally pinned to `--env production` so the Worker keeps its D1, KV, R2, and route bindings.
+- Do not run a bare `wrangler deploy` for production from this repo. The top-level worker name matches production, so an env-less deploy can replace the live script without the production bindings and break `https://pzm.ae/api/*`.
+
 ## Useful commands
 - Run DB migrations on the production DB (`pzm-db`):
 

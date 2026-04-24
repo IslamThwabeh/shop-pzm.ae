@@ -69,6 +69,10 @@ export class Database {
     const result = await this.db.prepare('PRAGMA table_info(products)').all();
     const columns = new Set(((result.results as Array<{ name: string }>) || []).map((column) => column.name));
 
+    if (columns.size === 0) {
+      throw new Error('products table is unavailable for the current D1 binding')
+    }
+
     for (const column of PRODUCT_METADATA_COLUMNS) {
       if (!columns.has(column.name)) {
         await this.db.prepare(`ALTER TABLE products ADD COLUMN ${column.name} ${column.type}`).run();
@@ -135,7 +139,7 @@ export class Database {
       return products.filter(p => p.condition === 'used' ? (p.quantity ?? 0) > 0 : true);
     } catch (error) {
       console.error('Error fetching products:', error);
-      return [];
+      throw error;
     }
   }
 
@@ -149,7 +153,7 @@ export class Database {
       return (result as Product) || null;
     } catch (error) {
       console.error('Error fetching product:', error);
-      return null;
+      throw error;
     }
   }
 
@@ -261,7 +265,7 @@ export class Database {
       return updated;
     } catch (error) {
       console.error('Error updating product:', error);
-      return null;
+      throw error;
     }
   }
 

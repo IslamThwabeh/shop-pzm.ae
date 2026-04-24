@@ -53,6 +53,26 @@ Notes:
 - Description enrichment is limited to verified catalog facts already present in the live API, such as storage, real color, SIM variant wording, battery health, repair history, warranty, and release year.
 - Merchant feed files are static frontend build artifacts, so a description sync still requires a frontend rebuild and deploy before Google can fetch the updated copy.
 
+## Live Description Backfill From Snapshot
+
+Generate a description-only update manifest by comparing the live catalog against the latest repo-root `products_*.tsv` snapshot:
+
+```powershell
+$env:PZM_SITE_URL = "https://pzm.ae"
+npm run catalog:description-backfill -- --condition new --brand Samsung --limit 10 --label batch-01
+npm run catalog:sync -- .\scripts\product-sync.description-backfill.batch-01-YYYY-MM-DD.json
+```
+
+Notes:
+
+- The generator only emits live `prod-*` rows whose current live description is below the quality bar and whose snapshot description is longer and better.
+- Use `--condition`, `--brand`, `--model-query`, `--ids`, `--offset`, and `--limit` to cut small 10-20 product batches.
+- The generated markdown report includes emitted rows, skipped reasons, and remaining eligible rows after the current batch window.
+- Products added after the latest `products_*.tsv` snapshot will appear under `Missing snapshot matches`. Refresh the snapshot or prepare a manual manifest instead of forcing a guessed backfill.
+- If the live row contains impossible catalog facts, such as warranty text or accessory notes stored in `storage` or `color`, fix those fields with a hand-edited manifest before trusting any generated description.
+- Run the sync first, then refresh the live storefront and inspect the updated descriptions before deciding whether to deploy the frontend.
+- Ask for explicit approval before every frontend deploy. The deploy is only needed after approval so sitemap, prerendered product HTML, and Merchant feed artifacts are regenerated from the corrected live data.
+
 ## Merchant Local Inventory Feed
 
 The frontend prerender can now generate a separate local inventory feed for Merchant Center at `frontend/dist/merchant-local-inventory.txt`.
@@ -100,7 +120,7 @@ python .\scripts\optimize_gemini_images.py "D:\Personal\PZM Website\GiminiImages
 5. If the storefront uses a stable shared fallback image, upload that optimized file to the expected generated media key.
 6. Create a focused manifest in `scripts/` that maps the affected live product IDs to the new absolute Windows `.webp` paths.
 7. Run the product sync with `replaceImages: true` so the optimized files are assigned to the correct products.
-8. Verify the result in both `https://shop.pzm.ae/api/products` and the affected storefront page before considering the rollout complete.
+8. Verify the result in `https://pzm.ae/api/products` and on the affected storefront page before considering the rollout complete.
 
 Rules:
 

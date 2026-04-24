@@ -48,7 +48,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
               '@type': 'Offer',
               priceCurrency: 'AED',
               price: product.price,
-              availability: 'https://schema.org/InStock',
+              availability: (product.quantity ?? 0) > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
               itemCondition: 'https://schema.org/NewCondition',
               url: buildSiteUrl(`/product/${product.id}`),
               hasMerchantReturnPolicy: sharedReturnPolicy,
