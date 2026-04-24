@@ -17,5 +17,6 @@
 /services/* /services/:splat/index.html 200
 /areas/* /areas/:splat/index.html 200
 /blog/* /blog/:splat/index.html 200
+/product/* /product/:splat/index.html 200
 /api/* https://pzm-api.islam-thwabeh.workers.dev/:splat 200
 /* /index.html 200
