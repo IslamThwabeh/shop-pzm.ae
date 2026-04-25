@@ -20,7 +20,7 @@ const BRAND_NEW_FALLBACK_IMAGE = `${SITE_URL}/api/media/generated/services/brand
 const SECONDHAND_FALLBACK_IMAGE = `${SITE_URL}/api/media/generated/services/secondhand/secondhand-service.webp`
 const BUY_IPHONE_FALLBACK_IMAGE = `${SITE_URL}/images/Catigories/mini_buy_iphone.webp`
 const PRODUCT_FEED_URL = process.env.PZM_PRODUCT_FEED_URL || 'https://pzm.ae/api/products'
-const LASTMOD = '2026-04-07'
+const LASTMOD = new Date().toISOString().slice(0, 10)
 const MERCHANT_LOCAL_INVENTORY_FILE = 'merchant-local-inventory.txt'
 const SHARED_RETURN_POLICY = {
   '@type': 'MerchantReturnPolicy',
