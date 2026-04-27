@@ -41,7 +41,7 @@ WHERE id IN (
 
 -- 2.4: Apple accessories missing google_product_category
 UPDATE products SET
-  google_product_category = 'Electronics > Communications > Wearable Technology'
+  google_product_category = 'Electronics > Wearable Technology > Smartwatches'
 WHERE id = 'prod-mo4quzkt-96k1wf'; -- Apple Watch SE 40mm GPS
 
 UPDATE products SET

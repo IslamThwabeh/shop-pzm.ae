@@ -1,0 +1,20 @@
+{
+  "products": [
+    {
+      "id": "prod-mo4quzkt-96k1wf",
+      "google_product_category": "Electronics > Wearable Technology > Smartwatches",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\Apple Watch SE 40mm Silver Starlight.webp"
+      ]
+    },
+    {
+      "id": "prod-mo4qv87d-9dxvi0",
+      "google_product_category": "Electronics > Computers > Laptops",
+      "replaceImages": true,
+      "imagePaths": [
+        "D:\\Personal\\PZM Website\\GiminiImages\\Missing-Images\\Lenovo i7 13th, i3 8130u, i7 8550u, Core i5 11th, i5 12th.webp"
+      ]
+    }
+  ]
+}

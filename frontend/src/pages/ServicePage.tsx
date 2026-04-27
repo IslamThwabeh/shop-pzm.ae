@@ -1,5 +1,4 @@
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { MessageCircle } from 'lucide-react'
 import Seo from '../components/Seo'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
 import RetailImage from '../components/RetailImage'
@@ -128,24 +127,17 @@ export default function ServicePage() {
       )}
 
       {hasAppointment && (
-        <section id="appointment" className="rounded-3xl border border-brandBorder bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] p-6 md:p-8">
-          <div className="mb-6 text-left">
+        <section id="appointment" className="rounded-3xl border border-brandBorder bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] p-5 md:p-6">
+          <div className="mb-4 text-left">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Appointment</p>
             <h2 className="mt-2 text-2xl font-bold text-slate-900">Book a Service Appointment</h2>
-            <p className="mt-3 text-brandTextMedium">Choose a preferred time and send your request to the store team.</p>
-            <a
-              href={buildWhatsAppHref(`Hi, I'd like to book a ${service.title} appointment. (via pzm.ae/services/${service.slug})`)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-[#25D366] hover:underline"
-            >
-              <MessageCircle size={15} />
-              Or message us directly on WhatsApp
-            </a>
+            <p className="mt-2 text-sm text-brandTextMedium md:text-[0.95rem]">Choose a preferred time and send your request to the store team.</p>
           </div>
           <HomeAppointmentPanel
             sourcePage={`/services/${service.slug}#appointment`}
             defaultServiceType={appointmentServiceTypes[service.slug]}
+            density="compact"
+            quickContactHref={buildWhatsAppHref(`Hi, I'd like to book a ${service.title} appointment. (via pzm.ae/services/${service.slug})`)}
           />
         </section>
       )}

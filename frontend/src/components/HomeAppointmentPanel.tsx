@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CalendarDays, Clock3, MapPinned, Store, Truck } from 'lucide-react'
+import { CalendarDays, Clock3, MapPinned, MessageCircle, Store, Truck } from 'lucide-react'
 import { apiService } from '../services/api'
 
 type BookingMode = 'store' | 'pickup'
@@ -68,12 +68,19 @@ function formatDateInput(date: Date) {
 type HomeAppointmentPanelProps = {
   sourcePage?: string
   defaultServiceType?: string
+  density?: 'default' | 'compact'
+  quickContactHref?: string
+  quickContactLabel?: string
 }
 
 export default function HomeAppointmentPanel({
   sourcePage = '/#appointment',
   defaultServiceType,
+  density = 'default',
+  quickContactHref,
+  quickContactLabel = 'Message us on WhatsApp',
 }: HomeAppointmentPanelProps) {
+  const isCompact = density === 'compact'
   const today = useMemo(() => formatDateInput(getDubaiNow()), [])
   const pickupMinDate = useMemo(() => {
     const nextDay = getDubaiNow()
@@ -209,21 +216,55 @@ export default function HomeAppointmentPanel({
     )
   }
 
+  const formPaddingClass = isCompact ? 'p-4 md:p-5' : 'p-5 md:p-6'
+  const headerMarginClass = isCompact ? 'mb-4' : 'mb-5'
+  const sectionSpacingClass = isCompact ? 'mt-4' : 'mt-5'
+  const subsectionSpacingClass = isCompact ? 'mt-3' : 'mt-4'
+  const labelSpacingClass = isCompact ? 'mb-1.5' : 'mb-2'
+  const inputPaddingClass = isCompact ? 'px-3 py-2' : 'px-3 py-2.5'
+  const pickupInputPaddingClass = isCompact ? 'py-2 pl-10 pr-3' : 'py-2.5 pl-10 pr-3'
+  const modeCardPaddingClass = isCompact ? 'p-3.5' : 'p-4'
+  const modeDescriptionSpacingClass = isCompact ? 'mt-0.5' : 'mt-1'
+  const timePeriodButtonPaddingClass = isCompact ? 'px-3 py-1.5' : 'px-3 py-2'
+  const slotButtonPaddingClass = isCompact ? 'px-2.5 py-2' : 'px-2.5 py-2.5'
+  const slotGridClass = isCompact
+    ? 'grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6'
+    : 'grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4'
+  const submitMarginClass = isCompact ? 'mt-4' : 'mt-5'
+
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl border border-white/70 bg-white/90 p-5 shadow-2xl backdrop-blur md:p-6">
-      <div className="mb-5 flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Book now</p>
-          <h3 className="mt-2 text-xl font-bold text-slate-900">Book drop-off or pickup</h3>
+    <form onSubmit={handleSubmit} className={`rounded-2xl border border-white/70 bg-white/90 shadow-2xl backdrop-blur ${formPaddingClass}`}>
+      <div className={`${headerMarginClass} flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between`}>
+        <div className="flex items-start gap-3">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brandLight text-primary ring-1 ring-brandBorder">
+            <CalendarDays size={18} />
+          </span>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Book now</p>
+            <h3 className="mt-1.5 text-xl font-bold text-slate-900">Book drop-off or pickup</h3>
+          </div>
         </div>
-        <CalendarDays className="text-primary" size={22} />
+
+        {quickContactHref && (
+          <a
+            href={quickContactHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex w-full items-center justify-center gap-2.5 self-start rounded-full border border-brandBorder bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm transition-colors hover:border-primary hover:text-primary sm:w-auto"
+          >
+            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brandLight ring-1 ring-brandBorder">
+              <MessageCircle size={16} className="text-[#25D366]" />
+            </span>
+            {quickContactLabel}
+          </a>
+        )}
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
         <button
           type="button"
           onClick={() => setMode('store')}
-          className={`rounded-2xl border p-4 text-left transition-colors ${
+          className={`rounded-2xl border ${modeCardPaddingClass} text-left transition-colors ${
             mode === 'store'
               ? 'border-sky-200 bg-gradient-to-br from-sky-50 to-emerald-50 shadow-sm'
               : 'border-brandBorder bg-white hover:border-primary'
@@ -235,7 +276,7 @@ export default function HomeAppointmentPanel({
             </span>
             <div>
               <p className="font-semibold text-slate-900">I will bring my device</p>
-              <p className="mt-1 text-sm text-brandTextMedium">Same-day drop-off at the Al Barsha store.</p>
+              <p className={`${modeDescriptionSpacingClass} text-sm text-brandTextMedium`}>Same-day drop-off at the Al Barsha store.</p>
             </div>
           </div>
         </button>
@@ -243,7 +284,7 @@ export default function HomeAppointmentPanel({
         <button
           type="button"
           onClick={() => setMode('pickup')}
-          className={`rounded-2xl border p-4 text-left transition-colors ${
+          className={`rounded-2xl border ${modeCardPaddingClass} text-left transition-colors ${
             mode === 'pickup'
               ? 'border-emerald-200 bg-gradient-to-br from-emerald-50 to-sky-50 shadow-sm'
               : 'border-brandBorder bg-white hover:border-primary'
@@ -255,25 +296,25 @@ export default function HomeAppointmentPanel({
             </span>
             <div>
               <p className="font-semibold text-slate-900">Pick up and return</p>
-              <p className="mt-1 text-sm text-brandTextMedium">We collect it from you and return it after service.</p>
+              <p className={`${modeDescriptionSpacingClass} text-sm text-brandTextMedium`}>We collect it from you and return it after service.</p>
             </div>
           </div>
         </button>
       </div>
 
       {error && (
-        <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className={`${subsectionSpacingClass} rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700`}>
           {error}
         </div>
       )}
 
-      <div className="mt-5 grid gap-3 md:grid-cols-2">
+      <div className={`${sectionSpacingClass} grid gap-3 md:grid-cols-2`}>
         <label className="block">
-          <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">Required service</span>
+          <span className={`${labelSpacingClass} block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium`}>Required service</span>
           <select
             value={serviceType}
             onChange={(event) => setServiceType(event.target.value)}
-            className="w-full rounded-xl border border-brandBorder px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
+            className={`w-full rounded-xl border border-brandBorder text-sm text-slate-900 outline-none transition-colors focus:border-primary ${inputPaddingClass}`}
           >
             {SERVICE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>{option.label}</option>
@@ -282,56 +323,57 @@ export default function HomeAppointmentPanel({
         </label>
 
         <label className="block">
-          <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">Your name</span>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Book now</p>
+          <span className={`${labelSpacingClass} block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium`}>Your name</span>
           <input
             value={customerName}
             onChange={(event) => setCustomerName(event.target.value)}
             placeholder="Enter your name"
-            className="w-full rounded-xl border border-brandBorder px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
+            className={`w-full rounded-xl border border-brandBorder text-sm text-slate-900 outline-none transition-colors focus:border-primary ${inputPaddingClass}`}
           />
         </label>
       </div>
 
-      <div className="mt-3 grid gap-3 md:grid-cols-2">
+      <div className={`${subsectionSpacingClass} grid gap-3 md:grid-cols-2`}>
         <label className="block">
-          <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">Phone</span>
+          <span className={`${labelSpacingClass} block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium`}>Phone</span>
           <input
             value={customerPhone}
             onChange={(event) => setCustomerPhone(event.target.value)}
             placeholder="+971 5X XXX XXXX"
-            className="w-full rounded-xl border border-brandBorder px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
+            className={`w-full rounded-xl border border-brandBorder text-sm text-slate-900 outline-none transition-colors focus:border-primary ${inputPaddingClass}`}
           />
         </label>
 
         <label className="block">
-          <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">Preferred date</span>
+          <span className={`${labelSpacingClass} block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium`}>Preferred date</span>
           <input
             type="date"
             min={mode === 'pickup' ? pickupMinDate : today}
             value={preferredDate}
             onChange={(event) => setPreferredDate(event.target.value)}
-            className="ios-date-input w-full rounded-xl border border-brandBorder px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
+            className={`ios-date-input w-full rounded-xl border border-brandBorder text-sm text-slate-900 outline-none transition-colors focus:border-primary ${inputPaddingClass}`}
           />
         </label>
       </div>
 
       {mode === 'pickup' && (
-        <label className="mt-4 block">
-          <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">Pickup area or address</span>
+        <label className={`${subsectionSpacingClass} block`}>
+          <span className={`${labelSpacingClass} block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium`}>Pickup area or address</span>
           <div className="relative">
             <MapPinned size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-brandTextMedium" />
             <input
               value={pickupAddress}
               onChange={(event) => setPickupAddress(event.target.value)}
               placeholder="Dubai, Al Barsha"
-              className="w-full rounded-xl border border-brandBorder py-2.5 pl-10 pr-3 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
+              className={`w-full rounded-xl border border-brandBorder text-sm text-slate-900 outline-none transition-colors focus:border-primary ${pickupInputPaddingClass}`}
             />
           </div>
         </label>
       )}
 
-      <div className="mt-5">
-        <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">
+      <div className={sectionSpacingClass}>
+        <div className="mb-2.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">
           <Clock3 size={14} />
           Time period
         </div>
@@ -341,7 +383,7 @@ export default function HomeAppointmentPanel({
               key={period}
               type="button"
               onClick={() => setTimePeriod(period)}
-              className={`rounded-full px-3 py-2 text-sm font-semibold capitalize transition-colors ${
+              className={`rounded-full text-sm font-semibold capitalize transition-colors ${timePeriodButtonPaddingClass} ${
                 timePeriod === period
                   ? 'bg-primary text-white'
                   : 'border border-brandBorder bg-white text-brandTextDark hover:border-primary hover:text-primary'
@@ -353,16 +395,16 @@ export default function HomeAppointmentPanel({
         </div>
       </div>
 
-      <div className="mt-4">
-        <div className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">Select a time slot</div>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
+      <div className={subsectionSpacingClass}>
+        <div className="mb-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">Select a time slot</div>
+        <div className={slotGridClass}>
           {availableSlots.length > 0 ? (
             availableSlots.map((slot) => (
               <button
                 key={slot.label}
                 type="button"
                 onClick={() => setSelectedSlot(slot.label)}
-                className={`rounded-xl border px-2.5 py-2.5 text-sm font-medium transition-colors ${
+                className={`rounded-xl border text-sm font-medium transition-colors ${slotButtonPaddingClass} ${
                   selectedSlot === slot.label
                     ? 'border-primary bg-brandLight text-primary'
                     : 'border-brandBorder bg-white text-brandTextDark hover:border-primary hover:text-primary'
@@ -379,21 +421,21 @@ export default function HomeAppointmentPanel({
         </div>
       </div>
 
-      <label className="mt-4 block">
-        <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium">Device or service summary</span>
+      <label className={`${subsectionSpacingClass} block`}>
+        <span className={`${labelSpacingClass} block text-xs font-semibold uppercase tracking-[0.16em] text-brandTextMedium`}>Device or service summary</span>
         <textarea
-          rows={3}
+          rows={isCompact ? 2 : 3}
           value={details}
           onChange={(event) => setDetails(event.target.value)}
           placeholder="Tell us the device model, issue, or what you want collected or repaired."
-          className="w-full rounded-xl border border-brandBorder px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-primary"
+          className={`w-full rounded-xl border border-brandBorder text-sm text-slate-900 outline-none transition-colors focus:border-primary ${inputPaddingClass}`}
         />
       </label>
 
       <button
         type="submit"
         disabled={submitting}
-        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-primary px-6 py-3 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+        className={`${submitMarginClass} inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-primary px-6 py-2.5 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60`}
       >
         {submitting ? 'Submitting tracked booking...' : 'Submit Tracked Booking'}
       </button>
