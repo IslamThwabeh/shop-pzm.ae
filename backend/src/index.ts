@@ -396,44 +396,94 @@ app.get('/api/gcr-opt-in-events', async (c) => {
 // ============ BUSINESS HOURS API ============
 
 const PLACE_ID = 'ChIJ1aZJvMBtXz4RLrOI1vITjBU'; // PZM Store Place ID
+const BUSINESS_HOURS_CACHE_KEY = 'business-hours:v1';
+const BUSINESS_HOURS_CACHE_TTL_SECONDS = 12 * 60 * 60;
+const BUSINESS_HOURS_BROWSER_TTL_SECONDS = 60 * 60;
+
+type BusinessHoursResponse = {
+  html_attributions: unknown[];
+  result: {
+    name: string;
+    opening_hours: {
+      weekday_text: string[];
+      open_now: boolean | null;
+    };
+  };
+  status: string;
+};
+
+const FALLBACK_BUSINESS_HOURS: BusinessHoursResponse = {
+  html_attributions: [],
+  result: {
+    name: 'PZM Computers & Phones',
+    opening_hours: {
+      weekday_text: [
+        'Monday: 8:30 AM – 11:30 PM',
+        'Tuesday: 8:30 AM – 11:30 PM',
+        'Wednesday: 8:30 AM – 11:30 PM',
+        'Thursday: 8:30 AM – 11:30 PM',
+        'Friday: 10:00 AM – 11:30 PM',
+        'Saturday: 8:30 AM – 1:00 AM',
+        'Sunday: 8:30 AM – 1:00 AM',
+      ],
+      open_now: null,
+    },
+  },
+  status: 'OK',
+};
+
+function isValidBusinessHoursResponse(value: unknown): value is BusinessHoursResponse {
+  const rows = (value as { result?: { opening_hours?: { weekday_text?: unknown } } })
+    ?.result?.opening_hours?.weekday_text;
+  const status = (value as { status?: unknown })?.status;
+
+  return status === 'OK' && Array.isArray(rows) && rows.every((row) => typeof row === 'string');
+}
 
 app.get('/api/business-hours', async (c) => {
   try {
     logRequest('GET', '/api/business-hours');
+    c.header('Cache-Control', `public, max-age=${BUSINESS_HOURS_BROWSER_TTL_SECONDS}`);
+
+    let cached: unknown = null;
+    try {
+      cached = await c.env.KV.get(BUSINESS_HOURS_CACHE_KEY, 'json');
+    } catch (error) {
+      logError(error, 'GET /api/business-hours cache read');
+    }
+
+    if (isValidBusinessHoursResponse(cached)) {
+      return c.json(cached, 200);
+    }
 
     const apiKey = c.env.GOOGLE_MAPS_API_KEY;
 
     if (!apiKey) {
       // Return fallback hours if API key not configured
-      return c.json({
-        html_attributions: [],
-        result: {
-          name: 'PZM Computers & Phones',
-          opening_hours: {
-            weekday_text: [
-              "Monday: 8:30 AM – 11:30 PM",
-              "Tuesday: 8:30 AM – 11:30 PM",
-              "Wednesday: 8:30 AM – 11:30 PM",
-              "Thursday: 8:30 AM – 11:30 PM",
-              "Friday: 10:00 AM – 11:30 PM",
-              "Saturday: 8:30 AM – 1:00 AM",
-              "Sunday: 8:30 AM – 1:00 AM"
-            ],
-            open_now: null
-          }
-        },
-        status: 'OK'
-      }, 200);
+      return c.json(FALLBACK_BUSINESS_HOURS, 200);
     }
 
     const googleUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${PLACE_ID}&fields=name,opening_hours&key=${apiKey}`;
 
-    const response = await fetch(googleUrl );
-    const data = await response.json();
+    const response = await fetch(googleUrl);
+    const data = await response.json() as unknown;
 
-    return c.json(data, 200);
+    if (isValidBusinessHoursResponse(data)) {
+      try {
+        await c.env.KV.put(BUSINESS_HOURS_CACHE_KEY, JSON.stringify(data), {
+          expirationTtl: BUSINESS_HOURS_CACHE_TTL_SECONDS,
+        });
+      } catch (error) {
+        logError(error, 'GET /api/business-hours cache write');
+      }
+
+      return c.json(data, 200);
+    }
+
+    return c.json(FALLBACK_BUSINESS_HOURS, 200);
   } catch (error) {
     logError(error, 'GET /api/business-hours');
+    c.header('Cache-Control', 'no-store');
     return c.json({ error: 'Failed to fetch business hours', status: 500 }, 500);
   }
 });
