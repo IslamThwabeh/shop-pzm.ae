@@ -406,21 +406,23 @@ app.get('/api/business-hours', async (c) => {
     if (!apiKey) {
       // Return fallback hours if API key not configured
       return c.json({
+        html_attributions: [],
         result: {
+          name: 'PZM Computers & Phones',
           opening_hours: {
             weekday_text: [
-              "Monday: 8 AM – 12 AM",
-              "Tuesday: 8 AM – 12 AM",
-              "Wednesday: 8 AM – 12 AM",
-              "Thursday: 8 AM – 12 AM",
-              "Friday: 9:30 AM – 12 AM",
-              "Saturday: 7 AM – 1 AM",
-              "Sunday: 7 AM – 1 AM"
+              "Monday: 8:30 AM – 11:30 PM",
+              "Tuesday: 8:30 AM – 11:30 PM",
+              "Wednesday: 8:30 AM – 11:30 PM",
+              "Thursday: 8:30 AM – 11:30 PM",
+              "Friday: 10:00 AM – 11:30 PM",
+              "Saturday: 8:30 AM – 1:00 AM",
+              "Sunday: 8:30 AM – 1:00 AM"
             ],
             open_now: null
           }
         },
-        status: 200
+        status: 'OK'
       }, 200);
     }
 

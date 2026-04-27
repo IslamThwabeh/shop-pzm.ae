@@ -4,23 +4,23 @@ type StoreWindow = {
 }
 
 const STORE_HOURS: Record<number, StoreWindow> = {
-  0: { open: [10, 0], close: [25, 0] },
-  1: { open: [10, 0], close: [23, 0] },
-  2: { open: [10, 0], close: [22, 30] },
-  3: { open: [10, 0], close: [23, 0] },
-  4: { open: [10, 0], close: [23, 0] },
-  5: { open: [10, 0], close: [23, 0] },
-  6: { open: [10, 0], close: [24, 0] },
+  0: { open: [8, 30], close: [25, 0] },  // Sunday:    8:30 AM – 1:00 AM
+  1: { open: [8, 30], close: [23, 30] }, // Monday:    8:30 AM – 11:30 PM
+  2: { open: [8, 30], close: [23, 30] }, // Tuesday:   8:30 AM – 11:30 PM
+  3: { open: [8, 30], close: [23, 30] }, // Wednesday: 8:30 AM – 11:30 PM
+  4: { open: [8, 30], close: [23, 30] }, // Thursday:  8:30 AM – 11:30 PM
+  5: { open: [10, 0], close: [23, 30] }, // Friday:    10:00 AM – 11:30 PM
+  6: { open: [8, 30], close: [25, 0] },  // Saturday:  8:30 AM – 1:00 AM
 }
 
 export const weeklyHoursText = [
-  'Sunday: 10:00 AM - 01:00 AM',
-  'Monday: 10:00 AM - 11:00 PM',
-  'Tuesday: 10:00 AM - 10:30 PM',
-  'Wednesday: 10:00 AM - 11:00 PM',
-  'Thursday: 10:00 AM - 11:00 PM',
-  'Friday: 10:00 AM - 11:00 PM',
-  'Saturday: 10:00 AM - 12:00 AM',
+  'Monday: 8:30 AM – 11:30 PM',
+  'Tuesday: 8:30 AM – 11:30 PM',
+  'Wednesday: 8:30 AM – 11:30 PM',
+  'Thursday: 8:30 AM – 11:30 PM',
+  'Friday: 10:00 AM – 11:30 PM',
+  'Saturday: 8:30 AM – 1:00 AM',
+  'Sunday: 8:30 AM – 1:00 AM',
 ]
 
 const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']

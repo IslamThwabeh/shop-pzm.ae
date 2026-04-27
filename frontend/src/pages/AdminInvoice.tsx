@@ -45,7 +45,7 @@ interface OrderResponse {
 
 // Company constants (edit if needed)
 const COMPANY = {
-  name: 'PZM Computers & Phones Store',
+  name: 'PZM Computers & Phones',
   phone: '+971 528026677',
   // Use the favicon from public for reliable printing
   logo: '/favicon.png',

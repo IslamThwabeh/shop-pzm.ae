@@ -1,3 +1,4 @@
+import { buildWhatsAppHref, SUPPORT_PHONE_DISPLAY, SUPPORT_PHONE_E164 } from '../utils/contact'
 import { normalizeSitePath } from '../utils/siteConfig'
 import type { LucideIcon } from 'lucide-react'
 import {
@@ -88,18 +89,19 @@ export const megaMenuShopSections: MegaMenuItem[] = [
 const page = normalizeSitePath
 
 export const siteIdentity = {
-  name: 'PZM Computers & Phones Store',
-  publicBrandName: 'PZM Computers & Phones Store - New, Used, Repair, PC Build',
+  name: 'PZM Computers & Phones',
+  publicBrandName: 'PZM Computers & Phones – New, Used, Repair, PC Build',
   tagline: 'New, Used, Repair, PC Build',
   summary:
-    'Dubai tech storefront for new and used phones, laptops, repairs, accessories, and custom PC builds.',
+    'Dubai tech retail and repair destination for new and used phones, laptops, accessories, and custom PC builds.',
 }
 
 export const siteContact = {
-  phoneDisplay: '+971 52 802 6677',
-  phoneHref: 'tel:+971528026677',
-  whatsappSupportHref:
-    'https://wa.me/971528026677?text=Hi%2C%20I%27m%20interested%20in%20the%20services%20listed%20on%20your%20website.%20Can%20you%20tell%20me%20more%3F%20(via%20pzm.ae)',
+  phoneDisplay: SUPPORT_PHONE_DISPLAY,
+  phoneHref: `tel:${SUPPORT_PHONE_E164}`,
+  whatsappSupportHref: buildWhatsAppHref(
+    "Hi, I'm interested in the services listed on your website. Can you tell me more? (via pzm.ae)"
+  ),
   noReplyEmail: 'no-reply@pzm.ae',
   mapsHref: 'https://maps.app.goo.gl/e5Rhfo8YY3i8CatM7?g_st=ic',
   mapEmbedUrl:
@@ -115,6 +117,8 @@ export const footerQuickLinks: NavigationLink[] = [
   { label: 'Repair', to: page('/services/repair') },
   { label: 'Shop', to: page('/services/brand-new') },
   { label: 'PC Build', to: page('/services/gaming-pc') },
-  { label: 'Blog', to: page('/blog') },    { label: 'Areas', to: page('/areas') },  { label: 'Return Policy', to: page('/return-policy') },
+  { label: 'Blog', to: page('/blog') },
+  { label: 'Areas', to: page('/areas') },
+  { label: 'Return Policy', to: page('/return-policy') },
   { label: 'Terms', to: page('/terms') },
 ]

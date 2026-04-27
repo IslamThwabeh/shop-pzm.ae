@@ -1,14 +1,11 @@
 import { MessageCircle, Phone } from 'lucide-react'
 import { siteContact } from '../content/siteData'
+import { buildWhatsAppHref } from '../utils/contact'
 
 interface WhatsAppCTAProps {
   title?: string
   description?: string
   prefilledMessage: string
-}
-
-function buildWhatsAppUrl(message: string) {
-  return `https://wa.me/971528026677?text=${encodeURIComponent(message)}`
 }
 
 export default function WhatsAppCTA({
@@ -23,7 +20,7 @@ export default function WhatsAppCTA({
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
         <a
-          href={buildWhatsAppUrl(prefilledMessage)}
+          href={buildWhatsAppHref(prefilledMessage)}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center justify-center gap-2 rounded-xl border border-brandBorder px-5 py-3 text-sm font-semibold text-brandTextDark transition-colors hover:border-primary hover:text-primary"

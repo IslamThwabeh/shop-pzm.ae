@@ -21,7 +21,7 @@ import { selectHomepageFeaturedProducts } from '../utils/featuredProducts'
 import { buildCanonicalUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 const trustIcons = [ShieldCheck, Zap, CheckCircle, Truck] as const
-const homeSeoTitle = 'Buy iPhones, Laptops & Repair in Al Barsha, JVC & Tecom | PZM Computers & Phones Store - New, Used, Repair, PC Build'
+const homeSeoTitle = 'PZM Computers & Phones – New, Used, Repair, PC Build | Barsha Dubai'
 const homeSeoDescription =
   "PZM's Al Barsha store serves Barsha 1-3, Dubai Science Park, JVC, Meadows Village, JLT, Springs, Barsha Heights, Tecom, and Al Sufouh for phones, laptops, repairs, and device support."
 const homeAreaServed = Array.from(

@@ -77,11 +77,11 @@ export default function BlogPostPage() {
           dateModified: `${post.publishedAt}T00:00:00+04:00`,
           author: {
             '@type': 'Organization',
-            name: 'PZM Computers & Phones Store',
+            name: 'PZM Computers & Phones',
           },
           publisher: {
             '@type': 'Organization',
-            name: 'PZM Computers & Phones Store',
+            name: 'PZM Computers & Phones',
             logo: {
               '@type': 'ImageObject',
               url: toAbsoluteSiteUrl('/images/mini_logo.png'),

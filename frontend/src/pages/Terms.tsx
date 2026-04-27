@@ -1,12 +1,13 @@
 import Seo from '../components/Seo'
-import { siteIdentity } from '../content/siteData'
+import { siteContact, siteIdentity } from '../content/siteData'
+import { buildWhatsAppHref } from '../utils/contact'
 
 export default function Terms() {
   return (
     <div className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm md:p-10">
       <Seo
         title="Terms & Conditions | PZM Dubai"
-        description="Read the terms and conditions for PZM Computers & Phones Store in Dubai, including ordering, payment, delivery, warranty, and returns."
+        description="Read the terms and conditions for PZM Computers & Phones in Dubai, including ordering, payment, delivery, warranty, and returns."
         canonicalPath="/terms"
       />
       <h1 className="mb-4 text-3xl font-bold text-primary">Terms & Conditions</h1>
@@ -25,7 +26,7 @@ export default function Terms() {
           <strong className="font-bold">{siteIdentity.name}</strong><br/>
           Al Barsha, Hessa Street, Inside Hessa Union Coop Hypermarket, Ground Floor<br/>
           Dubai, United Arab Emirates<br/><br/>
-          Phone/WhatsApp: <a href="tel:+971528026677" className="font-bold text-primary hover:underline">+971 52 802 6677</a>
+          Phone/WhatsApp: <a href={siteContact.phoneHref} className="font-bold text-primary hover:underline">{siteContact.phoneDisplay}</a>
         </p>
       </section>
 
@@ -44,8 +45,8 @@ export default function Terms() {
         <h2 className="text-xl font-bold text-brandTextDark">3. How to Order</h2>
         <p className="text-brandTextMedium">We offer multiple convenient ways to place an order:</p>
         <ul className="list-disc space-y-2 pl-5 text-brandTextMedium">
-          <li>WhatsApp Order: Message us on <a href="https://wa.me/971528026677?text=Hi%2C%20I%20would%20like%20to%20place%20an%20order.%20(via%20pzm.ae)" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">+971 52 802 6677</a> with the product you want.</li>
-          <li>Phone Order: Call us at <a href="tel:+971528026677" className="text-primary hover:underline">+971 52 802 6677</a>.</li>
+          <li>WhatsApp Order: Message us on <a href={buildWhatsAppHref('Hi, I would like to place an order. (via pzm.ae)')} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{siteContact.phoneDisplay}</a> with the product you want.</li>
+          <li>Phone Order: Call us at <a href={siteContact.phoneHref} className="text-primary hover:underline">{siteContact.phoneDisplay}</a>.</li>
           <li>Walk-in: Visit our store in Al Barsha, Dubai.</li>
         </ul>
       </section>
@@ -143,7 +144,7 @@ export default function Terms() {
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-brandTextDark">13. Contact Us</h2>
         <p className="text-brandTextMedium">
-          If you have any questions about these terms, please contact us via WhatsApp at <a href="https://wa.me/971528026677?text=Hi%2C%20I%20have%20a%20question%20about%20your%20terms.%20(via%20pzm.ae)" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">+971 52 802 6677</a>, by phone at <a href="tel:+971528026677" className="text-primary hover:underline">+971 52 802 6677</a>, or at our Al Barsha, Hessa Street, Dubai location.
+          If you have any questions about these terms, please contact us via WhatsApp at <a href={buildWhatsAppHref('Hi, I have a question about your terms. (via pzm.ae)')} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{siteContact.phoneDisplay}</a>, by phone at <a href={siteContact.phoneHref} className="text-primary hover:underline">{siteContact.phoneDisplay}</a>, or at our Al Barsha, Hessa Street, Dubai location.
         </p>
       </section>
     </div>

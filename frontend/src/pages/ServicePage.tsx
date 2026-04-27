@@ -1,9 +1,11 @@
 import { Link, Navigate, useParams } from 'react-router-dom'
+import { MessageCircle } from 'lucide-react'
 import Seo from '../components/Seo'
 import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
 import RetailImage from '../components/RetailImage'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { resolveServiceSlug } from '../content/serviceCatalog'
+import { buildWhatsAppHref } from '../utils/contact'
 
 const appointmentServiceTypes: Partial<Record<string, string>> = {
   repair: 'repair-mobile',
@@ -131,6 +133,15 @@ export default function ServicePage() {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Appointment</p>
             <h2 className="mt-2 text-2xl font-bold text-slate-900">Book a Service Appointment</h2>
             <p className="mt-3 text-brandTextMedium">Choose a preferred time and send your request to the store team.</p>
+            <a
+              href={buildWhatsAppHref(`Hi, I'd like to book a ${service.title} appointment. (via pzm.ae/services/${service.slug})`)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-[#25D366] hover:underline"
+            >
+              <MessageCircle size={15} />
+              Or message us directly on WhatsApp
+            </a>
           </div>
           <HomeAppointmentPanel
             sourcePage={`/services/${service.slug}#appointment`}

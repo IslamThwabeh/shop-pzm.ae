@@ -1133,7 +1133,7 @@ const termsSnapshotSections = [
   {
     title: '1. Business Information',
     paragraphs: [
-      'PZM Computers & Phones Store operates from Al Barsha on Hessa Street inside Hessa Union Coop Hypermarket, Ground Floor, Dubai, United Arab Emirates.',
+      'PZM Computers & Phones operates from Al Barsha on Hessa Street inside Hessa Union Coop Hypermarket, Ground Floor, Dubai, United Arab Emirates.',
       'Phone and WhatsApp support is available on +971 52 802 6677 for questions about ordering, pricing, delivery, and store visits.',
     ],
   },
@@ -1191,7 +1191,7 @@ const termsSnapshotSections = [
   {
     title: '8. Intellectual Property',
     paragraphs: [
-      'Text, images, branding, design, and storefront content on the site remain the property of PZM Computers & Phones Store and may not be reproduced, distributed, or modified without written permission.',
+      'Text, images, branding, design, and storefront content on the site remain the property of PZM Computers & Phones and may not be reproduced, distributed, or modified without written permission.',
     ],
   },
   {
@@ -2317,9 +2317,9 @@ function outputPathForRoute(routePath) {
   return path.join(distRoot, normalized.replace(/\/+$/, ''), 'index.html')
 }
 
-const BUSINESS_NAME = 'PZM Computers & Phones Store'
-const WEBSITE_BRAND = 'PZM Computers & Phones Store - New, Used, Repair, PC Build'
-const HOME_ROUTE_TITLE = 'Buy iPhones, Laptops & Repair in Al Barsha, JVC & Tecom | PZM Computers & Phones Store - New, Used, Repair, PC Build'
+const BUSINESS_NAME = 'PZM Computers & Phones'
+const WEBSITE_BRAND = 'PZM Computers & Phones – New, Used, Repair, PC Build'
+const HOME_ROUTE_TITLE = 'PZM Computers & Phones – New, Used, Repair, PC Build | Barsha Dubai'
 const HOME_ROUTE_DESCRIPTION =
   "PZM's Al Barsha store serves Barsha 1-3, Dubai Science Park, JVC, Meadows Village, JLT, Springs, Barsha Heights, Tecom, and Al Sufouh for phones, laptops, repairs, and device support."
 const HOME_AREA_SERVED = [
@@ -2650,7 +2650,7 @@ const baseRoutes = [
   },
   {
     path: '/services',
-    title: 'Our Services | PZM Computers & Phones Store',
+    title: 'Our Services | PZM Computers & Phones',
     description:
       'Explore repair, trade-in, gaming PC, accessories, iPhone, and device support pages from PZM Computers & Phones in Dubai.',
     canonicalPath: '/services',

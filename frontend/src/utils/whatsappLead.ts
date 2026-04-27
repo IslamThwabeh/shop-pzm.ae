@@ -1,7 +1,6 @@
 import type { WhatsAppLeadType } from '@shared/types'
 import { API_BASE_URL } from './siteConfig'
-
-const WHATSAPP_NUMBER = '971528026677'
+import { buildWhatsAppHref } from './contact'
 
 interface WhatsAppLeadParams {
   leadType: WhatsAppLeadType
@@ -20,17 +19,13 @@ function buildWhatsAppMessage(params: WhatsAppLeadParams): string {
   return lines.join('\n')
 }
 
-function buildWhatsAppUrl(message: string): string {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
-}
-
 /**
  * Register a WhatsApp lead in the backend, then open WhatsApp in a new tab.
  * The API call is fire-and-forget so the user is never blocked.
  */
 export function openWhatsAppLead(params: WhatsAppLeadParams): void {
   const message = buildWhatsAppMessage(params)
-  const url = buildWhatsAppUrl(message)
+  const url = buildWhatsAppHref(message)
 
   // Fire-and-forget: register lead in the background
   fetch(`${API_BASE_URL}/whatsapp-leads`, {

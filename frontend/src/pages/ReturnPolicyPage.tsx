@@ -1,12 +1,13 @@
 import Seo from '../components/Seo'
 import { siteContact, siteIdentity } from '../content/siteData'
+import { buildWhatsAppHref } from '../utils/contact'
 
 export default function ReturnPolicyPage() {
   return (
     <div className="rounded-[28px] border border-brandBorder bg-white p-8 shadow-sm md:p-10">
       <Seo
         title="Return & Refund Policy | PZM Dubai"
-        description="Return and refund policy for PZM Computers & Phones Store in Dubai — eligibility, defective items, exchanges, and used devices."
+        description="Return and refund policy for PZM Computers & Phones in Dubai — eligibility, defective items, exchanges, and used devices."
         canonicalPath="/return-policy"
       />
 
@@ -60,7 +61,7 @@ export default function ReturnPolicyPage() {
         <div className="space-y-3 rounded-2xl border-l-4 border-primary bg-brandLight p-5 text-brandTextDark">
           <p>
             <strong>WhatsApp:</strong>{' '}
-            <a href="https://wa.me/971528026677?text=Hi%2C%20I%20would%20like%20to%20initiate%20a%20return.%20(via%20pzm.ae)" target="_blank" rel="noopener noreferrer" className="font-semibold text-primary hover:underline">
+            <a href={buildWhatsAppHref('Hi, I would like to initiate a return. (via pzm.ae)')} target="_blank" rel="noopener noreferrer" className="font-semibold text-primary hover:underline">
               {siteContact.phoneDisplay}
             </a>
           </p>
@@ -105,7 +106,7 @@ export default function ReturnPolicyPage() {
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-brandTextDark">8. Contact Us</h2>
         <p className="text-brandTextMedium">
-          If you have any questions about this policy, please reach out via WhatsApp at <a href="https://wa.me/971528026677?text=Hi%2C%20I%20have%20a%20question%20about%20your%20return%20policy.%20(via%20pzm.ae)" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">+971 52 802 6677</a>, by phone at <a href={siteContact.phoneHref} className="text-primary hover:underline">{siteContact.phoneDisplay}</a>, or at our Al Barsha, Hessa Street, Dubai location.
+          If you have any questions about this policy, please reach out via WhatsApp at <a href={buildWhatsAppHref('Hi, I have a question about your return policy. (via pzm.ae)')} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{siteContact.phoneDisplay}</a>, by phone at <a href={siteContact.phoneHref} className="text-primary hover:underline">{siteContact.phoneDisplay}</a>, or at our Al Barsha, Hessa Street, Dubai location.
         </p>
       </section>
     </div>

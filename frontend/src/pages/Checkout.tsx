@@ -285,7 +285,7 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
                   className="mt-1 w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
                 />
                 <label className="text-sm text-brandTextDark">
-                  I agree to receive email and WhatsApp notifications regarding my order status and updates from PZM Computers & Phones Store
+                  I agree to receive email and WhatsApp notifications regarding my order status and updates from PZM Computers & Phones
                 </label>
               </div>
             </div>
