@@ -180,6 +180,19 @@ function normalizeProductMedia<T extends { image_url?: string | null; images?: s
   };
 }
 
+const PUBLIC_NEW_PRODUCT_MIN_QUANTITY = 6;
+
+function normalizePublicProductInventory<T extends Pick<Product, 'condition' | 'quantity'>>(product: T): T {
+  if (product.condition !== 'new') {
+    return product;
+  }
+
+  return {
+    ...product,
+    quantity: Math.max(Number(product.quantity) || 0, PUBLIC_NEW_PRODUCT_MIN_QUANTITY),
+  };
+}
+
 function getOptionalFormString(formData: FormData, key: string): string | undefined {
   const value = formData.get(key);
   if (typeof value !== 'string') {
@@ -505,8 +518,9 @@ app.get('/api/products', async (c) => {
     const productsWithImages = await Promise.all(
       products.map(async (product) => {
         const images = await db.getProductImages(product.id);
+        const normalizedProduct = includeOutOfStock ? product : normalizePublicProductInventory(product);
         return normalizeProductMedia({
-          ...product,
+          ...normalizedProduct,
           images: images.length > 0 ? images : (product.image_url ? [product.image_url] : [])
         });
       })
@@ -524,6 +538,10 @@ app.get('/api/products/:id', async (c) => {
     const productId = c.req.param('id');
     logRequest('GET', `/api/products/${productId}`);
     const db = new Database(c.env.DB);
+    const authService = new AuthService(c.env.ADMIN_SECRET);
+    const token = authService.extractToken(c.req.header('Authorization'));
+    const payload = token ? await authService.verifyToken(token) : null;
+    const isAdminRequest = payload?.type === 'admin';
     const product = await db.getProduct(productId);
     if (!product) {
       return c.json({ error: 'Product not found', status: 404 }, 404);
@@ -531,8 +549,9 @@ app.get('/api/products/:id', async (c) => {
     
     // Fetch images for this product
     const images = await db.getProductImages(productId);
+    const normalizedProduct = isAdminRequest ? product : normalizePublicProductInventory(product);
     const productWithImages = normalizeProductMedia({
-      ...product,
+      ...normalizedProduct,
       images: images.length > 0 ? images : (product.image_url ? [product.image_url] : [])
     });
     

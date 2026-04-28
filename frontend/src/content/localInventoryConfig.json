@@ -1,7 +1,10 @@
 {
-  "enabled": true,
+  "enabled": false,
   "storeCode": "15302387347957747833",
-  "primaryFeedExcludedDestinations": [],
+  "primaryFeedExcludedDestinations": [
+    "Local_inventory_ads",
+    "Free_local_listings"
+  ],
   "includedProductIds": [],
   "excludedProductIds": []
 }
