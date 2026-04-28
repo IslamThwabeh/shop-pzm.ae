@@ -132,6 +132,7 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
         canonicalPath={`/product/${product.id}`}
         imageUrl={schemaImage}
         jsonLd={jsonLd}
+        noindex={!inStock}
       />
 
       {/* Breadcrumb */}

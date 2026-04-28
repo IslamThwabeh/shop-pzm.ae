@@ -115,7 +115,7 @@ export function buildProductRichDescription(product: Product) {
 }
 
 export function buildProductMetaDescription(product: Product) {
-  return truncateText(buildProductRichDescription(product), 160)
+  return truncateText(buildProductRichDescription(product), 150)
 }
 
 export function getPrimaryProductImage(product?: Pick<Product, 'image_url' | 'images'> | null) {

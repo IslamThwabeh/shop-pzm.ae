@@ -565,12 +565,12 @@ function buildProductDetailEntries(product) {
 function buildProductFallbackHighlights(product) {
   const highlights = []
 
-  if (product.release_year) highlights.push(`Released ${product.release_year}`)
-  if (product.battery_health != null) highlights.push(`Battery ${product.battery_health}%`)
-  if (product.cosmetic_grade) highlights.push(`Cosmetic grade ${product.cosmetic_grade}`)
-  if (product.repair_history) highlights.push(product.repair_history)
-  if (product.accessories_included) highlights.push(`Includes ${product.accessories_included}`)
-  if (product.warranty) highlights.push(product.warranty)
+  if (product.release_year) highlights.push(`Released ${product.release_year}.`)
+  if (product.battery_health != null) highlights.push(`Battery health ${product.battery_health}%.`)
+  if (product.cosmetic_grade) highlights.push(`Cosmetic grade ${product.cosmetic_grade}.`)
+  if (product.repair_history) highlights.push(String(product.repair_history).trim())
+  if (product.accessories_included) highlights.push(`Includes ${product.accessories_included}.`)
+  if (product.warranty) highlights.push(String(product.warranty).trim())
 
   return highlights
 }
@@ -640,13 +640,23 @@ function buildProductRichDescription(product) {
     return description
   }
 
+  const label = buildProductLabel(product)
+  const modelToken = String(product.model || '').trim().toLowerCase()
+  const shortDescContainsModel = modelToken && description.toLowerCase().includes(modelToken)
+  const prefix = (description && !shortDescContainsModel) ? description : null
+
   const highlights = buildProductFallbackHighlights(product)
-  const fallbackDescription = `${buildProductLabel(product)} from PZM in Dubai with ${product.condition === 'used' ? 'used-device' : 'brand-new'} availability, local support, and Cash on Delivery.`
-  return cleanProductText([description, fallbackDescription, ...highlights].join(' '))
+  const fallbackDescription = [
+    `${label} from PZM Computers & Phones in Dubai with direct WhatsApp ordering, Cash on Delivery, and UAE delivery support.`,
+    product.condition === 'used'
+      ? 'Certified pre-owned and checked by the store team.'
+      : 'Brand-new stock with local retail support.',
+  ].join(' ')
+  return cleanProductText([prefix, fallbackDescription, ...highlights].filter(Boolean).join(' ')) || label
 }
 
 function buildProductMetaDescription(product) {
-  return truncateText(buildProductRichDescription(product), 160)
+  return truncateText(buildProductRichDescription(product), 150)
 }
 
 function buildMerchantProductType(product) {
@@ -832,19 +842,23 @@ function buildProductRoutes(products) {
 
   const allProducts = Array.from(uniqueProducts.values()).sort(sortProducts)
 
-  const toRoute = (product) => ({
-    path: buildProductPath(product),
-    title: `${buildProductLabel(product)} | PZM Computers & Phones`,
-    description: buildProductMetaDescription(product),
-    canonicalPath: buildProductPath(product),
-    imageUrl: getProductImageUrl(product),
-    priority: (product.quantity ?? 0) > 0 ? '0.8' : '0.5',
-    changefreq: 'daily',
-    lastmod: formatLastmodDate(product.updated_at || product.updatedAt || product.created_at || product.createdAt),
-    rootHtml: buildProductSnapshot(product),
-    preloadedProducts: [product],
-    jsonLd: buildProductJsonLd(product),
-  })
+  const toRoute = (product) => {
+    const inStock = (product.quantity ?? 0) > 0
+    return {
+      path: buildProductPath(product),
+      title: `${buildProductLabel(product)} | PZM Computers & Phones`,
+      description: buildProductMetaDescription(product),
+      canonicalPath: buildProductPath(product),
+      imageUrl: getProductImageUrl(product),
+      priority: inStock ? '0.8' : '0.5',
+      changefreq: 'daily',
+      lastmod: formatLastmodDate(product.updated_at || product.updatedAt || product.created_at || product.createdAt),
+      rootHtml: buildProductSnapshot(product),
+      preloadedProducts: [product],
+      jsonLd: buildProductJsonLd(product),
+      ...(!inStock ? { excludeFromSitemap: true, robots: 'noindex, follow' } : {}),
+    }
+  }
 
   return allProducts.map((p) => toRoute(p))
 }

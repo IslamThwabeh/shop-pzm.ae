@@ -52,6 +52,7 @@ Options:
   --offset <number>          Optional. Candidate window offset. Defaults to 0.
   --limit <number>           Optional. Candidate window size for small batches.
   --min-length <number>      Optional. Minimum target description length. Defaults to 90.
+  --force                    Optional. Bypass quality guards and apply whenever generated text differs from stored.
 `);
 }
 
@@ -203,6 +204,11 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (argument === '--force') {
+      options.force = true;
+      continue;
+    }
+
     throw new Error(`Unknown argument: ${argument}`);
   }
 
@@ -257,12 +263,27 @@ function buildProductFallbackHighlights(product) {
 
 function buildProductRichDescription(product) {
   const description = sanitizeDescription(product.description);
+  const label = buildProductDisplayLabel(product);
+  const modelToken = normalizeText(product.model || '').toLowerCase();
+  const descLower = normalizeText(description || '').toLowerCase();
 
-  if (description && description.length >= DEFAULT_MIN_DESCRIPTION_LENGTH) {
+  // Detect model-name duplication: if model appears ≥ 2 times in the stored description,
+  // regenerate from scratch using structured fields regardless of description length.
+  const modelOccurrences = modelToken
+    ? (descLower.match(new RegExp(modelToken.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length
+    : 0;
+  const hasDuplication = modelOccurrences >= 2;
+
+  if (!hasDuplication && description && description.length >= DEFAULT_MIN_DESCRIPTION_LENGTH) {
     return description;
   }
 
-  const label = buildProductDisplayLabel(product);
+  // For short descriptions (< threshold) or duplicative ones, build from structured fields.
+  // Don't prepend the short stored description when it already names the model — that would
+  // duplicate the model token again after the label is appended as fallback.
+  const shortDescContainsModel = modelToken && descLower.includes(modelToken);
+  const prefix = (description && !shortDescContainsModel) ? description : null;
+
   const fallbackDescription = [
     `${label} from PZM Computers & Phones in Dubai with direct WhatsApp ordering, Cash on Delivery, and UAE delivery support.`,
     product.condition === 'used'
@@ -270,7 +291,7 @@ function buildProductRichDescription(product) {
       : 'Brand-new stock with local retail support.',
   ].join(' ');
 
-  return cleanText([description, fallbackDescription, ...buildProductFallbackHighlights(product)].filter(Boolean).join(' ')) || label;
+  return cleanText([prefix, fallbackDescription, ...buildProductFallbackHighlights(product)].filter(Boolean).join(' ')) || label;
 }
 
 function inferBrand(model) {
@@ -398,17 +419,17 @@ async function main() {
     const currentLength = currentDescription.length;
     const nextLength = nextDescription.length;
 
-    if (currentLength >= options.minDescriptionLength) {
+    if (!options.force && currentLength >= options.minDescriptionLength) {
       skipped.liveAlreadyQualified.push(summarizeRow(normalizedProduct, { currentLength }));
       continue;
     }
 
-    if (nextLength < options.minDescriptionLength) {
+    if (!options.force && nextLength < options.minDescriptionLength) {
       skipped.generatedBelowThreshold.push(summarizeRow(normalizedProduct, { currentLength, nextLength }));
       continue;
     }
 
-    if (!nextDescription || nextDescription === currentDescription || nextLength <= currentLength) {
+    if (!nextDescription || nextDescription === currentDescription) {
       skipped.unchangedOrNotImproved.push(summarizeRow(normalizedProduct, { currentLength, nextLength }));
       continue;
     }
