@@ -59,15 +59,37 @@ The site uses a local favicon at `/favicon.png` (place the image at `frontend/pu
 
 Create `.env.production` for production:
 ```env
-VITE_API_URL=https://api.pzm.ae
+VITE_SITE_URL=https://pzm.ae
+VITE_API_BASE_URL=https://pzm.ae/api
+VITE_GOOGLE_ADS_ID=AW-16481610525
+
+# Optional: set these only after creating the matching Google Ads conversions
+VITE_GOOGLE_ADS_BEGIN_CHECKOUT_LABEL=
+VITE_GOOGLE_ADS_PURCHASE_LABEL=
+VITE_GOOGLE_ADS_PHONE_LABEL=
+VITE_GOOGLE_ADS_WHATSAPP_LABEL=
+VITE_GOOGLE_ADS_WHATSAPP_PRODUCT_LABEL=
+VITE_GOOGLE_ADS_WHATSAPP_SERVICE_LABEL=
+VITE_GOOGLE_ADS_WHATSAPP_APPOINTMENT_LABEL=
 ```
 
 Create `.env.staging` for staging:
 ```env
-VITE_API_URL=https://test.pzm.ae/api
+VITE_SITE_URL=https://test.pzm.ae
+VITE_API_BASE_URL=https://test.pzm.ae/api
+VITE_GOOGLE_ADS_ID=AW-16481610525
 ```
 
 > Note: Local development instructions were removed; use the staging workflow to publish and test changes.
+
+The frontend now emits these analytics events at the owning interaction points:
+- `add_to_cart` from the shared cart context
+- `begin_checkout` when checkout opens with cart items
+- `purchase` on order confirmation
+- `generate_lead` for WhatsApp lead flows
+- `contact` for direct phone links
+
+Google Ads conversion snippets fire only when the corresponding `VITE_GOOGLE_ADS_*_LABEL` value is configured.
 ## 🚢 Deployment
 
 Deploy to Cloudflare Pages:

@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import Seo from '../components/Seo'
 import { buildApiUrl } from '../utils/siteConfig'
 import { getDeliveryPolicy, getGrossVatBreakdown } from '../utils/orderPricing'
+import { trackBeginCheckout } from '../utils/analytics'
 
 interface CheckoutProps {
   onBack: () => void
@@ -25,6 +26,10 @@ export default function Checkout({ onBack, onSuccess }: CheckoutProps) {
     emailConsent: true,
   })
   const deliveryPolicy = getDeliveryPolicy(pricing.grossTotal, formData.customerAddress)
+
+  useEffect(() => {
+    trackBeginCheckout(items)
+  }, [items])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target

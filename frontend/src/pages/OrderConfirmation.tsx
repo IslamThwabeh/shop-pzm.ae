@@ -6,6 +6,7 @@ import Seo from '../components/Seo'
 import { siteContact } from '../content/siteData'
 import { buildApiUrl } from '../utils/siteConfig'
 import { getDeliveryPolicy, getGrossVatBreakdown } from '../utils/orderPricing'
+import { trackPurchase } from '../utils/analytics'
 
 const GCR_TELEMETRY_STORAGE_PREFIX = 'gcr-telemetry'
 
@@ -145,6 +146,26 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
       sessionStorage.removeItem(telemetryKey)
     })
   }, [gcrStatus, location.pathname, rawId, showGcrDebug])
+
+  useEffect(() => {
+    if (!rawId || orderItems.length === 0) {
+      return
+    }
+
+    trackPurchase({
+      orderId: rawId,
+      items: orderItems.map((item) => ({
+        id: item.id,
+        model: item.model,
+        price: item.price,
+        quantity: item.quantity,
+        color: item.color,
+        storage: item.storage,
+        condition: item.condition,
+      })),
+      totalValue: totalPrice,
+    })
+  }, [orderItems, rawId, totalPrice])
 
   const handleCopyOrderId = () => {
     navigator.clipboard.writeText(displayOrderId)

@@ -11,6 +11,7 @@ import Footer from './components/Footer'
 import StoreContactSection from './components/StoreContactSection'
 import ConsentBanner from './components/ConsentBanner'
 import { sanitizeProductsForDisplay } from './utils/productPresentation'
+import { isPhoneHref, isWhatsAppHref, openTrackedPhoneHref, trackWhatsAppLead } from './utils/analytics'
 
 const ProductDetails = lazy(() => import('./pages/ProductDetails'))
 const Cart = lazy(() => import('./pages/Cart'))
@@ -104,6 +105,50 @@ function AppContent() {
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }, [location.pathname, location.search])
+
+  useEffect(() => {
+    const handleDocumentClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return
+      }
+
+      const target = event.target
+      if (!(target instanceof Element)) {
+        return
+      }
+
+      const anchor = target.closest('a[href]')
+      if (!(anchor instanceof HTMLAnchorElement)) {
+        return
+      }
+
+      const href = anchor.href
+      const referenceLabel = anchor.textContent?.trim() || undefined
+
+      if (isPhoneHref(href)) {
+        event.preventDefault()
+        openTrackedPhoneHref({
+          href,
+          referenceLabel,
+          sourcePage: location.pathname,
+        })
+        return
+      }
+
+      if (isWhatsAppHref(href)) {
+        trackWhatsAppLead({
+          leadType: 'generic',
+          referenceLabel,
+          sourcePage: location.pathname,
+        })
+      }
+    }
+
+    document.addEventListener('click', handleDocumentClick)
+    return () => {
+      document.removeEventListener('click', handleDocumentClick)
+    }
+  }, [location.pathname])
 
   const navigateTo = (path: string) => {
     navigate(path)

@@ -8,6 +8,7 @@ import {
   type RankedSuggestion,
 } from '../utils/storefrontSearch'
 import { buildWhatsAppHref } from '../utils/contact'
+import { trackWhatsAppLead } from '../utils/analytics'
 
 interface HeaderSearchProps {
   products: Product[]
@@ -74,6 +75,21 @@ export default function HeaderSearch({ products, variant, onAfterNavigate }: Hea
     setActiveIndex(-1)
   }, [])
 
+  const openWhatsAppFallback = useCallback(() => {
+    const trimmed = query.trim()
+    if (!trimmed) {
+      return
+    }
+
+    trackWhatsAppLead({
+      leadType: 'generic',
+      referenceLabel: trimmed,
+      sourcePage: window.location.pathname,
+    })
+    window.open(buildWhatsAppHref(buildWhatsAppMessage(trimmed)), '_blank', 'noopener,noreferrer')
+    closeAndBlur()
+  }, [closeAndBlur, query])
+
   const goTo = useCallback(
     (destination: string) => {
       navigate(destination)
@@ -117,7 +133,7 @@ export default function HeaderSearch({ products, variant, onAfterNavigate }: Hea
       }
       // No suggestions -> open WhatsApp fallback.
       if (query.trim().length > 0) {
-        window.open(buildWhatsAppHref(buildWhatsAppMessage(query)), '_blank', 'noopener,noreferrer')
+        openWhatsAppFallback()
       }
       return
     }

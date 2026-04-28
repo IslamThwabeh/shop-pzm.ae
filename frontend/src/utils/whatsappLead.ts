@@ -1,6 +1,7 @@
 import type { WhatsAppLeadType } from '@shared/types'
 import { API_BASE_URL } from './siteConfig'
 import { buildWhatsAppHref } from './contact'
+import { trackWhatsAppLead } from './analytics'
 
 interface WhatsAppLeadParams {
   leadType: WhatsAppLeadType
@@ -26,6 +27,8 @@ function buildWhatsAppMessage(params: WhatsAppLeadParams): string {
 export function openWhatsAppLead(params: WhatsAppLeadParams): void {
   const message = buildWhatsAppMessage(params)
   const url = buildWhatsAppHref(message)
+
+  trackWhatsAppLead(params)
 
   // Fire-and-forget: register lead in the background
   fetch(`${API_BASE_URL}/whatsapp-leads`, {

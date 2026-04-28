@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
+import { trackAddToCart } from '../utils/analytics'
 
 export interface CartItem {
   id: string
@@ -66,6 +67,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return [...prev, item]
     })
+    trackAddToCart(item)
     setLastAddedTick((current) => current + 1)
     setLastAddedMessage('Added to cart')
 
