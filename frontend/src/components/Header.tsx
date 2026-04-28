@@ -3,7 +3,9 @@ import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import type { Product } from '@shared/types'
 import CartFeedbackLayer from './CartFeedbackLayer'
+import HeaderSearch from './HeaderSearch'
 import {
   megaMenuCategories,
   megaMenuShopSections,
@@ -14,9 +16,10 @@ import { formatCartCount, replayAnimationClass } from '../utils/cartFeedback'
 interface HeaderProps {
   onNavigate: (page: any) => void
   currentPage?: string
+  products?: Product[]
 }
 
-export default function Header({ onNavigate }: HeaderProps) {
+export default function Header({ onNavigate, products = [] }: HeaderProps) {
   const { isAuthenticated, logout } = useAuth()
   const { itemCount, lastAddedTick } = useCart()
   const location = useLocation()
@@ -196,6 +199,9 @@ export default function Header({ onNavigate }: HeaderProps) {
             </Link>
           </nav>
 
+          {/* ── Desktop search (primary header element) ─── */}
+          <HeaderSearch products={products} variant="desktop" />
+
           {/* ── Right actions ─────────────────────────── */}
           <div className="flex items-center gap-2">
             {/* Desktop CTA icons */}
@@ -274,6 +280,11 @@ export default function Header({ onNavigate }: HeaderProps) {
             )}
           </div>
         </div>
+      </div>
+
+      {/* ── Mobile search row (always visible under top bar) ─ */}
+      <div className="lg:hidden border-t border-[#eee] bg-white px-4 py-2.5">
+        <HeaderSearch products={products} variant="mobile" onAfterNavigate={() => setIsMobileMenuOpen(false)} />
       </div>
 
       {/* ── Mobile menu ────────────────────────────── */}

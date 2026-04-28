@@ -13,6 +13,7 @@ import { brandNewCategories, brandNewHero, getBrandNewCategoryGroups, getBrandNe
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { getDeviceFinderLabel, matchesDeviceFinderProduct, normalizeDeviceFinderKey } from '../utils/deviceFinder'
 import { selectFeaturedProducts } from '../utils/featuredProducts'
+import { matchesStorefrontFamily, normalizeStorefrontFamilyKey } from '../utils/storefrontSearch'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 import { buildProductRichDescription, groupProductsByModelFamily, resolveProductBrand } from '../utils/productPresentation'
 import { extractBrandFromName, sharedReturnPolicy, sharedShippingDetails } from '../utils/seoConfig'
@@ -55,6 +56,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
     [searchParams, activeCategories],
   )
   const activeFinder = useMemo(() => normalizeDeviceFinderKey(searchParams.get('finder')), [searchParams])
+  const activeFamilyKey = useMemo(() => normalizeStorefrontFamilyKey(searchParams.get('family')), [searchParams])
 
   if (!service) {
     return null
@@ -77,8 +79,11 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
     if (activeBrands.size > 0) {
       result = result.filter((p) => activeBrands.has(resolveProductBrand(p)))
     }
+    if (activeFamilyKey) {
+      result = result.filter((product) => matchesStorefrontFamily(product, activeFamilyKey))
+    }
     return result
-  }, [products, activeCategories, activeFinder, activeBrands])
+  }, [products, activeCategories, activeFinder, activeBrands, activeFamilyKey])
 
   const liveBrandNewProducts = useMemo(() => getBrandNewProducts(filteredProducts), [filteredProducts])
   const featuredProducts = useMemo(() => selectFeaturedProducts(allBrandNewProducts, { condition: 'new', limit: 6 }), [allBrandNewProducts])
@@ -133,6 +138,14 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
   const clearFinder = () => {
     const nextParams = new URLSearchParams(searchParams)
     nextParams.delete('finder')
+    setSearchParams(nextParams, { replace: true })
+  }
+
+  const queryTerm = (searchParams.get('q') ?? '').trim()
+  const clearSearchTerm = () => {
+    const nextParams = new URLSearchParams(searchParams)
+    nextParams.delete('q')
+    nextParams.delete('family')
     setSearchParams(nextParams, { replace: true })
   }
   const lowestPrice = liveBrandNewProducts.length > 0 ? Math.min(...liveBrandNewProducts.map((product) => product.price)) : null
@@ -227,7 +240,22 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
         onToggleBrand={toggleBrand}
       />
 
-      {activeCategories.size === 0 && activeBrands.size === 0 && !activeFinder && (
+      {(queryTerm || activeFamilyKey) && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#eee] bg-slate-50 px-4 py-3">
+          <p className="text-sm text-slate-600">
+            Showing results for <span className="font-semibold text-slate-900">“{queryTerm || 'your search'}”</span>.
+          </p>
+          <button
+            type="button"
+            onClick={clearSearchTerm}
+            className="text-sm font-semibold text-slate-700 underline-offset-2 hover:text-slate-900 hover:underline"
+          >
+            Clear search
+          </button>
+        </div>
+      )}
+
+      {activeCategories.size === 0 && activeBrands.size === 0 && !activeFinder && !activeFamilyKey && !queryTerm && (
         <FeaturedProductsSection
           eyebrow="Brand-new picks"
           title="Popular brand-new devices with complete listing details"

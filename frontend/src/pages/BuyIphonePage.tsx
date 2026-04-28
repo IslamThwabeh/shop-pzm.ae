@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import type { Product } from '@shared/types'
 import IphoneFamilyCard from '../components/IphoneFamilyCard'
 import Seo from '../components/Seo'
@@ -19,6 +20,38 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
   const familyGroups = useMemo(() => getBuyIphoneFamilyGroups(products), [products])
   const availableFamilyCount = familyGroups.filter((group) => group.products.length > 0).length
   const lowestPrice = liveIphoneProducts.length > 0 ? Math.min(...liveIphoneProducts.map((product) => product.price)) : null
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const queryTerm = (searchParams.get('q') ?? '').trim()
+  const familyParam = searchParams.get('family')
+  const validFamilyKey = useMemo(
+    () => (familyParam && buyIphoneFamilies.some((f) => f.key === familyParam) ? familyParam : null),
+    [familyParam],
+  )
+  const [highlightKey, setHighlightKey] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!validFamilyKey) {
+      setHighlightKey(null)
+      return undefined
+    }
+    setHighlightKey(validFamilyKey)
+    if (typeof window !== 'undefined') {
+      const target = document.getElementById(`family-${validFamilyKey}`)
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+    const timer = window.setTimeout(() => setHighlightKey(null), 2400)
+    return () => window.clearTimeout(timer)
+  }, [validFamilyKey])
+
+  const clearSearchContext = () => {
+    const next = new URLSearchParams(searchParams)
+    next.delete('q')
+    next.delete('family')
+    setSearchParams(next, { replace: true })
+  }
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -100,6 +133,21 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
       </section>
 
       {/* Family cards grid */}
+      {queryTerm && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#eee] bg-slate-50 px-4 py-3">
+          <p className="text-sm text-slate-600">
+            Showing results for <span className="font-semibold text-slate-900">“{queryTerm}”</span>.
+          </p>
+          <button
+            type="button"
+            onClick={clearSearchContext}
+            className="text-sm font-semibold text-slate-700 underline-offset-2 hover:text-slate-900 hover:underline"
+          >
+            Clear
+          </button>
+        </div>
+      )}
+
       {loading ? (
         <div className="rounded-2xl border border-[#eee] bg-white p-8 text-sm text-slate-400">
           Loading iPhone models…
@@ -107,7 +155,13 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
       ) : (
         <section id="iphone-models" className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {familyGroups.map((group) => (
-            <IphoneFamilyCard key={group.family.key} family={group.family} products={group.products} />
+            <IphoneFamilyCard
+              key={group.family.key}
+              id={`family-${group.family.key}`}
+              family={group.family}
+              products={group.products}
+              highlighted={highlightKey === group.family.key}
+            />
           ))}
         </section>
       )}

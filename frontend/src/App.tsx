@@ -137,6 +137,7 @@ function AppContent() {
       {!isAdminRoute && (
         <Header
           currentPage={currentPage}
+          products={products}
           onNavigate={(page) => {
             // keep compatibility with previous onNavigate signature
             if (page && (page as any).type) {

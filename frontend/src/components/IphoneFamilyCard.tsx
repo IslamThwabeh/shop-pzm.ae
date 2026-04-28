@@ -12,9 +12,11 @@ import { triggerCartAddFeedback } from '../utils/cartFeedback'
 interface Props {
   family: BuyIphoneFamily
   products: Product[]
+  id?: string
+  highlighted?: boolean
 }
 
-export default function IphoneFamilyCard({ family, products }: Props) {
+export default function IphoneFamilyCard({ family, products, id, highlighted = false }: Props) {
   const group = groupVariantsByColorAndStorage(products)
   const { addItem } = useCart()
   const realColors = group.colors.filter((c) => !isPlaceholderColor(c))
@@ -55,7 +57,7 @@ export default function IphoneFamilyCard({ family, products }: Props) {
 
   if (products.length === 0) {
     return (
-      <article className="rounded-2xl border border-[#eee] bg-white p-5">
+      <article id={id} className={`rounded-2xl border bg-white p-5 transition-shadow ${highlighted ? 'border-primary ring-2 ring-primary/30 shadow-md' : 'border-[#eee]'}`}>
         <div className="h-[140px] overflow-hidden rounded-xl bg-slate-50">
           <RetailImage src={family.imageUrl} alt={family.imageAlt} name={family.title} variant="card" />
         </div>
@@ -69,7 +71,7 @@ export default function IphoneFamilyCard({ family, products }: Props) {
   }
 
   return (
-    <article data-cart-feedback-root className="flex flex-col rounded-2xl border border-[#eee] bg-white">
+    <article id={id} data-cart-feedback-root className={`flex flex-col rounded-2xl border bg-white transition-shadow ${highlighted ? 'border-primary ring-2 ring-primary/30 shadow-md' : 'border-[#eee]'}`}>
       {/* Image */}
       <div className="relative h-[200px] sm:h-[210px] overflow-hidden rounded-t-2xl border-b border-[#eee] bg-white">
         <div data-cart-feedback-image className="flex h-full w-full items-center justify-center p-4">
