@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, MessageCircle, ShoppingCart, ShieldCheck, Truck, CreditCard } from 'lucide-react'
 import type { Product } from '@shared/types'
 import { useCart } from '../context/CartContext'
-import { buildProductDisplayLabel, getKnownProductBrand, getPrimaryProductImage, getProductDetailRows } from '../utils/productPresentation'
+import { buildProductDisplayLabel, buildProductMetaDescription, buildProductRichDescription, getKnownProductBrand, getPrimaryProductImage, getProductDetailRows } from '../utils/productPresentation'
 import { getProductBrowsePath } from '../utils/productRouting'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { triggerCartAddFeedback } from '../utils/cartFeedback'
@@ -53,7 +53,6 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
 
   const image = getPrimaryProductImage(product)
   const inStock = (product.quantity ?? 0) > 0
-  const isQualityProduct = inStock && (product.description || '').trim().length >= 90
   const browsePath = getProductBrowsePath(product)
   const schemaImage = image || (
     browsePath === '/services/buy-iphone'
@@ -63,6 +62,8 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
         : brandNewHero.imageUrl
   )
   const label = buildProductDisplayLabel(product)
+  const richDescription = buildProductRichDescription(product)
+  const metaDescription = buildProductMetaDescription(product)
   const brand = getKnownProductBrand(product)
   const detailRows = getProductDetailRows(product).filter((row) => row.label !== 'Storage' && row.label !== 'Color')
   const warrantyLabel = product.warranty || (product.condition === 'new' ? 'Warranty' : 'Inspected & Tested')
@@ -97,7 +98,7 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: label,
-    description: product.description || `${label} available at PZM Computers & Phones in Dubai.`,
+    description: richDescription,
     image: [toAbsoluteSiteUrl(schemaImage)],
     sku: product.id,
     brand: {
@@ -127,11 +128,10 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
     <div className="space-y-8">
       <Seo
         title={`${label} | PZM Computers & Phones`}
-        description={product.description || `Buy ${label} in Dubai with Cash on Delivery from PZM.`}
+        description={metaDescription}
         canonicalPath={`/product/${product.id}`}
         imageUrl={schemaImage}
         jsonLd={jsonLd}
-        noindex={!isQualityProduct}
       />
 
       {/* Breadcrumb */}
@@ -162,9 +162,7 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
               {product.condition === 'new' ? 'Brand New' : 'Used'}
             </span>
             <h1 className="mt-3 text-2xl font-bold text-slate-900 md:text-3xl">{product.model}</h1>
-            {product.description && (
-              <p className="mt-2 text-sm leading-relaxed text-brandTextMedium">{product.description}</p>
-            )}
+            <p className="mt-2 text-sm leading-relaxed text-brandTextMedium">{richDescription}</p>
           </div>
 
           {/* Specs */}

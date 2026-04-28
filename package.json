@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "catalog:description-backfill": "node scripts/generate-live-description-backfill-manifest.mjs",
+    "catalog:rich-description-backfill": "node scripts/generate-live-rich-description-manifest.mjs",
     "catalog:sync": "node scripts/sync-products-to-shop.mjs",
     "media:upload": "node scripts/upload-owned-media-to-r2.mjs",
     "smoke:deploy": "node scripts/deploy-smoke-tests.mjs",

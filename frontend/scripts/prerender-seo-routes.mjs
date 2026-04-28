@@ -636,13 +636,13 @@ function buildProductLabel(product) {
 
 function buildProductRichDescription(product) {
   const description = cleanProductText(String(product.description || '').trim())
-  if (description) {
+  if (description.length >= 90) {
     return description
   }
 
   const highlights = buildProductFallbackHighlights(product)
   const fallbackDescription = `${buildProductLabel(product)} from PZM in Dubai with ${product.condition === 'used' ? 'used-device' : 'brand-new'} availability, local support, and Cash on Delivery.`
-  return cleanProductText([fallbackDescription, ...highlights].join(' '))
+  return cleanProductText([description, fallbackDescription, ...highlights].join(' '))
 }
 
 function buildProductMetaDescription(product) {
@@ -832,14 +832,6 @@ function buildProductRoutes(products) {
 
   const allProducts = Array.from(uniqueProducts.values()).sort(sortProducts)
 
-  // Quality products → included in sitemap; non-qualifying → prerendered HTML only (noindex via client)
-  const qualityProducts = allProducts.filter(isQualityProduct)
-  const lowQualityProducts = allProducts.filter((p) => !isQualityProduct(p))
-
-  if (lowQualityProducts.length > 0) {
-    console.log(`[prerender] Sitemap: ${qualityProducts.length} quality products included, ${lowQualityProducts.length} thin/OOS products excluded.`)
-  }
-
   const toRoute = (product) => ({
     path: buildProductPath(product),
     title: `${buildProductLabel(product)} | PZM Computers & Phones`,
@@ -854,12 +846,7 @@ function buildProductRoutes(products) {
     jsonLd: buildProductJsonLd(product),
   })
 
-  // Quality routes are returned normally (included in sitemap via canonicalRoutes)
-  // Low-quality routes are returned with excludeFromSitemap so they still get prerendered HTML pages
-  return [
-    ...qualityProducts.map((p) => toRoute(p)),
-    ...lowQualityProducts.map((p) => ({ ...toRoute(p), excludeFromSitemap: true, robots: 'noindex, follow' })),
-  ]
+  return allProducts.map((p) => toRoute(p))
 }
 
 function buildMerchantFeed(products, config = getResolvedLocalInventoryConfig()) {
@@ -1006,23 +993,27 @@ function buildMerchantTabFeed(products, config = getResolvedLocalInventoryConfig
 }
 
 function buildMerchantLocalInventoryTabFeed(products, config) {
+  const emptyLocalInventoryFeed = ['store_code', 'id', 'availability', 'quantity'].join('\t')
+
   if (!config.enabled) {
-    console.log('[prerender] Skipping merchant local inventory feed because it is disabled in localInventoryConfig.json.')
-    return null
+    console.log(
+      '[prerender] Local inventory is disabled in localInventoryConfig.json. Writing an empty merchant-local-inventory.txt to replace previous deployments.'
+    )
+    return `${emptyLocalInventoryFeed}\n`
   }
 
   if (!config.storeCode) {
     console.warn(
-      '[prerender] Skipping merchant-local-inventory.txt because no store code is configured. Set PZM_MERCHANT_STORE_CODE or update frontend/src/content/localInventoryConfig.json.'
+      '[prerender] No store code is configured. Writing an empty merchant-local-inventory.txt. Set PZM_MERCHANT_STORE_CODE or update frontend/src/content/localInventoryConfig.json when local inventory is ready.'
     )
-    return null
+    return `${emptyLocalInventoryFeed}\n`
   }
 
   const localProducts = getMerchantLocalInventoryProducts(products, config)
 
   if (localProducts.length === 0) {
-    console.warn('[prerender] Skipping merchant-local-inventory.txt because no eligible in-store products were selected.')
-    return null
+    console.warn('[prerender] No eligible in-store products were selected. Writing an empty merchant-local-inventory.txt.')
+    return `${emptyLocalInventoryFeed}\n`
   }
 
   const rows = [
@@ -2885,15 +2876,7 @@ for (const route of canonicalRoutes) {
 const canonicalRouteMap = new Map(canonicalRoutes.map((route) => [normalizeCanonicalPath(route.canonicalPath || route.path), route]))
 const blogRoute = canonicalRouteMap.get('/blog/')
 
-const aliasRoutes = [
-  {
-    ...blogRoute,
-    path: '/blog-post.html',
-    title: 'Tech Blog - iPhone, PC & Repair Tips | PZM Dubai',
-    canonicalPath: '/blog/',
-    robots: 'noindex, follow',
-  },
-]
+const aliasRoutes = []
 
 const productRoutes = buildProductRoutes(liveProducts)
 

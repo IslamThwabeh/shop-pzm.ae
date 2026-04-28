@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { MessageCircle, X, Truck, ShieldCheck, Banknote } from 'lucide-react'
 import type { Product } from '@shared/types'
 import RetailImage from './RetailImage'
-import { buildProductDisplayLabel, getPrimaryProductImage, getProductDetailRows } from '../utils/productPresentation'
+import { buildProductDisplayLabel, buildProductRichDescription, getPrimaryProductImage, getProductDetailRows } from '../utils/productPresentation'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 
 interface ProductDetailDrawerProps {
@@ -56,6 +56,7 @@ export default function ProductDetailDrawer({ product, onClose }: ProductDetailD
     },
     ...getProductDetailRows(product),
   ].filter(Boolean) as { label: string; value: string }[]
+  const description = buildProductRichDescription(product)
   const warrantyLabel = product.warranty || (product.condition === 'new' ? 'Official Warranty' : 'Inspected & Tested')
 
   return (
@@ -110,9 +111,9 @@ export default function ProductDetailDrawer({ product, onClose }: ProductDetailD
           )}
 
           {/* Description */}
-          {product.description && (
+          {description && (
             <p className="mt-4 text-sm leading-relaxed text-slate-500">
-              {product.description}
+              {description}
             </p>
           )}
 

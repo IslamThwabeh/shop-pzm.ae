@@ -4,6 +4,7 @@ import IphoneFamilyCard from '../components/IphoneFamilyCard'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { buyIphoneFamilies, getBuyIphoneFamilyGroups, getBuyIphoneProducts } from '../content/buyIphoneCatalog'
+import { buildProductRichDescription } from '../utils/productPresentation'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 import { sharedReturnPolicy, sharedShippingDetails } from '../utils/seoConfig'
@@ -37,7 +38,7 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
           item: {
             '@type': 'Product',
             name: productName,
-            description: `Apple ${productName} available in Dubai. Order via WhatsApp for same-day delivery in Dubai or 1–3 business days UAE-wide. Sold by PZM.`,
+            description: buildProductRichDescription(product),
             url: buildSiteUrl(`/product/${product.id}`),
             brand: {
               '@type': 'Brand',

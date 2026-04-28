@@ -13,7 +13,7 @@ import { getSecondhandCategoryGroups, getSecondhandProducts, secondhandCategorie
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { getDeviceFinderLabel, matchesDeviceFinderProduct, normalizeDeviceFinderKey } from '../utils/deviceFinder'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
-import { resolveProductBrand } from '../utils/productPresentation'
+import { buildProductRichDescription, resolveProductBrand } from '../utils/productPresentation'
 import { extractBrandFromName, sharedReturnPolicy, sharedShippingDetails } from '../utils/seoConfig'
 
 interface SecondhandPageProps {
@@ -152,7 +152,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
             item: {
               '@type': 'Product',
               name: productName,
-              description: product.description || `Certified pre-owned ${productName} available in Dubai at PZM.`,
+              description: buildProductRichDescription(product),
               brand: {
                 '@type': 'Brand',
                 name: resolveProductBrand(product) || extractBrandFromName(productName),

@@ -14,7 +14,7 @@ import { resolveServiceSlug } from '../content/serviceCatalog'
 import { getDeviceFinderLabel, matchesDeviceFinderProduct, normalizeDeviceFinderKey } from '../utils/deviceFinder'
 import { selectFeaturedProducts } from '../utils/featuredProducts'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
-import { groupProductsByModelFamily, resolveProductBrand } from '../utils/productPresentation'
+import { buildProductRichDescription, groupProductsByModelFamily, resolveProductBrand } from '../utils/productPresentation'
 import { extractBrandFromName, sharedReturnPolicy, sharedShippingDetails } from '../utils/seoConfig'
 
 interface BrandNewPageProps {
@@ -154,7 +154,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
             item: {
               '@type': 'Product',
               name: productName,
-              description: product.description || `Brand new ${productName} available in Dubai. Order for quick delivery.`,
+              description: buildProductRichDescription(product),
               brand: {
                 '@type': 'Brand',
                 name: resolveProductBrand(product) || extractBrandFromName(productName),

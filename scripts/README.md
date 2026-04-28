@@ -73,6 +73,21 @@ Notes:
 - Run the sync first, then refresh the live storefront and inspect the updated descriptions before deciding whether to deploy the frontend.
 - Ask for explicit approval before every frontend deploy. The deploy is only needed after approval so sitemap, prerendered product HTML, and Merchant feed artifacts are regenerated from the corrected live data.
 
+## Live Rich Description Backfill
+
+Generate description-only updates directly from the live catalog when both the current live description and the latest TSV snapshot are too short for SEO:
+
+```powershell
+npm run catalog:rich-description-backfill -- --label gsc-pass
+npm run catalog:sync -- .\scripts\product-sync.rich-description-backfill.gsc-pass-YYYY-MM-DD.json
+```
+
+Notes:
+
+- This workflow uses only verified live catalog fields already stored on the product row, such as model, storage, condition, warranty, battery health, accessories, repair history, and release year.
+- Use it after `catalog:description-backfill` reports zero candidates but GSC or manual QA still shows thin product copy.
+- Review the generated markdown report before syncing if a product has awkward placeholder values in `color` or other fields that should be cleaned separately.
+
 ## Merchant Local Inventory Feed
 
 The frontend prerender can now generate a separate local inventory feed for Merchant Center at `frontend/dist/merchant-local-inventory.txt`.

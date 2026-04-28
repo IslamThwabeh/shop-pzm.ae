@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { Product } from '@shared/types'
 import RetailImage from './RetailImage'
-import { buildProductDisplayLabel, getKnownProductBrand, getPrimaryProductImage, sanitizeProductDescription } from '../utils/productPresentation'
+import { buildProductDisplayLabel, buildProductRichDescription, getKnownProductBrand, getPrimaryProductImage } from '../utils/productPresentation'
 import { getProductBrowsePath } from '../utils/productRouting'
 
 interface FeaturedProductsSectionProps {
@@ -47,7 +47,7 @@ export default function FeaturedProductsSection({
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => {
-            const descriptionText = sanitizeProductDescription(product.description)
+            const descriptionText = buildProductRichDescription(product)
             const collectionPath = collectionHref ?? getProductBrowsePath(product)
             const imageUrl = getPrimaryProductImage(product)
 

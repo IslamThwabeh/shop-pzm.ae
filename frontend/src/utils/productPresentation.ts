@@ -14,6 +14,8 @@ const descriptionReplacements: Array<[RegExp, string]> = [
   [/\s+with multiple units available\.?/gi, '.'],
 ]
 
+const MIN_RICH_PRODUCT_DESCRIPTION_LENGTH = 90
+
 function cleanText(value: string) {
   return value
     .replace(/\s{2,}/g, ' ')
@@ -21,6 +23,17 @@ function cleanText(value: string) {
     .replace(/\s+,/g, ',')
     .replace(/\.\s*\./g, '.')
     .trim()
+}
+
+function truncateText(value: string, maxLength: number) {
+  if (value.length <= maxLength) {
+    return value
+  }
+
+  const truncated = value.slice(0, maxLength - 1)
+  const safeBoundary = truncated.lastIndexOf(' ')
+
+  return `${(safeBoundary > 60 ? truncated.slice(0, safeBoundary) : truncated).trim()}…`
 }
 
 function sanitizeOptionalText(value?: string | null) {
@@ -68,6 +81,41 @@ export function buildProductDisplayLabel(product: Pick<Product, 'model' | 'stora
   }
 
   return cleanText(segments.filter(Boolean).join(' ')) || product.model.trim()
+}
+
+function buildProductFallbackHighlights(product: Product) {
+  const highlights: string[] = []
+
+  if (product.release_year) highlights.push(`Released ${product.release_year}.`)
+  if (product.battery_health != null) highlights.push(`Battery health ${product.battery_health}%.`)
+  if (sanitizeOptionalText(product.cosmetic_grade)) highlights.push(`Cosmetic grade ${product.cosmetic_grade!.trim()}.`)
+  if (sanitizeOptionalText(product.repair_history)) highlights.push(product.repair_history!.trim())
+  if (sanitizeOptionalText(product.accessories_included)) highlights.push(`Includes ${product.accessories_included!.trim()}.`)
+  if (sanitizeOptionalText(product.warranty)) highlights.push(product.warranty!.trim())
+
+  return highlights
+}
+
+export function buildProductRichDescription(product: Product) {
+  const description = sanitizeProductDescription(product.description)
+
+  if (description && description.length >= MIN_RICH_PRODUCT_DESCRIPTION_LENGTH) {
+    return description
+  }
+
+  const label = buildProductDisplayLabel(product)
+  const fallbackDescription = [
+    `${label} from PZM Computers & Phones in Dubai with direct WhatsApp ordering, Cash on Delivery, and UAE delivery support.`,
+    product.condition === 'used'
+      ? 'Certified pre-owned and checked by the store team.'
+      : 'Brand-new stock with local retail support.',
+  ].join(' ')
+
+  return cleanText([description, fallbackDescription, ...buildProductFallbackHighlights(product)].filter(Boolean).join(' ')) || label
+}
+
+export function buildProductMetaDescription(product: Product) {
+  return truncateText(buildProductRichDescription(product), 160)
 }
 
 export function getPrimaryProductImage(product?: Pick<Product, 'image_url' | 'images'> | null) {
