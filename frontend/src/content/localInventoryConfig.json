@@ -1,5 +1,5 @@
 {
-  "enabled": false,
+  "enabled": true,
   "storeCode": "15302387347957747833",
   "primaryFeedExcludedDestinations": [
     "Local_inventory_ads",

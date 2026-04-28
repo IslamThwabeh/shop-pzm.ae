@@ -2344,39 +2344,74 @@ const HOME_AREA_SERVED = [
 const AREAS_INDEX_DESCRIPTION =
   'Explore the Dubai communities served by PZM, including Barsha 1-3, Dubai Science Park, JVC, JLT, Springs, Meadows Village, Barsha Heights, Tecom, and Al Sufouh.'
 
+const BUSINESS_PHONE = '+971528026677'
+const BUSINESS_GEO = { latitude: '25.0848627', longitude: '55.1992671' }
+const BUSINESS_ADDRESS = {
+  '@type': 'PostalAddress',
+  streetAddress: 'Hessa Street Branch, Inside Hessa Union Coop Hypermarket, Ground Floor',
+  addressLocality: 'Dubai',
+  addressCountry: 'AE',
+}
+const BUSINESS_MAP_URL = 'https://maps.app.goo.gl/e5Rhfo8YY3i8CatM7?g_st=ic'
+const BUSINESS_OPENING_HOURS = [
+  {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+    opens: '08:30',
+    closes: '23:30',
+  },
+  {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: 'Friday',
+    opens: '10:00',
+    closes: '23:30',
+  },
+  {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Saturday', 'Sunday'],
+    opens: '08:30',
+    closes: '01:00',
+  },
+]
+const BUSINESS_SAME_AS = [BUSINESS_MAP_URL]
+const BUSINESS_PAYMENT_ACCEPTED = 'Cash, Credit Card, Debit Card, Apple Pay, Google Pay'
+const BUSINESS_CURRENCIES_ACCEPTED = 'AED'
+const BUSINESS_PRICE_RANGE = 'AED 150 - AED 7,000'
+const BUSINESS_ID = `${SITE_URL}/#store`
+
 function buildStoreJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'ComputerStore',
+    additionalType: ['https://schema.org/MobilePhoneStore', 'https://schema.org/Store'],
+    '@id': BUSINESS_ID,
     name: BUSINESS_NAME,
     description: HOME_ROUTE_DESCRIPTION,
     url: `${SITE_URL}/`,
-    telephone: '+971528026677',
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: 'Hessa Street Branch, Inside Hessa Union Coop Hypermarket, Ground Floor',
-      addressLocality: 'Dubai',
-      addressCountry: 'AE',
-    },
+    telephone: BUSINESS_PHONE,
+    address: BUSINESS_ADDRESS,
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: '25.0848627',
-      longitude: '55.1992671',
+      ...BUSINESS_GEO,
     },
+    hasMap: BUSINESS_MAP_URL,
+    openingHoursSpecification: BUSINESS_OPENING_HOURS,
+    sameAs: BUSINESS_SAME_AS,
+    paymentAccepted: BUSINESS_PAYMENT_ACCEPTED,
+    currenciesAccepted: BUSINESS_CURRENCIES_ACCEPTED,
     areaServed: [
       ...HOME_AREA_SERVED.map((name) => ({ '@type': 'Place', name })),
       {
         '@type': 'GeoCircle',
         geoMidpoint: {
           '@type': 'GeoCoordinates',
-          latitude: '25.0848627',
-          longitude: '55.1992671',
+          ...BUSINESS_GEO,
         },
         geoRadius: '10000',
       },
     ],
     image: DEFAULT_IMAGE,
-    priceRange: 'AED 150 - AED 7,000',
+    priceRange: BUSINESS_PRICE_RANGE,
   }
 }
 
@@ -2384,35 +2419,35 @@ function buildAreaJsonLd(route) {
   return {
     '@context': 'https://schema.org',
     '@type': 'ComputerStore',
+    additionalType: ['https://schema.org/MobilePhoneStore', 'https://schema.org/Store'],
+    '@id': `${SITE_URL}/areas/${route.slug}/#store`,
     name: `${BUSINESS_NAME} - ${route.name}, Dubai`,
     description: route.description,
     url: `${SITE_URL}/areas/${route.slug}/`,
-    telephone: '+971528026677',
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: 'Hessa Street Branch, Inside Hessa Union Coop Hypermarket, Ground Floor',
-      addressLocality: 'Dubai',
-      addressCountry: 'AE',
-    },
+    telephone: BUSINESS_PHONE,
+    address: BUSINESS_ADDRESS,
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: '25.0848627',
-      longitude: '55.1992671',
+      ...BUSINESS_GEO,
     },
+    hasMap: BUSINESS_MAP_URL,
+    openingHoursSpecification: BUSINESS_OPENING_HOURS,
+    sameAs: BUSINESS_SAME_AS,
+    paymentAccepted: BUSINESS_PAYMENT_ACCEPTED,
+    currenciesAccepted: BUSINESS_CURRENCIES_ACCEPTED,
     areaServed: [
       ...route.areaServed.map((name) => ({ '@type': 'Place', name })),
       {
         '@type': 'GeoCircle',
         geoMidpoint: {
           '@type': 'GeoCoordinates',
-          latitude: '25.0848627',
-          longitude: '55.1992671',
+          ...BUSINESS_GEO,
         },
         geoRadius: '10000',
       },
     ],
     image: DEFAULT_IMAGE,
-    priceRange: 'AED 150 - AED 7,000',
+    priceRange: BUSINESS_PRICE_RANGE,
   }
 }
 

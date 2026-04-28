@@ -62,9 +62,9 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     heroTitle: 'Phone and Laptop Store in Al Barsha and Dubai Science Park',
     heroDescription:
       'Walk in for iPhones, repairs, trade-ins, accessories, and PC builds from Al Barsha, Barsha 1-3, and Dubai Science Park.',
-    travelNote: 'Inside Hessa Union Coop Hypermarket on Hessa Street.',
+    travelNote: 'Inside Hessa Union Coop Hypermarket on Hessa Street, opposite Mall of the Emirates side of Al Barsha.',
     localSummary:
-      'PZM is inside Hessa Union Coop Hypermarket, making Al Barsha, Barsha 1-3, and Dubai Science Park one of the fastest access points for same-day repair intake, product collection, and on-site help.',
+      'PZM sits inside Hessa Union Coop Hypermarket on Hessa Street, a few minutes from Mall of the Emirates and the Dubai Science Park / Arjan corridor. Walk in for new and used iPhone, Samsung, and laptop sales, same-day phone screen and battery replacement, MacBook diagnostics, accessories, and custom gaming PC builds. Free parking inside the Coop, easy collection point for online orders, and quick repair drop-off for residents and offices in Barsha 1, Barsha 2, Barsha 3, Al Barsha South, and Dubai Science Park.',
     nearbyCommunities: ['Barsha 1', 'Barsha 2', 'Barsha 3', 'Dubai Science Park', 'Al Barsha South'],
     advantages: [
       'Fastest walk-in option for same-day repair intake and accessory pickup.',
@@ -230,9 +230,9 @@ export const areaCatalog: Record<string, AreaCatalogEntry> = {
     heroTitle: 'Phone and Laptop Services for Tecom, Barsha Heights, and Al Sufouh',
     heroDescription:
       'Quick access from Tecom, Barsha Heights, Al Sufouh, Internet City, and Media City for repairs and device support.',
-    travelNote: 'Usually around 5 to 10 minutes from Tecom, Barsha Heights, and Al Sufouh.',
+    travelNote: 'About 5 to 10 minutes from Tecom, Barsha Heights, Al Sufouh, Internet City, and Media City via Hessa Street or Sheikh Zayed Road.',
     localSummary:
-      'This area often needs quick turnaround from offices and nearby apartments, so fast responses and easy next steps matter.',
+      'PZM is the closest walk-in store on Hessa Street for Tecom, Barsha Heights, Al Sufouh, Dubai Internet City, and Dubai Media City offices and apartments. We handle iPhone screen and battery replacement, MacBook and laptop repair, used and new device sales, trade-ins, accessories, and on-the-spot diagnostics. Drop a device on the way to the office and pick it up the same day. Bulk corporate device support and pickup for Tecom and Internet City buildings is available on request.',
     nearbyCommunities: ['Tecom', 'Barsha Heights', 'Al Sufouh', 'Internet City', 'Media City'],
     advantages: [
       'Great for fast repair requests during the workday.',
