@@ -23,7 +23,7 @@ export default function Seo({
   jsonLd,
 }: SeoProps) {
   const canonicalUrl = buildCanonicalUrl(canonicalPath)
-  const robots = noindex ? 'noindex, nofollow' : 'index, follow'
+  const robots = noindex ? 'noindex, follow' : 'index, follow'
   const ogImage = imageUrl ? toAbsoluteSiteUrl(imageUrl) : DEFAULT_IMAGE
 
   const jsonLdArray = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []

@@ -25,6 +25,17 @@ function cleanText(value: string) {
     .trim()
 }
 
+function countModelOccurrences(description: string, model: string) {
+  const normalizedModel = model.trim().toLowerCase()
+
+  if (!normalizedModel) {
+    return 0
+  }
+
+  const escapedModel = normalizedModel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return (description.toLowerCase().match(new RegExp(escapedModel, 'g')) || []).length
+}
+
 function truncateText(value: string, maxLength: number) {
   if (value.length <= maxLength) {
     return value
@@ -98,12 +109,17 @@ function buildProductFallbackHighlights(product: Product) {
 
 export function buildProductRichDescription(product: Product) {
   const description = sanitizeProductDescription(product.description)
+  const modelOccurrences = description ? countModelOccurrences(description, product.model) : 0
+  const hasModelDuplication = modelOccurrences >= 2
 
-  if (description && description.length >= MIN_RICH_PRODUCT_DESCRIPTION_LENGTH) {
+  if (!hasModelDuplication && description && description.length >= MIN_RICH_PRODUCT_DESCRIPTION_LENGTH) {
     return description
   }
 
   const label = buildProductDisplayLabel(product)
+  const shortDescContainsModel = description
+    ? countModelOccurrences(description, product.model) >= 1
+    : false
   const fallbackDescription = [
     `${label} from PZM Computers & Phones in Dubai with direct WhatsApp ordering, Cash on Delivery, and UAE delivery support.`,
     product.condition === 'used'
@@ -111,7 +127,9 @@ export function buildProductRichDescription(product: Product) {
       : 'Brand-new stock with local retail support.',
   ].join(' ')
 
-  return cleanText([description, fallbackDescription, ...buildProductFallbackHighlights(product)].filter(Boolean).join(' ')) || label
+  const prefix = description && !shortDescContainsModel ? description : undefined
+
+  return cleanText([prefix, fallbackDescription, ...buildProductFallbackHighlights(product)].filter(Boolean).join(' ')) || label
 }
 
 export function buildProductMetaDescription(product: Product) {
