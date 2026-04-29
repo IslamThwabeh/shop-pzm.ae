@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import './App.css'
-import type { Product } from '@shared/types'
+import type { Product, WhatsAppLeadType } from '@shared/types'
 import { apiService } from './services/api'
 import HomePage from './pages/HomePage'
 import Header from './components/Header'
@@ -12,6 +12,7 @@ import StoreContactSection from './components/StoreContactSection'
 import ConsentBanner from './components/ConsentBanner'
 import { sanitizeProductsForDisplay } from './utils/productPresentation'
 import { isPhoneHref, isWhatsAppHref, openTrackedPhoneHref, trackWhatsAppLead } from './utils/analytics'
+import { openRegisteredWhatsAppHref } from './utils/whatsappLead'
 
 const ProductDetails = lazy(() => import('./pages/ProductDetails'))
 const Cart = lazy(() => import('./pages/Cart'))
@@ -48,6 +49,19 @@ function readPreloadedProducts() {
     console.error('Failed to parse preloaded products', error)
     return [] as Product[]
   }
+}
+
+function getWhatsAppLeadType(pathname: string, href: string, referenceLabel?: string): WhatsAppLeadType {
+  if (pathname.startsWith('/product/')) {
+    return 'product'
+  }
+
+  const leadSignal = `${referenceLabel || ''} ${href}`.toLowerCase()
+  if (pathname.startsWith('/services/') && /appointment|book/.test(leadSignal)) {
+    return 'appointment'
+  }
+
+  return 'service'
 }
 
 function AppContent() {
@@ -136,11 +150,19 @@ function AppContent() {
       }
 
       if (isWhatsAppHref(href)) {
+        event.preventDefault()
         trackWhatsAppLead({
           leadType: 'generic',
           referenceLabel,
           sourcePage: location.pathname,
         })
+        openRegisteredWhatsAppHref({
+          href,
+          leadType: getWhatsAppLeadType(location.pathname, href, referenceLabel),
+          referenceLabel,
+          sourcePage: location.pathname,
+        })
+        return
       }
     }
 

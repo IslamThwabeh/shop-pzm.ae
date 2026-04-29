@@ -14,6 +14,27 @@
       gtag('js', new Date())
       gtag('config', 'AW-16481610525')
     </script>
+    <script>
+      (function () {
+        var pathname = window.location.pathname || '/'
+        var exactRoutes = ['/admin', '/cart', '/checkout', '/terms', '/return-policy', '/services', '/areas', '/blog', '/blog-post']
+        var routePrefixes = ['/admin/', '/order/', '/product/', '/services/', '/areas/', '/blog/']
+        var isKnownSpaRoute = exactRoutes.indexOf(pathname) !== -1 || routePrefixes.some(function (prefix) {
+          return pathname.indexOf(prefix) === 0
+        })
+
+        if (!isKnownSpaRoute) {
+          return
+        }
+
+        var targetPath = pathname + window.location.search + window.location.hash
+        if (!targetPath || targetPath === '/') {
+          return
+        }
+
+        window.location.replace('/?pzm-spa=' + encodeURIComponent(targetPath))
+      })()
+    </script>
     <style>
       :root {
         color-scheme: light;
@@ -137,11 +158,60 @@
       <div class="actions">
         <a class="button primary" href="/">Go to homepage</a>
         <a class="button" href="/services/brand-new/">Browse products</a>
-        <a class="button" href="https://wa.me/971528026677?text=Hi%2C%20I%27m%20looking%20for%20a%20product%20that%20may%20no%20longer%20be%20listed.%20Can%20you%20help%3F%20(via%20pzm.ae)" target="_blank" rel="noopener noreferrer">Ask on WhatsApp</a>
+        <a id="not-found-whatsapp-link" class="button" href="https://wa.me/971528026677?text=Hi%2C%20I%27m%20looking%20for%20a%20product%20that%20may%20no%20longer%20be%20listed.%20Can%20you%20help%3F%20(via%20pzm.ae)" target="_blank" rel="noopener noreferrer">Ask on WhatsApp</a>
       </div>
       <div class="help">
         Need direct help? Call <a href="tel:+971528026677">+971 52 802 6677</a> or message the store team.
       </div>
     </main>
+    <script>
+      (function () {
+        var whatsappLink = document.getElementById('not-found-whatsapp-link')
+        if (!whatsappLink) {
+          return
+        }
+
+        function getWhatsAppMessage(href) {
+          try {
+            var url = new URL(href, window.location.origin)
+            return url.searchParams.get('text') || ''
+          } catch (error) {
+            return ''
+          }
+        }
+
+        whatsappLink.addEventListener('click', function (event) {
+          event.preventDefault()
+
+          var href = whatsappLink.getAttribute('href') || ''
+          var message = getWhatsAppMessage(href) || 'Hi, I need help finding a product that may no longer be listed. (via pzm.ae)'
+
+          if (typeof window.gtag === 'function') {
+            window.gtag('event', 'generate_lead', {
+              method: 'whatsapp',
+              lead_type: 'generic',
+              reference_label: '404 page WhatsApp help',
+              source_page: window.location.pathname,
+            })
+          }
+
+          fetch('/api/whatsapp-leads', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              lead_type: 'service',
+              reference_label: '404 page WhatsApp help',
+              source_page: window.location.pathname,
+              whatsapp_message: message,
+            }),
+            keepalive: true,
+          }).catch(function () {
+            return undefined
+          })
+
+          window.open(href, '_blank', 'noopener,noreferrer')
+        })
+      })()
+    </script>
   </body>
 </html>

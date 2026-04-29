@@ -9,6 +9,7 @@ import {
 } from '../utils/storefrontSearch'
 import { buildWhatsAppHref } from '../utils/contact'
 import { trackWhatsAppLead } from '../utils/analytics'
+import { openRegisteredWhatsAppHref } from '../utils/whatsappLead'
 
 interface HeaderSearchProps {
   products: Product[]
@@ -81,12 +82,19 @@ export default function HeaderSearch({ products, variant, onAfterNavigate }: Hea
       return
     }
 
+    const href = buildWhatsAppHref(buildWhatsAppMessage(trimmed))
+
     trackWhatsAppLead({
       leadType: 'generic',
       referenceLabel: trimmed,
       sourcePage: window.location.pathname,
     })
-    window.open(buildWhatsAppHref(buildWhatsAppMessage(trimmed)), '_blank', 'noopener,noreferrer')
+    openRegisteredWhatsAppHref({
+      href,
+      leadType: 'service',
+      referenceLabel: trimmed,
+      sourcePage: window.location.pathname,
+    })
     closeAndBlur()
   }, [closeAndBlur, query])
 
