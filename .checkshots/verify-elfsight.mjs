@@ -4,7 +4,7 @@ const browser = await chromium.launch({ channel: "msedge", headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1400 } });
 const widgetSelector = 'iframe[src*="elfsight"], iframe[src*="elfsightcdn"], iframe[src*="elfsight.com"]';
 
-await page.goto('https://shop.pzm.ae/', { waitUntil: 'networkidle' });
+await page.goto('https://pzm.ae/', { waitUntil: 'networkidle' });
 await page.mouse.move(240, 220);
 await page.locator('text=Customer Reviews').scrollIntoViewIfNeeded();
 await page.waitForTimeout(6000);
