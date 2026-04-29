@@ -98,15 +98,12 @@ export default function Header({ onNavigate, products = [] }: HeaderProps) {
         <div className="flex h-16 items-center justify-between gap-4">
 
           {/* ── Logo ─────────────────────────────────── */}
-          <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label="Home">
+          <Link to="/" className="flex shrink-0 items-center" aria-label="PZM home">
             <img
-              src="/images/mini_logo.png"
-              alt="PZM logo"
-              className="h-10 w-auto object-contain"
+              src="/images/brand/pzm-header-logo.png"
+              alt="PZM"
+              className="h-8 w-auto object-contain sm:h-9 lg:h-10"
             />
-            <span className="text-lg font-bold tracking-tight text-slate-900 hidden sm:inline">
-              PZM
-            </span>
           </Link>
 
           {/* ── Desktop Nav (center) ──────────────────── */}
