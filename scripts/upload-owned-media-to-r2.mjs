@@ -152,7 +152,7 @@ async function main() {
     const normalizedRelativePath = file.relativePath.replace(/^\.+\//, '');
     const objectKey = `${folder}/${normalizedRelativePath}`;
     await runWrangler(['r2', 'object', 'put', `pzm-images/${objectKey}`, `--file=${file.absolutePath}`, '--remote'], path.resolve('backend'));
-    const publicUrl = `https://shop.pzm.ae/api/media/${objectKey}`;
+    const publicUrl = `https://pzm.ae/api/media/${objectKey}`;
     results.push({
       source: file.absolutePath,
       url: publicUrl,

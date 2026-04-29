@@ -1,6 +1,6 @@
 
 account_id = "79e9ff531db92d17c6579430b86a5f3c"
-name = "shop-pzm-ae-api-production"
+name = "pzm-ae-api-production"
 main = "src/index.ts"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
@@ -32,10 +32,10 @@ compatibility_flags = ["nodejs_compat"]
 
 # Local development configuration removed per request
 # =====================================================================
-# Production (pzm.ae/api with shop alias)
+# Production (pzm.ae/api)
 # =====================================================================
 [env.production]
-name = "shop-pzm-ae-api-production"
+name = "pzm-ae-api-production"
 vars = { ENVIRONMENT = "production" }
 
 [[env.production.routes]]

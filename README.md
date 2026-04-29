@@ -1,2 +1,1 @@
-pzm.ae
-# shop-pzm.ae
+# pzm.ae

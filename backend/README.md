@@ -3,7 +3,7 @@
 Local development instructions have been removed per repository policy change. This project uses Cloudflare staging and production environments for development and testing.
 
 ## Local deploy auth
-- Store the shop.pzm.ae deploy token only in `backend/.cloudflare-deploy.env`.
+- Store the pzm.ae deploy token only in `backend/.cloudflare-deploy.env`.
 - Keep runtime worker secrets in `backend/.dev.vars`.
 - Do not place the deploy token in `backend/.env` or `backend/.dev.vars`.
 - Use `backend/.cloudflare-deploy.env.example` as the template for the local deploy-token file.
@@ -31,7 +31,7 @@ npx wrangler deploy --env staging
 ```
 
 ## Production
-- Production worker: `shop-pzm-ae-api-production` (routes: `pzm.ae/api/*`, `www.pzm.ae/api/*`)
+- Production worker: `pzm-ae-api-production` (routes: `pzm.ae/api/*`, `www.pzm.ae/api/*`)
 
 To deploy to production:
 

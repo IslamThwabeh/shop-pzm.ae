@@ -37,7 +37,7 @@ const PRODUCTION_SITE_ORIGINS = [
   'https://pzm.ae',
   'https://www.pzm.ae',
   'https://api.pzm.ae',
-  'https://pzm-store-frontend.pages.dev',
+  'https://pzm-ae-frontend.pages.dev',
 ];
 const LOCAL_DEV_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173'];
 const PRODUCTION_API_HOSTS = new Set(['pzm.ae', 'www.pzm.ae', 'api.pzm.ae']);

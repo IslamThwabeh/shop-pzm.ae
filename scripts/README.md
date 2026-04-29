@@ -155,5 +155,5 @@ npm run media:upload -- --folder blog C:\Users\your-name\Pictures\pzm\blog
 Notes:
 
 - The script loads `backend/.cloudflare-deploy.env` automatically when it exists.
-- Uploads go to `https://shop.pzm.ae/api/media/<folder>/<filename>`.
+- Uploads go to `https://pzm.ae/api/media/<folder>/<filename>`.
 - This script is for owned local files only. Do not rehost third-party blog images unless you have the right to use them.

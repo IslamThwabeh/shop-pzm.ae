@@ -5,10 +5,10 @@
  *
  * Usage:
  *   node scripts/audit-product-images.mjs
- *   node scripts/audit-product-images.mjs https://shop.pzm.ae
+ *   node scripts/audit-product-images.mjs https://pzm.ae
  */
 
-const BASE = process.argv[2] || 'https://shop.pzm.ae'
+const BASE = process.argv[2] || 'https://pzm.ae'
 const API = `${BASE}/api/products`
 
 async function head(url) {
