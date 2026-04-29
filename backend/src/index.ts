@@ -1488,6 +1488,36 @@ app.put('/api/whatsapp-leads/:id', async (c) => {
   }
 });
 
+app.delete('/api/whatsapp-leads/:id', async (c) => {
+  try {
+    const leadId = c.req.param('id');
+    logRequest('DELETE', `/api/whatsapp-leads/${leadId}`);
+    const authService = new AuthService(c.env.ADMIN_SECRET);
+    const authHeader = c.req.header('Authorization');
+    const token = authService.extractToken(authHeader);
+
+    if (!token) {
+      return c.json({ error: 'Unauthorized', status: 401 }, 401);
+    }
+
+    const payload = await authService.verifyToken(token);
+    if (!payload || payload.type !== 'admin') {
+      return c.json({ error: 'Forbidden', status: 403 }, 403);
+    }
+
+    const db = new Database(c.env.DB);
+    const deleted = await db.deleteWhatsAppLead(leadId);
+    if (!deleted) {
+      return c.json({ error: 'Lead not found', status: 404 }, 404);
+    }
+
+    return c.json({ data: { id: leadId }, status: 200 }, 200);
+  } catch (error) {
+    logError(error, 'DELETE /api/whatsapp-leads/:id');
+    return c.json({ error: 'Failed to delete whatsapp lead', status: 500 }, 500);
+  }
+});
+
 // ============ AUTH API ============
 
 app.post('/api/auth/admin/login', async (c) => {

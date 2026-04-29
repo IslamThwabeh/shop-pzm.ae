@@ -779,6 +779,19 @@ export class Database {
     }
   }
 
+  async deleteWhatsAppLead(id: string): Promise<boolean> {
+    try {
+      const result = await this.db
+        .prepare('DELETE FROM whatsapp_leads WHERE id = ?')
+        .bind(id)
+        .run();
+      return (result.meta?.changes ?? 0) > 0;
+    } catch (error) {
+      console.error('Error deleting whatsapp lead:', error);
+      return false;
+    }
+  }
+
   // ============ GOOGLE CUSTOMER REVIEWS ============
 
   async createGcrOptInEvent(event: GcrOptInEvent): Promise<GcrOptInEvent> {

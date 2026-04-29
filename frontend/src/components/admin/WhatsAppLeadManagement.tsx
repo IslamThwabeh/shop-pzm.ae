@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { WhatsAppLead, WhatsAppLeadStatus } from '@shared/types';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Trash2 } from 'lucide-react';
 import { buildApiUrl } from '../../utils/siteConfig';
 
 interface WhatsAppLeadManagementProps {
@@ -70,6 +70,7 @@ export default function WhatsAppLeadManagement({ onUnauthorized }: WhatsAppLeadM
   const [draftStatus, setDraftStatus] = useState<WhatsAppLeadStatus>('pending');
   const [draftNotes, setDraftNotes] = useState('');
   const [savingStatus, setSavingStatus] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const leadsPerPage = 10;
 
@@ -152,6 +153,43 @@ export default function WhatsAppLeadManagement({ onUnauthorized }: WhatsAppLeadM
       setError(err instanceof Error ? err.message : 'Failed to update WhatsApp lead');
     } finally {
       setSavingStatus(false);
+    }
+  };
+
+  const handleDeleteLead = async (lead: WhatsAppLead) => {
+    if (!window.confirm(`Delete lead "${lead.reference_label}"? This cannot be undone.`)) return;
+    setDeletingId(lead.id);
+    setError(null);
+
+    try {
+      const authToken = localStorage.getItem('adminToken');
+      if (!authToken) {
+        setError('Not authenticated');
+        onUnauthorized();
+        return;
+      }
+
+      const response = await fetch(buildApiUrl(`/whatsapp-leads/${lead.id}`), {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${authToken}` },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUser');
+          onUnauthorized();
+          throw new Error('Session expired. Please login again.');
+        }
+        throw new Error('Failed to delete WhatsApp lead');
+      }
+
+      setLeads((prev) => prev.filter((l) => l.id !== lead.id));
+      if (selectedLead?.id === lead.id) setSelectedLead(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete WhatsApp lead');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -296,12 +334,22 @@ export default function WhatsAppLeadManagement({ onUnauthorized }: WhatsAppLeadM
                   </td>
                   <td className="px-6 py-4 text-sm text-brandTextMedium">{formatDateTime(lead.created_at)}</td>
                   <td className="px-6 py-4 text-sm">
-                    <button
-                      onClick={() => setSelectedLead(lead)}
-                      className="font-semibold text-primary transition-colors hover:text-brandGreenDark"
-                    >
-                      Manage
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setSelectedLead(lead)}
+                        className="font-semibold text-primary transition-colors hover:text-brandGreenDark"
+                      >
+                        Manage
+                      </button>
+                      <button
+                        onClick={() => handleDeleteLead(lead)}
+                        disabled={deletingId === lead.id}
+                        className="text-rose-400 transition-colors hover:text-rose-600 disabled:opacity-40"
+                        title="Delete lead"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -466,13 +514,23 @@ export default function WhatsAppLeadManagement({ onUnauthorized }: WhatsAppLeadM
                     />
                   </div>
 
-                  <button
-                    onClick={handleUpdateLead}
-                    disabled={savingStatus || (draftStatus === selectedLead.status && draftNotes === (selectedLead.notes || ''))}
-                    className="rounded-full bg-[linear-gradient(135deg,#7adf38_0%,#00A76F_100%)] px-5 py-3 font-semibold text-white transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)] disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {savingStatus ? 'Saving...' : 'Save Changes'}
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handleUpdateLead}
+                      disabled={savingStatus || (draftStatus === selectedLead.status && draftNotes === (selectedLead.notes || ''))}
+                      className="rounded-full bg-[linear-gradient(135deg,#7adf38_0%,#00A76F_100%)] px-5 py-3 font-semibold text-white transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {savingStatus ? 'Saving...' : 'Save Changes'}
+                    </button>
+                    <button
+                      onClick={() => handleDeleteLead(selectedLead)}
+                      disabled={deletingId === selectedLead.id}
+                      className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-5 py-3 font-semibold text-rose-600 transition-all duration-150 hover:-translate-y-0.5 hover:border-rose-300 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <Trash2 size={15} />
+                      {deletingId === selectedLead.id ? 'Deleting...' : 'Delete Lead'}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
