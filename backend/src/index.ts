@@ -132,6 +132,11 @@ function getObjectKeyFromUrl(url: string): string | null {
     const parsedUrl = new URL(url);
     const hostname = parsedUrl.hostname.toLowerCase();
 
+    if (PRODUCTION_API_HOSTS.has(hostname) && parsedUrl.pathname.startsWith(SHOP_MEDIA_PATH_PREFIX)) {
+      const key = parsedUrl.pathname.slice(SHOP_MEDIA_PATH_PREFIX.length);
+      return key || null;
+    }
+
     if (hostname !== R2_HOST && !hostname.endsWith('.r2.cloudflarestorage.com')) {
       return null;
     }
@@ -264,8 +269,13 @@ async function serveR2Object(c: any, pathPrefix: string = '/') {
 // Block search engine crawlers on r2.pzm.ae and serve robots.txt
 app.use('*', async (c, next) => {
   const host = c.req.header('host')?.toLowerCase();
-  const path = new URL(c.req.url).pathname;
+  const url = new URL(c.req.url);
+  const path = url.pathname;
   if (host === R2_HOST) {
+    if (path === '/') {
+      return c.redirect(`${PUBLIC_SITE_URL}/${url.search}`, 301);
+    }
+
     if (path === '/robots.txt') {
       return c.text(ROBOTS_TXT, 200, {
         'Content-Type': 'text/plain; charset=utf-8',

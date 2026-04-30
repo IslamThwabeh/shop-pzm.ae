@@ -47,8 +47,8 @@ pattern = "www.pzm.ae/api/*"
 zone_name = "pzm.ae"
 
 [[env.production.routes]]
-pattern = "r2.pzm.ae/*"
-zone_name = "pzm.ae"
+pattern = "r2.pzm.ae"
+custom_domain = true
 
 [[env.production.d1_databases]]
 binding = "DB"

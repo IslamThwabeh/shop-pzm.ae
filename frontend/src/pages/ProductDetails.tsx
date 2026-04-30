@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { ArrowLeft, MessageCircle, ShoppingCart, ShieldCheck, Truck, CreditCard } from 'lucide-react'
 import type { Product } from '@shared/types'
 import { useCart } from '../context/CartContext'
@@ -11,6 +11,7 @@ import { toAbsoluteSiteUrl } from '../utils/siteConfig'
 import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
 import { brandNewHero } from '../content/brandNewCatalog'
+import retiredProductRedirects from '../content/retiredProductRedirects.json'
 import { secondhandHero } from '../content/secondhandCatalog'
 import { extractBrandFromName, sharedReturnPolicy, sharedShippingDetails } from '../utils/seoConfig'
 
@@ -18,14 +19,25 @@ interface ProductDetailsProps {
   products: Product[]
 }
 
+const retiredProductRedirectMap = new Map(
+  retiredProductRedirects
+    .filter((entry) => entry.id && entry.target)
+    .map((entry) => [entry.id, entry.target]),
+)
+
 export default function ProductDetails({ products }: ProductDetailsProps) {
   const { id } = useParams<{ id: string }>()
   const { addItem } = useCart()
+  const retiredRedirectTarget = id ? retiredProductRedirectMap.get(id) : undefined
 
   const product = useMemo(
     () => products.find((p) => p.id === id),
     [products, id],
   )
+
+  if (!product && retiredRedirectTarget) {
+    return <Navigate replace to={retiredRedirectTarget} />
+  }
 
   if (!product) {
     return (

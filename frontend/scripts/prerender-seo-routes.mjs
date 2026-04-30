@@ -11,6 +11,9 @@ const contentRoot = path.join(frontendRoot, 'src', 'content')
 const deviceFinderEntries = JSON.parse(
   await fs.readFile(path.join(contentRoot, 'deviceFinderDestinations.json'), 'utf8')
 )
+const retiredProductRedirects = JSON.parse(
+  await fs.readFile(path.join(contentRoot, 'retiredProductRedirects.json'), 'utf8')
+)
 const localInventoryConfigSource = JSON.parse(
   await fs.readFile(path.join(contentRoot, 'localInventoryConfig.json'), 'utf8')
 )
@@ -20,6 +23,7 @@ const BRAND_NEW_FALLBACK_IMAGE = `${SITE_URL}/api/media/generated/services/brand
 const SECONDHAND_FALLBACK_IMAGE = `${SITE_URL}/api/media/generated/services/secondhand/secondhand-service.webp`
 const BUY_IPHONE_FALLBACK_IMAGE = `${SITE_URL}/images/Catigories/mini_buy_iphone.webp`
 const PRODUCT_FEED_URL = process.env.PZM_PRODUCT_FEED_URL || 'https://pzm.ae/api/products'
+const MERCHANT_PRODUCTS_FILE = 'merchant-products.txt'
 const LASTMOD = new Date().toISOString().slice(0, 10)
 const MERCHANT_LOCAL_INVENTORY_FILE = 'merchant-local-inventory.txt'
 const SHARED_RETURN_POLICY = {
@@ -2649,6 +2653,64 @@ function buildSitemap(routes) {
   return `${lines.join('\n')}\n`
 }
 
+function buildRetiredProductRedirectRules(entries) {
+  const rules = []
+  const seenRules = new Set()
+
+  for (const entry of Array.isArray(entries) ? entries : []) {
+    const productId = String(entry?.id || '').trim()
+    const redirectTarget = normalizeCanonicalPath(String(entry?.target || '').trim())
+
+    if (!productId || !redirectTarget) {
+      continue
+    }
+
+    for (const sourcePath of [`/product/${productId}`, `/product/${productId}/`]) {
+      const rule = `${sourcePath} ${redirectTarget} 301`
+
+      if (!seenRules.has(rule)) {
+        seenRules.add(rule)
+        rules.push(rule)
+      }
+    }
+  }
+
+  return rules
+}
+
+async function writeRedirectRules(entries) {
+  const redirectsPath = path.join(distRoot, '_redirects')
+  let baseRedirects = ''
+
+  try {
+    baseRedirects = await fs.readFile(redirectsPath, 'utf8')
+  } catch {
+    baseRedirects = ''
+  }
+
+  const retiredRedirectRules = buildRetiredProductRedirectRules(entries)
+  if (retiredRedirectRules.length === 0) {
+    if (baseRedirects) {
+      await fs.writeFile(redirectsPath, `${baseRedirects.trimEnd()}\n`, 'utf8')
+    }
+    return
+  }
+
+  const baseLines = baseRedirects
+    .split(/\r?\n/u)
+    .map((line) => line.trimEnd())
+    .filter(Boolean)
+  const productFallbackIndex = baseLines.findIndex((line) => line.trim().startsWith('/product/* '))
+  const insertionIndex = productFallbackIndex >= 0 ? productFallbackIndex : baseLines.length
+  const outputLines = [
+    ...baseLines.slice(0, insertionIndex),
+    ...retiredRedirectRules,
+    ...baseLines.slice(insertionIndex),
+  ]
+
+  await fs.writeFile(redirectsPath, `${outputLines.join('\n')}\n`, 'utf8')
+}
+
 async function writeRouteHeaders(routes) {
   const headersPath = path.join(distRoot, '_headers')
   let baseHeaders = ''
@@ -2979,7 +3041,9 @@ for (const route of aliasRoutes) {
 
 await fs.writeFile(path.join(distRoot, 'sitemap.xml'), buildSitemap(canonicalRoutes), 'utf8')
 await fs.writeFile(path.join(distRoot, 'merchant-feed.xml'), buildMerchantFeed(liveProducts, merchantFeedConfig), 'utf8')
-await fs.writeFile(path.join(distRoot, 'merchant-feed.txt'), buildMerchantTabFeed(liveProducts, merchantFeedConfig), 'utf8')
+const merchantTabFeed = buildMerchantTabFeed(liveProducts, merchantFeedConfig)
+await fs.writeFile(path.join(distRoot, 'merchant-feed.txt'), merchantTabFeed, 'utf8')
+await fs.writeFile(path.join(distRoot, MERCHANT_PRODUCTS_FILE), merchantTabFeed, 'utf8')
 const merchantLocalInventoryFeed = buildMerchantLocalInventoryTabFeed(liveProducts, merchantFeedConfig)
 const merchantLocalInventoryPath = path.join(distRoot, MERCHANT_LOCAL_INVENTORY_FILE)
 
@@ -2989,4 +3053,5 @@ if (merchantLocalInventoryFeed) {
   await fs.rm(merchantLocalInventoryPath, { force: true })
 }
 
+await writeRedirectRules(retiredProductRedirects)
 await writeRouteHeaders(canonicalRoutes)

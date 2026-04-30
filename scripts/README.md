@@ -73,6 +73,21 @@ Notes:
 - Run the sync first, then refresh the live storefront and inspect the updated descriptions before deciding whether to deploy the frontend.
 - Ask for explicit approval before every frontend deploy. The deploy is only needed after approval so sitemap, prerendered product HTML, and Merchant feed artifacts are regenerated from the corrected live data.
 
+## Post-Deploy Smoke Test
+
+After any frontend deploy that regenerates prerendered HTML or Merchant artifacts, run:
+
+```powershell
+npm run smoke:deploy
+npm run smoke:deploy -- https://046415d4.pzm-ae-frontend.pages.dev
+```
+
+Notes:
+
+- The smoke test now fetches `merchant-feed.xml`, extracts every `<g:link>`, and fails if any feed URL does not return HTTP 200.
+- It also fetches `sitemap.xml`, samples the first 20 and last 20 `<loc>` entries, and fails if any sampled URL does not return HTTP 200.
+- Use `PZM_SMOKE_BASE_URL` to target a preview deployment and `PZM_SMOKE_SITEMAP_SAMPLE_SIZE` if a larger sitemap sample is needed.
+
 ## Live Rich Description Backfill
 
 Generate description-only updates directly from the live catalog when both the current live description and the latest TSV snapshot are too short for SEO:
