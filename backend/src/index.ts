@@ -421,7 +421,7 @@ app.get('/api/gcr-opt-in-events', async (c) => {
 const PLACE_ID = 'ChIJ1aZJvMBtXz4RLrOI1vITjBU'; // PZM Store Place ID
 const BUSINESS_HOURS_CACHE_KEY = 'business-hours:v1';
 const BUSINESS_HOURS_CACHE_TTL_SECONDS = 12 * 60 * 60;
-const BUSINESS_HOURS_BROWSER_TTL_SECONDS = 60 * 60;
+const BUSINESS_HOURS_BROWSER_TTL_SECONDS = 6 * 60 * 60;
 
 type BusinessHoursResponse = {
   html_attributions: unknown[];
@@ -476,6 +476,7 @@ app.get('/api/business-hours', async (c) => {
     }
 
     if (isValidBusinessHoursResponse(cached)) {
+      c.header('X-Business-Hours-Source', 'cache');
       return c.json(cached, 200);
     }
 
@@ -483,6 +484,7 @@ app.get('/api/business-hours', async (c) => {
 
     if (!apiKey) {
       // Return fallback hours if API key not configured
+      c.header('X-Business-Hours-Source', 'fallback-missing-key');
       return c.json(FALLBACK_BUSINESS_HOURS, 200);
     }
 
@@ -500,13 +502,16 @@ app.get('/api/business-hours', async (c) => {
         logError(error, 'GET /api/business-hours cache write');
       }
 
+      c.header('X-Business-Hours-Source', 'google');
       return c.json(data, 200);
     }
 
+    c.header('X-Business-Hours-Source', 'fallback-invalid-google-response');
     return c.json(FALLBACK_BUSINESS_HOURS, 200);
   } catch (error) {
     logError(error, 'GET /api/business-hours');
     c.header('Cache-Control', 'no-store');
+    c.header('X-Business-Hours-Source', 'error');
     return c.json({ error: 'Failed to fetch business hours', status: 500 }, 500);
   }
 });
