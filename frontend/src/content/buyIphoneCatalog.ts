@@ -1,5 +1,6 @@
 import type { Product } from '@shared/types'
 import { buildApiUrl } from '../utils/siteConfig'
+import { getPrimaryProductImage } from '../utils/productPresentation'
 
 const generatedBuyIphoneFamilyMedia = (filename: string) => buildApiUrl(`/media/generated/buy-iphone/${filename}`)
 
@@ -61,6 +62,20 @@ export const buyIphoneFamilies: BuyIphoneFamily[] = [
   },
 ]
 
+interface BuyIphoneImageUnificationRule {
+  familyKey: BuyIphoneFamily['key']
+  color: string
+  preferStorages: string[]
+}
+
+const buyIphoneImageUnificationRules: BuyIphoneImageUnificationRule[] = [
+  {
+    familyKey: 'iphone-17-pro-max',
+    color: 'deep blue',
+    preferStorages: ['1TB', '256GB'],
+  },
+]
+
 
 function normalizeModel(model: string) {
   return model.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
@@ -82,6 +97,99 @@ function sortProducts(left: Product, right: Product) {
   }
 
   return left.model.localeCompare(right.model)
+}
+
+function getStorageMagnitude(storage?: string) {
+  const match = (storage || '').trim().match(/^(\d+)\s*(GB|TB)$/i)
+
+  if (!match) {
+    return Number.MIN_SAFE_INTEGER
+  }
+
+  const amount = Number.parseInt(match[1], 10)
+  return match[2].toUpperCase() === 'TB' ? amount * 1024 : amount
+}
+
+function getFamilyForProduct(product: Product) {
+  const normalizedModel = normalizeModel(product.model)
+  return buyIphoneFamilies.find((family) => family.matcher.test(normalizedModel))
+}
+
+function pickUnifiedImageSource(products: Product[], rule: BuyIphoneImageUnificationRule) {
+  const withImage = products.filter((product) => getPrimaryProductImage(product))
+
+  for (const preferredStorage of rule.preferStorages) {
+    const normalizedStorage = normalizeModel(preferredStorage)
+    const preferredNew = withImage.find(
+      (product) => product.condition === 'new' && normalizeModel(product.storage || '') === normalizedStorage,
+    )
+
+    if (preferredNew) {
+      return preferredNew
+    }
+
+    const preferredAnyCondition = withImage.find(
+      (product) => normalizeModel(product.storage || '') === normalizedStorage,
+    )
+
+    if (preferredAnyCondition) {
+      return preferredAnyCondition
+    }
+  }
+
+  return [...withImage].sort((left, right) => {
+    if (left.condition !== right.condition) {
+      return left.condition === 'new' ? -1 : 1
+    }
+
+    return getStorageMagnitude(right.storage) - getStorageMagnitude(left.storage)
+  })[0]
+}
+
+function unifyBuyIphoneVariantImages(products: Product[]) {
+  if (products.length === 0) {
+    return products
+  }
+
+  const unifiedImages = new Map<string, { imageUrl: string; images: string[] }>()
+
+  for (const rule of buyIphoneImageUnificationRules) {
+    const matchingProducts = products.filter((product) => {
+      const family = getFamilyForProduct(product)
+
+      return family?.key === rule.familyKey && normalizeModel(product.color || '') === rule.color
+    })
+
+    const imageSource = pickUnifiedImageSource(matchingProducts, rule)
+    const imageUrl = getPrimaryProductImage(imageSource)
+
+    if (!imageSource || !imageUrl) {
+      continue
+    }
+
+    const sourceImages = imageSource.images?.filter((image) => typeof image === 'string' && image.trim()) || []
+    const normalizedImages = sourceImages.length > 0 ? sourceImages : [imageUrl]
+    unifiedImages.set(`${rule.familyKey}|${rule.color}`, { imageUrl, images: normalizedImages })
+  }
+
+  if (unifiedImages.size === 0) {
+    return products
+  }
+
+  return products.map((product) => {
+    const family = getFamilyForProduct(product)
+    const imageOverride = family ? unifiedImages.get(`${family.key}|${normalizeModel(product.color || '')}`) : undefined
+
+    if (!imageOverride) {
+      return product
+    }
+
+    return {
+      ...product,
+      image_url: imageOverride.imageUrl,
+      images: imageOverride.images,
+    }
+  })
 }
 
 function dedupeProducts(products: Product[]) {
@@ -110,7 +218,9 @@ function dedupeProducts(products: Product[]) {
 
 export function getBuyIphoneProducts(products: Product[]) {
   return dedupeProducts(
-    products.filter((product) => normalizeModel(product.model).includes('iphone'))
+    unifyBuyIphoneVariantImages(
+      products.filter((product) => normalizeModel(product.model).includes('iphone'))
+    )
   )
     .sort(sortProducts)
 }
