@@ -859,6 +859,7 @@ function buildProductRoutes(products) {
       lastmod: formatLastmodDate(product.updated_at || product.updatedAt || product.created_at || product.createdAt),
       rootHtml: buildProductSnapshot(product),
       preloadedProducts: [product],
+      preloadedProductsMode: 'single',
       jsonLd: buildProductJsonLd(product),
       ...(!inStock ? { excludeFromSitemap: true, robots: 'noindex, follow' } : {}),
     }
@@ -2327,8 +2328,8 @@ function outputPathForRoute(routePath) {
 }
 
 const BUSINESS_NAME = 'PZM Computers & Phones'
-const WEBSITE_BRAND = 'PZM Computers & Phones – New, Used, Repair, PC Build'
-const HOME_ROUTE_TITLE = 'PZM Computers & Phones – New, Used, Repair, PC Build | Barsha Dubai'
+const WEBSITE_BRAND = 'PZM Computers & Phones – Sell, New, Used, Repair, PC Build'
+const HOME_ROUTE_TITLE = 'PZM Computers & Phones – Sell, New, Used, Repair, PC Build | Barsha Dubai'
 const HOME_ROUTE_DESCRIPTION =
   "PZM's Al Barsha store serves Barsha 1-3, Dubai Science Park, JVC, Meadows Village, JLT, Springs, Barsha Heights, Tecom, and Al Sufouh for phones, laptops, repairs, and device support."
 const HOME_AREA_SERVED = [
@@ -2578,6 +2579,10 @@ function buildHtml(template, route) {
   const preloadedProductsScript = Array.isArray(route.preloadedProducts) && route.preloadedProducts.length > 0
     ? `<script id="pzm-preloaded-products" type="application/json">${escapeJsonForHtml(route.preloadedProducts)}</script>`
     : ''
+  const preloadedProductsMetaScript = route.preloadedProductsMode
+    ? `<script id="pzm-preloaded-products-meta" type="application/json">${escapeJsonForHtml({ mode: route.preloadedProductsMode })}</script>`
+    : ''
+  const preloadedPayloadScripts = [preloadedProductsScript, preloadedProductsMetaScript].filter(Boolean).join('\n    ')
 
   let html = template
     .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(route.title)}</title>`)
@@ -2610,13 +2615,13 @@ function buildHtml(template, route) {
     html = html.replace(/<div id="root"><\/div>/i, `<div id="root">${route.rootHtml}</div>`)
   }
 
-  if (preloadedProductsScript) {
+  if (preloadedPayloadScripts) {
     const moduleScriptPattern = /<script type="module"[^>]*src="[^"]+"[^>]*><\/script>/i
 
     if (moduleScriptPattern.test(html)) {
-      html = html.replace(moduleScriptPattern, `${preloadedProductsScript}\n    $&`)
+      html = html.replace(moduleScriptPattern, `${preloadedPayloadScripts}\n    $&`)
     } else {
-      html = html.replace('</body>', `    ${preloadedProductsScript}\n  </body>`)
+      html = html.replace('</body>', `    ${preloadedPayloadScripts}\n  </body>`)
     }
   }
 
@@ -2917,6 +2922,8 @@ for (const route of canonicalRoutes) {
 
   if (normalizedCanonicalPath === '/') {
     route.rootHtml = buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, liveProducts)
+    route.preloadedProducts = selectHomepageFeaturedSnapshotProducts(liveProducts)
+    route.preloadedProductsMode = 'partial'
     continue
   }
 
@@ -3007,16 +3014,19 @@ if (liveProducts.length > 0) {
     if (normalizedCanonicalPath === '/services/buy-iphone/') {
       route.rootHtml = buyIphoneSnapshotHtml
       route.preloadedProducts = liveProducts
+      route.preloadedProductsMode = 'full'
     }
 
     if (normalizedCanonicalPath === '/services/brand-new/') {
       route.rootHtml = brandNewSnapshotHtml
       route.preloadedProducts = liveProducts
+      route.preloadedProductsMode = 'full'
     }
 
     if (normalizedCanonicalPath === '/services/secondhand/') {
       route.rootHtml = secondhandSnapshotHtml
       route.preloadedProducts = liveProducts
+      route.preloadedProductsMode = 'full'
     }
   }
 } else {

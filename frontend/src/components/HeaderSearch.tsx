@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MessageCircle, Search, X } from 'lucide-react'
-import type { Product } from '@shared/types'
 import {
-  buildSearchIndex,
   searchStorefront,
   type RankedSuggestion,
+  type SearchIndex,
 } from '../utils/storefrontSearch'
 import { buildWhatsAppHref } from '../utils/contact'
 import { trackWhatsAppLead } from '../utils/analytics'
 import { openRegisteredWhatsAppHref } from '../utils/whatsappLead'
 
 interface HeaderSearchProps {
-  products: Product[]
+  searchIndex: SearchIndex
   variant: 'desktop' | 'mobile'
+  onActivate?: () => void
   /** Called after navigation, e.g. so a parent mobile menu can close. */
   onAfterNavigate?: () => void
 }
@@ -27,7 +27,7 @@ function buildWhatsAppMessage(query: string): string {
     : 'Hi PZM, I need help finding a device.'
 }
 
-export default function HeaderSearch({ products, variant, onAfterNavigate }: HeaderSearchProps) {
+export default function HeaderSearch({ searchIndex, variant, onActivate, onAfterNavigate }: HeaderSearchProps) {
   const navigate = useNavigate()
   const inputId = useId()
   const listboxId = `${inputId}-listbox`
@@ -38,13 +38,11 @@ export default function HeaderSearch({ products, variant, onAfterNavigate }: Hea
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const index = useMemo(() => buildSearchIndex(products), [products])
-
   const suggestions: RankedSuggestion[] = useMemo(() => {
     const trimmed = query.trim()
     if (trimmed.length < 1) return []
-    return searchStorefront(trimmed, index, { limit: SUGGESTION_LIMIT })
-  }, [query, index])
+    return searchStorefront(trimmed, searchIndex, { limit: SUGGESTION_LIMIT })
+  }, [query, searchIndex])
 
   const showDropdown = isOpen && query.trim().length >= 1
   const hasSuggestions = suggestions.length > 0
@@ -188,10 +186,12 @@ export default function HeaderSearch({ products, variant, onAfterNavigate }: Hea
           type="text"
           value={query}
           onChange={(e) => {
+            onActivate?.()
             setQuery(e.target.value)
             setIsOpen(true)
           }}
           onFocus={() => {
+            onActivate?.()
             if (query.trim().length >= 1) setIsOpen(true)
           }}
           onKeyDown={handleKeyDown}

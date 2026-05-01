@@ -90,8 +90,8 @@ const page = normalizeSitePath
 
 export const siteIdentity = {
   name: 'PZM Computers & Phones',
-  publicBrandName: 'PZM Computers & Phones – New, Used, Repair, PC Build',
-  tagline: 'New, Used, Repair, PC Build',
+  publicBrandName: 'PZM Computers & Phones – Sell, New, Used, Repair, PC Build',
+  tagline: 'Sell, New, Used, Repair, PC Build',
   summary:
     'Dubai tech retail and repair destination for new and used phones, laptops, accessories, and custom PC builds.',
 }

@@ -11,6 +11,8 @@ export default function Footer() {
             <img
               src="/images/brand/pzm-footer-logo.png"
               alt="PZM Computers & Phones Trading"
+              width={632}
+              height={332}
               className="h-11 w-auto object-contain"
             />
             <p className="text-center lg:text-left">&copy; {new Date().getFullYear()} {siteIdentity.publicBrandName}</p>

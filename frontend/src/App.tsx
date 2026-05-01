@@ -32,6 +32,8 @@ const BuyIphonePage = lazy(() => import('./pages/BuyIphonePage'))
 const BrandNewPage = lazy(() => import('./pages/BrandNewPage'))
 const SecondhandPage = lazy(() => import('./pages/SecondhandPage'))
 
+type PreloadedProductsMode = 'none' | 'partial' | 'single' | 'full'
+
 function readPreloadedProducts() {
   if (typeof document === 'undefined') {
     return [] as Product[]
@@ -51,6 +53,34 @@ function readPreloadedProducts() {
   }
 }
 
+function readPreloadedProductsMode(): PreloadedProductsMode {
+  if (typeof document === 'undefined') {
+    return 'none'
+  }
+
+  const payloadElement = document.getElementById('pzm-preloaded-products-meta')
+  if (!payloadElement?.textContent) {
+    return 'none'
+  }
+
+  try {
+    const parsed = JSON.parse(payloadElement.textContent) as { mode?: PreloadedProductsMode }
+    return parsed.mode || 'none'
+  } catch (error) {
+    console.error('Failed to parse preloaded products metadata', error)
+    return 'none'
+  }
+}
+
+function routeNeedsFullCatalog(pathname: string) {
+  return (
+    pathname.startsWith('/services/buy-iphone') ||
+    pathname.startsWith('/services/brand-new') ||
+    pathname.startsWith('/services/secondhand') ||
+    pathname.startsWith('/product/')
+  )
+}
+
 function getWhatsAppLeadType(pathname: string, href: string, referenceLabel?: string): WhatsAppLeadType {
   if (pathname.startsWith('/product/')) {
     return 'product'
@@ -68,17 +98,34 @@ function AppContent() {
   const navigate = useNavigate()
   const location = useLocation()
   const [initialProducts] = useState<Product[]>(() => readPreloadedProducts())
+  const [catalogMode, setCatalogMode] = useState<PreloadedProductsMode>(() => readPreloadedProductsMode())
   const [products, setProducts] = useState<Product[]>(initialProducts)
   const [loading, setLoading] = useState(initialProducts.length === 0)
   const [error, setError] = useState<string | null>(null)
+  const [fullCatalogRequested, setFullCatalogRequested] = useState(false)
   const currentPageRaw = location.pathname === '/'
     ? 'home'
     : (location.pathname.split('/')[1] || 'home').replace(/\.html$/i, '')
   const currentPage = currentPageRaw === 'blog-post' ? 'blog' : currentPageRaw
+  const currentRouteNeedsFullCatalog = routeNeedsFullCatalog(location.pathname)
+  const requiresFullCatalogLoad = catalogMode === 'none' || currentRouteNeedsFullCatalog || fullCatalogRequested
+  const routeLoading = loading || (currentRouteNeedsFullCatalog && catalogMode === 'none')
+
+  const requestFullCatalog = () => {
+    if (catalogMode === 'full') {
+      return
+    }
+
+    setFullCatalogRequested(true)
+  }
 
   useEffect(() => {
+    if (!requiresFullCatalogLoad || catalogMode === 'full') {
+      return undefined
+    }
+
     const loadProducts = async () => {
-      const shouldShowLoader = initialProducts.length === 0
+      const shouldShowLoader = currentRouteNeedsFullCatalog || (catalogMode === 'none' && initialProducts.length === 0)
 
       try {
         if (shouldShowLoader) {
@@ -86,22 +133,26 @@ function AppContent() {
         }
 
         const data = sanitizeProductsForDisplay(await apiService.getProducts())
-        if (data.length > 0 || initialProducts.length === 0) {
+        if (data.length > 0 || catalogMode === 'none') {
           setProducts(data)
+          setCatalogMode('full')
         }
+
         setError(null)
       } catch (err) {
-        if (initialProducts.length === 0) {
+        if (catalogMode === 'none') {
           setError('Failed to load products')
         }
         console.error(err)
       } finally {
+        setFullCatalogRequested(false)
         setLoading(false)
       }
     }
 
     loadProducts()
-  }, [initialProducts.length])
+    return undefined
+  }, [catalogMode, currentRouteNeedsFullCatalog, fullCatalogRequested, initialProducts.length, requiresFullCatalogLoad])
 
   useEffect(() => {
     if (!('scrollRestoration' in window.history)) {
@@ -205,6 +256,7 @@ function AppContent() {
         <Header
           currentPage={currentPage}
           products={products}
+          onSearchActivate={requestFullCatalog}
           onNavigate={(page) => {
             // keep compatibility with previous onNavigate signature
             if (page && (page as any).type) {
@@ -245,7 +297,7 @@ function AppContent() {
           />
           <Route
             path="/services/buy-iphone"
-            element={<BuyIphonePage products={products} loading={loading} />}
+            element={<BuyIphonePage products={products} loading={loading || routeLoading} />}
           />
           <Route
             path="/services/buy-iphone.html"
@@ -253,7 +305,7 @@ function AppContent() {
           />
           <Route
             path="/services/brand-new"
-            element={<BrandNewPage products={products} loading={loading} />}
+            element={<BrandNewPage products={products} loading={loading || routeLoading} />}
           />
           <Route
             path="/services/brand-new.html"
@@ -261,7 +313,7 @@ function AppContent() {
           />
           <Route
             path="/services/secondhand"
-            element={<SecondhandPage products={products} loading={loading} />}
+            element={<SecondhandPage products={products} loading={loading || routeLoading} />}
           />
           <Route
             path="/services/secondhand.html"

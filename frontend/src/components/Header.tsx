@@ -1,7 +1,7 @@
 import { LogOut, ChevronDown, Menu, MessageCircle, Phone, ShoppingCart, X, Wrench } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import type { Product } from '@shared/types'
 import CartFeedbackLayer from './CartFeedbackLayer'
@@ -12,17 +12,20 @@ import {
   siteContact,
 } from '../content/siteData'
 import { formatCartCount, replayAnimationClass } from '../utils/cartFeedback'
+import { buildSearchIndex } from '../utils/storefrontSearch'
 
 interface HeaderProps {
   onNavigate: (page: any) => void
   currentPage?: string
   products?: Product[]
+  onSearchActivate?: () => void
 }
 
-export default function Header({ onNavigate, products = [] }: HeaderProps) {
+export default function Header({ onNavigate, products = [], onSearchActivate }: HeaderProps) {
   const { isAuthenticated, logout } = useAuth()
   const { itemCount, lastAddedTick } = useCart()
   const location = useLocation()
+  const searchIndex = useMemo(() => buildSearchIndex(products), [products])
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMegaOpen, setIsMegaOpen] = useState(false)
   const megaRef = useRef<HTMLDivElement>(null)
@@ -102,6 +105,8 @@ export default function Header({ onNavigate, products = [] }: HeaderProps) {
             <img
               src="/images/brand/pzm-header-logo.png"
               alt="PZM"
+              width={516}
+              height={293}
               className="h-8 w-auto object-contain sm:h-9 lg:h-10"
             />
           </Link>
@@ -197,7 +202,7 @@ export default function Header({ onNavigate, products = [] }: HeaderProps) {
           </nav>
 
           {/* ── Desktop search (primary header element) ─── */}
-          <HeaderSearch products={products} variant="desktop" />
+          <HeaderSearch searchIndex={searchIndex} variant="desktop" onActivate={onSearchActivate} />
 
           {/* ── Right actions ─────────────────────────── */}
           <div className="flex items-center gap-2">
@@ -281,7 +286,7 @@ export default function Header({ onNavigate, products = [] }: HeaderProps) {
 
       {/* ── Mobile search row (always visible under top bar) ─ */}
       <div className="lg:hidden border-t border-[#eee] bg-white px-4 py-2.5">
-        <HeaderSearch products={products} variant="mobile" onAfterNavigate={() => setIsMobileMenuOpen(false)} />
+        <HeaderSearch searchIndex={searchIndex} variant="mobile" onActivate={onSearchActivate} onAfterNavigate={() => setIsMobileMenuOpen(false)} />
       </div>
 
       {/* ── Mobile menu ────────────────────────────── */}
