@@ -1,14 +1,15 @@
-import { useMemo } from 'react'
+import { useMemo, lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ShieldCheck, Zap, CheckCircle, Truck, MapPin } from 'lucide-react'
 import type { Product } from '@shared/types'
 import FeaturedProductsSection from '../components/FeaturedProductsSection'
 import Seo from '../components/Seo'
-import FaqAccordion from '../components/FaqAccordion'
 import CategoryCard from '../components/CategoryCard'
 import DeviceFinder from '../components/DeviceFinder'
 import RetailImage from '../components/RetailImage'
-import TestimonialCards from '../components/TestimonialCards'
+
+const TestimonialCards = lazy(() => import('../components/TestimonialCards'))
+const FaqAccordion = lazy(() => import('../components/FaqAccordion'))
 import {
   homeAreaHighlights,
   homeCategoryCards,
@@ -132,13 +133,15 @@ export default function HomePage({ products }: HomePageProps) {
           </p>
 
           <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {homeCategoryCards.map((cat) => (
+            {homeCategoryCards.map((cat, i) => (
               <CategoryCard
                 key={cat.title}
                 title={cat.title}
                 subtitle={cat.subtitle}
                 to={cat.to}
                 imageUrl={cat.imageUrl}
+                loading={i < 2 ? 'eager' : 'lazy'}
+                fetchPriority={i === 0 ? 'high' : 'auto'}
               />
             ))}
           </div>
@@ -213,7 +216,9 @@ export default function HomePage({ products }: HomePageProps) {
         <div className="mx-auto max-w-7xl">
           <h2 className="text-center text-2xl font-bold text-slate-900">Customer Reviews</h2>
           <div className="mt-10">
-            <TestimonialCards />
+            <Suspense fallback={null}>
+              <TestimonialCards />
+            </Suspense>
           </div>
         </div>
       </section>
@@ -267,7 +272,9 @@ export default function HomePage({ products }: HomePageProps) {
         <div className="mx-auto max-w-3xl">
           <h2 className="text-center text-2xl font-bold text-slate-900">Frequently Asked Questions</h2>
           <div className="mt-10">
-            <FaqAccordion items={homeFaqItems} />
+            <Suspense fallback={null}>
+              <FaqAccordion items={homeFaqItems} />
+            </Suspense>
           </div>
         </div>
       </section>

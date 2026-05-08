@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
 import { serviceCatalogList } from '../content/serviceCatalog'
+import { buildBreadcrumbJsonLd } from '../utils/breadcrumbs'
 
 export default function ServicesPage() {
   return (
@@ -10,6 +11,10 @@ export default function ServicesPage() {
         title="Our Services | PZM Computers & Phones"
         description="Explore repair, trade-in, gaming PC, accessories, iPhone, and device support pages from PZM Computers & Phones in Dubai."
         canonicalPath="/services"
+        jsonLd={buildBreadcrumbJsonLd([
+          { name: 'Home', path: '/' },
+          { name: 'Services', path: '/services' },
+        ])}
       />
 
       <section className="text-center">

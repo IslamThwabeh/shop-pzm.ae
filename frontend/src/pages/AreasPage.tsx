@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import Seo from '../components/Seo'
 import { areaCatalogList } from '../content/areaCatalog'
 import { siteContact } from '../content/siteData'
+import { buildBreadcrumbJsonLd } from '../utils/breadcrumbs'
 
 export default function AreasPage() {
   return (
@@ -10,6 +11,10 @@ export default function AreasPage() {
         title="Areas We Serve in Dubai | PZM Computers & Phones"
         description="Explore the Dubai communities served by PZM, including Barsha 1-3, Dubai Science Park, JVC, JLT, Springs, Meadows Village, Barsha Heights, Tecom, and Al Sufouh."
         canonicalPath="/areas"
+        jsonLd={buildBreadcrumbJsonLd([
+          { name: 'Home', path: '/' },
+          { name: 'Areas', path: '/areas' },
+        ])}
       />
 
       <section className="border-b border-[#eee] pb-8 text-left sm:pb-9">

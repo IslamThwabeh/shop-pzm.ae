@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
 import { blogPostsNewestFirst } from '../content/blogCatalog'
+import { buildBreadcrumbJsonLd } from '../utils/breadcrumbs'
 
 function formatPublishedDate(publishedAt: string) {
   return new Date(`${publishedAt}T00:00:00`).toLocaleDateString('en-US', {
@@ -21,6 +22,10 @@ export default function BlogPage() {
         title="Tech Blog - iPhone, PC & Repair Tips | PZM Dubai"
         description="Latest market updates, repair advice, iPhone tips, used-device buying guides, and PC articles from PZM in Dubai."
         canonicalPath="/blog/"
+        jsonLd={buildBreadcrumbJsonLd([
+          { name: 'Home', path: '/' },
+          { name: 'Blog', path: '/blog/' },
+        ])}
       />
 
       <section className="overflow-hidden rounded-[32px] border border-brandBorder bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] p-6 shadow-sm md:p-10">

@@ -35,7 +35,7 @@ export const megaMenuCategories: MegaMenuItem[] = [
   {
     label: 'Laptops & Computers',
     subtitle: 'MacBook, Dell, HP & more',
-    to: normalizeSitePath('/services/brand-new'),
+    to: normalizeSitePath('/services/laptop-shop'),
     icon: Laptop,
   },
   {
@@ -47,7 +47,7 @@ export const megaMenuCategories: MegaMenuItem[] = [
   {
     label: 'Professional Equipment',
     subtitle: 'Workstations & displays',
-    to: normalizeSitePath('/services/brand-new'),
+    to: normalizeSitePath('/services/computer-shop'),
     icon: Monitor,
   },
 ]

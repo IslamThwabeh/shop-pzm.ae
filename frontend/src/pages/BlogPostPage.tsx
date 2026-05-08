@@ -3,6 +3,7 @@ import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
 import RetailImage from '../components/RetailImage'
 import Seo from '../components/Seo'
 import { getRelatedBlogPosts, resolveBlogPost } from '../content/blogCatalog'
+import { buildBreadcrumbJsonLd } from '../utils/breadcrumbs'
 import { buildCanonicalUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 function formatPublishedDate(publishedAt: string) {
@@ -59,6 +60,28 @@ export default function BlogPostPage() {
   const relatedPosts = getRelatedBlogPosts(post.slug)
   const readTimeMinutes = estimateReadTime(post.bodyHtml)
   const articleImageUrl = toAbsoluteSiteUrl(post.imageUrl)
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.seoDescription,
+    image: [articleImageUrl],
+    datePublished: `${post.publishedAt}T00:00:00+04:00`,
+    dateModified: `${post.publishedAt}T00:00:00+04:00`,
+    author: {
+      '@type': 'Organization',
+      name: 'PZM Computers & Phones',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'PZM Computers & Phones',
+      logo: {
+        '@type': 'ImageObject',
+        url: toAbsoluteSiteUrl('/images/mini_logo.png'),
+      },
+    },
+    mainEntityOfPage: buildCanonicalUrl(`/blog/${post.slug}`),
+  }
 
   return (
     <div className="space-y-10">
@@ -67,28 +90,14 @@ export default function BlogPostPage() {
         description={post.seoDescription}
         canonicalPath={`/blog/${post.slug}`}
         imageUrl={articleImageUrl}
-        jsonLd={{
-          '@context': 'https://schema.org',
-          '@type': 'Article',
-          headline: post.title,
-          description: post.seoDescription,
-          image: [articleImageUrl],
-          datePublished: `${post.publishedAt}T00:00:00+04:00`,
-          dateModified: `${post.publishedAt}T00:00:00+04:00`,
-          author: {
-            '@type': 'Organization',
-            name: 'PZM Computers & Phones',
-          },
-          publisher: {
-            '@type': 'Organization',
-            name: 'PZM Computers & Phones',
-            logo: {
-              '@type': 'ImageObject',
-              url: toAbsoluteSiteUrl('/images/mini_logo.png'),
-            },
-          },
-          mainEntityOfPage: buildCanonicalUrl(`/blog/${post.slug}`),
-        }}
+        jsonLd={[
+          articleJsonLd,
+          buildBreadcrumbJsonLd([
+            { name: 'Home', path: '/' },
+            { name: 'Blog', path: '/blog/' },
+            { name: post.title, path: `/blog/${post.slug}` },
+          ]),
+        ]}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-4">

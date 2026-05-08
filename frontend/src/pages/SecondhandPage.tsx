@@ -11,6 +11,7 @@ import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { getSecondhandCategoryGroups, getSecondhandProducts, secondhandCategories, secondhandHero } from '../content/secondhandCatalog'
 import { resolveServiceSlug } from '../content/serviceCatalog'
+import { buildBreadcrumbJsonLd } from '../utils/breadcrumbs'
 import { getDeviceFinderLabel, matchesDeviceFinderProduct, normalizeDeviceFinderKey } from '../utils/deviceFinder'
 import { matchesStorefrontFamily, normalizeStorefrontFamilyKey } from '../utils/storefrontSearch'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
@@ -148,6 +149,33 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
   }
   const lowestPrice = liveSecondhandProducts.length > 0 ? Math.min(...liveSecondhandProducts.map((product) => product.price)) : null
   const heroImageUrl = toAbsoluteSiteUrl(secondhandHero.imageUrl)
+  const localSupportPoints = [
+    'Use this page to compare currently listed used phones, laptops, monitors, and gaming systems before you visit the store.',
+    'Ask about the exact grade, battery condition, and stock availability before driving to the Al Barsha branch.',
+    'If you are upgrading, move between trade-in, repair, and new-device pages without leaving the same buying flow.',
+  ]
+  const relatedLinks = [
+    {
+      label: 'Al Barsha store coverage',
+      to: '/areas/al-barsha/',
+      description: 'Open directions, nearby communities, and local store access on Hessa Street.',
+    },
+    {
+      label: 'Sell Your Device',
+      to: '/services/sell-gadgets/',
+      description: 'Trade in your current phone, laptop, or console before moving into another device.',
+    },
+    {
+      label: 'Buy iPhone',
+      to: '/services/buy-iphone/',
+      description: 'Compare the current iPhone lineup if you want a new Apple option alongside used stock.',
+    },
+    {
+      label: 'Repair Services',
+      to: '/services/repair/',
+      description: 'Check whether repair or upgrade is the better route before replacing a device.',
+    },
+  ]
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -194,9 +222,16 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
           title="Buy Used Phones & Laptops in Dubai | Pre-owned by PZM"
           description="Shop certified pre-owned devices at PZM. Phones, laptops, and tablets inspected for quality and sold with warranty."
           canonicalPath="/services/secondhand"
-        imageUrl={heroImageUrl}
-        jsonLd={jsonLd}
-      />
+          imageUrl={heroImageUrl}
+          jsonLd={[
+            jsonLd,
+            buildBreadcrumbJsonLd([
+              { name: 'Home', path: '/' },
+              { name: 'Services', path: '/services' },
+              { name: 'Pre-Owned Devices', path: '/services/secondhand' },
+            ]),
+          ]}
+        />
 
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -360,6 +395,41 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
           <h2 className="mt-4 text-base font-bold text-slate-950">Trade-in path</h2>
           <p className="mt-2 text-sm text-brandTextMedium">Trade in your old device toward your next upgrade.</p>
         </article>
+      </section>
+
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1.08fr),minmax(280px,0.92fr)]">
+        <article className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Local used-device support</p>
+          <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">Used phones and laptops from Al Barsha</h2>
+          <p className="mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.98rem]">
+            If you are searching for used phones in Dubai or a value-focused laptop upgrade near Al Barsha, this page keeps the current certified stock, grading context, and next-step routes in one place.
+          </p>
+          <ul className="mt-4 space-y-3 text-sm leading-6 text-brandTextDark">
+            {localSupportPoints.map((point) => (
+              <li key={point} className="flex items-start gap-3">
+                <span className="mt-1 shrink-0 text-primary">✓</span>
+                <span>{point}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <aside className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Related routes</p>
+          <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">Check the other value paths</h2>
+          <div className="mt-4 space-y-3">
+            {relatedLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="block rounded-xl border border-brandBorder bg-slate-50/70 px-4 py-4 transition-colors hover:border-slate-300 hover:bg-slate-50"
+              >
+                <span className="block text-base font-semibold text-slate-950">{link.label}</span>
+                <span className="mt-1.5 block text-sm leading-6 text-brandTextMedium">{link.description}</span>
+              </Link>
+            ))}
+          </div>
+        </aside>
       </section>
 
       <div id="secondhand-contact">

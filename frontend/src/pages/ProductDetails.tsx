@@ -5,6 +5,7 @@ import type { Product } from '@shared/types'
 import { useCart } from '../context/CartContext'
 import { buildProductDisplayLabel, buildProductMetaDescription, buildProductRichDescription, getKnownProductBrand, getPrimaryProductImage, getProductDetailRows } from '../utils/productPresentation'
 import { getProductBrowsePath } from '../utils/productRouting'
+import { buildBreadcrumbJsonLd } from '../utils/breadcrumbs'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { triggerCartAddFeedback } from '../utils/cartFeedback'
 import { toAbsoluteSiteUrl } from '../utils/siteConfig'
@@ -79,6 +80,11 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
   const brand = getKnownProductBrand(product)
   const detailRows = getProductDetailRows(product).filter((row) => row.label !== 'Storage' && row.label !== 'Color')
   const warrantyLabel = product.warranty || (product.condition === 'new' ? 'Warranty' : 'Inspected & Tested')
+  const browseLabel = browsePath === '/services/buy-iphone'
+    ? 'Buy iPhone'
+    : browsePath === '/services/secondhand'
+      ? 'Pre-Owned Devices'
+      : 'Brand New Devices'
 
   const handleAddToCart = (sourceElement: HTMLButtonElement) => {
     if (!inStock) return
@@ -143,7 +149,14 @@ export default function ProductDetails({ products }: ProductDetailsProps) {
         description={metaDescription}
         canonicalPath={`/product/${product.id}`}
         imageUrl={schemaImage}
-        jsonLd={jsonLd}
+        jsonLd={[
+          jsonLd,
+          buildBreadcrumbJsonLd([
+            { name: 'Home', path: '/' },
+            { name: browseLabel, path: browsePath },
+            { name: label, path: `/product/${product.id}` },
+          ]),
+        ]}
         noindex={!inStock}
       />
 

@@ -33,6 +33,16 @@ const standardFeaturedServices: AreaServiceLink[] = [
     description: 'iPhone models and ordering.',
   },
   {
+    label: 'Laptop Shop',
+    to: page('/services/laptop-shop'),
+    description: 'MacBooks, Windows laptops, and gaming laptop buying help.',
+  },
+  {
+    label: 'Computer Shop',
+    to: page('/services/computer-shop'),
+    description: 'Desktops, monitors, and workstation shopping support.',
+  },
+  {
     label: 'Repair Services',
     to: page('/services/repair'),
     description: 'Repairs, drop-off, and pickup.',

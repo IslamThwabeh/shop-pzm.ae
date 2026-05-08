@@ -86,6 +86,20 @@ const homeSnapshotCategoryEntries = [
   },
   {
     eyebrow: 'Category',
+    title: 'Laptop Shop',
+    description: 'Open the focused laptop route for MacBooks, Windows laptops, and gaming laptops.',
+    href: '/services/laptop-shop',
+    cta: 'Browse category',
+  },
+  {
+    eyebrow: 'Category',
+    title: 'Computer Shop',
+    description: 'Open the desktop, monitor, and workstation shopping route from the homepage.',
+    href: '/services/computer-shop',
+    cta: 'Browse category',
+  },
+  {
+    eyebrow: 'Category',
     title: 'Pre-Owned Devices',
     description: 'Compare certified used phones, tablets, laptops, and gaming hardware.',
     href: '/services/secondhand',
@@ -811,6 +825,20 @@ function buildProductSnapshot(product) {
   `
 }
 
+function getProductBrowseBreadcrumbName(product) {
+  const browsePath = getProductBrowsePath(product)
+
+  if (browsePath === '/services/buy-iphone') {
+    return 'Buy iPhone'
+  }
+
+  if (browsePath === '/services/secondhand') {
+    return 'Pre-Owned Devices'
+  }
+
+  return 'Brand New Devices'
+}
+
 /** Minimum description length for a product to qualify for sitemap inclusion. */
 const SITEMAP_MIN_DESCRIPTION_LENGTH = 90
 
@@ -848,6 +876,7 @@ function buildProductRoutes(products) {
 
   const toRoute = (product) => {
     const inStock = (product.quantity ?? 0) > 0
+    const browsePath = getProductBrowsePath(product)
     return {
       path: buildProductPath(product),
       title: `${buildProductLabel(product)} | PZM Computers & Phones`,
@@ -860,7 +889,14 @@ function buildProductRoutes(products) {
       rootHtml: buildProductSnapshot(product),
       preloadedProducts: [product],
       preloadedProductsMode: 'single',
-      jsonLd: buildProductJsonLd(product),
+      jsonLd: [
+        buildProductJsonLd(product),
+        buildBreadcrumbJsonLd([
+          { name: 'Home', path: '/' },
+          { name: getProductBrowseBreadcrumbName(product), path: browsePath },
+          { name: buildProductLabel(product), path: buildProductPath(product) },
+        ]),
+      ],
       ...(!inStock ? { excludeFromSitemap: true, robots: 'noindex, follow' } : {}),
     }
   }
@@ -1344,7 +1380,7 @@ function buildSnapshotCard(product, kind) {
     </article>`
 }
 
-function buildCatalogSnapshot({ eyebrow, title, intro, groups, emptyTitle, emptyDescription, kind }) {
+function buildCatalogSnapshot({ eyebrow, title, intro, groups, emptyTitle, emptyDescription, kind, extraSections = [] }) {
   const content = groups.length > 0
     ? groups
         .map(
@@ -1376,6 +1412,7 @@ function buildCatalogSnapshot({ eyebrow, title, intro, groups, emptyTitle, empty
         <p style="margin:18px 0 0;font-size:16px;line-height:1.8;color:#64748b;">${escapeHtml(intro)}</p>
       </div>
       ${content}
+      ${extraSections.join('')}
     </div>`
 }
 
@@ -1461,6 +1498,44 @@ function buildBrandNewSnapshot(products) {
     emptyTitle: 'No brand-new products are currently listed on the site.',
     emptyDescription: 'Use the contact options on the site to ask about models and pricing.',
     kind: 'new',
+    extraSections: [
+      buildSnapshotSection(
+        'Laptop and computer shopping from Al Barsha',
+        'If you are searching for a laptop shop in Al Barsha or a computer shop in Dubai, this route keeps the current new-device inventory, store pickup path, and follow-up actions in one place.',
+        buildBulletList([
+          'Compare laptops, desktops, phones, and gaming hardware before you visit the Hessa Street branch.',
+          'Confirm the exact model and configuration first, then use store pickup or Dubai delivery as the next step.',
+          'Move into repair, trade-in, or pre-owned routes from the same storefront if replacing a current machine.',
+        ])
+      ),
+      buildSnapshotSection(
+        'Related routes',
+        'Check nearby buying and upgrade paths without leaving the storefront journey.',
+        buildLinkGrid([
+          {
+            eyebrow: 'Area page',
+            title: 'Al Barsha store coverage',
+            description: 'Open directions, nearby communities, and the fastest route to the branch.',
+            href: '/areas/al-barsha/',
+            cta: 'Open area page',
+          },
+          {
+            eyebrow: 'Compare options',
+            title: 'Pre-Owned Devices',
+            description: 'Browse certified used phones, laptops, and monitors before buying new.',
+            href: '/services/secondhand/',
+            cta: 'Browse pre-owned',
+          },
+          {
+            eyebrow: 'Custom builds',
+            title: 'Gaming PC Builds',
+            description: 'Move into custom gaming and workstation builds when listed stock is not enough.',
+            href: '/services/gaming-pc/',
+            cta: 'Open gaming builds',
+          },
+        ])
+      ),
+    ],
   })
 }
 
@@ -1475,6 +1550,44 @@ function buildSecondhandSnapshot(products) {
     emptyTitle: 'No used products are currently listed on the site.',
     emptyDescription: 'Use the contact options on the site to ask about used-device details.',
     kind: 'used',
+    extraSections: [
+      buildSnapshotSection(
+        'Used phones and laptops from Al Barsha',
+        'If you are searching for used phones in Dubai or a lower-price laptop upgrade near Al Barsha, this route keeps the current certified stock and the next-step pages together.',
+        buildBulletList([
+          'Check the current listed devices before you drive, especially when stock changes quickly.',
+          'Ask about grade, battery condition, and exact availability before visiting the branch.',
+          'Move into trade-in, repair, or new-device pages if the right used option is not listed yet.',
+        ])
+      ),
+      buildSnapshotSection(
+        'Related routes',
+        'Compare the other value-focused paths from the same storefront journey.',
+        buildLinkGrid([
+          {
+            eyebrow: 'Area page',
+            title: 'Al Barsha store coverage',
+            description: 'Open directions, nearby communities, and local store access on Hessa Street.',
+            href: '/areas/al-barsha/',
+            cta: 'Open area page',
+          },
+          {
+            eyebrow: 'Trade-in',
+            title: 'Sell Your Device',
+            description: 'Trade in your current phone, laptop, or console before choosing another device.',
+            href: '/services/sell-gadgets/',
+            cta: 'Start trade-in',
+          },
+          {
+            eyebrow: 'Apple lineup',
+            title: 'Buy iPhone',
+            description: 'Compare new iPhone availability if you want to balance price against the latest Apple stock.',
+            href: '/services/buy-iphone/',
+            cta: 'Browse iPhones',
+          },
+        ])
+      ),
+    ],
   })
 }
 
@@ -1659,7 +1772,7 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, products) {
 
   const compactRouteLinks = [
     ...homeSnapshotCategoryEntries
-      .filter((entry) => ['Buy iPhone', 'Brand-New Devices', 'Pre-Owned Devices', 'Repair Services', 'Accessories'].includes(entry.title))
+      .filter((entry) => ['Buy iPhone', 'Brand-New Devices', 'Laptop Shop', 'Computer Shop', 'Pre-Owned Devices', 'Repair Services', 'Accessories'].includes(entry.title))
       .map((entry) => ({ href: entry.href, label: entry.title })),
     { href: '/areas', label: 'Dubai Areas' },
     { href: '/blog/', label: 'Latest Blog Posts' },
@@ -1796,6 +1909,36 @@ function buildServiceSnapshot(entry) {
           'Message or call the store with the exact model, problem, or configuration you want.',
           'Confirm the next step, whether that is a quote, callback, store visit, or guided recommendation.',
         ])
+      )
+    )
+  }
+
+  if (entry.localSupportTitle || entry.localSupportDescription || entry.localSupportPoints?.length) {
+    sections.push(
+      buildSnapshotSection(
+        entry.localSupportTitle || 'Local support',
+        entry.localSupportDescription || 'Use this service page to confirm the next step before visiting the store.',
+        entry.localSupportPoints?.length
+          ? buildBulletList(entry.localSupportPoints)
+          : buildParagraphs([entry.localSupportDescription || entry.description])
+      )
+    )
+  }
+
+  if (entry.relatedLinks?.length) {
+    sections.push(
+      buildSnapshotSection(
+        'Related routes',
+        'Move into nearby store, buying, trade-in, or comparison pages without restarting the journey.',
+        buildLinkGrid(
+          entry.relatedLinks.map((link) => ({
+            eyebrow: 'Related page',
+            title: link.label,
+            description: link.description,
+            href: link.to,
+            cta: 'Open page',
+          }))
+        )
       )
     )
   }
@@ -1985,6 +2128,42 @@ function buildBuyIphoneSnapshot(products) {
           'Use the service hub or store visit links if you want to compare broader device categories first.',
         ])
       ),
+      buildSnapshotSection(
+        'iPhone buying from Al Barsha, Dubai',
+        'If you are searching for an iPhone shop in Dubai, this route keeps the current lineup, exact model checks, and store pickup support in one place.',
+        buildBulletList([
+          'Confirm the exact family, storage, and color before visiting the Al Barsha branch.',
+          'Use store pickup on Hessa Street or move into WhatsApp ordering for Dubai delivery support.',
+          'Compare trade-in and certified pre-owned routes if you want a lower-price iPhone option first.',
+        ])
+      ),
+      buildSnapshotSection(
+        'Related routes',
+        'Compare nearby Apple and upgrade routes without leaving the storefront.',
+        buildLinkGrid([
+          {
+            eyebrow: 'Area page',
+            title: 'Al Barsha store coverage',
+            description: 'Open directions, nearby communities, and the quickest route to the branch.',
+            href: '/areas/al-barsha/',
+            cta: 'Open area page',
+          },
+          {
+            eyebrow: 'Compare options',
+            title: 'Pre-Owned iPhones',
+            description: 'Check certified used iPhones if you want a stronger value option first.',
+            href: '/services/secondhand/',
+            cta: 'Browse pre-owned',
+          },
+          {
+            eyebrow: 'Trade-in',
+            title: 'Sell Your Device',
+            description: 'Trade in your current phone before moving into a new iPhone purchase.',
+            href: '/services/sell-gadgets/',
+            cta: 'Start trade-in',
+          },
+        ])
+      ),
     ],
   })
 }
@@ -2059,6 +2238,17 @@ function extractStringField(source, fieldName) {
   return match ? decodeSingleQuotedString(match[1]) : ''
 }
 
+function extractPathField(source, fieldName) {
+  const directValue = extractStringField(source, fieldName)
+  if (directValue) {
+    return directValue
+  }
+
+  const wrappedPattern = new RegExp(`${fieldName}:\\s*(?:page|normalizeSitePath)\\('((?:\\\\'|[^'])+)'\\)`)
+  const wrappedMatch = wrappedPattern.exec(source)
+  return wrappedMatch ? decodeSingleQuotedString(wrappedMatch[1]) : ''
+}
+
 function extractStringArrayField(source, fieldName) {
   const arrayContent = extractFieldBlock(source, fieldName, '[', ']')
   return Array.from(arrayContent.matchAll(/'((?:\\'|[^'])+)'/g), (match) => decodeSingleQuotedString(match[1]))
@@ -2084,6 +2274,34 @@ function extractObjectBlocks(arrayContent) {
   return blocks
 }
 
+function extractLinkObjects(arrayContent) {
+  return extractObjectBlocks(arrayContent)
+    .map((block) => ({
+      label: extractStringField(block, 'label'),
+      to: extractPathField(block, 'to'),
+      description: extractStringField(block, 'description'),
+    }))
+    .filter((item) => item.label && item.to)
+}
+
+function extractNamedArrayBlock(source, name) {
+  const pattern = new RegExp(`(?:const|export const)\\s+${name}(?:\\s*:\\s*[^=]+)?\\s*=\\s*\\[`)
+  const match = pattern.exec(source)
+
+  if (!match) {
+    return ''
+  }
+
+  const startIndex = source.indexOf('[', match.index + match[0].length - 1)
+  const endIndex = findBalancedEnd(source, startIndex, '[', ']')
+
+  if (startIndex === -1 || endIndex === -1) {
+    return ''
+  }
+
+  return source.slice(startIndex + 1, endIndex)
+}
+
 function extractDetailSections(source) {
   const arrayContent = extractFieldBlock(source, 'detailSections', '[', ']')
   if (!arrayContent) {
@@ -2098,19 +2316,28 @@ function extractDetailSections(source) {
     .filter((section) => section.title && section.items.length > 0)
 }
 
-function extractFeaturedServices(source) {
+function extractFeaturedServices(source, catalogSource = source) {
   const arrayContent = extractFieldBlock(source, 'featuredServices', '[', ']')
+  if (arrayContent) {
+    return extractLinkObjects(arrayContent)
+  }
+
+  const referenceMatch = /featuredServices:\s*([A-Za-z0-9_]+)/.exec(source)
+  if (!referenceMatch) {
+    return []
+  }
+
+  const sharedArrayContent = extractNamedArrayBlock(catalogSource, referenceMatch[1])
+  return sharedArrayContent ? extractLinkObjects(sharedArrayContent) : []
+}
+
+function extractLinkItems(source, fieldName) {
+  const arrayContent = extractFieldBlock(source, fieldName, '[', ']')
   if (!arrayContent) {
     return []
   }
 
-  return extractObjectBlocks(arrayContent)
-    .map((block) => ({
-      label: extractStringField(block, 'label'),
-      to: extractStringField(block, 'to'),
-      description: extractStringField(block, 'description'),
-    }))
-    .filter((service) => service.label && service.to)
+  return extractLinkObjects(arrayContent)
 }
 
 async function fetchLiveProducts() {
@@ -2466,6 +2693,19 @@ function buildCollectionJsonLd(route) {
   }
 }
 
+function buildBreadcrumbJsonLd(items) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: toAbsoluteUrl(normalizeCanonicalPath(item.path)),
+    })),
+  }
+}
+
 function buildArticleJsonLd(route) {
   return {
     '@context': 'https://schema.org',
@@ -2515,6 +2755,10 @@ function extractServiceRoutes(serviceCatalogSource) {
       heroDescription: extractStringField(block, 'heroDescription'),
       highlights: extractStringArrayField(block, 'highlights'),
       detailSections: extractDetailSections(block),
+      localSupportTitle: extractStringField(block, 'localSupportTitle'),
+      localSupportDescription: extractStringField(block, 'localSupportDescription'),
+      localSupportPoints: extractStringArrayField(block, 'localSupportPoints'),
+      relatedLinks: extractLinkItems(block, 'relatedLinks'),
       cardDescription: extractStringField(block, 'cardDescription'),
     })
   }
@@ -2542,7 +2786,7 @@ function extractAreaRoutes(areaCatalogSource) {
       nearbyCommunities: extractStringArrayField(block, 'nearbyCommunities'),
       areaServed: extractStringArrayField(block, 'areaServed'),
       advantages: extractStringArrayField(block, 'advantages'),
-      featuredServices: extractFeaturedServices(block),
+      featuredServices: extractFeaturedServices(block, areaCatalogSource),
     })
   }
 
@@ -2575,7 +2819,17 @@ function buildHtml(template, route) {
   const robots = route.robots || 'index, follow'
   const imageUrl = toAbsoluteUrl(route.imageUrl)
   const ogType = route.ogType || 'website'
-  const jsonLd = route.jsonLd ? `<script type="application/ld+json">${JSON.stringify(route.jsonLd)}</script>` : ''
+  const jsonLdItems = Array.isArray(route.jsonLd)
+    ? route.jsonLd.filter(Boolean)
+    : route.jsonLd
+      ? [route.jsonLd]
+      : []
+  const jsonLd = jsonLdItems
+    .map((item) => `<script type="application/ld+json">${JSON.stringify(item)}</script>`)
+    .join('\n    ')
+  const lcpPreload = route.lcpImageUrl
+    ? `<link rel="preload" as="image" fetchpriority="high" href="${route.lcpImageUrl}" />`
+    : ''
   const preloadedProductsScript = Array.isArray(route.preloadedProducts) && route.preloadedProducts.length > 0
     ? `<script id="pzm-preloaded-products" type="application/json">${escapeJsonForHtml(route.preloadedProducts)}</script>`
     : ''
@@ -2592,8 +2846,10 @@ function buildHtml(template, route) {
     )
 
   const headBlock = [
+    lcpPreload,
     `<meta name="robots" content="${robots}" />`,
     `<link rel="canonical" href="${canonicalUrl}" />`,
+
     `<meta property="og:site_name" content="${escapeHtml(WEBSITE_BRAND)}" />`,
     `<meta property="og:title" content="${escapeHtml(route.title)}" />`,
     `<meta property="og:description" content="${escapeHtml(route.description)}" />`,
@@ -2754,6 +3010,7 @@ const baseRoutes = [
     priority: '1.0',
     changefreq: 'daily',
     jsonLd: buildStoreJsonLd(),
+    lcpImageUrl: '/api/media/generated/buy-iphone/iphone-17-pro-max-family.webp',
   },
   {
     path: '/services',
@@ -2763,6 +3020,10 @@ const baseRoutes = [
     canonicalPath: '/services',
     priority: '0.85',
     changefreq: 'weekly',
+    jsonLd: buildBreadcrumbJsonLd([
+      { name: 'Home', path: '/' },
+      { name: 'Services', path: '/services' },
+    ]),
   },
   {
     path: '/areas',
@@ -2771,6 +3032,10 @@ const baseRoutes = [
     canonicalPath: '/areas',
     priority: '0.75',
     changefreq: 'monthly',
+    jsonLd: buildBreadcrumbJsonLd([
+      { name: 'Home', path: '/' },
+      { name: 'Areas', path: '/areas' },
+    ]),
   },
   {
     path: '/blog',
@@ -2779,6 +3044,10 @@ const baseRoutes = [
     canonicalPath: '/blog/',
     priority: '0.75',
     changefreq: 'weekly',
+    jsonLd: buildBreadcrumbJsonLd([
+      { name: 'Home', path: '/' },
+      { name: 'Blog', path: '/blog/' },
+    ]),
   },
   {
     path: '/terms',
@@ -2802,6 +3071,8 @@ const baseRoutes = [
 const servicePriorityMap = {
   'buy-iphone': '0.95',
   'brand-new': '0.85',
+  'laptop-shop': '0.85',
+  'computer-shop': '0.8',
   secondhand: '0.85',
   repair: '0.9',
   'gaming-pc': '0.8',
@@ -2862,6 +3133,14 @@ const canonicalRoutes = [
 
     const title = dedicatedOverrides?.title || `${entry.title} in Dubai | PZM Computers & Phones`
     const description = dedicatedOverrides?.description || entry.description
+    const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+      { name: 'Home', path: '/' },
+      { name: 'Services', path: '/services' },
+      { name: entry.title, path: `/services/${entry.slug}` },
+    ])
+    const primaryJsonLd = ['buy-iphone', 'brand-new', 'secondhand'].includes(entry.slug)
+      ? buildCollectionJsonLd({ title, description, canonicalPath: `/services/${entry.slug}` })
+      : undefined
 
     return {
       path: `/services/${entry.slug}`,
@@ -2871,9 +3150,7 @@ const canonicalRoutes = [
       imageUrl: dedicatedOverrides?.imageUrl,
       priority: servicePriorityMap[entry.slug] || '0.7',
       changefreq: entry.slug === 'web-design' ? 'monthly' : 'weekly',
-      jsonLd: ['buy-iphone', 'brand-new', 'secondhand'].includes(entry.slug)
-        ? buildCollectionJsonLd({ title, description, canonicalPath: `/services/${entry.slug}` })
-        : undefined,
+      jsonLd: primaryJsonLd ? [primaryJsonLd, breadcrumbJsonLd] : breadcrumbJsonLd,
     }
   }),
   ...areaEntries.map((entry) => ({
@@ -2883,7 +3160,14 @@ const canonicalRoutes = [
     canonicalPath: `/areas/${entry.slug}`,
     priority: areaPriorityMap[entry.slug] || '0.6',
     changefreq: 'monthly',
-    jsonLd: buildAreaJsonLd(entry),
+    jsonLd: [
+      buildAreaJsonLd(entry),
+      buildBreadcrumbJsonLd([
+        { name: 'Home', path: '/' },
+        { name: 'Areas', path: '/areas' },
+        { name: entry.name, path: `/areas/${entry.slug}` },
+      ]),
+    ],
   })),
   ...blogEntries.map((entry) => {
     const suffix = ' | PZM Blog'
@@ -2901,14 +3185,21 @@ const canonicalRoutes = [
     articleTitle: entry.title,
     publishedAt: entry.publishedAt,
     rootHtml: buildBlogArticleSnapshot(entry),
-    jsonLd: buildArticleJsonLd({
-      title: `${entry.title} | PZM Blog`,
-      articleTitle: entry.title,
-      description: entry.description,
-      canonicalPath: `/blog/${entry.slug}`,
-      imageUrl: `/api/media/blog/${entry.imageFile}`,
-      publishedAt: entry.publishedAt,
-    }),
+    jsonLd: [
+      buildArticleJsonLd({
+        title: `${entry.title} | PZM Blog`,
+        articleTitle: entry.title,
+        description: entry.description,
+        canonicalPath: `/blog/${entry.slug}`,
+        imageUrl: `/api/media/blog/${entry.imageFile}`,
+        publishedAt: entry.publishedAt,
+      }),
+      buildBreadcrumbJsonLd([
+        { name: 'Home', path: '/' },
+        { name: 'Blog', path: '/blog/' },
+        { name: entry.title, path: `/blog/${entry.slug}` },
+      ]),
+    ],
   }}),
 ]
 

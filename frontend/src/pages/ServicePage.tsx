@@ -4,6 +4,7 @@ import HomeAppointmentPanel from '../components/HomeAppointmentPanel'
 import RetailImage from '../components/RetailImage'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { resolveServiceSlug } from '../content/serviceCatalog'
+import { buildBreadcrumbJsonLd } from '../utils/breadcrumbs'
 import { buildWhatsAppHref } from '../utils/contact'
 
 const appointmentServiceTypes: Partial<Record<string, string>> = {
@@ -42,6 +43,8 @@ export default function ServicePage() {
   }
 
   const hasAppointment = Boolean(appointmentServiceTypes[service.slug])
+  const hasLocalSupport = Boolean(service.localSupportTitle || service.localSupportDescription || service.localSupportPoints?.length)
+  const hasRelatedLinks = Boolean(service.relatedLinks?.length)
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 space-y-8">
@@ -49,6 +52,11 @@ export default function ServicePage() {
         title={`${service.title} in Dubai | PZM Computers & Phones`}
         description={service.description}
         canonicalPath={`/services/${service.slug}`}
+        jsonLd={buildBreadcrumbJsonLd([
+          { name: 'Home', path: '/' },
+          { name: 'Services', path: '/services' },
+          { name: service.title, path: `/services/${service.slug}` },
+        ])}
       />
 
       <section className="overflow-hidden rounded-3xl border border-brandBorder bg-white text-left shadow-md">
@@ -123,6 +131,51 @@ export default function ServicePage() {
               </details>
             ))}
           </div>
+        </section>
+      )}
+
+      {(hasLocalSupport || hasRelatedLinks) && (
+        <section className="grid gap-5 lg:grid-cols-[minmax(0,1.1fr),minmax(280px,0.9fr)]">
+          {hasLocalSupport && (
+            <article className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Local support</p>
+              <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">{service.localSupportTitle}</h2>
+              {service.localSupportDescription && (
+                <p className="mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.98rem]">
+                  {service.localSupportDescription}
+                </p>
+              )}
+              {service.localSupportPoints && service.localSupportPoints.length > 0 && (
+                <ul className="mt-4 space-y-3 text-sm leading-6 text-brandTextDark">
+                  {service.localSupportPoints.map((point) => (
+                    <li key={point} className="flex items-start gap-3">
+                      <span className="mt-1 shrink-0 text-primary">✓</span>
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          )}
+
+          {hasRelatedLinks && (
+            <aside className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Related routes</p>
+              <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">Keep moving without starting over</h2>
+              <div className="mt-4 space-y-3">
+                {service.relatedLinks?.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    className="block rounded-xl border border-brandBorder bg-slate-50/70 px-4 py-4 transition-colors hover:border-slate-300 hover:bg-slate-50"
+                  >
+                    <span className="block text-base font-semibold text-slate-950">{link.label}</span>
+                    <span className="mt-1.5 block text-sm leading-6 text-brandTextMedium">{link.description}</span>
+                  </Link>
+                ))}
+              </div>
+            </aside>
+          )}
         </section>
       )}
 

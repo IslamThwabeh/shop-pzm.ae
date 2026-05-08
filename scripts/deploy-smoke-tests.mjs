@@ -22,17 +22,42 @@ const checks = [
   {
     path: '/services/brand-new/',
     label: 'Brand-new catalog',
-    expect: ['Brand New Devices', 'canonical'],
+    expect: ['Brand New Devices', 'canonical', 'BreadcrumbList'],
   },
   {
     path: '/services/secondhand/',
     label: 'Secondhand catalog',
-    expect: ['Pre-Owned Devices', 'canonical'],
+    expect: ['Pre-Owned Devices', 'canonical', 'BreadcrumbList'],
   },
   {
     path: '/services/buy-iphone/',
     label: 'Buy iPhone',
-    expect: ['Buy iPhone', 'canonical'],
+    expect: ['Buy iPhone', 'canonical', 'BreadcrumbList'],
+  },
+  {
+    path: '/services/gaming-pc/',
+    label: 'Gaming PC service',
+    expect: ['Build your gaming PC with PZM', 'canonical', 'BreadcrumbList'],
+  },
+  {
+    path: '/services/laptop-shop/',
+    label: 'Laptop shop service',
+    expect: ['Shop laptops in Dubai from our Al Barsha store', 'canonical', 'BreadcrumbList'],
+  },
+  {
+    path: '/services/computer-shop/',
+    label: 'Computer shop service',
+    expect: ['Shop computers, desktops, and monitors in Dubai', 'canonical', 'BreadcrumbList'],
+  },
+  {
+    path: '/areas/al-barsha/',
+    label: 'Al Barsha area page',
+    expect: ['Al Barsha', 'canonical', 'BreadcrumbList'],
+  },
+  {
+    path: '/blog/gold-record-highs-tech-buyers-dubai-2026/',
+    label: 'Featured blog article',
+    expect: ['Gold Prices Hit Record Highs', 'canonical', 'BreadcrumbList'],
   },
   {
     path: '/robots.txt',

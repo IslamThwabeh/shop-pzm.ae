@@ -9,9 +9,11 @@ interface CategoryCardProps {
   to: string
   imageUrl?: string
   icon?: LucideIcon
+  loading?: 'lazy' | 'eager'
+  fetchPriority?: 'high' | 'low' | 'auto'
 }
 
-export default function CategoryCard({ title, subtitle, to, imageUrl, icon: Icon }: CategoryCardProps) {
+export default function CategoryCard({ title, subtitle, to, imageUrl, icon: Icon, loading = 'lazy', fetchPriority = 'auto' }: CategoryCardProps) {
   return (
     <Link
       to={to}
@@ -25,6 +27,8 @@ export default function CategoryCard({ title, subtitle, to, imageUrl, icon: Icon
             alt={title}
             name={title}
             variant="card"
+            loading={loading}
+            fetchPriority={fetchPriority}
             className="transition-transform duration-300 group-hover:scale-[1.03]"
           />
         ) : Icon ? (

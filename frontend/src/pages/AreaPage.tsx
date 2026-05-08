@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import Seo from '../components/Seo'
 import { resolveAreaSlug } from '../content/areaCatalog'
 import { siteContact, siteIdentity } from '../content/siteData'
+import { buildBreadcrumbJsonLd } from '../utils/breadcrumbs'
 import { buildCanonicalUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
 const geoCoordinates = {
@@ -34,45 +35,54 @@ export default function AreaPage() {
     )
   }
 
+  const areaJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ComputerStore',
+    name: `${siteIdentity.name} - ${area.name}, Dubai`,
+    description: area.description,
+    url: buildCanonicalUrl(`/areas/${area.slug}`),
+    telephone: '+971528026677',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: `${siteContact.addressLine1}, ${siteContact.addressLine2}`,
+      addressLocality: 'Dubai',
+      addressCountry: 'AE',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: geoCoordinates.latitude,
+      longitude: geoCoordinates.longitude,
+    },
+    areaServed: [
+      ...area.areaServed.map((name) => ({ '@type': 'Place', name })),
+      {
+        '@type': 'GeoCircle',
+        geoMidpoint: {
+          '@type': 'GeoCoordinates',
+          latitude: geoCoordinates.latitude,
+          longitude: geoCoordinates.longitude,
+        },
+        geoRadius: '10000',
+      },
+    ],
+    image: toAbsoluteSiteUrl('/images/mini_logo.png'),
+    priceRange: 'AED 150 - AED 7,000',
+  }
+
   return (
     <div className="space-y-8 sm:space-y-10">
       <Seo
         title={area.metaTitle}
         description={area.description}
         canonicalPath={`/areas/${area.slug}`}
-        jsonLd={{
-          '@context': 'https://schema.org',
-          '@type': 'ComputerStore',
-          name: `${siteIdentity.name} - ${area.name}, Dubai`,
-          description: area.description,
-          url: buildCanonicalUrl(`/areas/${area.slug}`),
-          telephone: '+971528026677',
-          address: {
-            '@type': 'PostalAddress',
-            streetAddress: `${siteContact.addressLine1}, ${siteContact.addressLine2}`,
-            addressLocality: 'Dubai',
-            addressCountry: 'AE',
-          },
-          geo: {
-            '@type': 'GeoCoordinates',
-            latitude: geoCoordinates.latitude,
-            longitude: geoCoordinates.longitude,
-          },
-          areaServed: [
-            ...area.areaServed.map((name) => ({ '@type': 'Place', name })),
-            {
-              '@type': 'GeoCircle',
-              geoMidpoint: {
-                '@type': 'GeoCoordinates',
-                latitude: geoCoordinates.latitude,
-                longitude: geoCoordinates.longitude,
-              },
-              geoRadius: '10000',
-            },
-          ],
-          image: toAbsoluteSiteUrl('/images/mini_logo.png'),
-          priceRange: 'AED 150 - AED 7,000',
-        }}
+        jsonLd={[
+          areaJsonLd,
+          buildBreadcrumbJsonLd([
+            { name: 'Home', path: '/' },
+            { name: 'Areas', path: '/areas' },
+            { name: area.name, path: `/areas/${area.slug}` },
+          ]),
+        ]}
       />
 
       <div>
@@ -172,6 +182,27 @@ export default function AreaPage() {
           </div>
         </section>
       </div>
+
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr),minmax(280px,0.85fr)]">
+        <article className="rounded-[22px] border border-[#eee] bg-white p-6 text-left shadow-[0_10px_30px_rgba(15,23,42,0.03)] sm:p-7">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Local summary</p>
+          <h2 className="mt-2 text-xl font-bold text-gray-900 sm:text-2xl">Shopping, repair, and pickup for {area.name}</h2>
+          <p className="mt-4 text-[15px] leading-7 text-brandTextMedium sm:text-base">{area.localSummary}</p>
+        </article>
+
+        <aside className="rounded-[22px] border border-[#eee] bg-white p-6 text-left shadow-[0_10px_30px_rgba(15,23,42,0.03)] sm:p-7">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Why nearby customers choose this store</p>
+          <h2 className="mt-2 text-xl font-bold text-gray-900 sm:text-2xl">Fastest route for {area.name}</h2>
+          <ul className="mt-4 space-y-3 text-[14px] leading-6 text-brandTextMedium sm:text-[15px]">
+            {area.advantages.map((advantage) => (
+              <li key={advantage} className="flex items-start gap-3">
+                <span className="mt-1 text-primary">✓</span>
+                <span>{advantage}</span>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      </section>
     </div>
   )
 }

@@ -41,6 +41,18 @@ export const homeCategoryCards: HomeCategoryCard[] = [
     imageUrl: svcMedia('generated/services/brand-new/brand-new-service.webp'),
   },
   {
+    title: 'Laptop Shop',
+    subtitle: 'MacBook, Dell, HP & more',
+    to: page('/services/laptop-shop'),
+    imageUrl: svcMedia('generated/services/brand-new/brand-new-service.webp'),
+  },
+  {
+    title: 'Computer Shop',
+    subtitle: 'Desktops & monitors',
+    to: page('/services/computer-shop'),
+    imageUrl: svcMedia('generated/services/brand-new/brand-new-service.webp'),
+  },
+  {
     title: 'Used Devices',
     subtitle: 'Certified pre-owned',
     to: page('/services/secondhand'),

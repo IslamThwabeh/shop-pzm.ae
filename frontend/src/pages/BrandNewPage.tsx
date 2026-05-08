@@ -11,6 +11,7 @@ import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { brandNewCategories, brandNewHero, getBrandNewCategoryGroups, getBrandNewProducts } from '../content/brandNewCatalog'
 import { resolveServiceSlug } from '../content/serviceCatalog'
+import { buildBreadcrumbJsonLd } from '../utils/breadcrumbs'
 import { getDeviceFinderLabel, matchesDeviceFinderProduct, normalizeDeviceFinderKey } from '../utils/deviceFinder'
 import { selectFeaturedProducts } from '../utils/featuredProducts'
 import { matchesStorefrontFamily, normalizeStorefrontFamilyKey } from '../utils/storefrontSearch'
@@ -150,6 +151,33 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
   }
   const lowestPrice = liveBrandNewProducts.length > 0 ? Math.min(...liveBrandNewProducts.map((product) => product.price)) : null
   const heroImageUrl = toAbsoluteSiteUrl(brandNewHero.imageUrl)
+  const localSupportPoints = [
+    'Use this page to compare laptops, computers, phones, and gaming hardware before visiting the Al Barsha branch.',
+    'Pick up from Hessa Street or confirm Dubai delivery after the team verifies the exact model and configuration.',
+    'If you are replacing an older machine, move straight into repair, trade-in, or pre-owned routes from the same storefront.',
+  ]
+  const relatedLinks = [
+    {
+      label: 'Laptop Shop',
+      to: '/services/laptop-shop/',
+      description: 'Open the narrower laptop route if you only want MacBooks, Windows laptops, and gaming laptops.',
+    },
+    {
+      label: 'Computer Shop',
+      to: '/services/computer-shop/',
+      description: 'Move into desktops, monitors, and workstation-focused shopping instead of the broader catalog.',
+    },
+    {
+      label: 'Al Barsha store coverage',
+      to: '/areas/al-barsha/',
+      description: 'Open directions, nearby communities, and the fastest route to the branch.',
+    },
+    {
+      label: 'Gaming PC Builds',
+      to: '/services/gaming-pc/',
+      description: 'Move into custom builds if you need a stronger gaming or workstation setup.',
+    },
+  ]
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -196,9 +224,16 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
           title="Buy Brand New Devices in Dubai | PZM Computers & Phones"
           description="Looking for brand-new devices? PZM offers phones, laptops, consoles, and more in Dubai. Top specs, guaranteed."
           canonicalPath="/services/brand-new"
-        imageUrl={heroImageUrl}
-        jsonLd={jsonLd}
-      />
+          imageUrl={heroImageUrl}
+          jsonLd={[
+            jsonLd,
+            buildBreadcrumbJsonLd([
+              { name: 'Home', path: '/' },
+              { name: 'Services', path: '/services' },
+              { name: 'Brand New Devices', path: '/services/brand-new' },
+            ]),
+          ]}
+        />
 
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -373,6 +408,41 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
           <h2 className="mt-4 text-base font-bold text-slate-950">Setup included</h2>
           <p className="mt-2 text-sm text-brandTextMedium">Device setup, data transfer, and accessory guidance.</p>
         </article>
+      </section>
+
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1.08fr),minmax(280px,0.92fr)]">
+        <article className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Local device shopping</p>
+          <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">Laptop and computer shopping from Al Barsha</h2>
+          <p className="mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.98rem]">
+            If you are searching for a laptop shop in Al Barsha or a computer shop in Dubai, this page is the clearest route to current new-device stock, fast model checks, and store pickup support from the Hessa Street branch.
+          </p>
+          <ul className="mt-4 space-y-3 text-sm leading-6 text-brandTextDark">
+            {localSupportPoints.map((point) => (
+              <li key={point} className="flex items-start gap-3">
+                <span className="mt-1 shrink-0 text-primary">✓</span>
+                <span>{point}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <aside className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Related routes</p>
+          <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">Compare new, used, and upgrade paths</h2>
+          <div className="mt-4 space-y-3">
+            {relatedLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="block rounded-xl border border-brandBorder bg-slate-50/70 px-4 py-4 transition-colors hover:border-slate-300 hover:bg-slate-50"
+              >
+                <span className="block text-base font-semibold text-slate-950">{link.label}</span>
+                <span className="mt-1.5 block text-sm leading-6 text-brandTextMedium">{link.description}</span>
+              </Link>
+            ))}
+          </div>
+        </aside>
       </section>
 
       <div id="brand-new-contact">

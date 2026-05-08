@@ -12,6 +12,12 @@ export interface ServiceDetailSection {
   items: string[]
 }
 
+export interface ServiceSupportLink {
+  label: string
+  to: string
+  description: string
+}
+
 export interface ServiceCatalogEntry {
   slug: string
   title: string
@@ -25,6 +31,10 @@ export interface ServiceCatalogEntry {
   cardImageUrl?: string
   cardDescription?: string
   detailSections?: ServiceDetailSection[]
+  localSupportTitle?: string
+  localSupportDescription?: string
+  localSupportPoints?: string[]
+  relatedLinks?: ServiceSupportLink[]
 }
 
 const generatedServiceMedia = (path: string) => buildApiUrl(`/media/generated/services/${path}`)
@@ -50,6 +60,31 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
     imageAlt: 'Repair services at PZM',
     cardImageUrl: '/images/Catigories/mini_laptop_maintenance.webp',
     cardDescription: 'Expert device repair and maintenance',
+    localSupportTitle: 'MacBook, laptop, and phone repair from Al Barsha',
+    localSupportDescription:
+      'Customers in Al Barsha, Dubai Science Park, Tecom, and nearby communities use this page to confirm MacBook repair, laptop diagnostics, screen replacement, battery replacement, and same-day intake before visiting the store.',
+    localSupportPoints: [
+      'Send the exact model and issue first so the team can confirm parts, timing, and whether same-day intake is realistic.',
+      'Use the Al Barsha branch on Hessa Street for quick drop-off, board-level diagnostics, and straightforward pickup after repair.',
+      'If repair is not the best value, compare trade-in and replacement routes before committing to parts and labor.',
+    ],
+    relatedLinks: [
+      {
+        label: 'Al Barsha store coverage',
+        to: '/areas/al-barsha/',
+        description: 'Open directions, nearby communities, and the fastest route to the Hessa Street branch.',
+      },
+      {
+        label: 'Sell Your Device',
+        to: '/services/sell-gadgets/',
+        description: 'Trade in the device if replacing it makes more sense than repairing it.',
+      },
+      {
+        label: 'Pre-Owned Devices',
+        to: '/services/secondhand/',
+        description: 'Compare used phones and laptops if you need a replacement quickly.',
+      },
+    ],
     requestKinds: [
       { value: 'booking', label: 'Book repair or drop-off', description: 'Reserve a repair visit, drop-off, or pickup slot.' },
       { value: 'quote', label: 'Request repair estimate', description: 'Describe the issue and ask for a cost estimate first.' },
@@ -118,6 +153,31 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
     imageAlt: 'Sell your old iPhone at PZM',
     cardImageUrl: '/images/Catigories/mini_sell-gadgets.webp',
     cardDescription: 'Get the best price for your devices',
+    localSupportTitle: 'Trade in phones, laptops, and gaming gear near Al Barsha',
+    localSupportDescription:
+      'Use this route when you want a fast quote before driving to the store. It works well for phones, laptops, MacBooks, consoles, and gaming PCs from Al Barsha and nearby Dubai communities.',
+    localSupportPoints: [
+      'Send the model, storage, condition, and any included accessories so the team can give a clearer first estimate.',
+      'Use the Al Barsha branch for quick handoff and same-day pricing when you are already near Hessa Street.',
+      'If you are upgrading, move straight from valuation into the new-device or certified pre-owned pages.',
+    ],
+    relatedLinks: [
+      {
+        label: 'Brand New Devices',
+        to: '/services/brand-new/',
+        description: 'Browse current new-device stock if you want to upgrade after the trade-in.',
+      },
+      {
+        label: 'Pre-Owned Devices',
+        to: '/services/secondhand/',
+        description: 'Compare certified used options if you want to keep the budget tighter.',
+      },
+      {
+        label: 'Al Barsha store coverage',
+        to: '/areas/al-barsha/',
+        description: 'Open the store-area page for directions and nearby community coverage.',
+      },
+    ],
     requestKinds: quoteAndCallback,
     detailSections: [
       {
@@ -182,6 +242,31 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
     imageAlt: 'Gaming PC builds at PZM',
     cardImageUrl: '/images/Catigories/mini_GamingPC.webp',
     cardDescription: 'Custom gaming PC builds',
+    localSupportTitle: 'Custom gaming PC builds from Al Barsha, Dubai',
+    localSupportDescription:
+      'Dubai gamers, streamers, editors, and workstation buyers use this page to confirm budget, parts direction, and consultation timing before visiting the Al Barsha store.',
+    localSupportPoints: [
+      'Send the budget, games, software, or FPS target first so the team can suggest the right CPU, GPU, cooling, and storage mix.',
+      'Use the Al Barsha branch for build consultations, upgrades, diagnostics, and finished-system pickup from one location.',
+      'If you are replacing an older setup, compare trade-in, used-device, and repair routes before finalizing the new build.',
+    ],
+    relatedLinks: [
+      {
+        label: 'Al Barsha store coverage',
+        to: '/areas/al-barsha/',
+        description: 'Get directions to the Hessa Street branch for build consultation and pickup.',
+      },
+      {
+        label: 'Brand New Devices',
+        to: '/services/brand-new/',
+        description: 'Browse currently listed gaming laptops, desktops, and related new hardware.',
+      },
+      {
+        label: 'Sell Your Device',
+        to: '/services/sell-gadgets/',
+        description: 'Trade in an older laptop, console, or PC before moving into a new build.',
+      },
+    ],
     requestKinds: [
       { value: 'quote', label: 'Request a build quote', description: 'Share your budget and goal to get a recommended configuration.' },
       { value: 'callback', label: 'Talk through the build', description: 'Ask the team to call you and discuss parts and timing.' },
@@ -340,6 +425,140 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       { value: 'availability', label: 'Ask about a model', description: 'Tell us the model or configuration you want.' },
       { value: 'quote', label: 'Request a price confirmation', description: 'Ask for a confirmed price.' },
       { value: 'callback', label: 'Request a callback', description: 'Ask the team to help you choose before buying.' },
+    ],
+  },
+  'laptop-shop': {
+    slug: 'laptop-shop',
+    title: 'Laptop Shop',
+    description: 'Brand-new laptops, MacBooks, business notebooks, and gaming laptops in Dubai.',
+    heroTitle: 'Shop laptops in Dubai from our Al Barsha store',
+    heroDescription: 'Compare MacBook, Dell, HP, Lenovo, Asus, Acer, and gaming laptop options before you visit or request a quote.',
+    highlights: [
+      'MacBook, Dell, HP, Lenovo, Asus, Acer, and gaming laptops',
+      'Business, student, creator, and performance-focused configurations',
+      'Pickup, delivery, and model guidance from the Al Barsha branch',
+    ],
+    imageUrl: generatedServiceMedia('brand-new/brand-new-service.webp'),
+    imageAlt: 'Laptop shopping at PZM',
+    cardImageUrl: '/images/Catigories/mini_brand_new.webp',
+    cardDescription: 'MacBooks, Windows laptops, and gaming laptops',
+    localSupportTitle: 'Laptop shop in Al Barsha with Dubai-wide support',
+    localSupportDescription:
+      'This page is for customers who want a clearer laptop route than the broader new-device catalog. Use it for MacBooks, Windows laptops, work-from-home setups, student laptops, and gaming laptop comparisons before you visit the store.',
+    localSupportPoints: [
+      'Share the brand, budget, and performance goal first so the team can narrow the options before your visit.',
+      'Use the Al Barsha branch for quick pickup, basic setup help, and accessory matching on the same visit.',
+      'If a used or repaired laptop is the better fit, move into the pre-owned and repair pages without restarting the buying flow.',
+    ],
+    relatedLinks: [
+      {
+        label: 'Brand New Devices',
+        to: '/services/brand-new/',
+        description: 'Go back to the wider new-device catalog if you want phones, tablets, and accessories too.',
+      },
+      {
+        label: 'Pre-Owned Devices',
+        to: '/services/secondhand/',
+        description: 'Compare certified used laptops if value matters more than buying brand-new.',
+      },
+      {
+        label: 'Repair Services',
+        to: '/services/repair/',
+        description: 'Check repair and upgrade options before replacing your current laptop.',
+      },
+    ],
+    requestKinds: [
+      { value: 'availability', label: 'Ask about a laptop', description: 'Tell us the brand or model family you want.' },
+      { value: 'quote', label: 'Request a laptop quote', description: 'Ask for pricing on the exact laptop configuration you need.' },
+      { value: 'callback', label: 'Request a callback', description: 'Ask the team to help you choose the right laptop before buying.' },
+    ],
+    detailSections: [
+      {
+        title: 'Popular Laptop Categories',
+        items: [
+          'MacBook Air and MacBook Pro models',
+          'Business laptops from Dell, HP, and Lenovo',
+          'Student and everyday-use laptops',
+          'Gaming laptops with higher GPU performance',
+          'Creator laptops with stronger displays and storage',
+        ],
+      },
+      {
+        title: 'How We Help You Choose',
+        items: [
+          'Budget-first recommendations',
+          'Performance guidance for office, study, editing, and gaming',
+          'Storage and RAM comparison support',
+          'Accessory matching for chargers, bags, hubs, and monitors',
+        ],
+      },
+    ],
+  },
+  'computer-shop': {
+    slug: 'computer-shop',
+    title: 'Computer Shop',
+    description: 'Desktops, all-in-one computers, monitors, workstations, and office computer setups in Dubai.',
+    heroTitle: 'Shop computers, desktops, and monitors in Dubai',
+    heroDescription: 'Explore desktop computers, all-in-ones, workstation setups, monitors, and business computer options from our Al Barsha branch.',
+    highlights: [
+      'Desktops, all-in-one computers, monitors, and workstation setups',
+      'Office systems, creator setups, and display guidance',
+      'Pickup, delivery, and configuration help from Al Barsha',
+    ],
+    imageUrl: generatedServiceMedia('brand-new/brand-new-service.webp'),
+    imageAlt: 'Computer shopping at PZM',
+    cardImageUrl: '/images/Catigories/mini_brand_new.webp',
+    cardDescription: 'Desktops, monitors, workstations, and office systems',
+    localSupportTitle: 'Computer shop in Dubai from the Al Barsha branch',
+    localSupportDescription:
+      'Use this page when you are specifically shopping for desktop computers, monitors, all-in-ones, or a practical office and workstation setup instead of a phone-first catalog view.',
+    localSupportPoints: [
+      'Send the use case, budget, and screen or performance requirements before you visit the store.',
+      'Use the Al Barsha branch for monitor comparison, desktop pickup, and accessory matching in one stop.',
+      'If you need a higher-performance setup, move directly into the gaming PC build route from this page.',
+    ],
+    relatedLinks: [
+      {
+        label: 'Brand New Devices',
+        to: '/services/brand-new/',
+        description: 'Browse the wider new-device catalog when you also want phones, tablets, or laptops.',
+      },
+      {
+        label: 'Gaming PC Builds',
+        to: '/services/gaming-pc/',
+        description: 'Open the custom-build route for stronger gaming and workstation requirements.',
+      },
+      {
+        label: 'Repair Services',
+        to: '/services/repair/',
+        description: 'Compare repair and upgrade options for an existing desktop, monitor, or laptop first.',
+      },
+    ],
+    requestKinds: [
+      { value: 'availability', label: 'Ask about a computer', description: 'Tell us the desktop, monitor, or workstation type you want.' },
+      { value: 'quote', label: 'Request a computer quote', description: 'Ask for pricing on the exact system or setup you need.' },
+      { value: 'callback', label: 'Request a callback', description: 'Ask the team to help you choose the right computer setup before buying.' },
+    ],
+    detailSections: [
+      {
+        title: 'Computer Categories We Support',
+        items: [
+          'Desktop computers for office and home use',
+          'All-in-one computers and space-saving setups',
+          'Monitors and multi-screen desk setups',
+          'Professional workstations and productivity systems',
+          'Desktop accessories, cables, keyboards, and mice',
+        ],
+      },
+      {
+        title: 'Good Fit For This Page',
+        items: [
+          'Office teams replacing older desktops',
+          'Customers comparing monitor sizes and display types',
+          'Buyers who need a practical work-from-home setup',
+          'Shoppers choosing between listed systems and a custom build',
+        ],
+      },
     ],
   },
   'buy-iphone': {

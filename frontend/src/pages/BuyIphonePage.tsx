@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import type { Product } from '@shared/types'
 import IphoneFamilyCard from '../components/IphoneFamilyCard'
 import Seo from '../components/Seo'
 import WhatsAppCTA from '../components/WhatsAppCTA'
 import { buyIphoneFamilies, getBuyIphoneFamilyGroups, getBuyIphoneProducts } from '../content/buyIphoneCatalog'
+import { buildBreadcrumbJsonLd } from '../utils/breadcrumbs'
 import { buildProductRichDescription } from '../utils/productPresentation'
 import { buildSiteUrl, toAbsoluteSiteUrl } from '../utils/siteConfig'
 
@@ -29,6 +30,28 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
     [familyParam],
   )
   const [highlightKey, setHighlightKey] = useState<string | null>(null)
+  const localSupportPoints = [
+    'Use this page to confirm the exact family, storage, and color before visiting the Al Barsha store.',
+    'Pick up from Hessa Street or move into direct WhatsApp ordering if you want delivery support in Dubai.',
+    'Compare trade-in and certified pre-owned routes if you want a lower-price iPhone option first.',
+  ]
+  const relatedLinks = [
+    {
+      label: 'Al Barsha store coverage',
+      to: '/areas/al-barsha/',
+      description: 'Open directions, nearby communities, and the quickest route to the branch.',
+    },
+    {
+      label: 'Pre-Owned iPhones',
+      to: '/services/secondhand/',
+      description: 'Check certified used iPhones if you want a stronger value option.',
+    },
+    {
+      label: 'Sell Your Device',
+      to: '/services/sell-gadgets/',
+      description: 'Trade in your current phone before moving into a new iPhone purchase.',
+    },
+  ]
 
   useEffect(() => {
     if (!validFamilyKey) {
@@ -100,7 +123,14 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
         title="Buy iPhone 16 and 17 in Dubai | PZM Dubai"
         description="Browse iPhone 16 and 17 families in Dubai with direct WhatsApp ordering and local support from PZM."
         canonicalPath="/services/buy-iphone"
-        jsonLd={jsonLd}
+        jsonLd={[
+          jsonLd,
+          buildBreadcrumbJsonLd([
+            { name: 'Home', path: '/' },
+            { name: 'Services', path: '/services' },
+            { name: 'Buy iPhone', path: '/services/buy-iphone' },
+          ]),
+        ]}
       />
 
       <section className="rounded-3xl border border-brandBorder bg-white p-6 shadow-sm md:p-8">
@@ -185,6 +215,41 @@ export default function BuyIphonePage({ products, loading }: BuyIphonePageProps)
           />
         </div>
       </div>
+
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1.08fr),minmax(280px,0.92fr)]">
+        <article className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Local iPhone support</p>
+          <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">iPhone buying from Al Barsha, Dubai</h2>
+          <p className="mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.98rem]">
+            If you are searching for an iPhone shop in Dubai, this page is the clearest path to the current Apple lineup, exact model checks, and store pickup support from the Al Barsha branch.
+          </p>
+          <ul className="mt-4 space-y-3 text-sm leading-6 text-brandTextDark">
+            {localSupportPoints.map((point) => (
+              <li key={point} className="flex items-start gap-3">
+                <span className="mt-1 shrink-0 text-primary">✓</span>
+                <span>{point}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <aside className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Related routes</p>
+          <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">Compare before you commit</h2>
+          <div className="mt-4 space-y-3">
+            {relatedLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="block rounded-xl border border-brandBorder bg-slate-50/70 px-4 py-4 transition-colors hover:border-slate-300 hover:bg-slate-50"
+              >
+                <span className="block text-base font-semibold text-slate-950">{link.label}</span>
+                <span className="mt-1.5 block text-sm leading-6 text-brandTextMedium">{link.description}</span>
+              </Link>
+            ))}
+          </div>
+        </aside>
+      </section>
     </div>
   )
 }

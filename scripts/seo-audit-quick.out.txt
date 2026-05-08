@@ -1,0 +1,85 @@
+URL: https://pzm.ae/
+  Status: 200  Words: 794  JsonLd: 1  Product: False  Breadcrumb: False  Org: False  ItemList: False
+  Title: PZM Computers &amp; Phones - Sell, New, Used, Repair, PC Build | Barsha Dubai
+  Canonical: https://pzm.ae/
+  OgUrl:     https://pzm.ae/
+  Robots:    index, follow
+URL: https://pzm.ae/services/buy-iphone/
+  Status: 200  Words: 6586  JsonLd: 1  Product: False  Breadcrumb: False  Org: False  ItemList: False
+  Title: Buy iPhone 17 Pro Max, Pro, Air &amp; iPhone 17 in Dubai | PZM
+  Canonical: https://pzm.ae/services/buy-iphone/
+  OgUrl:     https://pzm.ae/services/buy-iphone/
+  Robots:    index, follow
+URL: https://pzm.ae/services/brand-new/
+  Status: 200  Words: 8419  JsonLd: 1  Product: False  Breadcrumb: False  Org: False  ItemList: False
+  Title: Brand New Devices in Dubai | PZM Dubai
+  Canonical: https://pzm.ae/services/brand-new/
+  OgUrl:     https://pzm.ae/services/brand-new/
+  Robots:    index, follow
+URL: https://pzm.ae/services/secondhand/
+  Status: 200  Words: 10095  JsonLd: 1  Product: False  Breadcrumb: False  Org: False  ItemList: False
+  Title: Buy Used iPhones, Laptops &amp; Gaming PCs | PZM Dubai
+  Canonical: https://pzm.ae/services/secondhand/
+  OgUrl:     https://pzm.ae/services/secondhand/
+  Robots:    index, follow
+URL: https://pzm.ae/services/repair/
+  Status: 200  Words: 344  JsonLd: 0  Product: False  Breadcrumb: False  Org: False  ItemList: False
+  Title: Repair Services in Dubai | PZM Computers &amp; Phones
+  Canonical: https://pzm.ae/services/repair/
+  OgUrl:     https://pzm.ae/services/repair/
+  Robots:    index, follow
+URL: https://pzm.ae/services/sell-gadgets/
+  Status: 200  Words: 327  JsonLd: 0  Product: False  Breadcrumb: False  Org: False  ItemList: False
+  Title: Sell Your Device in Dubai | PZM Computers &amp; Phones
+  Canonical: https://pzm.ae/services/sell-gadgets/
+  OgUrl:     https://pzm.ae/services/sell-gadgets/
+  Robots:    index, follow
+URL: https://pzm.ae/services/gaming-pc/
+  Status: 200  Words: 330  JsonLd: 0  Product: False  Breadcrumb: False  Org: False  ItemList: False
+  Title: Gaming PC Builds in Dubai | PZM Computers &amp; Phones
+  Canonical: https://pzm.ae/services/gaming-pc/
+  OgUrl:     https://pzm.ae/services/gaming-pc/
+  Robots:    index, follow
+URL: https://pzm.ae/services/accessories/
+  Status: 200  Words: 366  JsonLd: 0  Product: False  Breadcrumb: False  Org: False  ItemList: False
+  Title: Accessories in Dubai | PZM Computers &amp; Phones
+  Canonical: https://pzm.ae/services/accessories/
+  OgUrl:     https://pzm.ae/services/accessories/
+  Robots:    index, follow
+URL: https://pzm.ae/areas/al-barsha/
+  Status: 200  Words: 503  JsonLd: 1  Product: False  Breadcrumb: False  Org: False  ItemList: False
+  Title: Phone and Laptop Store in Al Barsha &amp; Dubai Science Park | PZM
+  Canonical: https://pzm.ae/areas/al-barsha/
+  OgUrl:     https://pzm.ae/areas/al-barsha/
+  Robots:    index, follow
+FAIL https://pzm.ae/areas/business-bay/ :: Response status code does not indicate success: 404 (Not Found).
+URL: https://pzm.ae/blog/
+  Status: 200  Words: 412  JsonLd: 0  Product: False  Breadcrumb: False  Org: False  ItemList: False
+  Title: Tech Blog - iPhone, PC &amp; Repair Tips | PZM Dubai
+  Canonical: https://pzm.ae/blog/
+  OgUrl:     https://pzm.ae/blog/
+  Robots:    index, follow
+URL: https://pzm.ae/product/prod-mo4quvwx-668ugf/
+  Status: 200  Words: 123  JsonLd: 1  Product: True  Breadcrumb: False  Org: False  ItemList: False
+  Title: iPhone 6S 64GB Gold | PZM Computers &amp; Phones
+  Canonical: https://pzm.ae/product/prod-mo4quvwx-668ugf/
+  OgUrl:     https://pzm.ae/product/prod-mo4quvwx-668ugf/
+  Robots:    index, follow
+URL: https://pzm.ae/product/prod-mo4qviia-t4t7si/
+  Status: 200  Words: 184  JsonLd: 1  Product: True  Breadcrumb: False  Org: False  ItemList: False
+  Title: Samsung S3 Curved 24&quot; 24 inch / 60Hz / FHD / HDMI+VGA Black | PZM Computers &amp; Phones
+  Canonical: https://pzm.ae/product/prod-mo4qviia-t4t7si/
+  OgUrl:     https://pzm.ae/product/prod-mo4qviia-t4t7si/
+  Robots:    index, follow
+URL: https://pzm.ae/product/prod-mnnz7dy1-88bplj/
+  Status: 200  Words: 205  JsonLd: 1  Product: True  Breadcrumb: False  Org: False  ItemList: False
+  Title: Tecno Spark Go 1 64GB / 3GB RAM Good Condition | PZM Computers &amp; Phones
+  Canonical: https://pzm.ae/product/prod-mnnz7dy1-88bplj/
+  OgUrl:     https://pzm.ae/product/prod-mnnz7dy1-88bplj/
+  Robots:    index, follow
+URL: https://pzm.ae/product/prod-mnnz7hfp-d4coml/
+  Status: 200  Words: 239  JsonLd: 1  Product: True  Breadcrumb: False  Org: False  ItemList: False
+  Title: MacBook Pro 16&quot; 36GB / 512GB / GPU 18-Core Good Condition | PZM Computers &amp; Phones
+  Canonical: https://pzm.ae/product/prod-mnnz7hfp-d4coml/
+  OgUrl:     https://pzm.ae/product/prod-mnnz7hfp-d4coml/
+  Robots:    index, follow
