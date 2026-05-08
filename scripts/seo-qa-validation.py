@@ -201,7 +201,8 @@ def audit(url: str) -> AuditRow:
     row.has_product = "Product" in types
     row.has_breadcrumb = "BreadcrumbList" in types
     row.has_organization = bool(
-        types & {"Organization", "LocalBusiness", "Store"})
+        types & {"Organization", "LocalBusiness", "Store", "ComputerStore",
+                 "MobilePhoneStore", "ElectronicsStore", "HomeAndConstructionBusiness"})
     row.has_itemlist = "ItemList" in types
 
     text = re.sub(r"<[^>]+>", " ", html)

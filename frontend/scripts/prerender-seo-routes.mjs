@@ -2706,6 +2706,33 @@ function buildBreadcrumbJsonLd(items) {
   }
 }
 
+function buildFaqJsonLd(items) {
+  if (!Array.isArray(items) || items.length === 0) return null
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
+    })),
+  }
+}
+
+function extractHomeFaqItems(homeContentSource) {
+  const match = homeContentSource.match(/export\s+const\s+homeFaqItems\s*:\s*[^=]+=\s*\[([\s\S]*?)\n\]/)
+  if (!match) return []
+  const body = match[1]
+  const items = []
+  const itemPattern = /\{\s*question:\s*(['"`])([\s\S]*?)\1\s*,\s*answer:\s*(['"`])([\s\S]*?)\3\s*,?\s*\}/g
+  for (const m of body.matchAll(itemPattern)) {
+    const question = m[2].replace(/\\'/g, "'").replace(/\\"/g, '"').trim()
+    const answer = m[4].replace(/\\'/g, "'").replace(/\\"/g, '"').trim()
+    if (question && answer) items.push({ question, answer })
+  }
+  return items
+}
+
 function buildArticleJsonLd(route) {
   return {
     '@context': 'https://schema.org',
@@ -3107,9 +3134,23 @@ const blogPriorityMap = {
 const serviceCatalogSource = await readSourceFile('serviceCatalog.ts')
 const areaCatalogSource = await readSourceFile('areaCatalog.ts')
 const blogCatalogSource = await readSourceFile('blogCatalog.ts')
+const homePageContentSource = await readSourceFile('homePageContent.ts')
 const serviceEntries = extractServiceRoutes(serviceCatalogSource)
 const areaEntries = extractAreaRoutes(areaCatalogSource)
 const blogEntries = extractBlogRoutes(blogCatalogSource)
+const homeFaqItems = extractHomeFaqItems(homePageContentSource)
+const homeFaqJsonLd = buildFaqJsonLd(homeFaqItems)
+if (homeFaqJsonLd) {
+  const homeRoute = baseRoutes.find((route) => route.path === '/')
+  if (homeRoute) {
+    const existing = Array.isArray(homeRoute.jsonLd)
+      ? homeRoute.jsonLd
+      : homeRoute.jsonLd
+        ? [homeRoute.jsonLd]
+        : []
+    homeRoute.jsonLd = [...existing, homeFaqJsonLd]
+  }
+}
 
 const canonicalRoutes = [
   ...baseRoutes,
