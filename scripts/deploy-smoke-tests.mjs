@@ -17,7 +17,7 @@ const checks = [
   {
     path: '/',
     label: 'Homepage',
-    expect: ['<title>', 'canonical', 'Choose your route'],
+    expect: ['<title>', 'canonical', 'Choose your route', 'Popular In Al Barsha'],
   },
   {
     path: '/services/brand-new/',
@@ -52,7 +52,7 @@ const checks = [
   {
     path: '/areas/al-barsha/',
     label: 'Al Barsha area page',
-    expect: ['Al Barsha', 'canonical', 'BreadcrumbList'],
+    expect: ['Al Barsha', 'canonical', 'BreadcrumbList', 'Repair Services', 'Used Devices'],
   },
   {
     path: '/blog/gold-record-highs-tech-buyers-dubai-2026/',
@@ -68,11 +68,6 @@ const checks = [
     path: '/sitemap.xml',
     label: 'Sitemap',
     expect: ['<urlset', '<loc>https://pzm.ae/'],
-  },
-  {
-    path: '/merchant-feed.xml',
-    label: 'Merchant feed',
-    expect: ['<rss', '<g:link>https://pzm.ae/product/'],
   },
 ]
 
@@ -92,6 +87,16 @@ function buildRedirectChecks() {
       url: buildUrl('/product/services/'),
       label: 'Phantom services redirect',
       location: buildUrl('/services/'),
+    },
+    {
+      url: buildUrl('/areas/jbr.html'),
+      label: 'Legacy JBR area redirect',
+      location: buildUrl('/areas/jbr/'),
+    },
+    {
+      url: buildUrl('/areas/jumeirah.html'),
+      label: 'Legacy Jumeirah area redirect',
+      location: buildUrl('/areas/jumeirah/'),
     },
   ]
 
@@ -283,10 +288,6 @@ async function main() {
     checkResults.set(check.path, result)
     results.push(`${check.label}: OK (${result.status})`)
   }
-
-  const merchantFeedBody = checkResults.get('/merchant-feed.xml')?.body
-  const merchantLinks = extractXmlValues(merchantFeedBody, /<g:link>([\s\S]*?)<\/g:link>/g, 'Merchant feed')
-  results.push(await runUrlStatusChecks({ label: 'Merchant feed URLs', urls: merchantLinks }))
 
   const sitemapBody = checkResults.get('/sitemap.xml')?.body
   const sitemapUrls = extractXmlValues(sitemapBody, /<loc>([\s\S]*?)<\/loc>/g, 'Sitemap')

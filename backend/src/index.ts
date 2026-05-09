@@ -6,7 +6,7 @@ import { EmailService, TEAM_NOTIFICATION_EMAIL } from './email-service';
 import { StorageService } from './storage';
 import { getCorsHeaders, handleCors, generateId, validateRequired, parseRequestBody, logRequest, logError } from './utils';
 import { getDeliveryPolicy, roundCurrency } from '../../shared/utils';
-import type { Product, Order, OrderItem, ServiceRequest, WhatsAppLead, GcrOptInEvent } from '../../shared/types';
+import type { Product, Order, OrderItem, ServiceRequest, WhatsAppLead } from '../../shared/types';
 
 interface Env {
   DB: D1Database;
@@ -45,21 +45,6 @@ const ADMIN_2FA_CODE_LENGTH = 6;
 const ADMIN_2FA_EXPIRY_SECONDS = 10 * 60;
 const ADMIN_2FA_MAX_ATTEMPTS = 5;
 const ADMIN_2FA_CODE_PATTERN = /^\d{6}$/;
-const GCR_OPT_IN_STATUS_PATTERN = /^[a-z0-9-]+(?::[a-z0-9_-]+)?$/;
-const GCR_OPT_IN_ALLOWED_SOURCE = 'order-confirmation';
-const MAX_GCR_PATH_LENGTH = 160;
-const MAX_GCR_ORIGIN_LENGTH = 120;
-const MAX_GCR_USER_AGENT_LENGTH = 300;
-
-interface GcrOptInEventRequestBody {
-  order_id?: string;
-  status?: string;
-  source?: string;
-  page_path?: string;
-  debug_enabled?: boolean;
-  viewport_width?: number;
-  viewport_height?: number;
-}
 
 interface AdminTwoFactorChallenge {
   adminId: string;
@@ -320,100 +305,6 @@ app.use(
 // Health check
 app.get('/health', (c) => {
   return c.json({ status: 'ok' });
-});
-
-// ============ GOOGLE CUSTOMER REVIEWS TELEMETRY ============
-
-app.post('/api/gcr-opt-in-events', async (c) => {
-  try {
-    logRequest('POST', '/api/gcr-opt-in-events');
-    const body = await parseRequestBody(c) as GcrOptInEventRequestBody | null;
-    if (!body) {
-      return c.json({ error: 'Invalid request body', status: 400 }, 400);
-    }
-
-    const orderId = getBoundedString(body.order_id, 64);
-    const status = getBoundedString(body.status, 80);
-    const source = getBoundedString(body.source, 40) || GCR_OPT_IN_ALLOWED_SOURCE;
-    const pagePath = getBoundedString(body.page_path, MAX_GCR_PATH_LENGTH);
-
-    if (!orderId || !status || !pagePath) {
-      return c.json({ error: 'Missing required telemetry fields', status: 400 }, 400);
-    }
-
-    if (!GCR_OPT_IN_STATUS_PATTERN.test(status)) {
-      return c.json({ error: 'Invalid GCR status', status: 400 }, 400);
-    }
-
-    if (source !== GCR_OPT_IN_ALLOWED_SOURCE) {
-      return c.json({ error: 'Invalid GCR telemetry source', status: 400 }, 400);
-    }
-
-    if (!pagePath.startsWith('/order/')) {
-      return c.json({ error: 'Invalid telemetry page path', status: 400 }, 400);
-    }
-
-    const db = new Database(c.env.DB);
-    const order = await db.getOrder(orderId);
-    if (!order) {
-      return c.json({ error: 'Order not found', status: 404 }, 404);
-    }
-
-    const promptStyle = status.includes(':') ? status.split(':')[1] || null : null;
-    const pageOrigin = getBoundedOrigin(c.req.header('origin'))
-      || getBoundedOrigin(c.req.header('referer'));
-    const userAgent = getBoundedString(c.req.header('user-agent'), MAX_GCR_USER_AGENT_LENGTH);
-
-    const event: GcrOptInEvent = {
-      id: generateId('gcr'),
-      order_id: order.id,
-      status,
-      prompt_style: promptStyle,
-      source,
-      page_path: pagePath,
-      page_origin: pageOrigin ?? null,
-      user_agent: userAgent ?? null,
-      viewport_width: getOptionalPositiveInteger(body.viewport_width) ?? null,
-      viewport_height: getOptionalPositiveInteger(body.viewport_height) ?? null,
-      debug_enabled: Boolean(body.debug_enabled),
-      created_at: new Date().toISOString(),
-    };
-
-    await db.createGcrOptInEvent(event);
-
-    return c.json({ data: { success: true, id: event.id }, status: 202 }, 202);
-  } catch (error) {
-    logError(error, 'POST /api/gcr-opt-in-events');
-    return c.json({ error: 'Failed to record GCR telemetry', status: 500 }, 500);
-  }
-});
-
-app.get('/api/gcr-opt-in-events', async (c) => {
-  try {
-    logRequest('GET', '/api/gcr-opt-in-events');
-    const authService = new AuthService(c.env.ADMIN_SECRET);
-    const authHeader = c.req.header('Authorization');
-    const token = authService.extractToken(authHeader);
-
-    if (!token) {
-      return c.json({ error: 'Unauthorized', status: 401 }, 401);
-    }
-
-    const payload = await authService.verifyToken(token);
-    if (!payload || payload.type !== 'admin') {
-      return c.json({ error: 'Forbidden', status: 403 }, 403);
-    }
-
-    const limitValue = Number.parseInt(c.req.query('limit') || '50', 10);
-    const limit = Number.isFinite(limitValue) ? limitValue : 50;
-    const orderId = getBoundedString(c.req.query('orderId'), 64);
-    const db = new Database(c.env.DB);
-    const events = await db.getGcrOptInEvents(limit, orderId);
-    return c.json({ data: events, status: 200 }, 200);
-  } catch (error) {
-    logError(error, 'GET /api/gcr-opt-in-events');
-    return c.json({ error: 'Failed to fetch GCR telemetry', status: 500 }, 500);
-  }
 });
 
 // ============ BUSINESS HOURS API ============

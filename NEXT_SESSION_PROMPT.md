@@ -1,6 +1,6 @@
 # Next Session Prompt
 
-Use this repository as the source of truth. The Dubai delivery-pricing rollout is already live, and the public storefront cutover to https://pzm.ae is now live. The next session should start from post-cutover SEO, Merchant Center, and cleanup work.
+Use this repository as the source of truth. The Dubai delivery-pricing rollout is already live, and the public storefront cutover to https://pzm.ae is now live. The next session should start from post-cutover SEO plus Google Search Console, Google Ads, Google Maps, and cleanup work.
 
 Context:
 - Workspace: C:\Users\islamt\shop-pzm.ae
@@ -27,27 +27,25 @@ Already completed and verified:
 - Live verification on shop.pzm.ae confirms pzm.ae canonicals, pzm.ae media URLs in prerendered product payloads, and the new production bundle.
 - Root-domain cutover is now live: https://pzm.ae/api/products?condition=new returns 200 and core pages serve the new storefront.
 - Product detail pages are now prerendered at /product/:id on the live site, included in https://pzm.ae/sitemap.xml, and expose Product JSON-LD.
-- A live Merchant Center feed is now available at https://pzm.ae/merchant-feed.xml and currently includes in-stock catalog items with pzm.ae product links and pzm.ae media URLs.
-- A Merchant Center fallback feed is also live at https://pzm.ae/merchant-feed.txt for scheduled fetch compatibility.
 - The user completed the Search Console sitemap resubmission and URL inspection step.
-- Merchant Center business name was updated to "PZM Computers & Phones Store".
-- Merchant Center scheduled fetch source was switched to https://pzm.ae/merchant-feed.txt after Google reported the original source format as unsupported.
 - The mobile floating cart shortcut was tightened for narrow screens and only shows when the cart has items.
+- Merchant Center is intentionally disconnected and should stay out of scope unless the user explicitly asks to reconnect it.
+- Google Customer Reviews prompt/telemetry and Merchant feed cleanup is in progress; keep search-facing Product schema fields that help Google Search.
 
 Remaining follow-up facts from the repo:
 - The root domain is live, but GitHub Pages cleanup on the old `pzm.ae` repo still needs to be done so the legacy workflow and custom-domain marker cannot reclaim the domain.
 - Decide whether shop.pzm.ae remains a temporary alias or becomes a redirect to https://pzm.ae.
-- Merchant Center still needs the scheduled fetch to complete successfully on the new TXT source, plus diagnostics review for identifiers, landing-page match, and categorization.
-- The current Merchant purchase-method warning is believed to be stale from the previous static site; re-evaluate it only after Google finishes revalidating the new storefront.
-- The user left an incomplete taxonomy note: "Categorization, at new devices and brand new and". Treat this as an open classification review for New Devices / Brand New / Buy iPhone / Secondhand during Merchant cleanup.
+- Remove remaining Merchant-oriented repo/runtime surfaces without touching Product schema fields used for Google Search enhancements.
+- Provision `GOOGLE_MAPS_API_KEY` in production so `/api/business-hours?refresh=1` returns live Google-backed hours instead of the fallback schedule.
+- Reconfirm Google Ads measurement strategy: keep GA4-imported conversions only, or create native website conversions and fill the `VITE_GOOGLE_ADS_*_LABEL` vars.
 
 Suggested execution order:
-1. In Merchant Center, wait for or manually trigger a refresh of the scheduled fetch source at https://pzm.ae/merchant-feed.txt and review Diagnostics after processing completes.
-2. Reassess the Merchant purchase-method issue only after Google has recrawled the new storefront; if it persists, inspect live product landing pages, cart, and checkout from a Googlebot-friendly no-JS path.
+1. Finish removing Merchant feed and Google Customer Reviews runtime/operator surfaces while preserving Product schema completeness for Google Search.
+2. Provision the production Google Maps API key and verify `https://pzm.ae/api/business-hours?refresh=1` reports a Google-backed source.
 3. Decide whether shop.pzm.ae remains a temporary alias or becomes a redirect to https://pzm.ae, then verify storefront + API behavior on both hosts.
 4. Disable GitHub Pages or remove the custom domain from the old `pzm.ae` repo so it cannot take the domain back.
-5. Run a narrow production verification pass on `pzm.ae`: homepage, services, areas, blog, product pages, cart, checkout, robots, sitemap, merchant-feed.xml, merchant-feed.txt, canonical tags, and JSON-LD.
-6. Finish the ops layer: GA4 domain checks, final catalog audit, and the open categorization cleanup.
+5. Run a narrow production verification pass on `pzm.ae`: homepage, services, areas, blog, product pages, cart, checkout, robots, sitemap, canonical tags, and JSON-LD.
+6. Finish the ops layer: Search Console follow-up, Google Ads conversion strategy confirmation, and final catalog audit.
 
 Execution rules for the next chat:
 - Start by reading repo memories and this prompt before editing code.

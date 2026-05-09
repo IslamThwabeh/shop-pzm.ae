@@ -27,6 +27,12 @@ export interface HomeAreaHighlight {
   to: string
 }
 
+export interface HomeMoneyRouteLink {
+  label: string
+  to: string
+  description: string
+}
+
 export const homeCategoryCards: HomeCategoryCard[] = [
   {
     title: 'Buy iPhone',
@@ -145,6 +151,39 @@ export const homeAreaHighlights: HomeAreaHighlight[] = [
     label: 'Al Sufouh',
     placeName: 'Al Sufouh, Dubai',
     to: page('/areas/tecom'),
+  },
+]
+
+export const homeMoneyRouteLinks: HomeMoneyRouteLink[] = [
+  {
+    label: 'Laptop Shop in Al Barsha',
+    to: page('/services/laptop-shop'),
+    description: 'MacBook and Windows laptop buying routes with local pickup support.',
+  },
+  {
+    label: 'Computer Shop in Dubai',
+    to: page('/services/computer-shop'),
+    description: 'Desktops, monitors, and workstation shopping from the Al Barsha branch.',
+  },
+  {
+    label: 'Repair Services',
+    to: page('/services/repair'),
+    description: 'MacBook, laptop, and phone repair intake with quick branch follow-up.',
+  },
+  {
+    label: 'Buy iPhone',
+    to: page('/services/buy-iphone'),
+    description: 'Current iPhone lineup with model checks before store visit or delivery.',
+  },
+  {
+    label: 'Used Devices',
+    to: page('/services/secondhand'),
+    description: 'Certified pre-owned phones and laptops for value-focused buying.',
+  },
+  {
+    label: 'Gaming PC Builds',
+    to: page('/services/gaming-pc'),
+    description: 'Custom gaming and workstation builds with consultation from Al Barsha.',
   },
 ]
 

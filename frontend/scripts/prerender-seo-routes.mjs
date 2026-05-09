@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const frontendRoot = path.resolve(__dirname, '..')
@@ -14,18 +14,13 @@ const deviceFinderEntries = JSON.parse(
 const retiredProductRedirects = JSON.parse(
   await fs.readFile(path.join(contentRoot, 'retiredProductRedirects.json'), 'utf8')
 )
-const localInventoryConfigSource = JSON.parse(
-  await fs.readFile(path.join(contentRoot, 'localInventoryConfig.json'), 'utf8')
-)
 const SITE_URL = (process.env.VITE_SITE_URL || 'https://pzm.ae').replace(/\/+$/, '')
 const DEFAULT_IMAGE = `${SITE_URL}/images/mini_logo.png`
 const BRAND_NEW_FALLBACK_IMAGE = `${SITE_URL}/api/media/generated/services/brand-new/brand-new-service.webp`
 const SECONDHAND_FALLBACK_IMAGE = `${SITE_URL}/api/media/generated/services/secondhand/secondhand-service.webp`
 const BUY_IPHONE_FALLBACK_IMAGE = `${SITE_URL}/images/Catigories/mini_buy_iphone.webp`
 const PRODUCT_FEED_URL = process.env.PZM_PRODUCT_FEED_URL || 'https://pzm.ae/api/products'
-const MERCHANT_PRODUCTS_FILE = 'merchant-products.txt'
 const LASTMOD = new Date().toISOString().slice(0, 10)
-const MERCHANT_LOCAL_INVENTORY_FILE = 'merchant-local-inventory.txt'
 const SHARED_RETURN_POLICY = {
   '@type': 'MerchantReturnPolicy',
   applicableCountry: 'AE',
@@ -237,11 +232,6 @@ function formatPrice(value) {
   return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value)
 }
 
-function formatMerchantPrice(value) {
-  const numericValue = Number(value)
-  return `${Number.isFinite(numericValue) ? numericValue.toFixed(2) : '0.00'} AED`
-}
-
 function truncateText(value, maxLength) {
   if (value.length <= maxLength) {
     return value
@@ -277,114 +267,6 @@ function getProductDeduplicationKey(product) {
 
 function getProductTimestamp(product) {
   return Date.parse(product.updated_at || product.updatedAt || product.created_at || product.createdAt || '') || 0
-}
-
-function normalizeProductIdList(values) {
-  if (!Array.isArray(values)) {
-    return []
-  }
-
-  return Array.from(
-    new Set(
-      values
-        .map((value) => String(value || '').trim())
-        .filter(Boolean)
-    )
-  )
-}
-
-function normalizeMerchantDestinationList(values) {
-  if (!Array.isArray(values)) {
-    return []
-  }
-
-  return Array.from(
-    new Set(
-      values
-        .map((value) => String(value || '').trim())
-        .filter(Boolean)
-    )
-  )
-}
-
-function getResolvedLocalInventoryConfig() {
-  return {
-    enabled: localInventoryConfigSource.enabled !== false,
-    storeCode: String(
-      process.env.PZM_MERCHANT_LOCAL_STORE_CODE
-        || process.env.PZM_MERCHANT_STORE_CODE
-        || localInventoryConfigSource.storeCode
-        || ''
-    ).trim(),
-    primaryFeedExcludedDestinations: normalizeMerchantDestinationList(
-      localInventoryConfigSource.primaryFeedExcludedDestinations
-    ),
-    includedProductIds: normalizeProductIdList(localInventoryConfigSource.includedProductIds),
-    excludedProductIds: normalizeProductIdList(localInventoryConfigSource.excludedProductIds),
-  }
-}
-
-function isMerchantFeedEligibleProduct(product) {
-  const productId = String(product.id || '').trim()
-  return Boolean(productId) && Number(product.price) > 0 && (product.quantity ?? 0) > 0
-}
-
-function getMerchantFeedProducts(products) {
-  const uniqueProducts = new Map()
-
-  for (const product of products) {
-    if (!isMerchantFeedEligibleProduct(product)) {
-      continue
-    }
-
-    const productId = String(product.id || '').trim()
-    const existing = uniqueProducts.get(productId)
-
-    if (!existing || getProductTimestamp(product) >= getProductTimestamp(existing)) {
-      uniqueProducts.set(productId, product)
-    }
-  }
-
-  return Array.from(uniqueProducts.values()).sort(sortProducts)
-}
-
-function getMerchantLocalInventoryProducts(products, config) {
-  const includedIds = new Set(config.includedProductIds)
-  const excludedIds = new Set(config.excludedProductIds)
-
-  return getMerchantFeedProducts(products).filter((product) => {
-    const productId = String(product.id || '').trim()
-
-    if (!productId || excludedIds.has(productId)) {
-      return false
-    }
-
-    if (includedIds.size > 0) {
-      return includedIds.has(productId)
-    }
-
-    return true
-  })
-}
-
-function getLocalInventoryAvailability(product) {
-  const quantity = Math.max(0, Math.trunc(Number(product.quantity) || 0))
-
-  if (quantity <= 0) {
-    return 'out_of_stock'
-  }
-
-  if (quantity <= 2) {
-    return 'limited_availability'
-  }
-
-  return 'in_stock'
-}
-
-function getMerchantExcludedDestinations(config) {
-  return Array.isArray(config?.primaryFeedExcludedDestinations)
-    ? config.primaryFeedExcludedDestinations
-    : []
 }
 
 function sortProducts(left, right) {
@@ -593,10 +475,6 @@ function buildProductFallbackHighlights(product) {
   return highlights
 }
 
-function hasProductIdentifiers(product) {
-  return Boolean(getOptionalProductText(product.gtin) || (getOptionalProductText(product.mpn) && getKnownProductBrand(product)))
-}
-
 function getProductFallbackImageUrl(product) {
   if (product.condition === 'used') {
     return SECONDHAND_FALLBACK_IMAGE
@@ -675,33 +553,6 @@ function buildProductRichDescription(product) {
 
 function buildProductMetaDescription(product) {
   return truncateText(buildProductRichDescription(product), 150)
-}
-
-function buildMerchantProductType(product) {
-  if (product.product_type) {
-    return product.product_type
-  }
-
-  const model = String(product.model || '').toLowerCase()
-  const inventoryType = product.condition === 'used' ? 'Used Devices' : 'Brand New Devices'
-
-  if (/(iphone|galaxy|pixel|android|phone|mobile|ipad|tablet|\btab\b|watch|wearable)/i.test(model)) {
-    return `${inventoryType} > Phones & Tablets`
-  }
-
-  if (/(macbook|laptop|notebook|surface|thinkpad|lenovo|hp|dell|asus|acer|elitebook|probook|xps|inspiron|spectre|envy)/i.test(model)) {
-    return `${inventoryType} > Laptops & Computers`
-  }
-
-  if (/(playstation|ps5|ps4|xbox|nintendo|switch|gaming|rog|alienware|console)/i.test(model)) {
-    return `${inventoryType} > Gaming`
-  }
-
-  return inventoryType
-}
-
-function buildMerchantGoogleProductCategory(product) {
-  return getOptionalProductText(product.google_product_category)
 }
 
 function buildProductJsonLd(product) {
@@ -857,6 +708,70 @@ function countQualityProducts(products) {
   return products.filter(isQualityProduct).length
 }
 
+function getProductSitemapVariantKey(product) {
+  if (product.condition !== 'new') {
+    return null
+  }
+
+  const normalizedModel = normalizeProductValue(product.model)
+  const normalizedStorage = normalizeProductValue(product.storage)
+
+  if (!normalizedModel || !normalizedStorage) {
+    return null
+  }
+
+  return `${product.condition}|${normalizedModel}|${normalizedStorage}`
+}
+
+function getNewProductSitemapRepresentativeIds(products) {
+  const groupedVariants = new Map()
+
+  for (const product of products) {
+    const productId = String(product.id || '').trim()
+    const variantKey = getProductSitemapVariantKey(product)
+
+    if (!productId || !variantKey || (product.quantity ?? 0) <= 0) {
+      continue
+    }
+
+    const normalizedColor = normalizeProductValue(product.color)
+    const existingGroup = groupedVariants.get(variantKey)
+
+    if (!existingGroup) {
+      groupedVariants.set(variantKey, {
+        colors: new Set(normalizedColor ? [normalizedColor] : []),
+        representative: product,
+      })
+      continue
+    }
+
+    if (normalizedColor) {
+      existingGroup.colors.add(normalizedColor)
+    }
+
+    if (getProductTimestamp(product) >= getProductTimestamp(existingGroup.representative)) {
+      existingGroup.representative = product
+    }
+  }
+
+  const duplicateVariantKeys = new Set()
+  const representativeIds = new Set()
+
+  for (const [variantKey, group] of groupedVariants.entries()) {
+    if (group.colors.size < 2) {
+      continue
+    }
+
+    duplicateVariantKeys.add(variantKey)
+    representativeIds.add(String(group.representative.id || '').trim())
+  }
+
+  return {
+    duplicateVariantKeys,
+    representativeIds,
+  }
+}
+
 function buildProductRoutes(products) {
   const uniqueProducts = new Map()
 
@@ -873,10 +788,20 @@ function buildProductRoutes(products) {
   }
 
   const allProducts = Array.from(uniqueProducts.values()).sort(sortProducts)
+  const { duplicateVariantKeys, representativeIds } = getNewProductSitemapRepresentativeIds(allProducts)
 
   const toRoute = (product) => {
     const inStock = (product.quantity ?? 0) > 0
     const browsePath = getProductBrowsePath(product)
+    const productId = String(product.id || '').trim()
+    const variantKey = getProductSitemapVariantKey(product)
+    const isDuplicateNewColorVariant = Boolean(
+      inStock
+      && variantKey
+      && duplicateVariantKeys.has(variantKey)
+      && !representativeIds.has(productId)
+    )
+
     return {
       path: buildProductPath(product),
       title: `${buildProductLabel(product)} | PZM Computers & Phones`,
@@ -897,198 +822,12 @@ function buildProductRoutes(products) {
           { name: buildProductLabel(product), path: buildProductPath(product) },
         ]),
       ],
-      ...(!inStock ? { excludeFromSitemap: true, robots: 'noindex, follow' } : {}),
+      ...((!inStock || isDuplicateNewColorVariant) ? { excludeFromSitemap: true } : {}),
+      ...(!inStock ? { robots: 'noindex, follow' } : {}),
     }
   }
 
   return allProducts.map((p) => toRoute(p))
-}
-
-function buildMerchantFeed(products, config = getResolvedLocalInventoryConfig()) {
-  const feedProducts = getMerchantFeedProducts(products)
-  const excludedDestinations = getMerchantExcludedDestinations(config)
-
-  const lines = [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">',
-    '  <channel>',
-    '    <title>PZM Merchant Feed</title>',
-    `    <link>${escapeXml(`${SITE_URL}/`)}</link>`,
-    `    <description>${escapeXml('Live in-stock products from PZM Computers & Phones Store in Dubai.')}</description>`,
-  ]
-
-  for (const product of feedProducts) {
-    const brand = getKnownProductBrand(product)
-    const googleProductCategory = buildMerchantGoogleProductCategory(product)
-    const gtin = getOptionalProductText(product.gtin)
-    const mpn = getOptionalProductText(product.mpn)
-    const itemGroupId = getOptionalProductText(product.item_group_id)
-    const canonicalPath = normalizeCanonicalPath(buildProductPath(product))
-    const imageLinks = [getProductImageUrl(product), ...(Array.isArray(product.images) ? product.images : [])]
-      .filter(Boolean)
-      .filter((value, index, values) => values.indexOf(value) === index)
-      .slice(0, 11)
-
-    lines.push('    <item>')
-    lines.push(`      <g:id>${escapeXml(String(product.id))}</g:id>`)
-    lines.push(`      <g:title>${escapeXml(buildProductLabel(product))}</g:title>`)
-    lines.push(`      <g:description>${escapeXml(buildProductRichDescription(product))}</g:description>`)
-    lines.push(`      <g:link>${escapeXml(toAbsoluteUrl(canonicalPath))}</g:link>`)
-    lines.push(`      <g:image_link>${escapeXml(imageLinks[0] || DEFAULT_IMAGE)}</g:image_link>`)
-
-    for (const additionalImage of imageLinks.slice(1)) {
-      lines.push(`      <g:additional_image_link>${escapeXml(toAbsoluteUrl(additionalImage))}</g:additional_image_link>`)
-    }
-
-    lines.push(`      <g:availability>${(product.quantity ?? 0) > 0 ? 'in_stock' : 'out_of_stock'}</g:availability>`)
-    lines.push(`      <g:price>${escapeXml(formatMerchantPrice(product.price))}</g:price>`)
-    lines.push(`      <g:condition>${product.condition === 'used' ? 'used' : 'new'}</g:condition>`)
-    lines.push(`      <g:product_type>${escapeXml(buildMerchantProductType(product))}</g:product_type>`)
-
-    if (googleProductCategory) {
-      lines.push(`      <g:google_product_category>${escapeXml(googleProductCategory)}</g:google_product_category>`)
-    }
-
-    if (itemGroupId) {
-      lines.push(`      <g:item_group_id>${escapeXml(itemGroupId)}</g:item_group_id>`)
-    }
-
-    if (brand) {
-      lines.push(`      <g:brand>${escapeXml(brand)}</g:brand>`)
-    }
-
-    if (gtin) {
-      lines.push(`      <g:gtin>${escapeXml(gtin)}</g:gtin>`)
-    }
-
-    if (mpn) {
-      lines.push(`      <g:mpn>${escapeXml(mpn)}</g:mpn>`)
-    }
-
-    if (!hasProductIdentifiers(product)) {
-      lines.push('      <g:identifier_exists>no</g:identifier_exists>')
-    }
-
-    for (const excludedDestination of excludedDestinations) {
-      lines.push(`      <g:excluded_destination>${escapeXml(excludedDestination)}</g:excluded_destination>`)
-    }
-
-    lines.push('    </item>')
-  }
-
-  lines.push('  </channel>')
-  lines.push('</rss>')
-
-  return `${lines.join('\n')}\n`
-}
-
-function escapeMerchantTabValue(value) {
-  return String(value || '')
-    .replace(/[\t\r\n]+/g, ' ')
-    .replace(/\s{2,}/g, ' ')
-    .trim()
-}
-
-function buildMerchantTabFeed(products, config = getResolvedLocalInventoryConfig()) {
-  const feedProducts = getMerchantFeedProducts(products)
-  const excludedDestinations = getMerchantExcludedDestinations(config)
-  const rows = [
-    [
-      'id',
-      'title',
-      'description',
-      'link',
-      'image_link',
-      'additional_image_link',
-      'availability',
-      'price',
-      'condition',
-      'brand',
-      'product_type',
-      'google_product_category',
-      'gtin',
-      'mpn',
-      'item_group_id',
-      'excluded_destination',
-      'identifier_exists',
-    ].join('\t'),
-  ]
-
-  for (const product of feedProducts) {
-    const brand = getKnownProductBrand(product) || ''
-    const canonicalPath = normalizeCanonicalPath(buildProductPath(product))
-    const imageLinks = [getProductImageUrl(product), ...(Array.isArray(product.images) ? product.images : [])]
-      .filter(Boolean)
-      .filter((value, index, values) => values.indexOf(value) === index)
-      .slice(0, 11)
-    const row = [
-      product.id,
-      buildProductLabel(product),
-      buildProductRichDescription(product),
-      toAbsoluteUrl(canonicalPath),
-      imageLinks[0] || DEFAULT_IMAGE,
-      imageLinks.slice(1).map((image) => toAbsoluteUrl(image)).join(','),
-      (product.quantity ?? 0) > 0 ? 'in stock' : 'out of stock',
-      formatMerchantPrice(product.price),
-      product.condition === 'used' ? 'used' : 'new',
-      brand,
-      buildMerchantProductType(product),
-      buildMerchantGoogleProductCategory(product) || '',
-      getOptionalProductText(product.gtin) || '',
-      getOptionalProductText(product.mpn) || '',
-      getOptionalProductText(product.item_group_id) || '',
-      excludedDestinations.join(','),
-      hasProductIdentifiers(product) ? '' : 'no',
-    ].map((value) => escapeMerchantTabValue(value))
-
-    rows.push(row.join('\t'))
-  }
-
-  return `${rows.join('\n')}\n`
-}
-
-function buildMerchantLocalInventoryTabFeed(products, config) {
-  const emptyLocalInventoryFeed = ['store_code', 'id', 'availability', 'quantity'].join('\t')
-
-  if (!config.enabled) {
-    console.log(
-      '[prerender] Local inventory is disabled in localInventoryConfig.json. Writing an empty merchant-local-inventory.txt to replace previous deployments.'
-    )
-    return `${emptyLocalInventoryFeed}\n`
-  }
-
-  if (!config.storeCode) {
-    console.warn(
-      '[prerender] No store code is configured. Writing an empty merchant-local-inventory.txt. Set PZM_MERCHANT_STORE_CODE or update frontend/src/content/localInventoryConfig.json when local inventory is ready.'
-    )
-    return `${emptyLocalInventoryFeed}\n`
-  }
-
-  const localProducts = getMerchantLocalInventoryProducts(products, config)
-
-  if (localProducts.length === 0) {
-    console.warn('[prerender] No eligible in-store products were selected. Writing an empty merchant-local-inventory.txt.')
-    return `${emptyLocalInventoryFeed}\n`
-  }
-
-  const rows = [
-    ['store_code', 'id', 'availability', 'quantity'].join('\t'),
-  ]
-
-  for (const product of localProducts) {
-    const quantity = Math.max(0, Math.trunc(Number(product.quantity) || 0))
-    rows.push(
-      [config.storeCode, product.id, getLocalInventoryAvailability(product), String(quantity)]
-        .map((value) => escapeMerchantTabValue(value))
-        .join('\t')
-    )
-  }
-
-  console.log(
-    `[prerender] Local inventory feed ready for ${localProducts.length} products using store code ${config.storeCode}.`
-  )
-
-  return `${rows.join('\n')}\n`
 }
 
 const brandNewSnapshotCategories = [
@@ -1778,6 +1517,15 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, products) {
     { href: '/blog/', label: 'Latest Blog Posts' },
   ]
 
+  const popularInAlBarsha = [
+    { title: 'Laptop Shop in Al Barsha', description: 'MacBook and Windows laptop buying routes with local pickup support.', href: '/services/laptop-shop', cta: 'Open page' },
+    { title: 'Computer Shop in Dubai', description: 'Desktops, monitors, and workstation shopping from the Al Barsha branch.', href: '/services/computer-shop', cta: 'Open page' },
+    { title: 'Repair Services', description: 'MacBook, laptop, and phone repair intake with quick branch follow-up.', href: '/services/repair', cta: 'Open page' },
+    { title: 'Buy iPhone', description: 'Current iPhone lineup with model checks before store visit or delivery.', href: '/services/buy-iphone', cta: 'Open page' },
+    { title: 'Used Devices', description: 'Certified pre-owned phones and laptops for value-focused buying.', href: '/services/secondhand', cta: 'Open page' },
+    { title: 'Gaming PC Builds', description: 'Custom gaming and workstation builds with consultation from Al Barsha.', href: '/services/gaming-pc', cta: 'Open page' },
+  ]
+
   const compactAreaLinks = visibleAreaEntries.map((entry) => ({ href: `/areas/${entry.slug}`, label: entry.title }))
   const compactBlogLinks = visibleBlogEntries.map((entry) => ({ href: `/blog/${entry.slug}`, label: entry.title }))
 
@@ -1824,6 +1572,10 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, products) {
         'Keep crawlable paths into nearby-community pages and recent articles, but in a lighter snapshot than the full homepage content grid.',
         `
           <div style="display:grid;gap:18px;">
+            <div>
+              <p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#64748b;">Popular In Al Barsha</p>
+              ${buildLinkGrid(popularInAlBarsha)}
+            </div>
             <div>
               <p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#64748b;">Dubai areas</p>
               ${buildActionLinks(compactAreaLinks)}
@@ -2249,6 +2001,23 @@ function extractPathField(source, fieldName) {
   return wrappedMatch ? decodeSingleQuotedString(wrappedMatch[1]) : ''
 }
 
+function extractTemplateLiteralField(source, fieldName) {
+  const pattern = new RegExp(`${fieldName}:\\s*\`([\\s\\S]*?)\``)
+  const match = pattern.exec(source)
+  return match ? match[1].trim() : ''
+}
+
+function extractBlogImageUrl(source) {
+  const blogMediaPattern = /imageUrl:\s*blogMedia\('((?:\\'|[^'])+)'\)/
+  const blogMediaMatch = blogMediaPattern.exec(source)
+
+  if (blogMediaMatch) {
+    return `/api/media/blog/${decodeSingleQuotedString(blogMediaMatch[1])}`
+  }
+
+  return extractPathField(source, 'imageUrl')
+}
+
 function extractStringArrayField(source, fieldName) {
   const arrayContent = extractFieldBlock(source, fieldName, '[', ']')
   return Array.from(arrayContent.matchAll(/'((?:\\'|[^'])+)'/g), (match) => decodeSingleQuotedString(match[1]))
@@ -2300,6 +2069,77 @@ function extractNamedArrayBlock(source, name) {
   }
 
   return source.slice(startIndex + 1, endIndex)
+}
+
+function extractBlogServiceLinks(source) {
+  const arrayContent = extractFieldBlock(source, 'relatedServiceLinks', '[', ']')
+  return extractLinkObjects(arrayContent).map((item) => ({
+    label: item.label,
+    to: item.to,
+  }))
+}
+
+function formatPrerenderInlineLinkList(links) {
+  const htmlLinks = links
+    .filter((link) => link.label && link.href)
+    .map((link) => `<a href="${normalizePublicHref(link.href)}">${escapeHtml(link.label)}</a>`)
+
+  if (htmlLinks.length === 0) {
+    return ''
+  }
+
+  if (htmlLinks.length === 1) {
+    return htmlLinks[0]
+  }
+
+  if (htmlLinks.length === 2) {
+    return `${htmlLinks[0]} and ${htmlLinks[1]}`
+  }
+
+  return `${htmlLinks.slice(0, -1).join(', ')}, and ${htmlLinks[htmlLinks.length - 1]}`
+}
+
+function getPrerenderInlineRelatedPosts(entry, entries) {
+  const sameCategoryPosts = entries
+    .filter((candidate) => candidate.slug !== entry.slug && candidate.category === entry.category)
+    .slice(0, 2)
+
+  if (sameCategoryPosts.length >= 2) {
+    return sameCategoryPosts
+  }
+
+  const usedSlugs = new Set(sameCategoryPosts.map((candidate) => candidate.slug))
+  const fallbackPosts = entries
+    .filter((candidate) => candidate.slug !== entry.slug && !usedSlugs.has(candidate.slug))
+    .slice(0, 2 - sameCategoryPosts.length)
+
+  return [...sameCategoryPosts, ...fallbackPosts]
+}
+
+function buildPrerenderBlogInlineSection(entry, entries) {
+  const serviceText = formatPrerenderInlineLinkList(
+    entry.relatedServiceLinks.slice(0, 2).map((link) => ({
+      label: link.label,
+      href: link.to,
+    }))
+  )
+
+  const articleText = formatPrerenderInlineLinkList(
+    getPrerenderInlineRelatedPosts(entry, entries).map((candidate) => ({
+      label: candidate.title,
+      href: `/blog/${candidate.slug}`,
+    }))
+  )
+
+  return [
+    '<h3>Keep exploring</h3>',
+    serviceText
+      ? `<p>If you want the practical next step after this article, compare ${serviceText} to move from research into current store routes, repair help, or live device options.</p>`
+      : '',
+    articleText
+      ? `<p>For related reading, continue with ${articleText} to build a clearer buying, cleaning, or repair plan.</p>`
+      : '',
+  ].filter(Boolean).join('')
 }
 
 function extractDetailSections(source) {
@@ -2763,6 +2603,12 @@ async function readSourceFile(fileName) {
   return fs.readFile(path.join(contentRoot, fileName), 'utf8')
 }
 
+async function loadRawBlogPosts() {
+  const moduleUrl = pathToFileURL(path.join(contentRoot, 'blogPosts.data.js')).href
+  const { rawBlogPosts } = await import(moduleUrl)
+  return Array.isArray(rawBlogPosts) ? rawBlogPosts : []
+}
+
 function extractServiceRoutes(serviceCatalogSource) {
   const scopedSource = extractCatalogSlice(serviceCatalogSource, 'export const serviceCatalog', 'const serviceAliases')
   const pattern = /^\s{2}(?:'([^']+)'|([a-z-]+)):\s*\{([\s\S]*?)^\s{2}\},?/gm
@@ -2820,24 +2666,32 @@ function extractAreaRoutes(areaCatalogSource) {
   return routes
 }
 
-function extractBlogRoutes(blogCatalogSource) {
-  const pattern = /^\s{2}\{\s*[\r\n\s]*title:\s*'((?:\\'|[^'])+)'[\s\S]*?slug:\s*'((?:\\'|[^'])+)'[\s\S]*?excerpt:\s*'((?:\\'|[^'])+)'[\s\S]*?seoDescription:\s*'((?:\\'|[^'])+)'[\s\S]*?category:\s*'((?:\\'|[^'])+)'[\s\S]*?imageUrl:\s*blogMedia\('((?:\\'|[^'])+)'\)[\s\S]*?publishedAt:\s*'((?:\\'|[^'])+)'[\s\S]*?bodyHtml:\s*`([\s\S]*?)`\s*,?\s*\}/gm
-  const routes = []
+function buildBlogEntries(rawBlogPosts) {
+  const routes = rawBlogPosts
+    .map((post) => ({
+      title: typeof post.title === 'string' ? post.title : '',
+      slug: typeof post.slug === 'string' ? post.slug : '',
+      excerpt: typeof post.excerpt === 'string' ? post.excerpt : '',
+      description: typeof post.seoDescription === 'string' ? post.seoDescription : '',
+      category: typeof post.category === 'string' ? post.category : '',
+      imageUrl: typeof post.imageUrl === 'string' ? post.imageUrl : '',
+      publishedAt: typeof post.publishedAt === 'string' ? post.publishedAt : '',
+      bodyHtml: typeof post.bodyHtml === 'string' ? post.bodyHtml.trim() : '',
+      relatedServiceLinks: Array.isArray(post.relatedServiceLinks)
+        ? post.relatedServiceLinks
+            .map((link) => ({
+              label: typeof link?.label === 'string' ? link.label : '',
+              to: typeof link?.to === 'string' ? link.to : '',
+            }))
+            .filter((link) => link.label && link.to)
+        : [],
+    }))
+    .filter((route) => route.title && route.slug && route.description && route.imageUrl && route.publishedAt && route.bodyHtml)
 
-  for (const match of blogCatalogSource.matchAll(pattern)) {
-    routes.push({
-      title: decodeSingleQuotedString(match[1]),
-      slug: decodeSingleQuotedString(match[2]),
-      excerpt: decodeSingleQuotedString(match[3]),
-      description: decodeSingleQuotedString(match[4]),
-      category: decodeSingleQuotedString(match[5]),
-      imageFile: decodeSingleQuotedString(match[6]),
-      publishedAt: decodeSingleQuotedString(match[7]),
-      bodyHtml: match[8].trim(),
-    })
-  }
-
-  return routes
+  return routes.map((route) => ({
+    ...route,
+    bodyHtml: `${route.bodyHtml}${buildPrerenderBlogInlineSection(route, routes)}`,
+  }))
 }
 
 function buildHtml(template, route) {
@@ -3133,11 +2987,11 @@ const blogPriorityMap = {
 
 const serviceCatalogSource = await readSourceFile('serviceCatalog.ts')
 const areaCatalogSource = await readSourceFile('areaCatalog.ts')
-const blogCatalogSource = await readSourceFile('blogCatalog.ts')
 const homePageContentSource = await readSourceFile('homePageContent.ts')
 const serviceEntries = extractServiceRoutes(serviceCatalogSource)
 const areaEntries = extractAreaRoutes(areaCatalogSource)
-const blogEntries = extractBlogRoutes(blogCatalogSource)
+const rawBlogPosts = await loadRawBlogPosts()
+const blogEntries = buildBlogEntries(rawBlogPosts)
 const homeFaqItems = extractHomeFaqItems(homePageContentSource)
 const homeFaqJsonLd = buildFaqJsonLd(homeFaqItems)
 if (homeFaqJsonLd) {
@@ -3219,7 +3073,7 @@ const canonicalRoutes = [
     title: `${trimmedTitle}${suffix}`,
     description: entry.description,
     canonicalPath: `/blog/${entry.slug}`,
-    imageUrl: `/api/media/blog/${entry.imageFile}`,
+    imageUrl: entry.imageUrl,
     priority: blogPriorityMap[entry.slug] || '0.6',
     changefreq: 'monthly',
     ogType: 'article',
@@ -3232,7 +3086,7 @@ const canonicalRoutes = [
         articleTitle: entry.title,
         description: entry.description,
         canonicalPath: `/blog/${entry.slug}`,
-        imageUrl: `/api/media/blog/${entry.imageFile}`,
+        imageUrl: entry.imageUrl,
         publishedAt: entry.publishedAt,
       }),
       buildBreadcrumbJsonLd([
@@ -3245,7 +3099,6 @@ const canonicalRoutes = [
 ]
 
 const liveProducts = await fetchLiveProducts()
-const merchantFeedConfig = getResolvedLocalInventoryConfig()
 const serviceEntryMap = new Map(serviceEntries.map((entry) => [entry.slug, entry]))
 const areaEntryMap = new Map(areaEntries.map((entry) => [entry.slug, entry]))
 
@@ -3382,18 +3235,6 @@ for (const route of aliasRoutes) {
 }
 
 await fs.writeFile(path.join(distRoot, 'sitemap.xml'), buildSitemap(canonicalRoutes), 'utf8')
-await fs.writeFile(path.join(distRoot, 'merchant-feed.xml'), buildMerchantFeed(liveProducts, merchantFeedConfig), 'utf8')
-const merchantTabFeed = buildMerchantTabFeed(liveProducts, merchantFeedConfig)
-await fs.writeFile(path.join(distRoot, 'merchant-feed.txt'), merchantTabFeed, 'utf8')
-await fs.writeFile(path.join(distRoot, MERCHANT_PRODUCTS_FILE), merchantTabFeed, 'utf8')
-const merchantLocalInventoryFeed = buildMerchantLocalInventoryTabFeed(liveProducts, merchantFeedConfig)
-const merchantLocalInventoryPath = path.join(distRoot, MERCHANT_LOCAL_INVENTORY_FILE)
-
-if (merchantLocalInventoryFeed) {
-  await fs.writeFile(merchantLocalInventoryPath, merchantLocalInventoryFeed, 'utf8')
-} else {
-  await fs.rm(merchantLocalInventoryPath, { force: true })
-}
 
 await writeRedirectRules(retiredProductRedirects)
 await writeRouteHeaders(canonicalRoutes)

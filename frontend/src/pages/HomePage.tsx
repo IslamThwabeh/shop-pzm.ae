@@ -14,6 +14,7 @@ import {
   homeAreaHighlights,
   homeCategoryCards,
   homeFaqItems,
+  homeMoneyRouteLinks,
   homeTrustCards,
 } from '../content/homePageContent'
 import { blogPostsNewestFirst } from '../content/blogCatalog'
@@ -207,6 +208,28 @@ export default function HomePage({ products }: HomePageProps) {
                 {area.label}
               </Link>
             ))}
+          </div>
+
+          <div className="mt-8 border-t border-[#eee] pt-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Popular In Al Barsha
+            </p>
+            <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {homeMoneyRouteLinks.map((linkItem) => (
+                <Link
+                  key={linkItem.to}
+                  to={linkItem.to}
+                  className="rounded-2xl border border-[#eee] bg-[#fafafa] px-4 py-4 text-left transition-colors hover:border-slate-300 hover:bg-white"
+                >
+                  <span className="block text-sm font-semibold text-slate-900">
+                    {linkItem.label}
+                  </span>
+                  <span className="mt-1.5 block text-xs leading-6 text-slate-500">
+                    {linkItem.description}
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>

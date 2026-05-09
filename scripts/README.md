@@ -71,7 +71,7 @@ Notes:
 - Products added after the latest `products_*.tsv` snapshot will appear under `Missing snapshot matches`. Refresh the snapshot or prepare a manual manifest instead of forcing a guessed backfill.
 - If the live row contains impossible catalog facts, such as warranty text or accessory notes stored in `storage` or `color`, fix those fields with a hand-edited manifest before trusting any generated description.
 - Run the sync first, then refresh the live storefront and inspect the updated descriptions before deciding whether to deploy the frontend.
-- Ask for explicit approval before every frontend deploy. The deploy is only needed after approval so sitemap, prerendered product HTML, and Merchant feed artifacts are regenerated from the corrected live data.
+- Ask for explicit approval before every frontend deploy. The deploy is only needed after approval so sitemap and prerendered product HTML are regenerated from the corrected live data.
 
 ## Post-Deploy Smoke Test
 
@@ -84,7 +84,6 @@ npm run smoke:deploy -- https://046415d4.pzm-ae-frontend.pages.dev
 
 Notes:
 
-- The smoke test now fetches `merchant-feed.xml`, extracts every `<g:link>`, and fails if any feed URL does not return HTTP 200.
 - It also fetches `sitemap.xml`, samples the first 20 and last 20 `<loc>` entries, and fails if any sampled URL does not return HTTP 200.
 - Use `PZM_SMOKE_BASE_URL` to target a preview deployment and `PZM_SMOKE_SITEMAP_SAMPLE_SIZE` if a larger sitemap sample is needed.
 
@@ -100,33 +99,18 @@ npm run catalog:sync -- .\scripts\product-sync.rich-description-backfill.gsc-pas
 Notes:
 
 - This workflow uses only verified live catalog fields already stored on the product row, such as model, storage, condition, warranty, battery health, accessories, repair history, and release year.
-- Use it after `catalog:description-backfill` reports zero candidates but GSC or manual QA still shows thin product copy.
+- Use it after `catalog:description-backfill` reports zero candidates but Search Console or manual QA still shows thin product copy.
 - Review the generated markdown report before syncing if a product has awkward placeholder values in `color` or other fields that should be cleaned separately.
 
-## Merchant Local Inventory Feed
+## Merchant Scope Note
 
-The frontend prerender can now generate a separate local inventory feed for Merchant Center at `frontend/dist/merchant-local-inventory.txt`.
-
-Recommended workflow:
-
-```powershell
-$env:PZM_MERCHANT_STORE_CODE = "your-case-sensitive-business-profile-store-code"
-cd .\frontend
-npm run build:production
-```
+Merchant Center, local inventory feeds, and Google Customer Reviews are intentionally out of scope for the current `pzm.ae` setup.
 
 Notes:
 
-- Configure the exact Google Business Profile `store_code` with `PZM_MERCHANT_STORE_CODE` or by filling `frontend/src/content/localInventoryConfig.json` after it is confirmed in Merchant Center.
-- The primary Merchant product feed is now configured to exclude `Local_inventory_ads` and `Free_local_listings` by default through `primaryFeedExcludedDestinations` in `frontend/src/content/localInventoryConfig.json`, because the current Merchant account has no linked store profiles.
-- The local inventory feed reuses the current primary Merchant product IDs exactly as they appear in `merchant-feed.txt`.
-- Only positive-price, in-stock products are considered, then the local config further narrows the set with `includedProductIds` or `excludedProductIds`.
-- If `includedProductIds` is non-empty, only those IDs are emitted. Otherwise, all eligible in-stock products are emitted except the IDs listed under `excludedProductIds`.
-- The initial config excludes the 17 `Available soon` IDs from the 2026-04-15 Merchant export so they are not claimed as in-store stock on day one.
-- If no store code is configured, the build skips the local inventory file instead of generating an invalid feed.
-- Add `merchant-local-inventory.txt` in Merchant Center as a `Local product inventory` data source, not as a supplemental feed.
-- Code-side exclusions help, but if the Merchant product source itself still has physical-store marketing methods enabled, you should also remove `Free local listings` / `Local inventory ads` in the data source settings until a real Business Profile store is linked.
-- Like the main Merchant feed, this file is a frontend build artifact, so Merchant will only see updates after the frontend is rebuilt and deployed.
+- Do not reintroduce `merchant-feed.xml`, `merchant-feed.txt`, `merchant-local-inventory.txt`, or Google Customer Reviews prompt code unless the user explicitly asks to reconnect Merchant Center.
+- Keep Product schema fields such as `hasMerchantReturnPolicy` and `shippingDetails`; those support Google Search product enhancements and are still useful without Merchant Center.
+- Active Google surfaces for ongoing QA in this repo are Google Search Console, Google Ads, and Google Maps.
 
 ## Gemini Device Image Workflow
 

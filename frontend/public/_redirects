@@ -9,6 +9,7 @@
 /services/buy-used /services/secondhand/ 301
 /services/buy-used.html /services/secondhand/ 301
 /areas/index.html /areas/ 301
+/areas/:slug.html /areas/:slug/ 301
 /blog /blog/ 301
 /services /services/ 301
 /areas /areas/ 301

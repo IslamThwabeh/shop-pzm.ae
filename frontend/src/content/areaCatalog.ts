@@ -28,14 +28,14 @@ export interface AreaCatalogEntry {
 
 const standardFeaturedServices: AreaServiceLink[] = [
   {
-    label: 'Buy iPhone',
-    to: page('/services/buy-iphone'),
-    description: 'iPhone models and ordering.',
+    label: 'Repair Services',
+    to: page('/services/repair'),
+    description: 'Same-day phone and laptop repair intake from Al Barsha.',
   },
   {
     label: 'Laptop Shop',
     to: page('/services/laptop-shop'),
-    description: 'MacBooks, Windows laptops, and gaming laptop buying help.',
+    description: 'MacBooks, Windows laptops, and gaming laptop buying support.',
   },
   {
     label: 'Computer Shop',
@@ -43,14 +43,14 @@ const standardFeaturedServices: AreaServiceLink[] = [
     description: 'Desktops, monitors, and workstation shopping support.',
   },
   {
-    label: 'Repair Services',
-    to: page('/services/repair'),
-    description: 'Repairs, drop-off, and pickup.',
+    label: 'Buy iPhone',
+    to: page('/services/buy-iphone'),
+    description: 'Current iPhone lineup with local pickup and ordering support.',
   },
   {
-    label: 'Sell Your Device',
-    to: page('/services/sell-gadgets'),
-    description: 'Trade-in and sell-device quotes.',
+    label: 'Used Devices',
+    to: page('/services/secondhand'),
+    description: 'Certified pre-owned phones and laptops with value-first pricing.',
   },
   {
     label: 'Gaming PC Builds',

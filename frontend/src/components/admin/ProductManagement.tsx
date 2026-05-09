@@ -540,8 +540,8 @@ export default function ProductManagement({ token }: ProductManagementProps) {
 
               <div className="space-y-4 rounded-lg border border-slate-700 bg-slate-900/35 p-4">
                 <div>
-                  <p className="text-sm font-semibold text-white">Merchant fields</p>
-                  <p className="mt-1 text-xs text-slate-400">Fill only with verified values. Leave blank if you are not sure.</p>
+                  <p className="text-sm font-semibold text-white">Product metadata</p>
+                  <p className="mt-1 text-xs text-slate-400">Use verified catalog and search values only. Leave blank if you are not sure.</p>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

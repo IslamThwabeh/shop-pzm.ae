@@ -1,27 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { CheckCircle, Home, Copy } from 'lucide-react'
-import GoogleCustomerReviewsOptIn from '../components/GoogleCustomerReviewsOptIn'
 import Seo from '../components/Seo'
 import { siteContact } from '../content/siteData'
-import { buildApiUrl } from '../utils/siteConfig'
 import { getDeliveryPolicy, getGrossVatBreakdown } from '../utils/orderPricing'
 import { trackPurchase } from '../utils/analytics'
-
-const GCR_TELEMETRY_STORAGE_PREFIX = 'gcr-telemetry'
-
-function isReportableGcrStatus(status: string) {
-  return status.startsWith('prompt-visible:')
-    || status.startsWith('prompt-hidden:')
-    || status.startsWith('prompt-missing:')
-    || status === 'script-load-error'
-    || status === 'surveyoptin-api-missing'
-    || status === 'gapi-unavailable'
-}
-
-function getTelemetryKey(orderId: string, status: string) {
-  return `${GCR_TELEMETRY_STORAGE_PREFIX}:${orderId}:${status}`
-}
 
 interface OrderConfirmationProps {
   orderId: string
@@ -51,10 +34,8 @@ interface OrderDetails {
 
 export default function OrderConfirmation({ orderId, onContinueShopping }: OrderConfirmationProps) {
   const params = useParams()
-  const location = useLocation()
   const [copied, setCopied] = useState(false)
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null)
-  const [gcrStatus, setGcrStatus] = useState('idle')
 
   const rawId = orderId || params.id || ''
   // Full ID format: ord-[timestamp]-[random 6 chars]
@@ -84,7 +65,6 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
       ? `You will pay AED ${totalPrice.toFixed(2)} when the delivery person arrives. Delivery is free for this order.`
       : `You will pay AED ${totalPrice.toFixed(2)} when the delivery person arrives. This includes the AED ${deliveryFee.toFixed(2)} Dubai delivery fee.`
     : `You will pay the items total of AED ${itemsTotal.toFixed(2)}. If a delivery fee applies, we will confirm it based on your location before dispatch.`
-  const showGcrDebug = new URLSearchParams(location.search).get('gcr-debug') === '1'
 
   const orderSteps = [
     {
@@ -118,36 +98,6 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
   }, [rawId])
 
   useEffect(() => {
-    if (!rawId || !isReportableGcrStatus(gcrStatus)) {
-      return
-    }
-
-    const telemetryKey = getTelemetryKey(rawId, gcrStatus)
-    if (sessionStorage.getItem(telemetryKey)) {
-      return
-    }
-
-    sessionStorage.setItem(telemetryKey, new Date().toISOString())
-
-    void fetch(buildApiUrl('/gcr-opt-in-events'), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      keepalive: true,
-      body: JSON.stringify({
-        order_id: rawId,
-        status: gcrStatus,
-        source: 'order-confirmation',
-        page_path: location.pathname,
-        debug_enabled: showGcrDebug,
-        viewport_width: window.innerWidth,
-        viewport_height: window.innerHeight,
-      }),
-    }).catch(() => {
-      sessionStorage.removeItem(telemetryKey)
-    })
-  }, [gcrStatus, location.pathname, rawId, showGcrDebug])
-
-  useEffect(() => {
     if (!rawId || orderItems.length === 0) {
       return
     }
@@ -175,15 +125,6 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
 
   return (
     <div className="mx-auto max-w-xl px-4 py-6 sm:px-6 sm:py-8">
-      {orderDetails?.customerEmail && (orderDetails.orderId || rawId) && (
-        <GoogleCustomerReviewsOptIn
-          orderId={orderDetails.orderId || rawId}
-          email={orderDetails.customerEmail}
-          address={orderDetails.customerAddress}
-          placedAt={orderDetails.placedAt}
-          onStatusChange={setGcrStatus}
-        />
-      )}
       <Seo
         title="Order Confirmation | PZM Computers & Phones"
         description="Your order has been confirmed."
@@ -199,20 +140,6 @@ export default function OrderConfirmation({ orderId, onContinueShopping }: Order
         <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-slate-500 sm:text-base">
           Thank you for your purchase. Your order has been successfully placed.
         </p>
-
-        <p className="mx-auto mt-4 max-w-md text-xs leading-5 text-slate-400">
-          If enabled for this order, Google may show a short review prompt after this page finishes loading.
-        </p>
-
-        {showGcrDebug && (
-          <div className="mx-auto mt-4 max-w-md rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-left text-xs leading-5 text-sky-800">
-            <p className="font-semibold uppercase tracking-[0.16em] text-sky-700">GCR Debug</p>
-            <p className="mt-2">Status: {gcrStatus}</p>
-            <p className="mt-1 text-sky-700">
-              `prompt-visible:*` means the review prompt is actually displayable. `prompt-hidden:*` means Google created the frame but kept it hidden. `prompt-missing:*` means the Google prompt iframe never appeared before the diagnostic timeout.
-            </p>
-          </div>
-        )}
 
         <div className="mt-6 rounded-2xl border border-[#d8ece4] bg-[#f6fcf9] p-4 sm:p-5">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Order ID</p>
