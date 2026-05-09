@@ -110,6 +110,42 @@ export const rawBlogPosts = [
       <p>A realistic local routine is simple: wipe high-touch devices regularly, deep-clean accessories weekly, keep chargers and cables off dusty floors, avoid leaving gear in cars, and act early when heat or grime affects performance. If you want another angle on the hygiene side specifically, continue with <a href="/blog/germs-on-phones-keyboards-safe-cleaning-electronics/">our germs-on-phones-and-keyboards guide</a>. If you are already deciding whether to clean, repair, or replace, compare the current <a href="/services/brand-new">brand-new device routes</a> and <a href="/services/repair">repair routes</a> before spending blindly.</p>`,
   },
   {
+    title: 'MacBook Not Charging in Dubai? Adapter, USB-C Port, Battery, or Logic Board Signs (2026)',
+    slug: 'macbook-not-charging-dubai-usbc-battery-port-repair-2026',
+    excerpt:
+      'A practical Dubai guide to MacBook charging problems, including adapter faults, USB-C port issues, battery wear, liquid damage, and when repair makes more sense than replacement.',
+    seoDescription:
+      'MacBook not charging in Dubai? Learn how to tell whether the issue is the charger, USB-C port, battery, settings, or logic board, and when to book repair help.',
+    category: 'Repair',
+    imageUrl: page('/images/Catigories/mini_laptop_maintenance.webp'),
+    publishedAt: '2026-05-09',
+    themeClassName: 'from-slate-200 via-sky-100 to-white',
+    relatedServiceLinks: [
+      { label: 'Repair Services', to: '/services/repair' },
+      { label: 'Accessories', to: '/services/accessories' },
+      { label: 'Laptop Shop', to: '/services/laptop-shop' },
+    ],
+    bodyHtml: `<p>A MacBook that will not charge is one of the most frustrating problems for anyone working, studying, or traveling around Dubai. Sometimes the cause is simple, like a worn cable or a dirty USB-C port. Other times the problem is deeper, involving the battery, charging circuit, or board-level damage. The right move is to separate the easy checks from the signs that point to repair.</p>
+
+      <h3>1. Start with the charger and cable before assuming the MacBook is faulty</h3>
+      <p>Many charging issues start outside the laptop itself. Test the wall outlet, inspect the cable for fraying, and check whether the adapter gets unusually hot or cuts in and out. Low-quality replacement chargers can cause unstable charging even when they look fine at first. If you need a dependable replacement first, compare the current <a href="/services/accessories">accessories options</a> before escalating to repair.</p>
+
+      <h3>2. USB-C or MagSafe connection issues often look like bigger failures</h3>
+      <p>Dust, pocket debris, slight port damage, and liquid residue can all interrupt charging. On USB-C MacBooks, one side may charge while another fails, which usually points to port-specific wear or board-level path issues. Avoid forcing connectors or scraping ports with metal tools. If safe cleaning does not restore charging, move into <a href="/services/repair">repair diagnostics</a> instead of pushing the port harder.</p>
+
+      <h3>3. Battery wear and heat are common in Dubai conditions</h3>
+      <p>Heat is hard on batteries, and Dubai makes that worse through parked-car exposure, warm bags, and long charging sessions in already hot rooms. If the MacBook only works while plugged in, shuts down unexpectedly, or shows Service Recommended battery warnings, battery aging is a realistic cause. For broader heat-related care, compare this with <a href="/blog/dubai-heat-dust-hygiene-clean-phones-laptops-accessories/">our Dubai heat and dust guide</a> so you are not solving one symptom while missing the bigger maintenance pattern.</p>
+
+      <h3>4. Software and power-management issues can still be part of the problem</h3>
+      <p>Not every charging issue is hardware from the start. A restart, macOS update, battery health check, or power reset can still matter depending on the model. If the battery percentage is stuck, charging pauses unpredictably, or the machine behaves differently under load, software and battery-management behavior may be part of the story. That said, if the problem keeps returning, repeated resets are not the fix.</p>
+
+      <h3>5. Logic board or liquid-damage signs mean you should stop guessing</h3>
+      <p>If the MacBook charges only at a certain angle, fails on multiple known-good chargers, shows burning smell, heats around the port, or stopped charging after liquid exposure, the risk shifts from inconvenience to hardware damage. Those are not good cases for trial-and-error buying. They are strong signs to use <a href="/services/repair">professional repair support</a> before more components are affected.</p>
+
+      <h3>6. Repair, replace the charger, or move on to another laptop?</h3>
+      <p>The smart decision depends on where the fault sits. If it is the adapter or cable, replacement is simple. If it is the battery or port, repair is often still the best value. If the MacBook is already old and the repair path no longer makes financial sense, compare the current <a href="/services/laptop-shop">laptop shop options</a> and <a href="/services/secondhand">used-device routes</a> before spending blindly. The goal is not just to restore charging. The goal is to choose the option that gives you the best reliable next step.</p>`,
+  },
+  {
     title: 'Gold Prices Hit Record Highs - What It Means for Tech Buyers in Dubai (2026)',
     slug: 'gold-record-highs-tech-buyers-dubai-2026',
     excerpt:
