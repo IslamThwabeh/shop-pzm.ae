@@ -16,8 +16,8 @@ const retiredProductRedirects = JSON.parse(
 )
 const SITE_URL = (process.env.VITE_SITE_URL || 'https://pzm.ae').replace(/\/+$/, '')
 const DEFAULT_IMAGE = `${SITE_URL}/images/mini_logo.png`
-const BRAND_NEW_FALLBACK_IMAGE = `${SITE_URL}/api/media/generated/services/brand-new/brand-new-service.webp`
-const SECONDHAND_FALLBACK_IMAGE = `${SITE_URL}/api/media/generated/services/secondhand/secondhand-service.webp`
+const BRAND_NEW_FALLBACK_IMAGE = `${SITE_URL}/images/generated/services/brand-new/brand-new-service.webp`
+const SECONDHAND_FALLBACK_IMAGE = `${SITE_URL}/images/generated/services/secondhand/secondhand-service.webp`
 const BUY_IPHONE_FALLBACK_IMAGE = `${SITE_URL}/images/Catigories/mini_buy_iphone.webp`
 const PRODUCT_FEED_URL = process.env.PZM_PRODUCT_FEED_URL || 'https://pzm.ae/api/products'
 const LASTMOD = new Date().toISOString().slice(0, 10)
@@ -2904,7 +2904,7 @@ const baseRoutes = [
     priority: '1.0',
     changefreq: 'daily',
     jsonLd: buildStoreJsonLd(),
-    lcpImageUrl: '/api/media/generated/buy-iphone/iphone-17-pro-max-family.webp',
+    lcpImageUrl: '/images/generated/buy-iphone/iphone-17-pro-max-family.webp',
   },
   {
     path: '/services',
@@ -3035,7 +3035,7 @@ const canonicalRoutes = [
       secondhand: {
         title: 'Buy Used iPhones, Laptops & Gaming PCs | PZM Dubai',
         description: 'Browse certified pre-owned devices in Dubai from PZM, including phones, laptops, tablets, and gaming hardware.',
-        imageUrl: '/api/media/generated/services/secondhand/secondhand-service.webp',
+        imageUrl: '/images/generated/services/secondhand/secondhand-service.webp',
       },
     }[entry.slug]
 

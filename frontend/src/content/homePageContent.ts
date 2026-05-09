@@ -1,4 +1,4 @@
-import { buildApiUrl, normalizeSitePath } from '../utils/siteConfig'
+import { normalizeSitePath } from '../utils/siteConfig'
 
 export interface HomeTrustCard {
   emoji: string
@@ -12,7 +12,6 @@ export interface HomeFaqItem {
 }
 
 const page = normalizeSitePath
-const svcMedia = (path: string) => buildApiUrl(`/media/${path}`)
 
 export interface HomeCategoryCard {
   title: string
@@ -38,61 +37,61 @@ export const homeCategoryCards: HomeCategoryCard[] = [
     title: 'Buy iPhone',
     subtitle: 'iPhone 16 & 17',
     to: page('/services/buy-iphone'),
-    imageUrl: svcMedia('generated/buy-iphone/iphone-17-pro-max-family.webp'),
+    imageUrl: '/images/generated/buy-iphone/iphone-17-pro-max-family.webp',
   },
   {
     title: 'New Devices',
     subtitle: 'Official warranty',
     to: page('/services/brand-new'),
-    imageUrl: svcMedia('generated/services/brand-new/brand-new-service.webp'),
+    imageUrl: '/images/generated/services/brand-new/brand-new-service.webp',
   },
   {
     title: 'Laptop Shop',
     subtitle: 'MacBook, Dell, HP & more',
     to: page('/services/laptop-shop'),
-    imageUrl: svcMedia('generated/services/brand-new/brand-new-service.webp'),
+    imageUrl: '/images/generated/services/brand-new/brand-new-service.webp',
   },
   {
     title: 'Computer Shop',
     subtitle: 'Desktops & monitors',
     to: page('/services/computer-shop'),
-    imageUrl: svcMedia('generated/services/brand-new/brand-new-service.webp'),
+    imageUrl: '/images/generated/services/brand-new/brand-new-service.webp',
   },
   {
     title: 'Used Devices',
     subtitle: 'Certified pre-owned',
     to: page('/services/secondhand'),
-    imageUrl: svcMedia('generated/services/secondhand/secondhand-service.webp'),
+    imageUrl: '/images/generated/services/secondhand/secondhand-service.webp',
   },
   {
     title: 'Gaming PCs',
     subtitle: 'Custom builds',
     to: page('/services/gaming-pc'),
-    imageUrl: svcMedia('generated/services/gaming-pc/gaming-pc-builds-service.webp'),
+    imageUrl: '/images/generated/services/gaming-pc/gaming-pc-builds-service.webp',
   },
   {
     title: 'Sell Your Device',
     subtitle: 'Get a fair quote',
     to: page('/services/sell-gadgets'),
-    imageUrl: svcMedia('generated/services/sell-gadgets/sell-devices-service.webp'),
+    imageUrl: '/images/generated/services/sell-gadgets/sell-devices-service.webp',
   },
   {
     title: 'Accessories',
     subtitle: 'Cases, chargers & more',
     to: page('/services/accessories'),
-    imageUrl: svcMedia('generated/services/accessories/accessories-service.webp'),
+    imageUrl: '/images/generated/services/accessories/accessories-service.webp',
   },
   {
     title: 'Repair Services',
     subtitle: 'Same-day fixes',
     to: page('/services/repair'),
-    imageUrl: svcMedia('generated/services/repair/repair-services.webp'),
+    imageUrl: '/images/generated/services/repair/repair-services.webp',
   },
   {
     title: 'Website Design',
     subtitle: 'Professional sites',
     to: page('/services/web-design'),
-    imageUrl: svcMedia('generated/services/web-design/website-design-service.webp'),
+    imageUrl: '/images/generated/services/web-design/website-design-service.webp',
   },
 ]
 

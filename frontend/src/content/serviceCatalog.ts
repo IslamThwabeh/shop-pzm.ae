@@ -1,5 +1,4 @@
 import type { ServiceRequestKind } from '@shared/types'
-import { buildApiUrl } from '../utils/siteConfig'
 
 export interface ServiceRequestOption {
   value: ServiceRequestKind
@@ -37,7 +36,7 @@ export interface ServiceCatalogEntry {
   relatedLinks?: ServiceSupportLink[]
 }
 
-const generatedServiceMedia = (path: string) => buildApiUrl(`/media/generated/services/${path}`)
+const generatedServiceMedia = (path: string) => `/images/generated/services/${path}`
 
 const quoteAndCallback: ServiceRequestOption[] = [
   { value: 'quote', label: 'Request a quote', description: 'Get pricing from the team.' },
@@ -572,7 +571,7 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       'Storage, color, and pricing guidance',
       'Pickup, delivery, and WhatsApp ordering',
     ],
-    imageUrl: buildApiUrl('/media/generated/buy-iphone/iphone-17-pro-max-family.webp'),
+    imageUrl: '/images/generated/buy-iphone/iphone-17-pro-max-family.webp',
     imageAlt: 'iPhone 17 Pro Max family image at PZM',
     cardImageUrl: '/images/Catigories/mini_buy_iphone.webp',
     cardDescription: 'iPhone 16 and 17 families with direct ordering',
