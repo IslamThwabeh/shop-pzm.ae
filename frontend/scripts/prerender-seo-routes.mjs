@@ -1192,7 +1192,42 @@ function buildBlogIndexSnapshot(entries) {
     </div>`
 }
 
+const blogServiceCardDescriptions = new Map([
+  ['/services/accessories', 'Open chargers, cables, cases, stands, and other practical add-ons connected to this article.'],
+  ['/services/brand-new', 'Browse brand-new devices and compare current buying routes from the same storefront.'],
+  ['/services/buy-iphone', 'Open the iPhone buying page for the latest listed models and direct contact options.'],
+  ['/services/computer-shop', 'Open desktop, monitor, and workstation options tied to this buying route.'],
+  ['/services/gaming-pc', 'Continue into the gaming PC route for build requests, budget planning, and hardware support.'],
+  ['/services/laptop-shop', 'Browse laptop options, compare live categories, and continue into store contact or stock checks.'],
+  ['/services/repair', 'Move from the article into repair intake, quote requests, and same-day support options.'],
+  ['/services/secondhand', 'Browse used devices, grading details, and current stock listed on the storefront.'],
+  ['/services/sell-gadgets', 'Start the trade-in or sell-device route to turn your current device into upgrade budget.'],
+])
+
+function getBlogServiceCardDescription(href) {
+  return (
+    blogServiceCardDescriptions.get(href) ||
+    'Open the related store page for current routes, inventory context, and contact options.'
+  )
+}
+
+function buildBlogServiceCards(entry) {
+  return (Array.isArray(entry.relatedServiceLinks) ? entry.relatedServiceLinks : [])
+    .slice(0, 3)
+    .map((link) => {
+      const href = normalizePublicHref(link.to)
+      return `
+          <a href="${escapeHtml(href)}" style="display:block;border:1px solid #e2e8f0;border-radius:24px;background:#ffffff;padding:18px;color:#0f172a;text-decoration:none;">
+            <strong style="display:block;font-size:18px;line-height:1.35;">${escapeHtml(link.label)}</strong>
+            <span style="display:block;margin-top:10px;font-size:14px;line-height:1.75;color:#475569;">${escapeHtml(getBlogServiceCardDescription(link.to))}</span>
+          </a>`
+    })
+    .join('')
+}
+
 function buildBlogArticleSnapshot(entry) {
+  const relatedServiceCards = buildBlogServiceCards(entry)
+
   return `
     <div data-pzm-prerender-blog-article="true" style="max-width:1100px;margin:0 auto;padding:48px 16px 64px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;background:#f8fafc;color:#0f172a;">
       <a href="${escapeHtml(normalizePublicHref('/blog/'))}" style="display:inline-block;font-size:14px;font-weight:700;color:#00A76F;text-decoration:none;">&larr; Back to blog</a>
@@ -1209,18 +1244,7 @@ function buildBlogArticleSnapshot(entry) {
         <h2 style="margin:0;font-size:28px;line-height:1.2;color:#0f172a;">Related store pages</h2>
         <p style="margin:14px 0 0;font-size:15px;line-height:1.8;color:#64748b;max-width:820px;">Continue from the article into the product, repair, and contact pages that connect with the same buying or support journey.</p>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px;">
-          <a href="${escapeHtml(normalizePublicHref('/services/buy-iphone'))}" style="display:block;border:1px solid #e2e8f0;border-radius:24px;background:#ffffff;padding:18px;color:#0f172a;text-decoration:none;">
-            <strong style="display:block;font-size:18px;line-height:1.35;">Buy iPhone</strong>
-            <span style="display:block;margin-top:10px;font-size:14px;line-height:1.75;color:#475569;">Open the iPhone buying page for the latest listed models and direct contact options.</span>
-          </a>
-          <a href="${escapeHtml(normalizePublicHref('/services/secondhand'))}" style="display:block;border:1px solid #e2e8f0;border-radius:24px;background:#ffffff;padding:18px;color:#0f172a;text-decoration:none;">
-            <strong style="display:block;font-size:18px;line-height:1.35;">Certified Pre-Owned</strong>
-            <span style="display:block;margin-top:10px;font-size:14px;line-height:1.75;color:#475569;">Browse used devices, grading details, and current stock listed on the storefront.</span>
-          </a>
-          <a href="${escapeHtml(normalizePublicHref('/services/repair'))}" style="display:block;border:1px solid #e2e8f0;border-radius:24px;background:#ffffff;padding:18px;color:#0f172a;text-decoration:none;">
-            <strong style="display:block;font-size:18px;line-height:1.35;">Repair Services</strong>
-            <span style="display:block;margin-top:10px;font-size:14px;line-height:1.75;color:#475569;">Move from the article into repair intake, quote requests, and same-day support options.</span>
-          </a>
+          ${relatedServiceCards}
         </div>
       </section>
     </div>`
