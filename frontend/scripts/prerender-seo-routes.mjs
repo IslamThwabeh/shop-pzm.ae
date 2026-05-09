@@ -1354,7 +1354,7 @@ function buildSecondhandSnapshot(products) {
   })
 }
 
-function buildPageShell({ eyebrow, title, intro, stats = [], sections = [] }) {
+function buildPageShell({ eyebrow, title, intro, stats = [], sections = [], includeDefaultLinks = true }) {
   const statsHtml = stats.length > 0
     ? `
       <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;">
@@ -1375,11 +1375,13 @@ function buildPageShell({ eyebrow, title, intro, stats = [], sections = [] }) {
         ${statsHtml}
       </div>
       ${sections.join('')}
-      ${buildSnapshotSection(
-        'Explore more pages',
-        'Use the links below to continue through the storefront, local area coverage, and blog content.',
-        buildLinkGrid(defaultSnapshotLinks)
-      )}
+      ${includeDefaultLinks
+        ? buildSnapshotSection(
+            'Explore more pages',
+            'Use the links below to continue through the storefront, local area coverage, and blog content.',
+            buildLinkGrid(defaultSnapshotLinks)
+          )
+        : ''}
     </div>`
 }
 
@@ -1558,6 +1560,7 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, products) {
     title: WEBSITE_BRAND,
     intro:
       'Your integrated device solutions hub in Al Barsha, Dubai, serving Barsha 1-3, Dubai Science Park, JVC, Meadows Village, JLT, Springs, Barsha Heights, Tecom, and Al Sufouh with devices, repairs, accessories, and buying guides.',
+    includeDefaultLinks: false,
     stats: [
       `${serviceEntries.length} service pages`,
       `${areaEntries.length} Dubai area pages`,
@@ -1597,10 +1600,6 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, products) {
         `
           <div style="display:grid;gap:18px;">
             <div>
-              <p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#64748b;">Popular In Al Barsha</p>
-              ${buildLinkGrid(popularInAlBarsha)}
-            </div>
-            <div>
               <p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#64748b;">Dubai areas</p>
               ${buildActionLinks(compactAreaLinks)}
             </div>
@@ -1609,16 +1608,6 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, products) {
               ${buildActionLinks(compactBlogLinks)}
             </div>
           </div>`
-      ),
-      buildSnapshotSection(
-        'Need help with our services or products?',
-        'Visit the store inside Hessa Union Coop Hypermarket or contact the team directly for pricing, repairs, model selection, and pickup support.',
-        buildActionLinks([
-          { href: 'tel:+971528026677', label: 'Call Us' },
-          { href: 'https://wa.me/971528026677?text=Hi%2C%20I%27m%20interested%20in%20the%20services%20listed%20on%20your%20website.%20Can%20you%20tell%20me%20more%3F%20(via%20pzm.ae)', label: 'WhatsApp Us' },
-          { href: '/services/brand-new', label: 'Browse Brand-New Devices' },
-          { href: '/services/secondhand', label: 'Browse Used Devices' },
-        ])
       ),
     ],
   })
