@@ -2,6 +2,7 @@ import { useState, useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
+import { LanguageProvider } from './context/LanguageContext'
 import './App.css'
 import type { Product, WhatsAppLeadType } from '@shared/types'
 import { apiService } from './services/api'
@@ -103,11 +104,20 @@ function AppContent() {
   const [loading, setLoading] = useState(initialProducts.length === 0)
   const [error, setError] = useState<string | null>(null)
   const [fullCatalogRequested, setFullCatalogRequested] = useState(false)
-  const currentPageRaw = location.pathname === '/'
+
+  // Strip /ar prefix so all route-type checks work identically for both
+  // the English surface (/) and the Arabic mirror (/ar/).
+  const effectivePath = location.pathname.startsWith('/ar/')
+    ? location.pathname.slice(3)   // "/ar/services/foo" → "/services/foo"
+    : location.pathname === '/ar'
+      ? '/'
+      : location.pathname
+
+  const currentPageRaw = effectivePath === '/'
     ? 'home'
-    : (location.pathname.split('/')[1] || 'home').replace(/\.html$/i, '')
+    : (effectivePath.split('/')[1] || 'home').replace(/\.html$/i, '')
   const currentPage = currentPageRaw === 'blog-post' ? 'blog' : currentPageRaw
-  const currentRouteNeedsFullCatalog = routeNeedsFullCatalog(location.pathname)
+  const currentRouteNeedsFullCatalog = routeNeedsFullCatalog(effectivePath)
   const requiresFullCatalogLoad = catalogMode === 'none' || currentRouteNeedsFullCatalog || fullCatalogRequested
   const routeLoading = loading || (currentRouteNeedsFullCatalog && catalogMode === 'none')
 
@@ -232,8 +242,8 @@ function AppContent() {
 
   const isInvoiceRoute = location.pathname.startsWith('/admin/orders/') && location.pathname.endsWith('/invoice')
   const isAdminRoute = location.pathname.startsWith('/admin')
-  const isHomeRoute = location.pathname === '/'
-  const isServiceRoute = location.pathname.startsWith('/services')
+  const isHomeRoute = effectivePath === '/'
+  const isServiceRoute = effectivePath.startsWith('/services')
   const isFullWidthRoute = isHomeRoute || isServiceRoute
   const showStoreContactSection =
     !isInvoiceRoute &&
@@ -400,6 +410,16 @@ function AppContent() {
             path="/admin"
             element={<AdminPage onLogout={() => navigateTo('/')} />}
           />
+
+          {/* ── Arabic mirror routes (/ar/*) ──────────────── */}
+          <Route path="/ar" element={<HomePage products={products} />} />
+          <Route path="/ar/" element={<HomePage products={products} />} />
+          <Route path="/ar/services/:slug" element={<ServicePage />} />
+          <Route path="/ar/services/:slug/" element={<ServicePage />} />
+          <Route path="/ar/services/buy-iphone" element={<BuyIphonePage products={products} loading={loading || routeLoading} />} />
+          <Route path="/ar/services/buy-iphone/" element={<BuyIphonePage products={products} loading={loading || routeLoading} />} />
+          <Route path="/ar/return-policy" element={<ReturnPolicyPage />} />
+          <Route path="/ar/return-policy/" element={<ReturnPolicyPage />} />
         </Routes>
         </Suspense>
       </main>
@@ -415,7 +435,9 @@ function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <AppContent />
+        <LanguageProvider>
+          <AppContent />
+        </LanguageProvider>
       </CartProvider>
     </AuthProvider>
   )

@@ -7,6 +7,7 @@ import { groupVariantsByColorAndStorage, getPrimaryProductImage, isPlaceholderCo
 import RetailImage from './RetailImage'
 import { openWhatsAppLead } from '../utils/whatsappLead'
 import { useCart } from '../context/CartContext'
+import { useLanguage } from '../context/LanguageContext'
 import { triggerCartAddFeedback } from '../utils/cartFeedback'
 
 interface Props {
@@ -17,6 +18,8 @@ interface Props {
 }
 
 export default function IphoneFamilyCard({ family, products, id, highlighted = false }: Props) {
+  const { lang } = useLanguage()
+  const isAr = lang === 'ar'
   const group = groupVariantsByColorAndStorage(products)
   const { addItem } = useCart()
   const realColors = group.colors.filter((c) => !isPlaceholderColor(c))
@@ -64,7 +67,7 @@ export default function IphoneFamilyCard({ family, products, id, highlighted = f
         <h3 className="mt-3 text-base font-bold text-slate-900">{family.title}</h3>
         <p className="mt-1 text-xs text-slate-400">{family.description}</p>
         <span className="mt-3 inline-block rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-500">
-          Ask us for availability
+          {isAr ? 'اسألنا عن التوفر' : 'Ask us for availability'}
         </span>
       </article>
     )
@@ -78,7 +81,7 @@ export default function IphoneFamilyCard({ family, products, id, highlighted = f
           <RetailImage src={displayImage} alt={family.imageAlt} name={family.title} variant="card" className="max-h-full w-full object-contain" />
         </div>
         <span className="absolute left-2.5 top-2.5 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
-          New
+          {isAr ? 'جديد' : 'New'}
         </span>
       </div>
 
@@ -94,7 +97,7 @@ export default function IphoneFamilyCard({ family, products, id, highlighted = f
         {/* Color swatches */}
         {realColors.length > 0 && (
           <div>
-            <p className="mb-1.5 text-[11px] font-medium text-slate-400">Color</p>
+            <p className="mb-1.5 text-[11px] font-medium text-slate-400">{isAr ? 'اللون' : 'Color'}</p>
             <div className="flex flex-wrap gap-1.5">
               {realColors.map((color) => (
                 <button
@@ -117,7 +120,7 @@ export default function IphoneFamilyCard({ family, products, id, highlighted = f
         {/* Storage pills */}
         {group.storages.length > 0 && (
           <div>
-            <p className="mb-1.5 text-[11px] font-medium text-slate-400">Storage</p>
+            <p className="mb-1.5 text-[11px] font-medium text-slate-400">{isAr ? 'السعة' : 'Storage'}</p>
             <div className="flex flex-wrap gap-1.5">
               {group.storages.map((storage) => (
                 <button
@@ -139,7 +142,7 @@ export default function IphoneFamilyCard({ family, products, id, highlighted = f
 
         {/* Availability hint */}
         {!activeProduct && selectedColor && selectedStorage && (
-          <p className="text-[11px] text-amber-600">This combo isn't listed — ask us</p>
+          <p className="text-[11px] text-amber-600">{isAr ? 'هذه التركيبة غير معروضة حالياً، راسلنا مباشرة' : "This combo isn't listed — ask us"}</p>
         )}
 
         {/* CTA */}
@@ -150,7 +153,7 @@ export default function IphoneFamilyCard({ family, products, id, highlighted = f
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#eee] py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-[#25D366] hover:text-[#25D366]"
           >
             <MessageCircle size={15} className="text-[#25D366]" />
-            Order via WhatsApp
+            {isAr ? 'اطلب عبر واتساب' : 'Order via WhatsApp'}
           </button>
           {activeProduct && (activeProduct.quantity ?? 0) > 0 && (
             <button
@@ -160,7 +163,7 @@ export default function IphoneFamilyCard({ family, products, id, highlighted = f
             >
               <span className="cart-add-button__content">
                 <ShoppingCart size={15} />
-                Add to Cart
+                {isAr ? 'أضف إلى السلة' : 'Add to Cart'}
               </span>
             </button>
           )}
@@ -168,12 +171,12 @@ export default function IphoneFamilyCard({ family, products, id, highlighted = f
 
         {/* SEO-visible link to product detail page */}
         {products[0] && (
-          <div className="border-t border-[#eee] pt-2 text-right">
+          <div className="border-t border-[#eee] pt-2 text-end">
             <Link
               to={`/product/${activeProduct?.id ?? products[0].id}`}
               className="text-[11px] text-slate-400 underline-offset-2 hover:text-slate-600 hover:underline"
             >
-              View details
+              {isAr ? 'عرض التفاصيل' : 'View details'}
             </Link>
           </div>
         )}

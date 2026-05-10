@@ -182,6 +182,11 @@ function normalizeCanonicalPath(routePath) {
   return `${basePath.replace(/\/+$/, '')}/${suffix}`
 }
 
+function buildArabicCanonicalPath(englishPath) {
+  const normalizedPath = normalizeCanonicalPath(englishPath)
+  return normalizedPath === '/' ? '/ar/' : `/ar${normalizedPath}`
+}
+
 function normalizePublicHref(href) {
   if (!href || href.startsWith('#') || /^(?:mailto:|tel:|sms:|javascript:)/i.test(href)) {
     return href
@@ -1073,6 +1078,66 @@ const returnPolicySnapshotSections = [
   },
 ]
 
+const returnPolicyArabicSnapshotSections = [
+  {
+    title: '1. شروط قبول الإرجاع',
+    paragraphs: [
+      'يمكن إرجاع المنتج خلال 7 أيام من تاريخ الشراء أو التسليم بشرط أن يبقى مغلقاً وغير مستخدم وغير متضرر، وأن يكون كاملاً مع جميع الملحقات الأصلية والكتيبات وبطاقات الضمان وإثبات الشراء.',
+    ],
+  },
+  {
+    title: '2. المنتجات غير القابلة للإرجاع',
+    items: [
+      'المنتجات التي تم فتحها أو تفعيلها أو استخدامها.',
+      'الكفرات، واقيات الشاشة، والملحقات المشابهة بعد استخدامها أو تركيبها.',
+      'المنتجات التي تعرضت للتلف بعد التسليم بسبب العميل.',
+      'أجهزة الكمبيوتر المجمعة حسب الطلب والطلبات المخصصة.',
+      'البرامج والمنتجات الرقمية وبطاقات الهدايا.',
+    ],
+  },
+  {
+    title: '3. المنتجات التالفة أو المعيبة',
+    items: [
+      'يجب الإبلاغ عن عيوب التصنيع أو أضرار الشحن خلال 48 ساعة من التسليم.',
+      'قد تكون الحالات المؤهلة مستحقة للاستبدال أو الاسترداد الكامل.',
+      'المنتجات المشمولة بضمان الشركة المصنعة قد تتم معالجتها عبر قناة الضمان الرسمية.',
+    ],
+  },
+  {
+    title: '4. طريقة بدء طلب الإرجاع',
+    paragraphs: [
+      'ابدأ الطلب بمراسلة المتجر على <a href="https://wa.me/971528026677?text=Hi%2C%20I%20would%20like%20to%20initiate%20a%20return.%20(via%20pzm.ae)" style="color:#00A76F;text-decoration:none;font-weight:700;">واتساب</a>، أو بالاتصال على <a href="tel:+971528026677" style="color:#00A76F;text-decoration:none;font-weight:700;">+971 52 802 6677</a>، أو بزيارة فرع البرشاء.',
+      'يقوم الفريق بمراجعة الحالة والرد بخطوات المتابعة، وعادة يتم ذلك خلال 24 ساعة.',
+    ],
+  },
+  {
+    title: '5. آلية الاسترداد',
+    items: [
+      'طلبات الدفع عند الاستلام يتم استردادها نقداً من المتجر أو عبر تحويل بنكي خلال 5 إلى 7 أيام عمل.',
+      'طلبات الدفع عبر الرابط يتم استردادها إلى وسيلة الدفع الأصلية خلال 5 إلى 7 أيام عمل.',
+      'رسوم الشحن تُسترد فقط إذا كان سبب الإرجاع منتجاً خاطئاً أو معيباً.',
+    ],
+  },
+  {
+    title: '6. سياسة الاستبدال',
+    paragraphs: [
+      'يمكن استبدال المنتج خلال فترة الإرجاع البالغة 7 أيام إذا انطبقت نفس شروط الإرجاع. أما الاستبدال بمنتج أعلى سعراً فيتطلب دفع فرق السعر.',
+    ],
+  },
+  {
+    title: '7. الأجهزة المستعملة والمعتمدة',
+    paragraphs: [
+      'تُباع الأجهزة المستعملة كما هي. ولا تُقبل الإرجاعات إلا إذا ظهر عيب هاردوير غير مُفصح عنه خلال 3 أيام من تاريخ الشراء.',
+    ],
+  },
+  {
+    title: '8. تواصل معنا',
+    paragraphs: [
+      'إذا كنت تحتاج مساعدة بخصوص الإرجاع أو الاسترداد، تواصل مع الفريق عبر <a href="https://wa.me/971528026677?text=Hi%2C%20I%20have%20a%20question%20about%20your%20return%20policy.%20(via%20pzm.ae)" style="color:#00A76F;text-decoration:none;font-weight:700;">واتساب</a>، أو اتصل على <a href="tel:+971528026677" style="color:#00A76F;text-decoration:none;font-weight:700;">+971 52 802 6677</a>، أو زر المتجر في البرشاء.',
+    ],
+  },
+]
+
 function groupCatalogProducts(products, condition, categories) {
   const grouped = categories.map((category) => ({
     category,
@@ -1507,11 +1572,11 @@ function buildHomeFinderSnapshot() {
     </div>`
 }
 
-function buildLegalSnapshot({ eyebrow, title, intro, lastUpdated, sections }) {
+function buildLegalSnapshot({ eyebrow, title, intro, lastUpdated, lastUpdatedLabel = 'Last updated', sections }) {
   return buildPageShell({
     eyebrow,
     title,
-    intro: `${intro} Last updated: ${lastUpdated}.`,
+    intro: `${intro} ${lastUpdatedLabel}: ${lastUpdated}.`,
     sections: sections.map((section) => {
       const contentParts = []
 
@@ -1608,6 +1673,70 @@ function buildHomeSnapshot(serviceEntries, areaEntries, blogEntries, products) {
               ${buildActionLinks(compactBlogLinks)}
             </div>
           </div>`
+      ),
+    ],
+  })
+}
+
+function buildArabicHomeSnapshot(serviceEntries, areaEntries, products) {
+  const featuredProducts = selectHomepageFeaturedSnapshotProducts(products).slice(0, 3)
+  const featuredAreas = areaEntries.slice(0, 4).map((entry) => ({
+    href: `/areas/${entry.slug}`,
+    label: entry.name,
+  }))
+  const arabicRouteLinks = [
+    { eyebrow: 'آيفون', title: 'شراء آيفون', description: 'موديلات آيفون الحالية مع الطلب عبر واتساب.', href: '/ar/services/buy-iphone/', cta: 'افتح الصفحة' },
+    { eyebrow: 'لابتوب', title: 'محل لابتوب', description: 'ماك بوك ولابتوبات ويندوز مع استلام من فرع البرشاء.', href: '/ar/services/laptop-shop/', cta: 'افتح الصفحة' },
+    { eyebrow: 'كمبيوتر', title: 'محل كمبيوتر', description: 'أجهزة مكتبية وشاشات ومحطات عمل من المتجر.', href: '/ar/services/computer-shop/', cta: 'افتح الصفحة' },
+    { eyebrow: 'ألعاب', title: 'تجميع كمبيوتر ألعاب', description: 'تجميعات مخصصة للألعاب والبث والعمل الاحترافي.', href: '/ar/services/gaming-pc/', cta: 'افتح الصفحة' },
+  ]
+
+  return buildPageShell({
+    eyebrow: 'واجهة PZM',
+    title: 'PZM للحواسيب والهواتف',
+    intro: 'متجر الأجهزة والحلول التقنية في البرشاء دبي للأجهزة الجديدة والمستعملة وخدمات الإصلاح وتجميع الكمبيوترات.',
+    includeDefaultLinks: false,
+    stats: [
+      `${serviceEntries.length} صفحات خدمات`,
+      `${areaEntries.length} صفحات مناطق`,
+      `${featuredProducts.length} أجهزة مميزة`,
+    ],
+    sections: [
+      buildSnapshotSection(
+        'ابدأ من المسار المناسب',
+        'هذه هي المسارات الأساسية المتوفرة حالياً باللغة العربية.',
+        buildLinkGrid(arabicRouteLinks)
+      ),
+      buildSnapshotSection(
+        'خطوات سريعة قبل الزيارة',
+        'استخدم الصفحة المناسبة أولاً حتى يتمكن الفريق من تأكيد الموديل أو الميزانية أو نوع الخدمة المطلوبة.',
+        buildStepsList([
+          'افتح مسار الخدمة أو الشراء المناسب لما تحتاجه الآن.',
+          'راجع الملخص والنقاط الرئيسية ثم جهز الموديل أو الاستخدام أو الميزانية.',
+          'تواصل عبر واتساب أو الهاتف لتأكيد الخطوة التالية قبل زيارة الفرع.',
+        ])
+      ),
+      ...(featuredProducts.length > 0
+        ? [
+            buildSnapshotSection(
+              'أجهزة متوفرة حالياً',
+              'هذه الروابط تقود مباشرة إلى بعض المنتجات الموجودة في المخزون حالياً.',
+              buildLinkGrid(
+                featuredProducts.map((product) => ({
+                  eyebrow: product.condition === 'used' ? 'مستعمل معتمد' : 'جديد',
+                  title: product.model,
+                  description: `AED ${formatPrice(product.price)}${product.storage ? ` • ${product.storage}` : ''}${product.color ? ` • ${product.color}` : ''}`,
+                  href: buildProductPath(product),
+                  cta: 'عرض المنتج',
+                }))
+              )
+            ),
+          ]
+        : []),
+      buildSnapshotSection(
+        'مناطق نخدمها في دبي',
+        'يمكنك أيضاً فتح صفحات المناطق لمعرفة أقرب مسار للفرع في البرشاء.',
+        buildActionLinks(featuredAreas)
       ),
     ],
   })
@@ -1725,6 +1854,55 @@ function buildServiceSnapshot(entry) {
     title: entry.heroTitle || entry.title,
     intro: entry.heroDescription || entry.description,
     stats: entry.highlights?.length ? [`${entry.highlights.length} service highlights`] : [],
+    sections,
+  })
+}
+
+function buildArabicServiceSnapshot(entry) {
+  if (!entry?.ar) {
+    return ''
+  }
+
+  const localized = entry.ar
+  const sections = [
+    buildSnapshotSection(
+      'ما الذي تقدمه هذه الخدمة',
+      localized.heroDescription || entry.description,
+      localized.highlights?.length ? buildBulletList(localized.highlights) : buildParagraphs([localized.heroDescription || entry.description])
+    ),
+  ]
+
+  if (localized.localSupportTitle || localized.localSupportDescription || localized.localSupportPoints?.length) {
+    sections.push(
+      buildSnapshotSection(
+        localized.localSupportTitle || 'دعم محلي',
+        localized.localSupportDescription || 'استخدم هذه الصفحة لتأكيد الخطوة التالية قبل زيارة المتجر.',
+        localized.localSupportPoints?.length
+          ? buildBulletList(localized.localSupportPoints)
+          : buildParagraphs([localized.localSupportDescription || localized.heroDescription || entry.description])
+      )
+    )
+  }
+
+  sections.push(
+    buildSnapshotSection(
+      'تحتاج مساعدة الآن؟',
+      'استخدم الروابط التالية للمتابعة مع فريق المتجر أو العودة إلى الخدمات.',
+      buildActionLinks([
+        { href: '/ar/', label: 'الصفحة الرئيسية' },
+        { href: '/services/', label: 'جميع الخدمات' },
+        { href: 'tel:+971528026677', label: 'اتصل بنا' },
+        { href: 'https://wa.me/971528026677?text=Hi%2C%20I%27m%20interested%20in%20the%20services%20listed%20on%20your%20website.%20Can%20you%20tell%20me%20more%3F%20(via%20pzm.ae)', label: 'واتساب' },
+      ])
+    )
+  )
+
+  return buildPageShell({
+    eyebrow: 'خدمة PZM',
+    title: localized.heroTitle || localized.title || entry.title,
+    intro: localized.heroDescription || entry.description,
+    includeDefaultLinks: false,
+    stats: localized.highlights?.length ? [`${localized.highlights.length} نقاط رئيسية`] : [],
     sections,
   })
 }
@@ -1927,6 +2105,58 @@ function buildBuyIphoneSnapshot(products) {
             href: '/services/sell-gadgets/',
             cta: 'Start trade-in',
           },
+        ])
+      ),
+    ],
+  })
+}
+
+function buildArabicBuyIphoneSnapshot(products) {
+  const groups = groupBuyIphoneSnapshotProducts(products)
+  const liveProducts = getBuyIphoneSnapshotProducts(products)
+  const listedFamilies = groups.filter((group) => group.products.length > 0).length
+  const lowestPrice = liveProducts.length > 0 ? Math.min(...liveProducts.map((product) => product.price)) : null
+
+  return buildPageShell({
+    eyebrow: 'تشكيلة آيفون',
+    title: 'شراء آيفون في دبي',
+    intro: 'تصفح موديلات آيفون الحالية، وقارن بين الفئات، ثم راسل المتجر للتأكد من اللون والسعة قبل الزيارة أو الطلب.',
+    includeDefaultLinks: false,
+    stats: [
+      `${liveProducts.length} موديلات آيفون`,
+      `${listedFamilies}/${buyIphoneSnapshotFamilies.length} فئات متاحة`,
+      lowestPrice ? `ابتداءً من AED ${formatPrice(lowestPrice)}` : 'اطلب السعر',
+    ],
+    sections: [
+      buildSnapshotSection(
+        'ابدأ بفئة آيفون',
+        'استخدم هذا المسار لمقارنة الفئات المتوفرة حالياً قبل مراسلة المتجر أو زيارة الفرع.',
+        buildLinkGrid(
+          groups.map((group) => ({
+            eyebrow: group.products.length > 0 ? `${group.products.length} متاح الآن` : 'راسلنا',
+            title: group.family.title,
+            description: group.family.description,
+            href: '/ar/services/buy-iphone/',
+            cta: group.products.length > 0 ? 'تصفح الفئة' : 'اسأل عنها',
+          }))
+        )
+      ),
+      buildSnapshotSection(
+        'خطوات الطلب',
+        'الهدف من صفحة آيفون هو إبقاء مسار الشراء واضحاً حتى عند تغيّر المخزون.',
+        buildStepsList([
+          'راجع الفئة المناسبة أولاً ثم تأكد من الموديلات الحالية.',
+          'راسل المتجر بالموديل والسعة واللون المطلوب.',
+          'استخدم واتساب أو الاستلام من الفرع أو قارن مع الصفحات القريبة قبل اتخاذ القرار.',
+        ])
+      ),
+      buildSnapshotSection(
+        'دعم آيفون من فرع البرشاء',
+        'إذا كنت تبحث عن محل آيفون في دبي، فهذا المسار يجمع التشكيلة الحالية وخطوات التأكيد والاستلام في مكان واحد.',
+        buildBulletList([
+          'أكد الفئة والسعة واللون قبل زيارة الفرع في البرشاء.',
+          'يمكنك الاستلام من شارع حصة أو متابعة الطلب عبر واتساب إذا كنت تحتاج التوصيل داخل دبي.',
+          'قارن أيضاً بين المقايضة والأجهزة المستعملة المعتمدة إذا كنت تريد خياراً أقل سعراً.',
         ])
       ),
     ],
@@ -2632,6 +2862,7 @@ function extractServiceRoutes(serviceCatalogSource) {
     const slug = extractStringField(block, 'slug')
     const title = extractStringField(block, 'title')
     const description = extractStringField(block, 'description')
+    const arBlock = extractFieldBlock(block, 'ar', '{', '}')
 
     routes.push({
       slug,
@@ -2646,6 +2877,17 @@ function extractServiceRoutes(serviceCatalogSource) {
       localSupportPoints: extractStringArrayField(block, 'localSupportPoints'),
       relatedLinks: extractLinkItems(block, 'relatedLinks'),
       cardDescription: extractStringField(block, 'cardDescription'),
+      ar: arBlock
+        ? {
+            title: extractStringField(arBlock, 'title'),
+            heroTitle: extractStringField(arBlock, 'heroTitle'),
+            heroDescription: extractStringField(arBlock, 'heroDescription'),
+            highlights: extractStringArrayField(arBlock, 'highlights'),
+            localSupportTitle: extractStringField(arBlock, 'localSupportTitle'),
+            localSupportDescription: extractStringField(arBlock, 'localSupportDescription'),
+            localSupportPoints: extractStringArrayField(arBlock, 'localSupportPoints'),
+          }
+        : null,
     })
   }
 
@@ -2710,6 +2952,9 @@ function buildBlogEntries(rawBlogPosts) {
 function buildHtml(template, route) {
   const canonicalPath = normalizeCanonicalPath(route.canonicalPath || route.path)
   const canonicalUrl = toAbsoluteUrl(canonicalPath)
+  const hreflangPath = route.hreflangPath ? normalizeCanonicalPath(route.hreflangPath) : ''
+  const englishHref = hreflangPath ? toAbsoluteUrl(hreflangPath) : ''
+  const arabicHref = hreflangPath ? toAbsoluteUrl(buildArabicCanonicalPath(hreflangPath)) : ''
   const robots = route.robots || 'index, follow'
   const imageUrl = toAbsoluteUrl(route.imageUrl)
   const ogType = route.ogType || 'website'
@@ -2736,24 +2981,27 @@ function buildHtml(template, route) {
     .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(route.title)}</title>`)
     .replace(
       /<meta name="description" content="[\s\S]*?"\s*\/?\s*>/i,
-      `<meta name="description" content="${escapeHtml(route.description)}" />`
+      `<meta data-rh="true" name="description" content="${escapeHtml(route.description)}" />`
     )
 
   const headBlock = [
     lcpPreload,
-    `<meta name="robots" content="${robots}" />`,
-    `<link rel="canonical" href="${canonicalUrl}" />`,
+    `<meta data-rh="true" name="robots" content="${robots}" />`,
+    `<link data-rh="true" rel="canonical" href="${canonicalUrl}" />`,
+    hreflangPath ? `<link data-rh="true" rel="alternate" hreflang="en-AE" href="${englishHref}" />` : '',
+    hreflangPath ? `<link data-rh="true" rel="alternate" hreflang="ar-AE" href="${arabicHref}" />` : '',
+    hreflangPath ? `<link data-rh="true" rel="alternate" hreflang="x-default" href="${englishHref}" />` : '',
 
-    `<meta property="og:site_name" content="${escapeHtml(WEBSITE_BRAND)}" />`,
-    `<meta property="og:title" content="${escapeHtml(route.title)}" />`,
-    `<meta property="og:description" content="${escapeHtml(route.description)}" />`,
-    `<meta property="og:type" content="${ogType}" />`,
-    `<meta property="og:url" content="${canonicalUrl}" />`,
-    `<meta property="og:image" content="${imageUrl}" />`,
-    `<meta name="twitter:card" content="summary_large_image" />`,
-    `<meta name="twitter:title" content="${escapeHtml(route.title)}" />`,
-    `<meta name="twitter:description" content="${escapeHtml(route.description)}" />`,
-    `<meta name="twitter:image" content="${imageUrl}" />`,
+    `<meta data-rh="true" property="og:site_name" content="${escapeHtml(WEBSITE_BRAND)}" />`,
+    `<meta data-rh="true" property="og:title" content="${escapeHtml(route.title)}" />`,
+    `<meta data-rh="true" property="og:description" content="${escapeHtml(route.description)}" />`,
+    `<meta data-rh="true" property="og:type" content="${ogType}" />`,
+    `<meta data-rh="true" property="og:url" content="${canonicalUrl}" />`,
+    `<meta data-rh="true" property="og:image" content="${imageUrl}" />`,
+    `<meta data-rh="true" name="twitter:card" content="summary_large_image" />`,
+    `<meta data-rh="true" name="twitter:title" content="${escapeHtml(route.title)}" />`,
+    `<meta data-rh="true" name="twitter:description" content="${escapeHtml(route.description)}" />`,
+    `<meta data-rh="true" name="twitter:image" content="${imageUrl}" />`,
     jsonLd,
   ]
     .filter(Boolean)
@@ -2901,6 +3149,7 @@ const baseRoutes = [
     title: HOME_ROUTE_TITLE,
     description: HOME_ROUTE_DESCRIPTION,
     canonicalPath: '/',
+    hreflangPath: '/',
     priority: '1.0',
     changefreq: 'daily',
     jsonLd: buildStoreJsonLd(),
@@ -2957,6 +3206,7 @@ const baseRoutes = [
     description:
       'Return and refund policy for PZM Computers & Phones Store in Dubai — eligibility, defective items, exchanges, and used devices.',
     canonicalPath: '/return-policy',
+    hreflangPath: '/return-policy',
     priority: '0.6',
     changefreq: 'monthly',
   },
@@ -3055,6 +3305,7 @@ const canonicalRoutes = [
       title,
       description,
       canonicalPath: `/services/${entry.slug}`,
+      hreflangPath: entry.ar ? `/services/${entry.slug}` : undefined,
       imageUrl: dedicatedOverrides?.imageUrl,
       priority: servicePriorityMap[entry.slug] || '0.7',
       changefreq: entry.slug === 'web-design' ? 'monthly' : 'weekly',
@@ -3251,3 +3502,112 @@ await fs.writeFile(path.join(distRoot, 'sitemap.xml'), buildSitemap(canonicalRou
 
 await writeRedirectRules(retiredProductRedirects)
 await writeRouteHeaders(canonicalRoutes)
+
+// ── Arabic core routes (Phase 2 i18n) ───────────────────────────────────────
+// These pages ship Arabic head tags and a crawlable Arabic body snapshot.
+const AR_CORE_ROUTES = [
+  {
+    path: '/ar',
+    title: 'PZM للحواسيب والهواتف دبي | بيع، جديد، مستعمل، إصلاح',
+    description: 'متجر PZM في البرشاء دبي — بيع وشراء الأجهزة الجديدة والمستعملة وخدمات الإصلاح وتجميع الحواسيب.',
+    canonicalPath: '/ar/',
+    rootHtml: buildArabicHomeSnapshot(serviceEntries, areaEntries, liveProducts),
+  },
+  {
+    path: '/ar/services/gaming-pc',
+    title: 'تجميع وبيع كمبيوتر الألعاب في دبي | PZM',
+    description: 'خدمة تجميع كمبيوترات الألعاب المخصصة وبيع أجهزة الألعاب في البرشاء، دبي من PZM.',
+    canonicalPath: '/ar/services/gaming-pc/',
+    enPath: '/services/gaming-pc/',
+    rootHtml: buildArabicServiceSnapshot(serviceEntryMap.get('gaming-pc')),
+  },
+  {
+    path: '/ar/services/laptop-shop',
+    title: 'شراء لابتوب في دبي | PZM للحواسيب والهواتف',
+    description: 'اشترِ لابتوب جديد أو مستعمل في البرشاء دبي — ماك بوك، ديل، HP والمزيد من PZM.',
+    canonicalPath: '/ar/services/laptop-shop/',
+    enPath: '/services/laptop-shop/',
+    rootHtml: buildArabicServiceSnapshot(serviceEntryMap.get('laptop-shop')),
+  },
+  {
+    path: '/ar/services/computer-shop',
+    title: 'شراء كمبيوتر مكتبي في دبي | PZM',
+    description: 'تسوق للكمبيوتر المكتبي وأجهزة العمل والشاشات في البرشاء دبي من PZM.',
+    canonicalPath: '/ar/services/computer-shop/',
+    enPath: '/services/computer-shop/',
+    rootHtml: buildArabicServiceSnapshot(serviceEntryMap.get('computer-shop')),
+  },
+  {
+    path: '/ar/services/buy-iphone',
+    title: 'شراء آيفون في دبي | PZM للحواسيب والهواتف',
+    description: 'اشترِ آيفون 17 برو ماكس، برو، Air وجميع موديلات آيفون في البرشاء دبي من PZM.',
+    canonicalPath: '/ar/services/buy-iphone/',
+    enPath: '/services/buy-iphone/',
+    rootHtml: buildArabicBuyIphoneSnapshot(liveProducts),
+  },
+  {
+    path: '/ar/return-policy',
+    title: 'سياسة الإرجاع والاسترداد | PZM دبي',
+    description: 'سياسة الإرجاع والاسترداد لمتجر PZM للحواسيب والهواتف في دبي.',
+    canonicalPath: '/ar/return-policy/',
+    enPath: '/return-policy/',
+    rootHtml: buildLegalSnapshot({
+      eyebrow: 'سياسة المتجر',
+      title: 'سياسة الإرجاع والاسترداد',
+      intro: 'اقرأ سياسة الإرجاع والاسترداد الخاصة بمشتريات المتجر في البرشاء أو الطلبات التي يتم توصيلها داخل الإمارات.',
+      lastUpdated: '24 مارس 2026',
+      lastUpdatedLabel: 'آخر تحديث',
+      sections: returnPolicyArabicSnapshotSections,
+    }),
+  },
+]
+
+for (const arRoute of AR_CORE_ROUTES) {
+  const canonicalPath = normalizeCanonicalPath(arRoute.canonicalPath || arRoute.path)
+  const canonicalUrl = toAbsoluteUrl(canonicalPath)
+  const enPath = arRoute.enPath ? normalizeCanonicalPath(arRoute.enPath) : '/'
+  const enUrl = toAbsoluteUrl(enPath)
+  const arUrl = toAbsoluteUrl(canonicalPath)
+
+  const hreflangLinks = [
+    `<link data-rh="true" rel="alternate" hreflang="en-AE" href="${enUrl}" />`,
+    `<link data-rh="true" rel="alternate" hreflang="ar-AE" href="${arUrl}" />`,
+    `<link data-rh="true" rel="alternate" hreflang="x-default" href="${enUrl}" />`,
+  ].join('\n    ')
+
+  let arHtml = template
+    .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(arRoute.title)}</title>`)
+    .replace(
+      /<meta name="description" content="[\s\S]*?"\s*\/?\s*>/i,
+      `<meta data-rh="true" name="description" content="${escapeHtml(arRoute.description)}" />`
+    )
+    // Set lang and dir on <html>
+    .replace(/<html([^>]*)>/, (_, attrs) => {
+      const cleaned = attrs.replace(/\s*lang="[^"]*"/, '').replace(/\s*dir="[^"]*"/, '')
+      return `<html${cleaned} lang="ar" dir="rtl">`
+    })
+
+  const headBlock = [
+    `<meta data-rh="true" name="robots" content="index, follow" />`,
+    `<link data-rh="true" rel="canonical" href="${canonicalUrl}" />`,
+    hreflangLinks,
+    `<meta data-rh="true" property="og:site_name" content="${escapeHtml(WEBSITE_BRAND)}" />`,
+    `<meta data-rh="true" property="og:title" content="${escapeHtml(arRoute.title)}" />`,
+    `<meta data-rh="true" property="og:description" content="${escapeHtml(arRoute.description)}" />`,
+    `<meta data-rh="true" property="og:type" content="website" />`,
+    `<meta data-rh="true" property="og:url" content="${canonicalUrl}" />`,
+    `<meta data-rh="true" property="og:image" content="${DEFAULT_IMAGE}" />`,
+  ].filter(Boolean).join('\n    ')
+
+  arHtml = arHtml.replace('</head>', `    ${headBlock}\n  </head>`)
+
+  if (arRoute.rootHtml) {
+    arHtml = arHtml.replace(/<div id="root"><\/div>/i, `<div id="root">${arRoute.rootHtml}</div>`)
+  }
+
+  const outputPath = outputPathForRoute(arRoute.path)
+  await fs.mkdir(path.dirname(outputPath), { recursive: true })
+  await fs.writeFile(outputPath, arHtml, 'utf8')
+}
+
+console.log(`Prerendered ${AR_CORE_ROUTES.length} Arabic core routes.`)

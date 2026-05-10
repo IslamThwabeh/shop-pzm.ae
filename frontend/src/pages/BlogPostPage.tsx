@@ -144,7 +144,7 @@ export default function BlogPostPage() {
             <Link
               key={link.to}
               to={link.to}
-              className="rounded-[22px] border border-brandBorder px-5 py-4 text-left transition-colors hover:border-primary hover:bg-green-50"
+              className="rounded-[22px] border border-brandBorder px-5 py-4 text-start transition-colors hover:border-primary hover:bg-green-50"
             >
               <span className="block text-lg font-semibold text-slate-950">{link.label}</span>
               <span className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-primary">

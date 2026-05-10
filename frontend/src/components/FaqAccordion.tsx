@@ -37,7 +37,7 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
             <button
               type="button"
               onClick={() => setOpenIndex(isOpen ? null : index)}
-              className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors hover:bg-slate-50"
+              className="flex w-full items-center justify-between gap-4 px-6 py-5 text-start transition-colors hover:bg-slate-50"
             >
               <span className="text-base font-semibold text-slate-900">{item.question}</span>
               <ChevronDown

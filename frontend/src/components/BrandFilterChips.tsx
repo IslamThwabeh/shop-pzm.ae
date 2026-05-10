@@ -86,7 +86,7 @@ export default function CatalogFilter({
                 }`}
               >
                 {cat.shortTitle}
-                <span className={`ml-1.5 text-xs ${active ? 'text-white/70' : 'text-slate-400'}`}>{count}</span>
+                <span className={`ms-1.5 text-xs ${active ? 'text-white/70' : 'text-slate-400'}`}>{count}</span>
               </button>
             )
           })}
@@ -109,7 +109,7 @@ export default function CatalogFilter({
                 }`}
               >
                 {name}
-                <span className={`ml-1.5 text-xs ${active ? 'text-white/70' : 'text-slate-400'}`}>{count}</span>
+                <span className={`ms-1.5 text-xs ${active ? 'text-white/70' : 'text-slate-400'}`}>{count}</span>
               </button>
             )
           })}

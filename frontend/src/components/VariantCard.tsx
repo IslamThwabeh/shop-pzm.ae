@@ -159,7 +159,7 @@ export default function VariantCard({ title, products, condition }: Props) {
 
         {/* SEO-visible link to product detail page */}
         {products[0] && (
-          <div className="border-t border-[#eee] pt-2 text-right">
+          <div className="border-t border-[#eee] pt-2 text-end">
             <Link
               to={`/product/${activeProduct?.id ?? products[0].id}`}
               className="text-[11px] text-slate-400 underline-offset-2 hover:text-slate-600 hover:underline"

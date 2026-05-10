@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Clock3 } from 'lucide-react'
 import { getStoreHoursSnapshot, weeklyHoursText } from '../utils/storeHours'
 import { buildApiUrl } from '../utils/siteConfig'
+import { useLanguage } from '../context/LanguageContext'
 
 const CACHE_KEY = 'pzm_biz_hours'
 const CACHE_TTL_MS = 60 * 60 * 1000 // 60 minutes
@@ -33,6 +34,8 @@ function setCachedHours(hours: string[]) {
 }
 
 export default function StoreHoursPanel() {
+  const { lang, t } = useLanguage()
+  const isAr = lang === 'ar'
   const [snapshot, setSnapshot] = useState(() => getStoreHoursSnapshot())
   const [apiHours, setApiHours] = useState<string[] | null>(() => getCachedHours())
   const [hoursLoading, setHoursLoading] = useState(apiHours === null)
@@ -69,25 +72,43 @@ export default function StoreHoursPanel() {
   }, [])
 
   const displayHours = apiHours ?? weeklyHoursText
+  const localizedTodayName = snapshot.todayName
+  const localizedBadge = snapshot.isOpen ? t('storeHoursOpenBadge') : t('storeHoursClosedBadge')
+  const localizedNote = snapshot.isOpen ? t('storeHoursOpenNote') : t('storeHoursClosedNote')
+
+  const AR_DAY_MAP: Record<string, string> = {
+    Sunday: 'الأحد',
+    Monday: 'الاثنين',
+    Tuesday: 'الثلاثاء',
+    Wednesday: 'الأربعاء',
+    Thursday: 'الخميس',
+    Friday: 'الجمعة',
+    Saturday: 'السبت',
+  }
+
+  const localizeDayName = (day: string) => {
+    if (!isAr) return day
+    return AR_DAY_MAP[day] || day
+  }
 
   return (
     <div className="rounded-2xl border border-brandBorder bg-gray-50 p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Store Hours</p>
-          <h3 className="mt-2 text-xl font-bold text-brandTextDark">Dubai working hours</h3>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{t('storeHoursEyebrow')}</p>
+          <h3 className="mt-2 text-xl font-bold text-brandTextDark">{t('storeHoursHeading')}</h3>
         </div>
         <span
           className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
             snapshot.isOpen ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-700'
           }`}
         >
-          <Clock3 size={14} className="mr-2" />
-          {snapshot.badge}
+          <Clock3 size={14} className="me-2" />
+          {localizedBadge}
         </span>
       </div>
 
-      <p className="mt-3 text-sm text-brandTextMedium">{snapshot.note}</p>
+      <p className="mt-3 text-sm text-brandTextMedium">{localizedNote}</p>
 
       <div className="mt-5 space-y-2 text-sm">
         {hoursLoading ? (
@@ -100,8 +121,9 @@ export default function StoreHoursPanel() {
           displayHours.map((row) => {
             const colonIdx = row.indexOf(':')
             const day = colonIdx !== -1 ? row.slice(0, colonIdx) : row
+            const localizedDay = localizeDayName(day)
             const hours = colonIdx !== -1 ? row.slice(colonIdx + 1).trim() : ''
-            const isToday = day === snapshot.todayName
+            const isToday = day === localizedTodayName
 
             return (
               <div
@@ -111,8 +133,8 @@ export default function StoreHoursPanel() {
                 }`}
               >
                 <span className={`font-medium ${isToday ? 'text-primary' : 'text-brandTextDark'}`}>
-                  {day}
-                  {isToday ? ' (Today)' : ''}
+                  {localizedDay}
+                  {isToday ? ` ${t('storeHoursTodaySuffix')}` : ''}
                 </span>
                 <span className="text-brandTextMedium">{hours}</span>
               </div>

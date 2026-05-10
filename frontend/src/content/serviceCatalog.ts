@@ -34,6 +34,16 @@ export interface ServiceCatalogEntry {
   localSupportDescription?: string
   localSupportPoints?: string[]
   relatedLinks?: ServiceSupportLink[]
+  /** Arabic Phase-2 fields — present only for the core translated services. */
+  ar?: {
+    title: string
+    heroTitle: string
+    heroDescription: string
+    highlights: string[]
+    localSupportTitle?: string
+    localSupportDescription?: string
+    localSupportPoints?: string[]
+  }
 }
 
 const generatedServiceMedia = (path: string) => `/images/generated/services/${path}`
@@ -271,6 +281,24 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       { value: 'callback', label: 'Talk through the build', description: 'Ask the team to call you and discuss parts and timing.' },
       { value: 'booking', label: 'Schedule a consultation', description: 'Reserve a time to review the build in more detail.' },
     ],
+    ar: {
+      title: 'تجميع كمبيوتر العاب',
+      heroTitle: 'جمّع كمبيوتر الألعاب المثالي في دبي',
+      heroDescription: 'أخبرنا بميزانيتك وألعابك المفضلة وسنقترح عليك التكوين الأمثل.',
+      highlights: [
+        'كمبيوترات للألعاب والبث والمونتاج ومحطات العمل',
+        'اختيار القطع والتجميع والإعداد الكامل',
+        'من الأجهزة الاقتصادية حتى أعلى المواصفات',
+      ],
+      localSupportTitle: 'تجميع كمبيوتر ألعاب مخصص من فرع البرشاء دبي',
+      localSupportDescription:
+        'يستخدم لاعبو دبي وصنّاع المحتوى والمحترفون هذه الصفحة لتحديد الميزانية واختيار القطع قبل زيارة المتجر.',
+      localSupportPoints: [
+        'أرسل الميزانية والألعاب أو البرامج المستخدمة أولاً حتى يقترح الفريق أفضل مكونات المعالج وكارت الشاشة والتبريد.',
+        'استخدم فرع البرشاء للاستشارة والتجميع والاستلام في موقع واحد.',
+        'إذا كنت تستبدل جهازاً قديماً، استعرض خيارات المقايضة أولاً قبل اتخاذ قرار الشراء.',
+      ],
+    },
     detailSections: [
       {
         title: 'Premium Components',
@@ -471,6 +499,24 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       { value: 'quote', label: 'Request a laptop quote', description: 'Ask for pricing on the exact laptop configuration you need.' },
       { value: 'callback', label: 'Request a callback', description: 'Ask the team to help you choose the right laptop before buying.' },
     ],
+    ar: {
+      title: 'محل لابتوب في دبي',
+      heroTitle: 'أفضل لابتوبات في دبي — ماك بوك وويندوز',
+      heroDescription: 'ماك بوك، ديل، HP، لينوفو، أسوس، وأحدث لابتوبات الألعاب — جديد ومستعمل معتمد بأفضل الأسعار.',
+      highlights: [
+        'ماك بوك، ديل، HP، لينوفو، أسوس، أيسر ولابتوبات الألعاب',
+        'خيارات للأعمال والطلاب والمبدعين والأداء العالي',
+        'استلام من المتجر أو توصيل مع الدعم الكامل من فرع البرشاء',
+      ],
+      localSupportTitle: 'محل لابتوب في البرشاء مع توصيل لجميع أنحاء دبي',
+      localSupportDescription:
+        'استخدم هذه الصفحة لاختيار ماك بوك أو لابتوب ويندوز أو لابتوب العاب قبل زيارة المتجر.',
+      localSupportPoints: [
+        'أرسل الماركة والميزانية وهدف الأداء حتى يتمكن الفريق من تضييق الخيارات قبل زيارتك.',
+        'فرع البرشاء متاح لاستلام الجهاز والإعداد ومطابقة الإكسسوارات في نفس الزيارة.',
+        'إذا كان اللابتوب المستعمل أو المُصلَّح أكثر توفيراً، ننقلك للصفحة المناسبة مباشرة.',
+      ],
+    },
     detailSections: [
       {
         title: 'Popular Laptop Categories',
@@ -538,6 +584,24 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       { value: 'quote', label: 'Request a computer quote', description: 'Ask for pricing on the exact system or setup you need.' },
       { value: 'callback', label: 'Request a callback', description: 'Ask the team to help you choose the right computer setup before buying.' },
     ],
+    ar: {
+      title: 'محل كمبيوتر في دبي',
+      heroTitle: 'أجهزة كمبيوتر وشاشات في دبي',
+      heroDescription: 'ديسكتوب، أول-إن-وان، شاشات ومحطات عمل احترافية من فرع البرشاء في دبي.',
+      highlights: [
+        'كمبيوترات مكتبية وأجهزة أول-إن-وان وشاشات ومحطات عمل',
+        'خيارات للمكاتب والمبدعين وإعدادات العمل من المنزل',
+        'استلام من المتجر أو توصيل مع خدمة الإعداد من البرشاء',
+      ],
+      localSupportTitle: 'محل كمبيوتر في البرشاء دبي',
+      localSupportDescription:
+        'استخدم هذه الصفحة إذا كنت تبحث عن كمبيوتر مكتبي أو شاشة أو نظام عمل متكامل بدلاً من تصفح كتالوج الهواتف.',
+      localSupportPoints: [
+        'أرسل الاستخدام والميزانية ومتطلبات الشاشة قبل الزيارة.',
+        'فرع البرشاء متاح لمقارنة الشاشات والاستلام والإكسسوارات في موقع واحد.',
+        'إذا احتجت مواصفات أعلى، انتقل مباشرة لصفحة تجميع كمبيوتر الألعاب.',
+      ],
+    },
     detailSections: [
       {
         title: 'Computer Categories We Support',
@@ -580,8 +644,18 @@ export const serviceCatalog: Record<string, ServiceCatalogEntry> = {
       { value: 'quote', label: 'Request a confirmed offer', description: 'Ask for pricing confirmation before placing the order.' },
       { value: 'callback', label: 'Request a callback', description: 'Talk to the team before choosing the right device.' },
     ],
+    ar: {
+      title: 'شراء آيفون في دبي',
+      heroTitle: 'اشتر آيفون في دبي',
+      heroDescription: 'تصفح موديلات آيفون 16 و17 وراسلنا مباشرة للحصول على الموديل الذي تريده.',
+      highlights: [
+        'Pro Max، Pro، Air، وجميع موديلات آيفون الأخرى',
+        'إرشاد حول التخزين واللون والسعر',
+        'استلام أو توصيل مع الطلب عبر واتساب',
+      ],
+    },
   },
-  secondhand: {
+  'secondhand': {
     slug: 'secondhand',
     title: 'Used Devices',
     description: 'Certified pre-owned phones, laptops, tablets, and gaming devices in Dubai.',

@@ -339,7 +339,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
                   </ProductGrid>
 
                   {group.category.key === 'phones-tablets' && (
-                    <div className="mt-5 rounded-xl border border-brandBorder bg-slate-50 p-4 text-left">
+                    <div className="mt-5 rounded-xl border border-brandBorder bg-slate-50 p-4 text-start">
                       <p className="text-sm font-semibold text-slate-950">Need the iPhone family view?</p>
                       <Link
                         to="/services/buy-iphone/"
@@ -411,7 +411,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
       </section>
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1.08fr),minmax(280px,0.92fr)]">
-        <article className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
+        <article className="rounded-2xl border border-brandBorder bg-white p-6 text-start shadow-sm md:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Local device shopping</p>
           <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">Laptop and computer shopping from Al Barsha</h2>
           <p className="mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.98rem]">
@@ -427,7 +427,7 @@ export default function BrandNewPage({ products, loading }: BrandNewPageProps) {
           </ul>
         </article>
 
-        <aside className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
+        <aside className="rounded-2xl border border-brandBorder bg-white p-6 text-start shadow-sm md:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Related routes</p>
           <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">Compare new, used, and upgrade paths</h2>
           <div className="mt-4 space-y-3">

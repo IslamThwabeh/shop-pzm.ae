@@ -398,7 +398,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
       </section>
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1.08fr),minmax(280px,0.92fr)]">
-        <article className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
+        <article className="rounded-2xl border border-brandBorder bg-white p-6 text-start shadow-sm md:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Local used-device support</p>
           <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">Used phones and laptops from Al Barsha</h2>
           <p className="mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.98rem]">
@@ -414,7 +414,7 @@ export default function SecondhandPage({ products, loading }: SecondhandPageProp
           </ul>
         </article>
 
-        <aside className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
+        <aside className="rounded-2xl border border-brandBorder bg-white p-6 text-start shadow-sm md:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Related routes</p>
           <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">Check the other value paths</h2>
           <div className="mt-4 space-y-3">

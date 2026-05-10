@@ -91,7 +91,7 @@ export default function AreaPage() {
         </Link>
       </div>
 
-      <section className="rounded-[16px] border border-[#eee] bg-white p-5 text-left shadow-[0_10px_30px_rgba(15,23,42,0.03)] sm:p-7">
+      <section className="rounded-[16px] border border-[#eee] bg-white p-5 text-start shadow-[0_10px_30px_rgba(15,23,42,0.03)] sm:p-7">
         <div className="flex flex-wrap items-center gap-2.5">
           <span className="rounded-full bg-brandLight px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
             {area.badge}
@@ -132,7 +132,7 @@ export default function AreaPage() {
       </section>
 
       <div className="overflow-hidden rounded-[22px] border border-[#eee] bg-white xl:grid xl:grid-cols-[minmax(0,1.14fr),minmax(320px,0.86fr)]">
-        <section className="p-6 text-left sm:p-7">
+        <section className="p-6 text-start sm:p-7">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Services</p>
           <h2 className="mt-2 mb-4 text-xl font-bold text-gray-900 sm:text-2xl">Popular services in {area.name}</h2>
           <div className="overflow-hidden rounded-[18px] border border-[#eee] bg-white">
@@ -149,7 +149,7 @@ export default function AreaPage() {
           </div>
         </section>
 
-        <section className="border-t border-[#eee] p-6 text-left sm:p-7 xl:border-l xl:border-t-0">
+        <section className="border-t border-[#eee] p-6 text-start sm:p-7 xl:border-s xl:border-t-0">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Coverage</p>
           <h2 className="mt-2 mb-3 text-xl font-bold text-gray-900 sm:text-2xl">Nearby communities</h2>
           <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-slate-400">Travel note</p>
@@ -184,13 +184,13 @@ export default function AreaPage() {
       </div>
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr),minmax(280px,0.85fr)]">
-        <article className="rounded-[22px] border border-[#eee] bg-white p-6 text-left shadow-[0_10px_30px_rgba(15,23,42,0.03)] sm:p-7">
+        <article className="rounded-[22px] border border-[#eee] bg-white p-6 text-start shadow-[0_10px_30px_rgba(15,23,42,0.03)] sm:p-7">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Local summary</p>
           <h2 className="mt-2 text-xl font-bold text-gray-900 sm:text-2xl">Shopping, repair, and pickup for {area.name}</h2>
           <p className="mt-4 text-[15px] leading-7 text-brandTextMedium sm:text-base">{area.localSummary}</p>
         </article>
 
-        <aside className="rounded-[22px] border border-[#eee] bg-white p-6 text-left shadow-[0_10px_30px_rgba(15,23,42,0.03)] sm:p-7">
+        <aside className="rounded-[22px] border border-[#eee] bg-white p-6 text-start shadow-[0_10px_30px_rgba(15,23,42,0.03)] sm:p-7">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Why nearby customers choose this store</p>
           <h2 className="mt-2 text-xl font-bold text-gray-900 sm:text-2xl">Fastest route for {area.name}</h2>
           <ul className="mt-4 space-y-3 text-[14px] leading-6 text-brandTextMedium sm:text-[15px]">

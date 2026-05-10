@@ -9,6 +9,7 @@ import {
 import { buildWhatsAppHref } from '../utils/contact'
 import { trackWhatsAppLead } from '../utils/analytics'
 import { openRegisteredWhatsAppHref } from '../utils/whatsappLead'
+import { useLanguage } from '../context/LanguageContext'
 
 interface HeaderSearchProps {
   searchIndex: SearchIndex
@@ -28,6 +29,7 @@ function buildWhatsAppMessage(query: string): string {
 }
 
 export default function HeaderSearch({ searchIndex, variant, onActivate, onAfterNavigate }: HeaderSearchProps) {
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const inputId = useId()
   const listboxId = `${inputId}-listbox`
@@ -157,8 +159,8 @@ export default function HeaderSearch({ searchIndex, variant, onActivate, onAfter
   }
 
   const placeholderText = variant === 'desktop'
-    ? 'Search iPhones, MacBooks, Galaxy, PS5…'
-    : 'Search devices'
+    ? t('searchPlaceholderDesktop')
+    : t('searchPlaceholderMobile')
 
   const wrapperClass = variant === 'desktop'
     ? 'hidden lg:flex flex-1 max-w-xl mx-4 relative'
@@ -177,7 +179,7 @@ export default function HeaderSearch({ searchIndex, variant, onActivate, onAfter
         aria-expanded={showDropdown}
         className="relative w-full"
       >
-        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+        <span className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-slate-400">
           <Search size={16} aria-hidden="true" />
         </span>
         <input
@@ -196,20 +198,20 @@ export default function HeaderSearch({ searchIndex, variant, onActivate, onAfter
           }}
           onKeyDown={handleKeyDown}
           placeholder={placeholderText}
-          aria-label="Search devices"
           aria-autocomplete="list"
           aria-controls={listboxId}
           aria-activedescendant={activeOptionId}
           autoComplete="off"
           spellCheck={false}
-          className="w-full rounded-xl border border-[#eee] bg-white py-2.5 pl-9 pr-9 text-sm text-slate-800 placeholder:text-slate-400 shadow-sm transition-colors focus:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-200"
+          className="w-full rounded-xl border border-[#eee] bg-white py-2.5 ps-9 pe-9 text-sm text-slate-800 placeholder:text-slate-400 shadow-sm transition-colors focus:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-200"
+          aria-label={t('searchInputAriaLabel')}
         />
         {query.length > 0 && (
           <button
             type="button"
             onClick={handleClear}
             className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
-            aria-label="Clear search"
+            aria-label={t('searchClearAriaLabel')}
           >
             <X size={14} aria-hidden="true" />
           </button>
@@ -224,7 +226,7 @@ export default function HeaderSearch({ searchIndex, variant, onActivate, onAfter
           <ul
             id={listboxId}
             role="listbox"
-            aria-label="Device suggestions"
+            aria-label={t('searchSuggestionsAriaLabel')}
             className="max-h-[60vh] overflow-y-auto py-1"
           >
             {hasSuggestions ? (
@@ -254,7 +256,7 @@ export default function HeaderSearch({ searchIndex, variant, onActivate, onAfter
             ) : (
               <li role="option" aria-selected={false} className="px-3 py-3">
                 <p className="text-sm text-slate-700">
-                  No matches for <span className="font-semibold">"{query.trim()}"</span>.
+                  {t('searchNoMatchesPrefix')} <span className="font-semibold">"{query.trim()}"</span>.
                 </p>
                 <a
                   href={buildWhatsAppHref(buildWhatsAppMessage(query))}
@@ -264,7 +266,7 @@ export default function HeaderSearch({ searchIndex, variant, onActivate, onAfter
                   className="mt-2 inline-flex items-center gap-2 rounded-lg bg-[#25D366] px-3 py-2 text-xs font-semibold text-white transition-opacity hover:opacity-90"
                 >
                   <MessageCircle size={14} aria-hidden="true" />
-                  Ask on WhatsApp
+                  {t('searchAskWhatsapp')}
                 </a>
               </li>
             )}

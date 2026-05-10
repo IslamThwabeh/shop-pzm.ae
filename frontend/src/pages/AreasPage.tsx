@@ -17,7 +17,7 @@ export default function AreasPage() {
         ])}
       />
 
-      <section className="border-b border-[#eee] pb-8 text-left sm:pb-9">
+      <section className="border-b border-[#eee] pb-8 text-start sm:pb-9">
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-primary">Local coverage</p>
         <h1 className="max-w-4xl text-3xl font-bold leading-tight text-gray-900 sm:text-4xl md:text-[2.75rem]">Areas We Serve in Dubai</h1>
         <p className="mt-3 max-w-4xl text-base leading-7 text-brandTextMedium sm:text-lg">
@@ -27,7 +27,7 @@ export default function AreasPage() {
 
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
         {areaCatalogList.map((area) => (
-          <article key={area.slug} className="flex h-full flex-col rounded-[16px] border border-[#eee] bg-white p-5 text-left shadow-[0_10px_30px_rgba(15,23,42,0.035)] sm:p-6">
+            <article key={area.slug} className="flex h-full flex-col rounded-[16px] border border-[#eee] bg-white p-5 text-start shadow-[0_10px_30px_rgba(15,23,42,0.035)] sm:p-6">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{area.badge}</p>
             <h2 className="mt-3 text-[1.35rem] font-bold leading-[1.1] text-gray-900 sm:text-[1.65rem]">{area.name}</h2>
             <p className="mt-2 text-base font-semibold leading-6 text-brandTextDark sm:text-[1.125rem]">{area.serviceTitle}</p>

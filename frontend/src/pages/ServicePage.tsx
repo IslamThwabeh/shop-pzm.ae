@@ -6,6 +6,7 @@ import WhatsAppCTA from '../components/WhatsAppCTA'
 import { resolveServiceSlug } from '../content/serviceCatalog'
 import { buildBreadcrumbJsonLd } from '../utils/breadcrumbs'
 import { buildWhatsAppHref } from '../utils/contact'
+import { useLanguage } from '../context/LanguageContext'
 
 const appointmentServiceTypes: Partial<Record<string, string>> = {
   repair: 'repair-mobile',
@@ -15,9 +16,17 @@ const appointmentServiceTypes: Partial<Record<string, string>> = {
 
 export default function ServicePage() {
   const { slug } = useParams()
+  const { lang, t } = useLanguage()
   const service = resolveServiceSlug(slug)
+  const supportsArabicRoute = Boolean(service?.ar)
+  const isArabicRoute = lang === 'ar'
+  const canonicalBasePath = isArabicRoute && supportsArabicRoute ? '/ar/services' : '/services'
 
   if (service && slug && slug.toLowerCase() !== service.slug) {
+    return <Navigate replace to={`${canonicalBasePath}/${service.slug}/`} />
+  }
+
+  if (isArabicRoute && service && !supportsArabicRoute) {
     return <Navigate replace to={`/services/${service.slug}/`} />
   }
 
@@ -30,13 +39,13 @@ export default function ServicePage() {
           canonicalPath="/services"
           noindex={true}
         />
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Service page not found</h1>
-        <p className="text-brandTextMedium mb-6">The service page you requested is not available right now. You can browse the current services below.</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('serviceNotFoundHeading')}</h1>
+        <p className="text-brandTextMedium mb-6">{t('serviceNotFoundBody')}</p>
         <Link
           to="/services/"
           className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
         >
-          Back to Services
+          {t('serviceBackToServices')}
         </Link>
       </div>
     )
@@ -44,34 +53,50 @@ export default function ServicePage() {
 
   const hasAppointment = Boolean(appointmentServiceTypes[service.slug])
   const hasLocalSupport = Boolean(service.localSupportTitle || service.localSupportDescription || service.localSupportPoints?.length)
-  const hasRelatedLinks = Boolean(service.relatedLinks?.length)
+
+  // Resolve localized content for Arabic routes.
+  const isAr = isArabicRoute && supportsArabicRoute
+  const heroTitle = isAr ? service.ar!.heroTitle : service.heroTitle
+  const heroDescription = isAr ? service.ar!.heroDescription : service.heroDescription
+  const highlights = isAr ? service.ar!.highlights : service.highlights
+  const localSupportTitle = isAr && service.ar?.localSupportTitle ? service.ar.localSupportTitle : service.localSupportTitle
+  const localSupportDescription = isAr && service.ar?.localSupportDescription ? service.ar.localSupportDescription : service.localSupportDescription
+  const localSupportPoints = isAr && service.ar?.localSupportPoints ? service.ar.localSupportPoints : service.localSupportPoints
+  const seoTitle = isAr && service.ar ? service.ar.title : `${service.title} in Dubai | PZM Computers & Phones`
+  const seoDescription = isAr ? heroDescription : service.description
+  const canonicalPath = isAr ? `/ar/services/${service.slug}` : `/services/${service.slug}`
+  const ctaServiceName = isAr && service.ar ? service.ar.title : service.title.toLowerCase()
+  const detailSections = isAr ? [] : service.detailSections
+  const relatedLinks = isAr ? [] : (service.relatedLinks || [])
+  const hasRelatedLinks = relatedLinks.length > 0
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 space-y-8">
       <Seo
-        title={`${service.title} in Dubai | PZM Computers & Phones`}
-        description={service.description}
-        canonicalPath={`/services/${service.slug}`}
+        title={seoTitle}
+        description={seoDescription}
+        canonicalPath={canonicalPath}
+        hreflangPath={service.ar ? `/services/${service.slug}` : undefined}
         jsonLd={buildBreadcrumbJsonLd([
-          { name: 'Home', path: '/' },
-          { name: 'Services', path: '/services' },
-          { name: service.title, path: `/services/${service.slug}` },
+          { name: isAr ? 'الرئيسية' : 'Home', path: '/' },
+          { name: isAr ? 'الخدمات' : 'Services', path: '/services' },
+          { name: isAr && service.ar ? service.ar.title : service.title, path: `/services/${service.slug}` },
         ])}
       />
 
-      <section className="overflow-hidden rounded-3xl border border-brandBorder bg-white text-left shadow-md">
+      <section className="overflow-hidden rounded-3xl border border-brandBorder bg-white text-start shadow-md">
         <div className={`grid grid-cols-1 ${service.imageUrl || service.cardImageUrl ? 'lg:grid-cols-[1.05fr,0.95fr] lg:items-stretch' : ''}`}>
           <div className="p-6 md:p-10">
-            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-primary">PZM service</p>
-            <h1 className="mb-4 text-[2rem] font-bold text-gray-900 md:text-[2.5rem]">{service.heroTitle}</h1>
-            <p className="mb-6 max-w-3xl text-[0.98rem] text-brandTextMedium md:text-base">{service.heroDescription}</p>
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-primary">{t('serviceEyebrow')}</p>
+            <h1 className="mb-4 text-[2rem] font-bold text-gray-900 md:text-[2.5rem]">{heroTitle}</h1>
+            <p className="mb-6 max-w-3xl text-[0.98rem] text-brandTextMedium md:text-base">{heroDescription}</p>
 
             <div className="flex flex-wrap gap-3">
               <a
                 href={hasAppointment ? '#appointment' : '#service-contact'}
                 className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-white font-semibold hover:bg-brandGreenDark transition-colors"
               >
-                {hasAppointment ? 'Book Appointment' : 'Contact Us'}
+                {hasAppointment ? t('serviceBookAppointment') : t('serviceContactUs')}
               </a>
             </div>
           </div>
@@ -90,10 +115,10 @@ export default function ServicePage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">What we do</h2>
+      <section className="rounded-2xl border border-brandBorder bg-white p-6 text-start shadow-sm md:p-8">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">{t('serviceWhatWeDoHeading')}</h2>
         <ul className="space-y-2 text-brandTextDark">
-          {service.highlights.map((highlight) => (
+          {highlights.map((highlight) => (
             <li key={highlight} className="flex items-start gap-2">
               <span className="text-primary mt-1 shrink-0">✓</span>
               <span>{highlight}</span>
@@ -102,11 +127,11 @@ export default function ServicePage() {
         </ul>
       </section>
 
-      {service.detailSections && service.detailSections.length > 0 && (
-        <section className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Service Details</h2>
+      {detailSections && detailSections.length > 0 && (
+        <section className="rounded-2xl border border-brandBorder bg-white p-6 text-start shadow-sm md:p-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">{t('serviceDetailsHeading')}</h2>
           <div className="space-y-4">
-            {service.detailSections.map((section, index) => (
+            {detailSections.map((section, index) => (
               <details
                 key={section.title}
                 open={index === 0}
@@ -122,9 +147,9 @@ export default function ServicePage() {
                       <span>{item}</span>
                     </li>
                   ))}
-                  {section.items.length > 4 && (
-                    <li className="pl-5 text-xs font-medium text-brandTextMedium">
-                      +{section.items.length - 4} more points
+                    {section.items.length > 4 && (
+                    <li className="ps-5 text-xs font-medium text-brandTextMedium">
+                      {t('serviceMorePoints', { n: String(section.items.length - 4) })}
                     </li>
                   )}
                 </ul>
@@ -137,17 +162,17 @@ export default function ServicePage() {
       {(hasLocalSupport || hasRelatedLinks) && (
         <section className="grid gap-5 lg:grid-cols-[minmax(0,1.1fr),minmax(280px,0.9fr)]">
           {hasLocalSupport && (
-            <article className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Local support</p>
-              <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">{service.localSupportTitle}</h2>
-              {service.localSupportDescription && (
+            <article className="rounded-2xl border border-brandBorder bg-white p-6 text-start shadow-sm md:p-8">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{t('serviceLocalSupportEyebrow')}</p>
+              <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">{localSupportTitle}</h2>
+              {localSupportDescription && (
                 <p className="mt-4 text-sm leading-7 text-brandTextMedium md:text-[0.98rem]">
-                  {service.localSupportDescription}
+                  {localSupportDescription}
                 </p>
               )}
-              {service.localSupportPoints && service.localSupportPoints.length > 0 && (
+              {localSupportPoints && localSupportPoints.length > 0 && (
                 <ul className="mt-4 space-y-3 text-sm leading-6 text-brandTextDark">
-                  {service.localSupportPoints.map((point) => (
+                  {localSupportPoints.map((point) => (
                     <li key={point} className="flex items-start gap-3">
                       <span className="mt-1 shrink-0 text-primary">✓</span>
                       <span>{point}</span>
@@ -159,11 +184,11 @@ export default function ServicePage() {
           )}
 
           {hasRelatedLinks && (
-            <aside className="rounded-2xl border border-brandBorder bg-white p-6 text-left shadow-sm md:p-8">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Related routes</p>
-              <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">Keep moving without starting over</h2>
+            <aside className="rounded-2xl border border-brandBorder bg-white p-6 text-start shadow-sm md:p-8">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{t('serviceRelatedEyebrow')}</p>
+              <h2 className="mt-2 text-xl font-bold text-slate-950 md:text-2xl">{t('serviceRelatedHeading')}</h2>
               <div className="mt-4 space-y-3">
-                {service.relatedLinks?.map((link) => (
+                {relatedLinks.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
@@ -181,25 +206,25 @@ export default function ServicePage() {
 
       {hasAppointment && (
         <section id="appointment" className="rounded-3xl border border-brandBorder bg-[linear-gradient(180deg,#f0f7ff_0%,#e8f4fd_100%)] p-5 md:p-6">
-          <div className="mb-4 text-left">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Appointment</p>
-            <h2 className="mt-2 text-2xl font-bold text-slate-900">Book a Service Appointment</h2>
-            <p className="mt-2 text-sm text-brandTextMedium md:text-[0.95rem]">Choose a preferred time and send your request to the store team.</p>
+          <div className="mb-4 text-start">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">{t('serviceAppointmentEyebrow')}</p>
+            <h2 className="mt-2 text-2xl font-bold text-slate-900">{t('serviceAppointmentHeading')}</h2>
+            <p className="mt-2 text-sm text-brandTextMedium md:text-[0.95rem]">{t('serviceAppointmentBody')}</p>
           </div>
           <HomeAppointmentPanel
-            sourcePage={`/services/${service.slug}#appointment`}
+            sourcePage={`${canonicalPath}#appointment`}
             defaultServiceType={appointmentServiceTypes[service.slug]}
             density="compact"
-            quickContactHref={buildWhatsAppHref(`Hi, I'd like to book a ${service.title} appointment. (via pzm.ae/services/${service.slug})`)}
+            quickContactHref={buildWhatsAppHref(isAr ? `مرحباً، أود حجز موعد لخدمة ${service.ar?.title || service.title}. (via pzm.ae${canonicalPath})` : `Hi, I'd like to book a ${service.title} appointment. (via pzm.ae/services/${service.slug})`)}
           />
         </section>
       )}
 
       <div id="service-contact">
         <WhatsAppCTA
-          title={`Need help with ${service.title.toLowerCase()}?`}
-          description="Send us a message and the PZM team will follow up with pricing and next steps."
-          prefilledMessage={`Hi, I'm interested in ${service.title} from your website. Can you help? (via pzm.ae/services/${service.slug})`}
+          title={t('serviceNeedHelp', { service: ctaServiceName })}
+          description={isAr ? 'أرسل لنا رسالة وسيتابع فريق PZM معك بخصوص الأسعار والخطوة التالية.' : 'Send us a message and the PZM team will follow up with pricing and next steps.'}
+          prefilledMessage={isAr ? `مرحباً، أنا مهتم بخدمة ${service.ar?.title || service.title} من موقعكم. هل يمكنكم المساعدة؟ (via pzm.ae${canonicalPath})` : `Hi, I'm interested in ${service.title} from your website. Can you help? (via pzm.ae/services/${service.slug})`}
         />
       </div>
     </div>

@@ -13,6 +13,7 @@ import {
 } from '../content/siteData'
 import { formatCartCount, replayAnimationClass } from '../utils/cartFeedback'
 import { buildSearchIndex } from '../utils/storefrontSearch'
+import { getLanguageSwitchPath, toSupportedLocalizedPath, useLanguage } from '../context/LanguageContext'
 
 interface HeaderProps {
   onNavigate: (page: any) => void
@@ -24,8 +25,30 @@ interface HeaderProps {
 export default function Header({ onNavigate, products = [], onSearchActivate }: HeaderProps) {
   const { isAuthenticated, logout } = useAuth()
   const { itemCount, lastAddedTick } = useCart()
+  const { lang, t } = useLanguage()
   const location = useLocation()
   const searchIndex = useMemo(() => buildSearchIndex(products), [products])
+  const localeAwarePath = useCallback((path: string) => toSupportedLocalizedPath(path, lang), [lang])
+  const currentRoute = `${location.pathname}${location.search}${location.hash}`
+  const languageSwitchHref = getLanguageSwitchPath(currentRoute)
+
+  // Build translated mega-menu items from the base siteData + translation record.
+  const categoryLabelKeys = ['catPhones', 'catLaptops', 'catGaming', 'catPro'] as const
+  const categorySubtitleKeys = ['catPhonesSubtitle', 'catLaptopsSubtitle', 'catGamingSubtitle', 'catProSubtitle'] as const
+  const shopLabelKeys = ['shopBrandNew', 'shopUsed', 'shopBuyIphone', 'shopSell', 'shopAccessories'] as const
+  const shopSubtitleKeys = ['shopBrandNewSubtitle', 'shopUsedSubtitle', 'shopBuyIphoneSubtitle', 'shopSellSubtitle', 'shopAccessoriesSubtitle'] as const
+  const translatedCategories = megaMenuCategories.map((item, i) => ({
+    ...item,
+    label: t(categoryLabelKeys[i]),
+    subtitle: t(categorySubtitleKeys[i]),
+    to: localeAwarePath(item.to),
+  }))
+  const translatedShopSections = megaMenuShopSections.map((item, i) => ({
+    ...item,
+    label: t(shopLabelKeys[i]),
+    subtitle: t(shopSubtitleKeys[i]),
+    to: localeAwarePath(item.to),
+  }))
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMegaOpen, setIsMegaOpen] = useState(false)
   const megaRef = useRef<HTMLDivElement>(null)
@@ -34,6 +57,9 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
   const mobileCartRef = useRef<HTMLAnchorElement>(null)
 
   const isRepairPage = location.pathname.startsWith('/services/repair')
+  const cartItemWord = itemCount === 1
+    ? (lang === 'ar' ? 'عنصر' : 'item')
+    : (lang === 'ar' ? 'عناصر' : 'items')
   const badgeToneClass = itemCount > 0
     ? 'bg-primary text-white shadow-[0_6px_14px_rgba(0,167,111,0.28)]'
     : 'bg-slate-200 text-slate-500'
@@ -101,7 +127,7 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
         <div className="flex h-16 items-center justify-between gap-4">
 
           {/* ── Logo ─────────────────────────────────── */}
-          <Link to="/" className="flex shrink-0 items-center" aria-label="PZM home">
+          <Link to={localeAwarePath('/')} className="flex shrink-0 items-center" aria-label="PZM home">
             <img
               src="/images/brand/pzm-header-logo.png"
               alt="PZM"
@@ -121,7 +147,7 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
                 className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-900"
                 aria-expanded={isMegaOpen}
               >
-                Products
+                {t('navProducts')}
                 <ChevronDown size={15} className={`transition-transform duration-200 ${isMegaOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -137,10 +163,10 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
                   {/* Left column — Device Categories */}
                   <div>
                     <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400">
-                      Categories
+                      {t('navCategories')}
                     </p>
                     <div className="space-y-1">
-                      {megaMenuCategories.map((item) => {
+                      {translatedCategories.map((item) => {
                         const Icon = item.icon
                         return (
                           <Link
@@ -162,10 +188,10 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
                   {/* Right column — Shop Sections */}
                   <div>
                     <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400">
-                      Shop
+                      {t('navShop')}
                     </p>
                     <div className="space-y-1">
-                      {megaMenuShopSections.map((item) => {
+                      {translatedShopSections.map((item) => {
                         const Icon = item.icon
                         return (
                           <Link
@@ -189,7 +215,7 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
 
             {/* Repair — top-level link */}
             <Link
-              to="/services/repair"
+              to={localeAwarePath('/services/repair')}
               className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
                 isRepairPage
                   ? 'bg-slate-100 text-slate-900'
@@ -197,7 +223,7 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
               }`}
             >
               <Wrench size={15} />
-              Repair
+              {t('navRepair')}
             </Link>
           </nav>
 
@@ -208,10 +234,16 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
           <div className="flex items-center gap-2">
             {/* Desktop CTA icons */}
             <div className="hidden lg:flex items-center gap-2">
+              <Link
+                to={languageSwitchHref}
+                className="inline-flex h-9 items-center justify-center rounded-full border border-[#eee] px-3 text-sm font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900"
+              >
+                {t('langSwitchLabel')}
+              </Link>
               <a
                 href={siteContact.phoneHref}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#eee] text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
-                aria-label="Call us"
+                aria-label={t('navCallAriaLabel')}
               >
                 <Phone size={16} />
               </a>
@@ -220,7 +252,7 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#25D366] text-white transition-opacity hover:opacity-90"
-                aria-label="WhatsApp"
+                aria-label={t('navWhatsAppAriaLabel')}
               >
                 <MessageCircle size={16} />
               </a>
@@ -229,7 +261,7 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
                 to="/cart"
                 data-cart-feedback-target="desktop"
                 className="cart-icon-button relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#eee] text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
-                aria-label={`Shopping cart, ${itemCount} item${itemCount === 1 ? '' : 's'}`}
+                aria-label={t('navCartAriaLabel', { count: itemCount, itemWord: cartItemWord })}
               >
                 <ShoppingCart size={16} />
                 <span
@@ -248,7 +280,7 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
                 to="/cart"
                 data-cart-feedback-target="mobile-header"
                 className="cart-icon-button relative flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
-                aria-label={`Shopping cart, ${itemCount} item${itemCount === 1 ? '' : 's'}`}
+                aria-label={t('navCartAriaLabel', { count: itemCount, itemWord: cartItemWord })}
               >
                 <ShoppingCart size={20} />
                 <span
@@ -261,7 +293,7 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
               <button
               onClick={() => setIsMobileMenuOpen((v) => !v)}
               className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
-              aria-label="Toggle navigation"
+              aria-label={t('navToggleAriaLabel')}
             >
               {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
@@ -275,7 +307,7 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
                   onNavigate({ type: 'home' })
                 }}
                 className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 transition-colors hover:text-red-500"
-                aria-label="Logout"
+                aria-label={t('navLogoutAriaLabel')}
               >
                 <LogOut size={20} />
               </button>
@@ -301,12 +333,12 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
           {/* Products accordion */}
           <details className="group rounded-xl border border-[#eee]">
             <summary className="flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-semibold text-slate-800 [&::-webkit-details-marker]:hidden">
-              Products
+              {t('navProducts')}
               <ChevronDown size={16} className="text-slate-400 transition-transform group-open:rotate-180" />
             </summary>
             <div className="px-2 pb-3">
-              <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-slate-400">Categories</p>
-              {megaMenuCategories.map((item) => {
+              <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-slate-400">{t('navCategories')}</p>
+              {translatedCategories.map((item) => {
                 const Icon = item.icon
                 return (
                   <Link
@@ -320,8 +352,8 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
                 )
               })}
 
-              <p className="mt-2 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-slate-400">Shop</p>
-              {megaMenuShopSections.map((item) => {
+              <p className="mt-2 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-slate-400">{t('navShop')}</p>
+              {translatedShopSections.map((item) => {
                 const Icon = item.icon
                 return (
                   <Link
@@ -339,11 +371,18 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
 
           {/* Repair direct link */}
           <Link
-            to="/services/repair"
+            to={localeAwarePath('/services/repair')}
             className="flex items-center gap-2.5 rounded-xl border border-[#eee] px-4 py-3 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50"
           >
             <Wrench size={16} className="text-slate-400" />
-            Repair
+            {t('navRepair')}
+          </Link>
+
+          <Link
+            to={languageSwitchHref}
+            className="flex items-center justify-center rounded-xl border border-[#eee] px-4 py-3 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50"
+          >
+            {t('langSwitchLabel')}
           </Link>
 
           {/* Contact row */}
@@ -353,7 +392,7 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#eee] py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300"
             >
               <Phone size={16} />
-              Call
+              {t('contactCardCallLabel')}
             </a>
             <a
               href={siteContact.whatsappSupportHref}
@@ -362,7 +401,7 @@ export default function Header({ onNavigate, products = [], onSearchActivate }: 
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#25D366] py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             >
               <MessageCircle size={16} />
-              WhatsApp
+              {t('contactCardWhatsappLabel')}
             </a>
           </div>
         </div>

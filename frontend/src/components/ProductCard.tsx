@@ -117,7 +117,7 @@ export default function ProductCard({ product, onViewDetails }: Props) {
       </div>
 
       {/* SEO-visible link to product detail page */}
-      <div className="border-t border-[#eee] px-3 py-2 text-right">
+      <div className="border-t border-[#eee] px-3 py-2 text-end">
         <Link
           to={`/product/${product.id}`}
           className="text-[11px] text-slate-400 underline-offset-2 hover:text-slate-600 hover:underline"
